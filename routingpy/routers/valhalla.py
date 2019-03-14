@@ -26,9 +26,8 @@ from operator import itemgetter
 from copy import deepcopy
 
 class Valhalla(Router):
-
     """Performs requests to a Valhalla instance."""
-
+    
     def __init__(self, base_url, api_key=None, user_agent=None, timeout=None,
                  retry_timeout=None, requests_kwargs=None, retry_over_query_limit=False):
         """
