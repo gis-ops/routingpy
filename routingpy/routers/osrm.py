@@ -24,7 +24,7 @@ from routingpy import convert
 
 
 class OSRM(Router):
-    """Performs requests to the ORS API services."""
+    """Performs requests to the OSRM API services."""
 
     _DEFAULT_BASE_URL = 'https://router.project-osrm.org'
 

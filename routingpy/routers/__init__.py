@@ -4,3 +4,4 @@ from .openrouteservice import ORS
 from .osrm import OSRM
 from .valhalla import Valhalla
 from .mapbox_valhalla import MapboxValhalla
+from .graphhopper import Graphhopper
