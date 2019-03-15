@@ -21,7 +21,8 @@ Core client functionality, common across all API requests.
 
 from .base import Router
 from routingpy import convert
-import json
+from operator import itemgetter
+from copy import deepcopy
 
 
 class Valhalla(Router):
@@ -180,7 +181,7 @@ class Valhalla(Router):
                 params['directions_options']['directions_type'] = directions_type
 
         if avoid_locations:
-            params['avoid_locations'] = [{"lat": coord[1], "lon": coord[0]} for coord in coordinates]
+            params['avoid_locations'] = self._build_locations(avoid_locations)
 
         if date_time:
             params['date_time'] = date_time
@@ -342,6 +343,9 @@ class Valhalla(Router):
         if generalize:
             params['generalize'] = generalize
 
+        if avoid_locations:
+            params['avoid_locations'] = self._build_locations(avoid_locations)
+
         if date_time:
             params['date_time'] = date_time
 
@@ -352,72 +356,131 @@ class Valhalla(Router):
 
         return self._request("/isochrone", get_params=get_params, post_json=params, dry_run=dry_run)
 
-    def distance_matrix(self, coordinates, profile, sources=None, destinations=None, metrics=None,
-                        resolve_locations=None, units=None, dry_run=None):
+    def distance_matrix(self, coordinates, profile, sources=None, destinations=None, types=None,
+                       headings=None, heading_tolerances=None, street_names=None,
+                       minimum_reachabilities=None, radiuses=None, rank_candidates=None, options=None,
+                       avoid_locations=None, units=None, id=None, dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
-            :param coordinates: One or more pairs of lng/lat values.
-            :type coordinates: a single location, or a list of locations, where a
-                location is a list or tuple of lng,lat values
+        :param coordinates: Multiple pairs of lng/lat values.
+        :type coordinates: list/tuple of lists/tuples
 
-            :param profile: Specifies the mode of transport to use when calculating
-                directions. One of ["driving-car", "driving-hgv", "foot-walking",
-                "foot-hiking", "cycling-regular", "cycling-road", "cycling-mountain",
-                "cycling-electric",]. Default "driving-car".
-            :type profile: str
+        :param profile: Specifies the mode of transport to use when calculating
+            directions. One of ["driving-car", "driving-hgv", "foot-walking",
+            "foot-hiking", "cycling-regular", "cycling-road", "cycling-mountain",
+            "cycling-electric",]. Default "driving-car".
+        :type profile: str
 
-            :param sources: A list of indices that refer to the list of locations
-                (starting with 0). If not passed, all indices are considered.
-            :type sources: list or tuple
+        :param sources: A list of indices that refer to the list of locations
+            (starting with 0). If not passed, all indices are considered.
+        :type sources: list or tuple
 
-            :param destinations: A list of indices that refer to the list of locations
-                (starting with 0). If not passed, all indices are considered.
-            :type destinations: list or tuple
+        :param destinations: A list of indices that refer to the list of locations
+            (starting with 0). If not passed, all indices are considered.
+        :type destinations: list or tuple
 
-            :param metrics: Specifies a list of returned metrics. One or more of ["distance",
-                "duration"]. Default ['duration'].
-            :type metrics: list of str
+        :param types: Type of location. One of ['break', 'through']. A break is a stop, so the first
+            and last locations must be of type break. A through location is one that the route path travels
+            through, and is useful to force a route to go through location. The path is not allowed to
+            reverse direction at the through locations. If no type is provided, the type is assumed to be a break.
+            The order has to correspond to ``coordinates`` and be of the same length.
+            More info at: https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#locations
+        :type types: list/tuple of str
 
-            :param resolve_locations: Specifies whether given locations are resolved or
-                not. If set 'true', every element in destinations and sources will
-                contain the name element that identifies the name of the closest street.
-                Default False.
-            :type resolve_locations: bool
+        :param headings: Preferred direction of travel for the start from the location. The heading is indicated
+            in degrees from north in a clockwise direction, where north is 0°, east is 90°,
+            south is 180°, and west is 270°.
+        :type headings: list/tuple of int
 
-            :param units: Specifies the unit system to use when displaying results.
-                One of ["m", "km", "m"]. Default "m".
-            :type units: str
+        :param heading_tolerances: How close in degrees a given street's angle must be in order for it
+            to be considered as in the same direction of the heading parameter. The default value is 60 degrees.
+        :type heading_tolerances: list/tuple of int
 
-            :param dry_run: Print URL and parameters without sending the request.
-            :param dry_run: bool
+        :param minimum_reachabilities: Minimum number of nodes (intersections) reachable for a given edge (road between
+            intersections) to consider that edge as belonging to a connected region. When correlating this
+            location to the route network, try to find candidates who are reachable from this many or more
+            nodes (intersections). If a given candidate edge reaches less than this number of nodes its considered
+            to be a disconnected island and we'll search for more candidates until we find at least one that
+            isn't considered a disconnected island. If this value is larger than the configured service limit
+            it will be clamped to that limit. The default is a minimum of 50 reachable nodes.
+        :type minimum_reachabilities: list/tuple of int
 
-            :returns: raw JSON response
-            :rtype: dict
+        :param radiuses: The number of meters about this input location within which edges (roads between intersections)
+            will be considered as candidates for said location. When correlating this location to the route network,
+            try to only return results within this distance (meters) from this location. If there are no candidates
+            within this distance it will return the closest candidate within reason. If this value is larger than
+            the configured service limit it will be clamped to that limit. The default is 0 meters.
+        :type radiuses: list/tuple of int
+
+        :param rank_candidates: Whether or not to rank the edge candidates for this location. The ranking is used
+            as a penalty within the routing algorithm so that some edges will be penalized more heavily than others.
+            If true candidates will be ranked according to their distance from the input and various other attributes.
+            If false the candidates will all be treated as equal which should lead to routes that are just the most
+            optimal path with emphasis about which edges were selected.
+        :type rank_candidates: list/tuple of bool
+
+        :param options: Profiles can have several options that can be adjusted to develop the route path,
+            as well as for estimating time along the path. Only specify the actual options dict, the profile
+            will be filled automatically. For more information, visit:
+            https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#costing-options
+        :type options: dict
+
+        :param avoid_locations: A set of locations to exclude or avoid within a route.
+            Specified as a list of coordinates, similar to coordinates object.
+        :type avoid_locations: list/tuple of coordinates lists/tuples
+
+        :param units: Distance units for output. One of ['mi', 'km']. Default km.
+        :type units: str
+
+        :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
+        :type id: str
+
+        :param dry_run: Print URL and parameters without sending the request.
+        :param dry_run: bool
+
+        :returns: raw JSON response
+        :rtype: dict
             """
 
         params = {
-            "locations": coordinates,
-            "profile": profile
+            'costing': profile,
         }
 
-        if sources:
-            params['sources'] = sources
+        locations = self._build_locations(coordinates, types=types, headings=headings, heading_tolerances=heading_tolerances,
+                                      street_names=street_names, minimum_reachabilities=minimum_reachabilities,
+                                      radiuses=radiuses, rank_candidates=rank_candidates)
 
-        if destinations:
-            params['destinations'] = destinations
+        sources_coords = locations
+        if sources is not None:
+            sources_coords = itemgetter(*sources)(sources_coords)
+            if isinstance(sources_coords, dict):
+                sources_coords = [sources_coords]
+        params['sources'] = sources_coords
 
-        if metrics:
-            params["metrics"] = metrics
+        dest_coords = locations
+        if destinations is not None:
+            dest_coords = itemgetter(*destinations)(dest_coords)
+            if isinstance(dest_coords, dict):
+                dest_coords = [dest_coords]
+        params['targets'] = dest_coords
 
-        if resolve_locations is not None:
-            params["resolve_locations"] = resolve_locations
+        if options:
+            params['costing_options'] = dict()
+            profile = profile if profile != 'multimodal' else 'transit'
+            params['costing_options'][profile] = options
+
+        if avoid_locations:
+            params['avoid_locations'] = self._build_locations(avoid_locations)
 
         if units:
             params["units"] = units
 
+        if id:
+            params['id'] = id
+
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
-        return self._request('sources_to_targets', get_params=get_params, post_json=params, dry_run=dry_run)
+        return self._request('/sources_to_targets', get_params=get_params, post_json=params, dry_run=dry_run)
 
     def _build_locations(self, coordinates, **kwargs):
 
@@ -432,7 +495,7 @@ class Valhalla(Router):
             'rank_candidates': 'rank_candidates'
         }
 
-        # On Mapbox Valhalla service, only one location is supported
+        # On Mapbox Valhalla service, only one location is supported for isochrones
         if convert._is_list(coordinates[0]):
             locations = [{"lat": coord[1], "lon": coord[0]} for coord in coordinates]
         else:

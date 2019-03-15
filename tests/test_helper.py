@@ -56,10 +56,29 @@ ENDPOINTS_QUERIES = {
             'range': [600, 1200],
             'colors': ['ff0000', '00FF00'],
             'polygons': True,
+            'avoid_locations': PARAM_POINT,
             'generalize': 0.5,
             'denoise': 0.1,
             'date_time': {'type': 1, 'value': '2019-03-03T08:06'},
-        }
+        },
+        'matrix': {
+            'coordinates': PARAM_LINE_MULTI,
+            'types': ['break', 'through', 'break'],
+            'headings': [PARAM_INT_SMALL] * 3,
+            'heading_tolerances': [PARAM_INT_SMALL] * 3,
+            'minimum_reachabilities': [PARAM_INT_SMALL] * 3,
+            'radiuses': [PARAM_INT_SMALL] * 3,
+            'rank_candidates': [True, False, True],
+            'options': {
+                'maneuver_penalty': PARAM_INT_SMALL,
+                'toll_booth_cost': PARAM_INT_SMALL,
+                'country_crossing_penalty': PARAM_INT_SMALL
+            },
+            'avoid_locations': PARAM_POINT,
+            'profile': 'auto',
+            'units': 'mi',
+            'id': 'wacko'
+        },
     }
 }
 
@@ -76,7 +95,27 @@ ENDPOINTS_EXPECTED = {
                     "minimum_reachability": 50,
                     "radius": 50,
                     "rank_candidates": True
-                }
+                },
+                {
+                    "lat": 49.415776,
+                    "lon": 8.680916,
+                    "type": "through",
+                    "heading": 50,
+                    "heading_tolerance": 50,
+                    "minimum_reachability": 50,
+                    "radius": 50,
+                    "rank_candidates": False
+                },
+                {
+                    "lat": 49.445776,
+                    "lon": 8.780916,
+                    "type": "break",
+                    "heading": 50,
+                    "heading_tolerance": 50,
+                    "minimum_reachability": 50,
+                    "radius": 50,
+                    "rank_candidates": True
+                },
             ],
             "costing": "auto",
             "costing_options": {
@@ -93,16 +132,8 @@ ENDPOINTS_EXPECTED = {
             },
             "avoid_locations": [
                 {
-                    "lat": 49.420577,
-                    "lon": 8.688641
-                },
-                {
-                    "lat": 49.415776,
-                    "lon": 8.680916
-                },
-                {
-                    "lat": 49.445776,
-                    "lon": 8.780916
+                    "lon": 8.34234,
+                    "lat": 48.23424
                 }
             ],
             "date_time": {
@@ -142,6 +173,12 @@ ENDPOINTS_EXPECTED = {
                     "color": "00FF00"
                 }
             ],
+            "avoid_locations": [
+                {
+                    "lon": 8.34234,
+                    "lat": 48.23424
+                }
+            ],
             "date_time": {
                 "type": 1,
                 "value": "2019-03-03T08:06"
@@ -150,7 +187,89 @@ ENDPOINTS_EXPECTED = {
             "denoise": 0.1,
             "polygons": True,
             "generalize": 0.5,
-        }
+        },
+        'matrix': {
+            "sources": [
+                {
+                    "lat": 49.420577,
+                    "lon": 8.688641,
+                    "type": "break",
+                    "heading": 50,
+                    "heading_tolerance": 50,
+                    "minimum_reachability": 50,
+                    "radius": 50,
+                    "rank_candidates": True
+                },
+                {
+                    "lat": 49.415776,
+                    "lon": 8.680916,
+                    "type": "through",
+                    "heading": 50,
+                    "heading_tolerance": 50,
+                    "minimum_reachability": 50,
+                    "radius": 50,
+                    "rank_candidates": False
+                },
+                {
+                    "lat": 49.445776,
+                    "lon": 8.780916,
+                    "type": "break",
+                    "heading": 50,
+                    "heading_tolerance": 50,
+                    "minimum_reachability": 50,
+                    "radius": 50,
+                    "rank_candidates": True
+                },
+            ],
+            "targets": [
+                {
+                    "lat": 49.420577,
+                    "lon": 8.688641,
+                    "type": "break",
+                    "heading": 50,
+                    "heading_tolerance": 50,
+                    "minimum_reachability": 50,
+                    "radius": 50,
+                    "rank_candidates": True
+                },
+                {
+                    "lat": 49.415776,
+                    "lon": 8.680916,
+                    "type": "through",
+                    "heading": 50,
+                    "heading_tolerance": 50,
+                    "minimum_reachability": 50,
+                    "radius": 50,
+                    "rank_candidates": False
+                },
+                {
+                    "lat": 49.445776,
+                    "lon": 8.780916,
+                    "type": "break",
+                    "heading": 50,
+                    "heading_tolerance": 50,
+                    "minimum_reachability": 50,
+                    "radius": 50,
+                    "rank_candidates": True
+                },
+            ],
+            "costing": "auto",
+            "costing_options": {
+                "auto": {
+                    "maneuver_penalty": 50,
+                    "toll_booth_cost": 50,
+                    "country_crossing_penalty": 50
+                }
+            },
+            "avoid_locations": [
+                {
+                    "lon": 8.34234,
+                    "lat": 48.23424
+                }
+            ],
+            "id": "wacko",
+            "units": 'mi'
+        },
     },
     'ors': {
         'directions': {

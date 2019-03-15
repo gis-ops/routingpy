@@ -30,7 +30,7 @@ def _pipe_list(arg):
 
 
 def _delimit_list(arg, delimiter=','):
-    """Convert list to comma-separated string"""
+    """Convert list to delimiter-separated string"""
     if not _is_list(arg):
         raise TypeError(
             "Expected a list or tuple, "

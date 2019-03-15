@@ -17,7 +17,7 @@
 # the License.
 #
 
-"""Tests for the Valhalla module."""
+"""Tests for the Mapbox Valhalla module."""
 
 from routingpy import Valhalla
 from tests.test_helper import *
@@ -28,12 +28,12 @@ import responses
 from copy import deepcopy
 
 
-class ValhallaTest(_test.TestCase):
-
+class MapboxValhallaTest(_test.TestCase):
     name = 'valhalla'
-            
+
     def setUp(self):
-        self.client = Valhalla('https://api.mapbox.com/valhalla/v1')
+        self.key = 'sample_key'
+        self.client = Valhalla('https://api.mapbox.com/valhalla/v1', api_key=self.key)
 
     @responses.activate
     def test_full_directions(self):
@@ -41,7 +41,7 @@ class ValhallaTest(_test.TestCase):
         expected = ENDPOINTS_EXPECTED[self.name]['directions']
 
         responses.add(responses.POST,
-                      'https://api.mapbox.com/valhalla/v1/route',
+                      'https://api.mapbox.com/valhalla/v1/route?access_token={}'.format(self.key),
                       status=200,
                       json=expected,
                       content_type='application/json')
@@ -63,7 +63,7 @@ class ValhallaTest(_test.TestCase):
         expected = ENDPOINTS_EXPECTED[self.name]['isochrones']
 
         responses.add(responses.POST,
-                      'https://api.mapbox.com/valhalla/v1/isochrone',
+                      'https://api.mapbox.com/valhalla/v1/isochrone?access_token={}'.format(self.key),
                       status=200,
                       json=expected,
                       content_type='application/json')
@@ -81,7 +81,7 @@ class ValhallaTest(_test.TestCase):
         expected = ENDPOINTS_EXPECTED[self.name]['matrix']
 
         responses.add(responses.POST,
-                      'https://api.mapbox.com/valhalla/v1/sources_to_targets',
+                      'https://api.mapbox.com/valhalla/v1/sources_to_targets?access_token={}'.format(self.key),
                       status=200,
                       json=expected,
                       content_type='application/json')
@@ -104,7 +104,7 @@ class ValhallaTest(_test.TestCase):
         del expected['targets'][1]
 
         responses.add(responses.POST,
-                      'https://api.mapbox.com/valhalla/v1/sources_to_targets',
+                      'https://api.mapbox.com/valhalla/v1/sources_to_targets?access_token={}'.format(self.key),
                       status=200,
                       json=expected,
                       content_type='application/json')
