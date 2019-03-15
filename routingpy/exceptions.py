@@ -58,6 +58,10 @@ class Timeout(Exception):
     """The request timed out."""
     pass
 
+class _JSONParseError(Exception):
+    """The Json response can't be parsed.."""
+    pass
+
 class _RetriableRequest(Exception):
     """Signifies that the request can be retried."""
     pass

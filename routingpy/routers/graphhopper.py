@@ -26,6 +26,7 @@ class Graphhopper(Router):
 
     _DEFAULT_BASE_URL = "https://graphhopper.com/api"
     _DEFAULT_API_VERSION = "1"
+
     def __init__(self, key=None, base_url=_DEFAULT_BASE_URL, version=_DEFAULT_API_VERSION, user_agent=None, timeout=None,
                  retry_timeout=None, requests_kwargs={}, retry_over_query_limit=False):
 
@@ -66,9 +67,9 @@ class Graphhopper(Router):
      
         super(Graphhopper, self).__init__(base_url, key, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit)
 
-    def directions(self, coordinates, profile, type=None, optimize=None, instructions=None, locale=None,
+    def directions(self, coordinates, profile, format, optimize=None, instructions=None, locale=None,
                    elevation=None, points_encoded=None, calc_points=None, debug=None,
-                   gpx_track=None, gpx_route=None, gpx_waypoints=None, point_hint=None, details=None, ch_disable = None, 
+                   point_hint=None, details=None, ch_disable = None, 
                    weighting=None, heading=None, heading_penalty=None, 
                    pass_through=None, block_area=None, avoid=None, algorithm=None, round_trip_distance=None, round_trip_seed = None,
                    alternative_route_max_paths = None, alternative_route_max_weight_factor = None, 
@@ -87,8 +88,8 @@ class Graphhopper(Router):
             https://graphhopper.com/api/1/docs/supported-vehicle-profiles/
         :type profile: str
 
-        :param type: Specifies the resulting format of the route, for json the content type will be application/json. 
-            Or use gpx, the content type will be application/gpx+xml. Default "json".
+        :param format: Specifies the resulting format of the route, for json the content type will be application/json. 
+            Default "json".
         :type format: str
 
         :param language: Language for routing instructions. The locale of the resulting turn instructions. 
@@ -207,95 +208,94 @@ class Graphhopper(Router):
         :rtype: dict
         """
 
-        params = {"point": coordinates,
-                  "profile": profile}
+        params = [
+            tuple(('profile', profile))
+        ]
 
-        if type:
-            params['type'] = type
+        if coordinates:
+            for coordinate in coordinates:
+                coord_latlng = reversed(coordinate)
+                params.append(tuple(("point", ",".join(map(str,coord_latlng)))))
 
         if self._authorization_key is not None:
-            params["key"] = self._authorization_key
+            params.append(tuple(("key", self._authorization_key)))
+
+        if format is not None:
+            params.append(tuple(("type", format)))
 
         if optimize is not None:
-            params["optimize"] = optimize
+            params.append(tuple(("optimize", convert._convert_bool(optimize))))
 
         if instructions is not None:
-            params["instructions"] = instructions
+            params.append(tuple(("instructions", convert._convert_bool(instructions))))
 
         if locale is not None:
-            params["locale"] = locale
+            params.append(tuple(("locale", locale)))
 
         if elevation is not None:
-            params["elevation"] = elevation
+            params.append(tuple(("elevation", convert._convert_bool(elevation))))
 
         if points_encoded is not None:
-            params["points_encoded"] = points_encoded
+            params.append(tuple(("points_encoded", convert._convert_bool(points_encoded))))
 
         if calc_points is not None:
-            params["calc_points"] = calc_points
-
+            params.append(tuple(("calc_points", convert._convert_bool(calc_points))))
+    
         if debug is not None:
-            params["debug"] = debug
+            params.append(tuple(("debug", convert._convert_bool(debug))))
 
         if point_hint is not None:
-            params["point_hint"] = point_hint
-
-        if details is not None:
-            params["details"] = details
-
-        # if gpx_track is not None:
-        #     params["gpx.track"] = gpx_track
-
-        # if gpx_route is not None:
-        #     params["gpx.route"] = gpx_route
-
-        # if gpx_waypoints is not None:
-        #     params["gpx.waypoints"] = gpx_waypoints
-
+            params.append(tuple(("point_hint", convert._convert_bool(point_hint))))
+        
         ### all below params will only work if ch is disabled
+        
+        if details is not None:
+            params.append(tuple(("details", convert._convert_bool(details))))
+
         if ch_disable is not None:
-            params["ch.disable"] = ch_disable
+            params.append(tuple(("ch.disable", convert._convert_bool(ch_disable))))
 
         if weighting is not None:
-            params["weighting"] = weighting
+            params.append(tuple(("weighting", weighting)))
 
         if heading is not None:
-            params["heading"] = heading
+            params.append(tuple(("heading", heading)))
 
         if heading_penalty is not None:
-            params["heading_penalty"] = heading_penalty
+            params.append(tuple(("heading_penalty", heading_penalty)))
 
         if pass_through is not None:
-            params["pass_through"] = pass_through
+            params.append(tuple(("pass_through", convert._convert_bool(pass_through))))
 
         if block_area is not None:
-            params["block_area"] = block_area
+            params.append(tuple(("heading_penalty", block_area)))
 
         if avoid is not None:
-            params["avoid"] = avoid
-
+            params.append(tuple(("avoid", avoid)))
+    
         if algorithm is not None:
 
             if algorithm == 'round_trip':
 
                 if round_trip_distance is not None:
-                    params["round_trip.distance"] = round_trip_distance
+                    params.append(tuple(("round_trip.distance", round_trip_distance)))
 
                 if round_trip_seed is not None:
-                    params["round_trip.seed"] = round_trip_seed
+                    params.append(tuple(("round_trip.seed", round_trip_seed)))
 
             if algorithm == 'alternative_route':
 
                 if alternative_route_max_paths is not None:
-                    params["alternative_route.max_paths"] = alternative_route_max_paths
+                    params.append(tuple(("alternative_route.max_paths", alternative_route.max_paths)))
 
                 if alternative_route_max_weight_factor is not None:
-                    params["alternative_route.max_weight_factor"] = alternative_route_max_weight_factor
+                    
+                    params.append(tuple(("alternative_route.max_weight_factor", alternative_route_max_weight_factor)))
 
                 if alternative_route_max_weight_factor is not None:
-                    params["alternative_route.max_weight_factor"] = alternative_route_max_weight_factor
+                    params.append(tuple(("alternative_route.max_weight_factor", alternative_route_max_weight_factor)))
 
-        return self._request("/" + self._DEFAULT_API_VERSION + '/route', get_params=self.gh_get_params(params), dry_run=dry_run)
+        return self._request("/" + self._DEFAULT_API_VERSION + '/route', get_params=params, dry_run=dry_run)
 
     def isochrones(self, coordinates, profile, distance_limit=None, time_limit=None, 
                     buckets=None, reverse_flow=None, debug=None, dry_run=None):
@@ -338,61 +338,35 @@ class Graphhopper(Router):
         :rtype: dict
         """
 
-        # params = {
-        #     "point": coordinates,
-        #     "profile": profile
-        # }
-        #
-        # if self._authorization_key is not None:
-        #     params["key"] = self._authorization_key
-        #
-        # if distance_limit is not None:
-        #     params['distance_limit'] = distance_limit
-        #
-        # if time_limit is not None:
-        #     params['time_limit'] = time_limit
-        #
-        # if buckets is not None:
-        #     params['buckets'] = buckets
-        #
-        # if reverse_flow is not None:
-        #     params['reverse_flow'] = reverse_flow
-        #
-        # if debug is not None:
-        #     params['debug'] = debug
-        #
-        # if dry_run is not None:
-        #     params['dry_run'] = dry_run
-
         params = [
-            ['point', coordinates],
-            ['profile', profile]
+            tuple(('profile', profile))
         ]
 
+        if coordinates:
+            coord_latlng = reversed(coordinates)
+            params.append(tuple(("point", ",".join(map(str,coord_latlng)))))
+
         if self._authorization_key is not None:
-            params.append(["key", self._authorization_key])
+            params.append(tuple(("key", self._authorization_key)))
 
         if distance_limit is not None:
-            params.append(['distance_limit', distance_limit])
+            params.append(tuple(('distance_limit', distance_limit)))
 
         if time_limit is not None:
-            params.append(['time_limit', time_limit])
+            params.append(tuple(('time_limit', time_limit)))
 
         if buckets is not None:
-            params.append(['buckets', buckets])
+            params.append(tuple(('buckets', buckets)))
 
         if reverse_flow is not None:
-            params.append(['reverse_flow', reverse_flow])
+            params.append(tuple(('reverse_flow', convert._convert_bool(reverse_flow))))
 
         if debug is not None:
-            params.append(['debug', debug])
-
-        if dry_run is not None:
-            params.append(['dry_run', dry_run])
+            params.append(tuple(('debug', convert._convert_bool(debug))))
 
         return self._request("/" + self._DEFAULT_API_VERSION + '/isochrone', get_params=params, dry_run=dry_run)
 
-    def distance_matrix(self, profile, coordinates=None, from_coordinates=None, to_coordinates=None, out_array=None, debug=None, dry_run=None):
+    def distance_matrix(self, coordinates, profile, sources=None, destinations=None, out_array=None, debug=None, dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
         :param coordinates: Specifiy multiple points for which the weight-, route-, time- or distance-matrix should be calculated. 
@@ -408,13 +382,12 @@ class Graphhopper(Router):
             Default "car".
         :type profile: str
 
-        :param from_coordinates: The starting points for the routes. 
-            E.g. if you want to calculate the three routes A->1, A->2, A->3 then you have one 
-            from_point parameter and three to_point parameters. Is a string with the format latitude,longitude.
-        :type from_coordinates: list, tuple
+        :param sources: The starting points for the routes. 
+            Specifies an index referring to coordinates.
+        :type from_coordinates: list
 
-        :param to_coordinates: The destination points for the routes. Is a string with the format latitude,longitude.
-        :type to_coordinates: list, tuple
+        :param destinations: The destination points for the routes. Specifies an index referring to coordinates.
+        :type to_coordinates: list
 
         :param out_array: Specifies which arrays should be included in the response. Specify one or more of the following 
             options 'weights', 'times', 'distances'. To specify more than one array use e.g. out_array=times&out_array=distances. 
@@ -429,66 +402,42 @@ class Graphhopper(Router):
         :returns: raw JSON response
         :rtype: dict
         """
-
-        params = {
-            "point": coordinates,
-            "profile": profile
-        }
+        params = [
+            tuple(('profile', profile))
+        ]
 
         if self._authorization_key is not None:
-            params["key"] = self._authorization_key
+            params.append(tuple(("key", self._authorization_key)))
 
-        if coordinates is not None:
-            params['point'] = coordinates
-
-        else:
-            if from_coordinates is not None:
-                params['from_point'] = from_coordinates
-            if to_coordinates is not None:
-                params['to_point'] = to_coordinates
-
-        if debug is not None:
-            params['debug'] = debug
+        if coordinates:
+            if sources is not None and destinations is not None:
+                if len(sources) > 0:
+                    for idx in sources:
+                        coord_latlng = reversed(coordinates[idx])
+                        params.append(tuple(("from_point", ",".join(map(str,coord_latlng)))))
+                if len(destinations) > 0:
+                    for idx in destinations:
+                        coord_latlng = reversed(coordinates[idx])
+                        params.append(tuple(("to_point", ",".join(map(str,coord_latlng)))))
+            else:
+                for coordinate in coordinates:
+                    coord_latlng = reversed(coordinate)
+                    params.append(tuple(("point", ",".join(map(str,coord_latlng)))))
+            
 
         if out_array is not None:
-            params['out_array'] = out_array
-    
-        return self._request("/" + self._DEFAULT_API_VERSION + '/matrix', get_params=self.gh_get_params(params), dry_run=dry_run)
+            for e in out_array:
+                params.append(tuple(("out_array", e)))
+
+        if debug is not None:
+            params.append(tuple(('debug', convert._convert_bool(debug))))
+
+
+        return self._request("/" + self._DEFAULT_API_VERSION + '/matrix', get_params=params, dry_run=dry_run)
 
     def optimization(self):
         pass
 
     def map_matching(self):
         pass
-
-    # @staticmethod
-    # def gh_get_params(params):
-    #     """ Graphhopper uses duplicate get parameters which are generated here.
-    #
-    #     :param params: GET params previously added.
-    #     :param params: dict
-    #
-    #     :returns: list of GET params
-    #     :rtype: list
-    #      """
-    #
-    #     dup_dict = {}
-    #     for dup_key in ('point', 'to_point', 'from_point', 'out_array'):
-    #         if dup_key in params:
-    #             dup_dict[dup_key] = params.pop(dup_key)
-    #
-    #     params = sorted(dict(**params).items())
-    #
-    #     for k, v in dup_dict.items():
-    #
-    #         for e in v:
-    #
-    #             # if coordinate
-    #             if isinstance(e, (list,)):
-    #                 e.reverse()
-    #                 params.append([k, ",".join(str(coord) for coord in e)])
-    #             else:
-    #                 params.append([k, e])
-    #
-    #     return params
 

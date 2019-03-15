@@ -17,9 +17,9 @@
 # the License.
 #
 
-"""Tests for the Mapbox Valhalla module."""
+"""Tests for the Graphhopper module."""
 
-from routingpy import Valhalla
+from routingpy import Graphhopper
 from tests.test_helper import *
 import tests as _test
 
@@ -28,81 +28,57 @@ import responses
 from copy import deepcopy
 
 
-class MapboxValhallaTest(_test.TestCase):
-    name = 'valhalla'
+class GraphhopperTest(_test.TestCase):
+    name = 'graphhopper'
 
     def setUp(self):
-        self.key = 'sample_key'
-        self.client = Valhalla('https://api.mapbox.com/valhalla/v1', api_key=self.key)
+        self.key = 'b163fba5-2dbf-4338-8736-7cd414f22444'
+        self.client = Graphhopper(key=self.key)
 
     @responses.activate
     def test_full_directions(self):
         query = ENDPOINTS_QUERIES[self.name]['directions']
-        expected = ENDPOINTS_EXPECTED[self.name]['directions']
 
-        responses.add(responses.POST,
-                      'https://api.mapbox.com/valhalla/v1/route?access_token={}'.format(self.key),
+        responses.add(responses.GET,
+                      'https://graphhopper.com/api/1/route',
                       status=200,
-                      json=expected,
+                      json={},
                       content_type='application/json')
-        routes = self.client.directions(**query)
 
+        routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body), expected)
+        self.assertURLEqual('https://graphhopper.com/api/1/route?avoid=motorway%3Btoll&elevation=true&instructions=false&key=b163fba5-2dbf-4338-8736-7cd414f22444&point=49.415776%2C8.680916&point=49.420577%2C8.688641&point=49.445776%2C8.780916&points_encoded=true&profile=car&type=json',
+            responses.calls[0].request.url)
 
     @responses.activate
     def test_full_isochrones(self):
         query = ENDPOINTS_QUERIES[self.name]['isochrones']
-        expected = ENDPOINTS_EXPECTED[self.name]['isochrones']
 
-        responses.add(responses.POST,
-                      'https://api.mapbox.com/valhalla/v1/isochrone?access_token={}'.format(self.key),
+        responses.add(responses.GET,
+                      'https://graphhopper.com/api/1/isochrone',
                       status=200,
-                      json=expected,
+                      json={},
                       content_type='application/json')
 
-        routes = self.client.isochrones(**query)
+        matrix = self.client.isochrones(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body), expected)
-
-    # TODO: test colors having less items than range
+        self.assertURLEqual('https://graphhopper.com/api/1/isochrone?key=b163fba5-2dbf-4338-8736-7cd414f22444&point=48.23424%2C8.34234&profile=car',
+            responses.calls[0].request.url)
 
     @responses.activate
     def test_full_matrix(self):
         query = ENDPOINTS_QUERIES[self.name]['matrix']
-        expected = ENDPOINTS_EXPECTED[self.name]['matrix']
 
-        responses.add(responses.POST,
-                      'https://api.mapbox.com/valhalla/v1/sources_to_targets?access_token={}'.format(self.key),
+        responses.add(responses.GET,
+                      'https://graphhopper.com/api/1/matrix',
                       status=200,
-                      json=expected,
+                      json={},
                       content_type='application/json')
 
-        routes = self.client.distance_matrix(**query)
+        matrix = self.client.distance_matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body), expected)
+        self.assertURLEqual('https://graphhopper.com/api/1/matrix?from_point=49.415776%2C8.680916&from_point=49.420577%2C8.688641&key=b163fba5-2dbf-4338-8736-7cd414f22444&out_array=distance&out_array=times&out_array=weights&profile=car&to_point=49.445776%2C8.780916',
+            responses.calls[0].request.url)
 
-    @responses.activate
-    def test_few_sources_destinations_matrix(self):
-        query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
-        query['sources'] = [2]
-        query['destinations'] = [0]
-
-        expected = deepcopy(ENDPOINTS_EXPECTED[self.name]['matrix'])
-        del expected['sources'][0]
-        del expected['sources'][0]
-        del expected['targets'][1]
-        del expected['targets'][1]
-
-        responses.add(responses.POST,
-                      'https://api.mapbox.com/valhalla/v1/sources_to_targets?access_token={}'.format(self.key),
-                      status=200,
-                      json=expected,
-                      content_type='application/json')
-
-        routes = self.client.distance_matrix(**query)
-
-        self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body), expected)

@@ -217,7 +217,11 @@ class Router(metaclass=ABCMeta):
     @staticmethod
     def _get_body(response):
         status_code = response.status_code
-        body = response.json()
+
+        try:
+            body = response.json()
+        except json.decoder.JSONDecodeError:
+            raise exceptions._JSONParseError("Can't decode JSON response")
 
         if status_code == 429:
             raise exceptions._OverQueryLimit(
@@ -257,6 +261,7 @@ class Router(metaclass=ABCMeta):
         :rtype: string
 
         """
+        
         if isinstance(params, dict):
             params = sorted(dict(**params).items())
         elif isinstance(params, (list, tuple)):
