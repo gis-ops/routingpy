@@ -21,11 +21,12 @@ Core client functionality, common across all API requests.
 
 from .base import Router
 from routingpy import convert
+import json
 from operator import itemgetter
 from copy import deepcopy
 
-
 class Valhalla(Router):
+
     """Performs requests to a Valhalla instance."""
 
     def __init__(self, base_url, api_key=None, user_agent=None, timeout=None,
@@ -482,6 +483,7 @@ class Valhalla(Router):
 
         return self._request('/sources_to_targets', get_params=get_params, post_json=params, dry_run=dry_run)
 
+
     def _build_locations(self, coordinates, **kwargs):
 
         # {VAR_NAME: Valhalla_Param_Name}
@@ -496,6 +498,7 @@ class Valhalla(Router):
         }
 
         # On Mapbox Valhalla service, only one location is supported for isochrones
+
         if convert._is_list(coordinates[0]):
             locations = [{"lat": coord[1], "lon": coord[0]} for coord in coordinates]
         else:

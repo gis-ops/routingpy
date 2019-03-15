@@ -95,6 +95,7 @@ ENDPOINTS_EXPECTED = {
                     "minimum_reachability": 50,
                     "radius": 50,
                     "rank_candidates": True
+<<<<<<< HEAD
                 },
                 {
                     "lat": 49.415776,
@@ -116,6 +117,9 @@ ENDPOINTS_EXPECTED = {
                     "radius": 50,
                     "rank_candidates": True
                 },
+=======
+                }
+>>>>>>> valhalla only missing matrix tests
             ],
             "costing": "auto",
             "costing_options": {
@@ -173,12 +177,15 @@ ENDPOINTS_EXPECTED = {
                     "color": "00FF00"
                 }
             ],
+<<<<<<< HEAD
             "avoid_locations": [
                 {
                     "lon": 8.34234,
                     "lat": 48.23424
                 }
             ],
+=======
+>>>>>>> valhalla only missing matrix tests
             "date_time": {
                 "type": 1,
                 "value": "2019-03-03T08:06"
@@ -187,6 +194,7 @@ ENDPOINTS_EXPECTED = {
             "denoise": 0.1,
             "polygons": True,
             "generalize": 0.5,
+<<<<<<< HEAD
         },
         'matrix': {
             "sources": [
@@ -270,6 +278,9 @@ ENDPOINTS_EXPECTED = {
             "id": "wacko",
             "units": 'mi'
         },
+=======
+        }
+>>>>>>> valhalla only missing matrix tests
     },
     'ors': {
         'directions': {
