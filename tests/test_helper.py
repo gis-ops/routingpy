@@ -15,33 +15,61 @@ PARAM_GEOJSON_POINT = {'type': 'Point', 'coordinates': PARAM_POINT}
 PARAM_GEOJSON_LINE = {'type': 'LineString', 'coordinates': PARAM_LINE}
 PARAM_GEOJSON_POLY = {'type': 'Polygon', 'coordinates': PARAM_POLY}
 
-ENDPOINT_DICT = {
+ENDPOINTS_QUERIES = {
+    'valhalla': {
+        'directions': {
+            'coordinates': PARAM_LINE_MULTI,
+            'types': ['break', 'through', 'break'],
+            'headings': [PARAM_INT_SMALL] * 3,
+            'heading_tolerances': [PARAM_INT_SMALL] * 3,
+            'minimum_reachabilities': [PARAM_INT_SMALL] * 3,
+            'radiuses': [PARAM_INT_SMALL] * 3,
+            'rank_candidates': [True, False, True],
+            'options': {
+                'maneuver_penalty': PARAM_INT_SMALL,
+                'toll_booth_cost': PARAM_INT_SMALL,
+                'country_crossing_penalty': PARAM_INT_SMALL
+            },
+            'profile': 'auto',
+            'units': 'mi',
+            'directions_type': 'none',
+            'avoid_locations': PARAM_POINT,
+            'date_time': {'type': 1, 'value': '2019-03-03T08:06'},
+            'language': 'pirate',
+            'id': 'wacko'
+        },
+        'isochrones': {
+            'coordinates': PARAM_POINT,
+            'types': ['break'],
+            'headings': [PARAM_INT_SMALL],
+            'heading_tolerances': [PARAM_INT_SMALL],
+            'minimum_reachabilities': [PARAM_INT_SMALL],
+            'radiuses': [PARAM_INT_SMALL],
+            'rank_candidates': [True],
+            'options': {
+                'maneuver_penalty': PARAM_INT_SMALL,
+                'toll_booth_cost': PARAM_INT_SMALL,
+                'country_crossing_penalty': PARAM_INT_SMALL
+            },
+            'profile': 'auto',
+            'id': 'wacko',
+            'range': [600, 1200],
+            'colors': ['ff0000', '00FF00'],
+            'polygons': True,
+            'generalize': 0.5,
+            'denoise': 0.1,
+            'date_time': {'type': 1, 'value': '2019-03-03T08:06'},
+        }
+    }
+}
+
+ENDPOINTS_EXPECTED = {
     'valhalla': {
         'directions': {
             "locations": [
                 {
                     "lat": 49.420577,
                     "lon": 8.688641,
-                    "type": "break",
-                    "heading": 50,
-                    "heading_tolerance": 50,
-                    "minimum_reachability": 50,
-                    "radius": 50,
-                    "rank_candidates": True
-                },
-                {
-                    "lat": 49.415776,
-                    "lon": 8.680916,
-                    "type": "through",
-                    "heading": 50,
-                    "heading_tolerance": 50,
-                    "minimum_reachability": 50,
-                    "radius": 50,
-                    "rank_candidates": False
-                },
-                {
-                    "lat": 49.445776,
-                    "lon": 8.780916,
                     "type": "break",
                     "heading": 50,
                     "heading_tolerance": 50,
@@ -86,8 +114,8 @@ ENDPOINT_DICT = {
         'isochrones': {
             "locations": [
                 {
-                    "lat": 49.420577,
-                    "lon": 8.688641,
+                    "lat": PARAM_POINT[1],
+                    "lon": PARAM_POINT[0],
                     "type": "break",
                     "heading": 50,
                     "heading_tolerance": 50,
@@ -97,18 +125,31 @@ ENDPOINT_DICT = {
                 }
             ],
             "costing": "auto",
-            "contours": {
-                "time": 600,
-                "color": 'ff0000'
+            "costing_options": {
+                "auto": {
+                    "maneuver_penalty": 50,
+                    "toll_booth_cost": 50,
+                    "country_crossing_penalty": 50
+                }
             },
+            "contours": [
+                {
+                    "time": 10,
+                    "color": 'ff0000'
+                },
+                {
+                    "time": 20,
+                    "color": "00FF00"
+                }
+            ],
             "date_time": {
                 "type": 1,
                 "value": "2019-03-03T08:06"
             },
             "id": "wacko",
+            "denoise": 0.1,
             "polygons": True,
-            "generalize": 0.65,
-
+            "generalize": 0.5,
         }
     },
     'ors': {

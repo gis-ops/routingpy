@@ -32,48 +32,21 @@ from copy import deepcopy
 class ValhallaTest(_test.TestCase):
 
     name = 'valhalla'
-
-    coords_valid = PARAM_LINE_MULTI
-    locations_valid = {
-        'coordinates': coords_valid,
-        'types': ['break', 'through', 'break'],
-        'headings': [PARAM_INT_SMALL] * 3,
-        'heading_tolerances': [PARAM_INT_SMALL] * 3,
-        'minimum_reachabilities': [PARAM_INT_SMALL] * 3,
-        'radiuses': [PARAM_INT_SMALL] * 3,
-        'rank_candidates': [True, False, True]
-    }
-
-    costing_options_auto_valid = {
-        'maneuver_penalty': PARAM_INT_SMALL,
-        'toll_booth_cost': PARAM_INT_SMALL,
-        'country_crossing_penalty': PARAM_INT_SMALL
-    }
             
     def setUp(self):
         self.client = Valhalla('https://api.mapbox.com/valhalla/v1')
 
     @responses.activate
     def test_full_directions(self):
-
-        expected = ENDPOINT_DICT[self.name]['directions']
+        query = ENDPOINTS_QUERIES[self.name]['directions']
+        expected = ENDPOINTS_EXPECTED[self.name]['directions']
 
         responses.add(responses.POST,
                       'https://api.mapbox.com/valhalla/v1/route',
                       status=200,
                       json=expected,
                       content_type='application/json')
-        
-        routes = self.client.directions(profile='auto',
-                                        options=self.costing_options_auto_valid,
-                                        units='mi',
-                                        directions_type='none',
-                                        avoid_locations=PARAM_POINT,
-                                        date_time={'type': 1, 'value': '2019-03-03T08:06'},
-                                        language='pirate',
-                                        id='wacko',
-                                        **self.locations_valid#, dry_run=True
-                                        )
+        routes = self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body), expected)
@@ -87,7 +60,19 @@ class ValhallaTest(_test.TestCase):
 
     @responses.activate
     def test_full_isochrones(self):
-        expected = ENDPOINT_DICT[self.name]['isochrones']
+        query = ENDPOINTS_QUERIES[self.name]['isochrones']
+        expected = ENDPOINTS_EXPECTED[self.name]['isochrones']
+
+        responses.add(responses.POST,
+                      'https://api.mapbox.com/valhalla/v1/isochrone',
+                      status=200,
+                      json=expected,
+                      content_type='application/json')
+
+        routes = self.client.isochrones(**query)
+
+        self.assertEqual(1, len(responses.calls))
+        self.assertEqual(json.loads(responses.calls[0].request.body), expected)
 
 
     # @responses.activate

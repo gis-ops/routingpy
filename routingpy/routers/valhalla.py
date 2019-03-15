@@ -20,14 +20,14 @@ Core client functionality, common across all API requests.
 """
 
 from .base import Router
-import re
+from routingpy import convert
 import json
 
 
 class Valhalla(Router):
-    """Performs requests to the ORS API services."""
+    """Performs requests to a Valhalla instance."""
 
-    def __init__(self, base_url, user_agent=None, timeout=None,
+    def __init__(self, base_url, api_key=None, user_agent=None, timeout=None,
                  retry_timeout=None, requests_kwargs=None, retry_over_query_limit=False):
         """
         Initializes a Valhalla client.
@@ -53,13 +53,12 @@ class Valhalla(Router):
             http://docs.python-requests.org/en/latest/api/#main-interface
         :type requests_kwargs: dict
 
-        :param queries_per_minute: Number of queries per second permitted.
-            If the rate limit is reached, the client will sleep for the
-            appropriate amount of time before it runs the current query.
-            Note, it won't help to initiate another client. This saves you the
-            trouble of raised exceptions.
-        :type queries_per_minute: int
+        :param retry_over_query_limit: If True, the client will retry when query
+            limit is reached (HTTP 429). Default False.
+        :type retry_over_query_limit: bool
         """
+
+        self.api_key = api_key
 
         super(Valhalla, self).__init__(base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit)
 
@@ -189,7 +188,9 @@ class Valhalla(Router):
         if id:
             params['id'] = id
 
-        return self._request("/route", get_params={'json': json.dumps(params)}, post_json=params, dry_run=dry_run)
+        get_params = {'access_token': self.api_key} if self.api_key else {}
+
+        return self._request("/route", get_params=get_params, post_json=params, dry_run=dry_run)
 
     def isochrones(self, coordinates, profile, range, colors=None, polygons=None, denoise=None, generalize=None, types=None,
                    headings=None, heading_tolerances=None, street_names=None,
@@ -310,10 +311,21 @@ class Valhalla(Router):
                                           street_names=street_names, minimum_reachabilities=minimum_reachabilities,
                                           radiuses=radiuses, rank_candidates=rank_candidates)
 
+        contours = []
+        for idx, r in enumerate(range):
+            d = {'time': int(r / 60)}
+            if colors:
+                try:
+                    d.update(color=colors[idx])
+                except IndexError:
+                    raise IndexError("Colors object must have same length as Range object.")
+            contours.append(d)
+
+
         params = {
             "locations": locations,
             "costing": profile,
-            "contours": range,
+            "contours": contours,
         }
 
         if options:
@@ -336,7 +348,9 @@ class Valhalla(Router):
         if id:
             params['id'] = id
 
-        return self._request("/v2/isochrones/" + profile + '/geojson', get_params={}, post_json=params, dry_run=dry_run)
+        get_params = {'access_token': self.api_key} if self.api_key else {}
+
+        return self._request("/isochrone", get_params=get_params, post_json=params, dry_run=dry_run)
 
     def distance_matrix(self, coordinates, profile, sources=None, destinations=None, metrics=None,
                         resolve_locations=None, units=None, dry_run=None):
@@ -401,7 +415,9 @@ class Valhalla(Router):
         if units:
             params["units"] = units
 
-        return self._request("/v2/matrix/" + profile + '/json', get_params={}, post_json=params, dry_run=dry_run)
+        get_params = {'access_token': self.api_key} if self.api_key else {}
+
+        return self._request('sources_to_targets', get_params=get_params, post_json=params, dry_run=dry_run)
 
     def _build_locations(self, coordinates, **kwargs):
 
@@ -416,7 +432,12 @@ class Valhalla(Router):
             'rank_candidates': 'rank_candidates'
         }
 
-        locations = [{"lat": coord[1], "lon": coord[0]} for coord in coordinates]
+        # On Mapbox Valhalla service, only one location is supported
+        if convert._is_list(coordinates[0]):
+            locations = [{"lat": coord[1], "lon": coord[0]} for coord in coordinates]
+        else:
+            locations = [{'lat': coordinates[1], 'lon': coordinates[0]}]
+            coordinates = [coordinates]
 
         def append_locations(arg, name):
             if len(arg) == len(coordinates):

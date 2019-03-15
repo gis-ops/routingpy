@@ -81,12 +81,18 @@ class Router(metaclass=ABCMeta):
 
         self._retry_over_query_limit = retry_over_query_limit
         self._retry_timeout = timedelta(seconds=retry_timeout or options.default_retry_timeout)
+
         self._requests_kwargs = requests_kwargs or {}
-        self._requests_kwargs.update({
-            "headers": {"User-Agent": user_agent or options.default_user_agent,
-                        'Content-Type': 'application/json'},
-            "timeout": timeout or options.default_timeout,
-        })
+        add_headers = {
+                "User-Agent": user_agent or options.default_user_agent,
+                'Content-Type': 'application/json'
+            }
+        try:
+            self._requests_kwargs['headers'].update(add_headers)
+        except KeyError:
+            self._requests_kwargs.update({'headers': add_headers})
+        add_timeout = self._requests_kwargs.get('timeout') or timeout or options.default_timeout
+        self._requests_kwargs['timeout'] = add_timeout
 
         self._req = None
 
