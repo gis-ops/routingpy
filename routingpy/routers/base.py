@@ -82,7 +82,6 @@ class Router(metaclass=ABCMeta):
         self._session = requests.Session()
         self._base_url = base_url
         self._authorization_key = key
-        self._name = self.__class__.__name__
 
         self._retry_over_query_limit = retry_over_query_limit
         self._retry_timeout = timedelta(seconds=retry_timeout or options.default_retry_timeout)
@@ -108,8 +107,7 @@ class Router(metaclass=ABCMeta):
                  retry_counter=0,
                  requests_kwargs=None,
                  post_json=None,
-                 dry_run=None,
-                 name=None):
+                 dry_run=None):
         """Performs HTTP GET/POST with credentials, returning the body as
         JSON.
 
@@ -162,8 +160,7 @@ class Router(metaclass=ABCMeta):
             time.sleep(delay_seconds * (random.random() + 0.5))
 
         authed_url = self._generate_auth_url(url,
-                                             get_params,
-                                             self._name
+                                             get_params
                                              )
 
         # Default to the client-level self.requests_kwargs, with method-level
@@ -247,7 +244,7 @@ class Router(metaclass=ABCMeta):
 
 
     @staticmethod
-    def _generate_auth_url(path, params, name):
+    def _generate_auth_url(path, params):
         """Returns the path and query string portion of the request URL, first
         adding any necessary parameters.
 
@@ -260,9 +257,10 @@ class Router(metaclass=ABCMeta):
         :rtype: string
 
         """
-        if type(params) is dict:
-            
+        if isinstance(params, dict):
             params = sorted(dict(**params).items())
+        elif isinstance(params, (list, tuple)):
+            params = sorted(params)
 
         return path + "?" + requests.utils.unquote_unreserved(urlencode(params))
 

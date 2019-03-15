@@ -208,8 +208,10 @@ class Graphhopper(Router):
         """
 
         params = {"point": coordinates,
-                  "profile": profile,
-                  "type": type}
+                  "profile": profile}
+
+        if type:
+            params['type'] = type
 
         if self._authorization_key is not None:
             params["key"] = self._authorization_key
@@ -293,7 +295,7 @@ class Graphhopper(Router):
                 if alternative_route_max_weight_factor is not None:
                     params["alternative_route.max_weight_factor"] = alternative_route_max_weight_factor
 
-        return self._request("/" + self._DEFAULT_API_VERSION + '/route', get_params=self.gh_get_params(params), post_json=None, dry_run=dry_run)
+        return self._request("/" + self._DEFAULT_API_VERSION + '/route', get_params=self.gh_get_params(params), dry_run=dry_run)
 
     def isochrones(self, coordinates, profile, distance_limit=None, time_limit=None, 
                     buckets=None, reverse_flow=None, debug=None, dry_run=None):
@@ -306,7 +308,7 @@ class Graphhopper(Router):
             One of bike, car, foot or 
             https://graphhopper.com/api/1/docs/supported-vehicle-profiles/Default.
             Default "car".
-        :type vehicle: str
+        :type profile: str
 
         :param distance_limit: Specify which time the vehicle should travel. In seconds.
             Default 600.
@@ -325,9 +327,9 @@ class Graphhopper(Router):
             Default False.
         :param reverse_flow: bool
         
-        :param debug: If true, the output will be formated.
+        :param debug: If true, the output will be formatted.
             Default False
-        :type elevation: bool
+        :type debug: bool
     
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
@@ -336,34 +338,59 @@ class Graphhopper(Router):
         :rtype: dict
         """
 
-        params = {
-            "point": coordinates,
-            "profile": profile
-        }
+        # params = {
+        #     "point": coordinates,
+        #     "profile": profile
+        # }
+        #
+        # if self._authorization_key is not None:
+        #     params["key"] = self._authorization_key
+        #
+        # if distance_limit is not None:
+        #     params['distance_limit'] = distance_limit
+        #
+        # if time_limit is not None:
+        #     params['time_limit'] = time_limit
+        #
+        # if buckets is not None:
+        #     params['buckets'] = buckets
+        #
+        # if reverse_flow is not None:
+        #     params['reverse_flow'] = reverse_flow
+        #
+        # if debug is not None:
+        #     params['debug'] = debug
+        #
+        # if dry_run is not None:
+        #     params['dry_run'] = dry_run
+
+        params = [
+            ['point', coordinates],
+            ['profile', profile]
+        ]
 
         if self._authorization_key is not None:
-            params["key"] = self._authorization_key
+            params.append(["key", self._authorization_key])
 
         if distance_limit is not None:
-            params['distance_limit'] = distance_limit
+            params.append(['distance_limit', distance_limit])
 
         if time_limit is not None:
-            params['time_limit'] = time_limit
+            params.append(['time_limit', time_limit])
 
         if buckets is not None:
-            params['buckets'] = buckets
+            params.append(['buckets', buckets])
 
         if reverse_flow is not None:
-            params['reverse_flow'] = reverse_flow
+            params.append(['reverse_flow', reverse_flow])
 
         if debug is not None:
-            params['debug'] = debug
+            params.append(['debug', debug])
 
         if dry_run is not None:
-            params['dry_run'] = dry_run
+            params.append(['dry_run', dry_run])
 
-
-        return self._request("/" + self._DEFAULT_API_VERSION + '/isochrone', get_params=self.gh_get_params(params), post_json=None, dry_run=dry_run)
+        return self._request("/" + self._DEFAULT_API_VERSION + '/isochrone', get_params=params, dry_run=dry_run)
 
     def distance_matrix(self, profile, coordinates=None, from_coordinates=None, to_coordinates=None, out_array=None, debug=None, dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
@@ -376,10 +403,10 @@ class Graphhopper(Router):
         :type coordinates: list, tuple
 
         :param profile: Specifies the mode of transport. 
-            One of bike, car, foot or 
+            One of bike, car, foot or
             https://graphhopper.com/api/1/docs/supported-vehicle-profiles/Default.
             Default "car".
-        :type vehicle: str
+        :type profile: str
 
         :param from_coordinates: The starting points for the routes. 
             E.g. if you want to calculate the three routes A->1, A->2, A->3 then you have one 
@@ -426,7 +453,7 @@ class Graphhopper(Router):
         if out_array is not None:
             params['out_array'] = out_array
     
-        return self._request("/" + self._DEFAULT_API_VERSION + '/matrix', get_params=self.gh_get_params(params), post_json=None, dry_run=dry_run)
+        return self._request("/" + self._DEFAULT_API_VERSION + '/matrix', get_params=self.gh_get_params(params), dry_run=dry_run)
 
     def optimization(self):
         pass
@@ -434,34 +461,34 @@ class Graphhopper(Router):
     def map_matching(self):
         pass
 
-    @staticmethod
-    def gh_get_params(params):
-        """ Graphhopper uses duplicate get parameters which are generated here.
-
-        :param params: GET params previously added.
-        :param params: dict
-
-        :returns: list of GET params
-        :rtype: list
-         """
-
-        dup_dict = {}
-        for dup_key in ('point', 'to_point', 'from_point', 'out_array'):
-            if dup_key in params:
-                dup_dict[dup_key] = params.pop(dup_key)
-
-        params = sorted(dict(**params).items())
-        
-        for k, v in dup_dict.items():
-        
-            for e in v:
-                
-                # if coordinate
-                if isinstance(e, (list,)):
-                    e.reverse()
-                    params.append([k, ",".join(str(coord) for coord in e)])  
-                else:
-                    params.append([k, e])  
-
-        return params
+    # @staticmethod
+    # def gh_get_params(params):
+    #     """ Graphhopper uses duplicate get parameters which are generated here.
+    #
+    #     :param params: GET params previously added.
+    #     :param params: dict
+    #
+    #     :returns: list of GET params
+    #     :rtype: list
+    #      """
+    #
+    #     dup_dict = {}
+    #     for dup_key in ('point', 'to_point', 'from_point', 'out_array'):
+    #         if dup_key in params:
+    #             dup_dict[dup_key] = params.pop(dup_key)
+    #
+    #     params = sorted(dict(**params).items())
+    #
+    #     for k, v in dup_dict.items():
+    #
+    #         for e in v:
+    #
+    #             # if coordinate
+    #             if isinstance(e, (list,)):
+    #                 e.reverse()
+    #                 params.append([k, ",".join(str(coord) for coord in e)])
+    #             else:
+    #                 params.append([k, e])
+    #
+    #     return params
 
