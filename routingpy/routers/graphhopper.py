@@ -24,10 +24,9 @@ from routingpy import convert
 class Graphhopper(Router):
     """Performs requests to the Graphhopper API services."""
 
-    _DEFAULT_BASE_URL = "https://graphhopper.com/api"
-    _DEFAULT_API_VERSION = "1"
+    _DEFAULT_BASE_URL = "https://graphhopper.com/api/1"
 
-    def __init__(self, key=None, base_url=_DEFAULT_BASE_URL, version=_DEFAULT_API_VERSION, user_agent=None, timeout=None,
+    def __init__(self, key=None, base_url=_DEFAULT_BASE_URL, user_agent=None, timeout=None,
                  retry_timeout=None, requests_kwargs={}, retry_over_query_limit=False):
 
         """
@@ -209,93 +208,93 @@ class Graphhopper(Router):
         """
 
         params = [
-            tuple(('profile', profile))
+            ('profile', profile)
         ]
 
-        if coordinates:
-            for coordinate in coordinates:
-                coord_latlng = reversed(coordinate)
-                params.append(tuple(("point", ",".join(map(str,coord_latlng)))))
+        
+        for coordinate in coordinates:
+            coord_latlng = reversed(coordinate)
+            params.append(("point", ",".join(map(str,coord_latlng))))
 
         if self._authorization_key is not None:
-            params.append(tuple(("key", self._authorization_key)))
+            params.append(("key", self._authorization_key))
 
         if format is not None:
-            params.append(tuple(("type", format)))
+            params.append(("type", format))
 
         if optimize is not None:
-            params.append(tuple(("optimize", convert._convert_bool(optimize))))
+            params.append(("optimize", convert._convert_bool(optimize)))
 
         if instructions is not None:
-            params.append(tuple(("instructions", convert._convert_bool(instructions))))
+            params.append(("instructions", convert._convert_bool(instructions)))
 
         if locale is not None:
-            params.append(tuple(("locale", locale)))
+            params.append(("locale", locale))
 
         if elevation is not None:
-            params.append(tuple(("elevation", convert._convert_bool(elevation))))
+            params.append(("elevation", convert._convert_bool(elevation)))
 
         if points_encoded is not None:
-            params.append(tuple(("points_encoded", convert._convert_bool(points_encoded))))
+            params.append(("points_encoded", convert._convert_bool(points_encoded)))
 
         if calc_points is not None:
-            params.append(tuple(("calc_points", convert._convert_bool(calc_points))))
+            params.append(("calc_points", convert._convert_bool(calc_points)))
     
         if debug is not None:
-            params.append(tuple(("debug", convert._convert_bool(debug))))
+            params.append(("debug", convert._convert_bool(debug)))
 
         if point_hint is not None:
-            params.append(tuple(("point_hint", convert._convert_bool(point_hint))))
+            params.append(("point_hint", convert._convert_bool(point_hint)))
         
         ### all below params will only work if ch is disabled
         
         if details is not None:
-            params.append(tuple(("details", convert._convert_bool(details))))
+            params.append(("details", convert._convert_bool(details)))
 
         if ch_disable is not None:
-            params.append(tuple(("ch.disable", convert._convert_bool(ch_disable))))
+            params.append(("ch.disable", convert._convert_bool(ch_disable)))
 
         if weighting is not None:
-            params.append(tuple(("weighting", weighting)))
+            params.append(("weighting", weighting))
 
         if heading is not None:
-            params.append(tuple(("heading", heading)))
+            params.append(("heading", heading))
 
         if heading_penalty is not None:
-            params.append(tuple(("heading_penalty", heading_penalty)))
+            params.append(("heading_penalty", heading_penalty))
 
         if pass_through is not None:
-            params.append(tuple(("pass_through", convert._convert_bool(pass_through))))
+            params.append(("pass_through", convert._convert_bool(pass_through)))
 
         if block_area is not None:
-            params.append(tuple(("heading_penalty", block_area)))
+            params.append(("heading_penalty", block_area))
 
         if avoid is not None:
-            params.append(tuple(("avoid", avoid)))
+            params.append(("avoid", avoid))
     
         if algorithm is not None:
 
             if algorithm == 'round_trip':
 
                 if round_trip_distance is not None:
-                    params.append(tuple(("round_trip.distance", round_trip_distance)))
+                    params.append(("round_trip.distance", round_trip_distance))
 
                 if round_trip_seed is not None:
-                    params.append(tuple(("round_trip.seed", round_trip_seed)))
+                    params.append(("round_trip.seed", round_trip_seed))
 
             if algorithm == 'alternative_route':
 
                 if alternative_route_max_paths is not None:
-                    params.append(tuple(("alternative_route.max_paths", alternative_route.max_paths)))
+                    params.append(("alternative_route.max_paths", alternative_route.max_paths))
 
                 if alternative_route_max_weight_factor is not None:
                     
-                    params.append(tuple(("alternative_route.max_weight_factor", alternative_route_max_weight_factor)))
+                    params.append(("alternative_route.max_weight_factor", alternative_route_max_weight_factor))
 
                 if alternative_route_max_weight_factor is not None:
-                    params.append(tuple(("alternative_route.max_weight_factor", alternative_route_max_weight_factor)))
+                    params.append(("alternative_route.max_weight_factor", alternative_route_max_weight_factor))
 
-        return self._request("/" + self._DEFAULT_API_VERSION + '/route', get_params=params, dry_run=dry_run)
+        return self._request('/route', get_params=params, dry_run=dry_run)
 
     def isochrones(self, coordinates, profile, distance_limit=None, time_limit=None, 
                     buckets=None, reverse_flow=None, debug=None, dry_run=None):
@@ -339,32 +338,31 @@ class Graphhopper(Router):
         """
 
         params = [
-            tuple(('profile', profile))
+            ('profile', profile)
         ]
 
-        if coordinates:
-            coord_latlng = reversed(coordinates)
-            params.append(tuple(("point", ",".join(map(str,coord_latlng)))))
+        coord_latlng = reversed(coordinates)
+        params.append(("point", ",".join(map(str,coord_latlng))))
 
         if self._authorization_key is not None:
-            params.append(tuple(("key", self._authorization_key)))
+            params.append(("key", self._authorization_key))
 
         if distance_limit is not None:
-            params.append(tuple(('distance_limit', distance_limit)))
+            params.append(('distance_limit', distance_limit))
 
         if time_limit is not None:
-            params.append(tuple(('time_limit', time_limit)))
+            params.append(('time_limit', time_limit))
 
         if buckets is not None:
-            params.append(tuple(('buckets', buckets)))
+            params.append(('buckets', buckets))
 
         if reverse_flow is not None:
-            params.append(tuple(('reverse_flow', convert._convert_bool(reverse_flow))))
+            params.append(('reverse_flow', convert._convert_bool(reverse_flow)))
 
         if debug is not None:
-            params.append(tuple(('debug', convert._convert_bool(debug))))
+            params.append(('debug', convert._convert_bool(debug)))
 
-        return self._request("/" + self._DEFAULT_API_VERSION + '/isochrone', get_params=params, dry_run=dry_run)
+        return self._request("/isochrone", get_params=params, dry_run=dry_run)
 
     def distance_matrix(self, coordinates, profile, sources=None, destinations=None, out_array=None, debug=None, dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
@@ -403,37 +401,46 @@ class Graphhopper(Router):
         :rtype: dict
         """
         params = [
-            tuple(('profile', profile))
+            ('profile', profile)
         ]
 
         if self._authorization_key is not None:
-            params.append(tuple(("key", self._authorization_key)))
+            params.append(("key", self._authorization_key))
 
-        if coordinates:
-            if sources is not None and destinations is not None:
-                if len(sources) > 0:
-                    for idx in sources:
-                        coord_latlng = reversed(coordinates[idx])
-                        params.append(tuple(("from_point", ",".join(map(str,coord_latlng)))))
-                if len(destinations) > 0:
-                    for idx in destinations:
-                        coord_latlng = reversed(coordinates[idx])
-                        params.append(tuple(("to_point", ",".join(map(str,coord_latlng)))))
-            else:
-                for coordinate in coordinates:
-                    coord_latlng = reversed(coordinate)
-                    params.append(tuple(("point", ",".join(map(str,coord_latlng)))))
+        
+        if sources is not None and destinations is not None:
+            for idx in sources:
+                try: 
+                    coord_latlng = reversed(coordinates[idx])
+                    params.append(("from_point", ",".join(map(str,coord_latlng))))
+                except IndexError: 
+                    raise IndexError("Source index {} out of range in coordinates {}.".format(idx, coordinates))
+        
+            for idx in destinations:
+                try:
+                    coord_latlng = reversed(coordinates[idx])
+                    params.append(("to_point", ",".join(map(str,coord_latlng))))
+                except IndexError: 
+                    raise IndexError("Destination index {} out of range in coordinates {}.".format(idx, coordinates))
+
+        elif sources is None or destinations is None:
+            raise ValueError("Sources and destinations are reciprocal, please add both.")
+
+        else:
+            for coordinate in coordinates:
+                coord_latlng = reversed(coordinate)
+                params.append(("point", ",".join(map(str,coord_latlng))))
             
-
         if out_array is not None:
             for e in out_array:
-                params.append(tuple(("out_array", e)))
+                params.append(("out_array", e))
 
         if debug is not None:
-            params.append(tuple(('debug', convert._convert_bool(debug))))
+            params.append(('debug', convert._convert_bool(debug)))
 
+        print(params)
 
-        return self._request("/" + self._DEFAULT_API_VERSION + '/matrix', get_params=params, dry_run=dry_run)
+        return self._request('/matrix', get_params=params, dry_run=dry_run)
 
     def optimization(self):
         pass

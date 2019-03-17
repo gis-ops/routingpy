@@ -82,3 +82,28 @@ class GraphhopperTest(_test.TestCase):
         self.assertURLEqual('https://graphhopper.com/api/1/matrix?from_point=49.415776%2C8.680916&from_point=49.420577%2C8.688641&key=b163fba5-2dbf-4338-8736-7cd414f22444&out_array=distance&out_array=times&out_array=weights&profile=car&to_point=49.445776%2C8.780916',
             responses.calls[0].request.url)
 
+    def test_no_destinations_matrix(self):
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
+        del query['destinations']
+
+        self.assertRaises(ValueError, lambda: self.client.distance_matrix(**query))
+
+    def test_no_sources_matrix(self):
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
+        del query['sources']
+
+        self.assertRaises(ValueError, lambda: self.client.distance_matrix(**query))
+
+    def test_index_sources_matrix(self):
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
+        query['sources'] = [100]
+
+        self.assertRaises(IndexError, lambda: self.client.distance_matrix(**query))
+
+    def test_index_destinations_matrix(self):
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
+        query['destinations'] = [100]
+
+        self.assertRaises(IndexError, lambda: self.client.distance_matrix(**query))
+  
+
