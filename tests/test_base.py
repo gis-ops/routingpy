@@ -21,6 +21,7 @@
 """Tests for client module."""
 
 import responses
+import requests
 import time
 
 import routingpy
@@ -78,11 +79,11 @@ class BaseTest(_test.TestCase):
                       status=503,
                       content_type='application/json')
 
-        client = RouterMock("https://httpbin.org", retry_timeout=retry_timeout)
+        client = RouterMock(base_url="https://httpbin.org", retry_timeout=retry_timeout)
 
         start = time.time()
         with self.assertRaises(routingpy.exceptions.Timeout):
-            client.directions('/post', {}, post_json=self.params)
+            client.directions(url='/post', post_params=self.params)
         end = time.time()
         self.assertTrue(retry_timeout < end-start < 2 * retry_timeout)
 
@@ -96,23 +97,45 @@ class BaseTest(_test.TestCase):
                       status=200,
                       content_type='application/json')
 
-        req = self.client.request(get_params={'format_out': 'geojson'},
-                             url='directions/',
-                             dry_run='true')
+        req = self.router.directions(
+            get_params={'format_out': 'geojson'},
+            url='directions/',
+            dry_run='true'
+        )
 
         self.assertEqual(0, len(responses.calls))
-    #
-    # @responses.activate
-    # def test_key_in_header(self):
-    #     # Test that API key is being put in the Authorization header
-    #     query = ENDPOINT_DICT['directions']
-    #
-    #     responses.add(responses.POST,
-    #                   'https://api.openrouteservice.org/v2/directions/{}/geojson'.format(query['profile']),
-    #                   json=ENDPOINT_DICT['directions'],
-    #                   status=200,
-    #                   content_type='application/json')
-    #
-    #     resp = self.client.directions(**query)
-    #
-    #     self.assertDictContainsSubset({'Authorization': self.key}, responses.calls[0].request.headers)
+
+    def test_headers(self):
+        # Test that existing request_kwargs keys are not scrubbed
+
+        timeout = {'holaDieWaldFee': 600}
+        headers = {
+            'headers': {
+                'X-Rate-Limit': '50'
+            }
+        }
+
+        client = RouterMock("https://httpbin.org", requests_kwargs=dict(timeout, **headers))
+
+        self.assertDictContainsSubset(timeout, client._requests_kwargs)
+        self.assertDictContainsSubset(headers['headers'], client._requests_kwargs['headers'])
+
+    @responses.activate
+    def test_req_property(self):
+        # Test if the req property is a PreparedRequest
+
+        responses.add(responses.GET,
+                      'https://httpbin.org/routes?a=b',
+                      json={},
+                      status=200,
+                      content_type='application/json')
+
+        req = self.router.directions(
+            url='/routes',
+            get_params={'a': 'b'}
+        )
+
+        assert isinstance(self.router.req, requests.PreparedRequest)
+        self.assertEqual('https://httpbin.org/routes?a=b',
+                         self.router.req.url)
+

@@ -191,7 +191,7 @@ class Valhalla(Router):
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
-        return self._request("/route", get_params=get_params, post_json=params, dry_run=dry_run)
+        return self._request("/route", get_params=get_params, post_params=params, dry_run=dry_run)
 
     def isochrones(self, coordinates, profile, range, colors=None, polygons=None, denoise=None, generalize=None, types=None,
                    headings=None, heading_tolerances=None, street_names=None,
@@ -354,7 +354,7 @@ class Valhalla(Router):
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
-        return self._request("/isochrone", get_params=get_params, post_json=params, dry_run=dry_run)
+        return self._request("/isochrone", get_params=get_params, post_params=params, dry_run=dry_run)
 
     def distance_matrix(self, coordinates, profile, sources=None, destinations=None, types=None,
                        headings=None, heading_tolerances=None, street_names=None,
@@ -480,7 +480,7 @@ class Valhalla(Router):
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
-        return self._request('/sources_to_targets', get_params=get_params, post_json=params, dry_run=dry_run)
+        return self._request('/sources_to_targets', get_params=get_params, post_params=params, dry_run=dry_run)
 
 
     def _build_locations(self, coordinates, **kwargs):

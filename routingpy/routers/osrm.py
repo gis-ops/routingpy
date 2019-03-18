@@ -214,7 +214,7 @@ class OSRM(Router):
         if destinations:
             params['destinations'] = destinations
 
-        return self._request("/table/v1/" + profile + '/' + coords, get_params={}, post_json=params, dry_run=dry_run)
+        return self._request("/table/v1/" + profile + '/' + coords, get_params={}, post_params=params, dry_run=dry_run)
 
     def map_matching(self):
         pass

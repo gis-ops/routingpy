@@ -51,11 +51,11 @@ class MapboxValhallaTest(_test.TestCase):
         self.assertEqual(json.loads(responses.calls[0].request.body), expected)
 
     def test_too_little_types(self):
-        payload = deepcopy(self.locations_valid)
+        payload = deepcopy(ENDPOINTS_QUERIES[self.name]['directions'])
         del payload['types'][0]
 
         with self.assertRaises(ValueError):
-            self.client.directions(profile='auto', **payload)
+            self.client.directions(**payload)
 
     @responses.activate
     def test_full_isochrones(self):

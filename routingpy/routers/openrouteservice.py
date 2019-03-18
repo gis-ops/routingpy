@@ -238,7 +238,7 @@ class ORS(Router):
         if options:
             params['options'] = options
 
-        return self._request("/v2/directions/" + profile + '/' + format, get_params={}, post_json=params, dry_run=dry_run)
+        return self._request("/v2/directions/" + profile + '/' + format, get_params={}, post_params=params, dry_run=dry_run)
 
     def isochrones(self, coordinates, profile, range, range_type, interval=None, units=None,
                    location_type=None, smoothing=None, attributes=None, intersections=None, dry_run=None):
@@ -321,7 +321,7 @@ class ORS(Router):
         if intersections:
             params["intersections"] = intersections
 
-        return self._request("/v2/isochrones/" + profile + '/geojson', get_params={}, post_json=params, dry_run=dry_run)
+        return self._request("/v2/isochrones/" + profile + '/geojson', get_params={}, post_params=params, dry_run=dry_run)
 
     def distance_matrix(self, coordinates, profile, sources=None, destinations=None, metrics=None,
                         resolve_locations=None, units=None, dry_run=None):
@@ -386,4 +386,4 @@ class ORS(Router):
         if units:
             params["units"] = units
 
-        return self._request("/v2/matrix/" + profile + '/json', get_params={}, post_json=params, dry_run=dry_run)
+        return self._request("/v2/matrix/" + profile + '/json', get_params={}, post_params=params, dry_run=dry_run)

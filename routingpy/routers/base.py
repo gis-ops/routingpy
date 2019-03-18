@@ -101,11 +101,11 @@ class Router(metaclass=ABCMeta):
 
     def _request(self,
                  url,
-                 get_params,
+                 get_params={},
+                 post_params=None,
                  first_request_time=None,
                  retry_counter=0,
                  requests_kwargs=None,
-                 post_json=None,
                  dry_run=None):
         """Performs HTTP GET/POST with credentials, returning the body as
         JSON.
@@ -128,8 +128,8 @@ class Router(metaclass=ABCMeta):
             per-request basis.
         :type requests_kwargs: dict
 
-        :param post_json: HTTP POST parameters. Only specified by calling method.
-        :type post_json: dict
+        :param post_params: HTTP POST parameters. Only specified by calling method.
+        :type post_params: dict
 
         :param dry_run: If 'true', only prints URL and parameters. 'true' or 'false'.
         :type dry_run: string
@@ -168,9 +168,9 @@ class Router(metaclass=ABCMeta):
         final_requests_kwargs = dict(self._requests_kwargs, **requests_kwargs)
         # Determine GET/POST.
         requests_method = self._session.get
-        if post_json is not None:
+        if post_params is not None:
             requests_method = self._session.post
-            final_requests_kwargs["json"] = post_json
+            final_requests_kwargs["json"] = post_params
 
         # Only print URL and parameters for dry_run
         if dry_run:
@@ -191,8 +191,8 @@ class Router(metaclass=ABCMeta):
             warnings.warn('Server down.\nRetrying for the {}th time.'.format(retry_counter + 1),
                           UserWarning)
 
-            return self._request(url, get_params, first_request_time,
-                                retry_counter + 1, requests_kwargs, post_json)
+            return self._request(url, get_params, post_params, first_request_time,
+                                 retry_counter + 1, requests_kwargs)
 
         try:
             result = self._get_body(response)
@@ -205,9 +205,9 @@ class Router(metaclass=ABCMeta):
             warnings.warn('Rate limit exceeded.\nRetrying for the {}th time.'.format(retry_counter + 1),
                           UserWarning)
             # Retry request.
-            return self._request(url, get_params, first_request_time,
+            return self._request(url, get_params, post_params, first_request_time,
                                  retry_counter + 1, requests_kwargs,
-                                 post_json)
+                                )
 
     @property
     def req(self):
