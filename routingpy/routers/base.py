@@ -49,7 +49,7 @@ class options(object):
 class Router(metaclass=ABCMeta):
     """Performs requests to the API service of choice."""
 
-    def __init__(self, base_url, key=None, user_agent=None, timeout=None, retry_timeout=None, requests_kwargs=None,
+    def __init__(self, base_url, user_agent=None, timeout=None, retry_timeout=None, requests_kwargs=None,
                  retry_over_query_limit=True):
         """
 
@@ -81,7 +81,6 @@ class Router(metaclass=ABCMeta):
 
         self._session = requests.Session()
         self._base_url = base_url
-        self._authorization_key = key
 
         self._retry_over_query_limit = retry_over_query_limit
         self._retry_timeout = timedelta(seconds=retry_timeout or options.default_retry_timeout)

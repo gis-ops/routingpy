@@ -33,7 +33,7 @@ class GraphhopperTest(_test.TestCase):
 
     def setUp(self):
         self.key = 'sample_key'
-        self.client = Graphhopper(key=self.key)
+        self.client = Graphhopper(api_key=self.key)
 
     @responses.activate
     def test_full_directions(self):

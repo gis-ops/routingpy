@@ -28,7 +28,7 @@ class Graphhopper(Router):
 
     _DEFAULT_BASE_URL = "https://graphhopper.com/api/1"
 
-    def __init__(self, key=None, base_url=_DEFAULT_BASE_URL, user_agent=None, timeout=None,
+    def __init__(self, base_url=_DEFAULT_BASE_URL, api_key=None, user_agent=None, timeout=None,
                  retry_timeout=None, requests_kwargs={}, retry_over_query_limit=False):
 
         """
@@ -63,10 +63,11 @@ class Graphhopper(Router):
         :type queries_per_minute: int
         """
 
-        if base_url == self._DEFAULT_BASE_URL and key is None:
+        if base_url == self._DEFAULT_BASE_URL and api_key is None:
             raise KeyError("API key must be specified.")
+        self.key = api_key
      
-        super(Graphhopper, self).__init__(base_url, key, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit)
+        super(Graphhopper, self).__init__(base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit)
 
     def directions(self, coordinates, profile, format, optimize=None, instructions=None, locale=None,
                    elevation=None, points_encoded=None, calc_points=None, debug=None,
@@ -213,8 +214,8 @@ class Graphhopper(Router):
             coord_latlng = reversed([convert._format_float(f) for f in coordinate])
             params.append(("point", ",".join(coord_latlng)))
 
-        if self._authorization_key is not None:
-            params.append(("key", self._authorization_key))
+        if self.key is not None:
+            params.append(("key", self.key))
 
         if format is not None:
             params.append(("type", format))
@@ -337,8 +338,8 @@ class Graphhopper(Router):
         coord_latlng = reversed([convert._format_float(f) for f in coordinates])
         params.append(("point", ",".join(coord_latlng)))
 
-        if self._authorization_key is not None:
-            params.append(("key", self._authorization_key))
+        if self.key is not None:
+            params.append(("key", self.key))
 
         if distance_limit is not None:
             params.append(('distance_limit', distance_limit))
@@ -397,8 +398,8 @@ class Graphhopper(Router):
             ('profile', profile)
         ]
 
-        if self._authorization_key is not None:
-            params.append(("key", self._authorization_key))
+        if self.key is not None:
+            params.append(("key", self.key))
 
         if sources is None and destinations is None:
             coordinates = (reversed([convert._format_float(f) for f in coord]) for coord in coordinates)
