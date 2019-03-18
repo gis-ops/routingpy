@@ -74,7 +74,6 @@ class ValhallaTest(_test.TestCase):
         self.assertEqual(json.loads(responses.calls[0].request.body), expected)
 
     # TODO: test colors having less items than range
-
     @responses.activate
     def test_full_matrix(self):
         query = ENDPOINTS_QUERIES[self.name]['matrix']
@@ -113,3 +112,44 @@ class ValhallaTest(_test.TestCase):
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body), expected)
+
+    # @responses.activate
+    # def test_bearings(self):
+    #     # First: test correct output for bearings
+    #     # Second: should switch to optimized=false bcs bearings was specified
+    #     responses.add(responses.GET,
+    #                   'https://api.openrouteservice.org/directions',
+    #                   body='{"status":"OK","routes":[]}',
+    #                   status=200,
+    #                   content_type='application/json')
+    #
+    #     # Simplest directions request. Driving directions by default.
+    #     routes = self.client.directions(self.coords_valid,
+    #                                     bearings=[[100,100],[200,200]])
+    #
+    #     self.assertEqual(1, len(responses.calls))
+    #     self.assertURLEqual('https://api.openrouteservice.org/directions?'
+    #                         'api_key={}&coordinates=8.34234%2C48.23424%7C8.34423%2C48.26424&'
+    #                         'profile=driving-car&bearings=100%2C100%7C200%2C200&optimized=false'.format(self.key),
+    #                         responses.calls[0].request.url)
+    #
+    # @responses.activate
+    # def test_continue_straight(self):
+    #     # Should switch to optimized=false bcs continue_straight is set true
+    #     responses.add(responses.GET,
+    #                   'https://api.openrouteservice.org/directions',
+    #                   body='{"status":"OK","routes":[]}',
+    #                   status=200,
+    #                   content_type='application/json')
+    #
+    #     # Simplest directions request. Driving directions by default.
+    #     routes = self.client.directions(self.coords_valid,
+    #                                     profile='cycling-regular',
+    #                                     continue_straight='true')
+    #
+    #     self.assertEqual(1, len(responses.calls))
+    #     self.assertURLEqual('https://api.openrouteservice.org/directions?'
+    #                         'api_key={}&coordinates=8.34234%2C48.23424%7C8.34423%2C48.26424&'
+    #                         'profile=cycling-regular&continue_straight=true&optimized=false'.format(self.key),
+    #                         responses.calls[0].request.url)
+

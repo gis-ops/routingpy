@@ -47,14 +47,17 @@ class options(object):
 
 
 class Router(metaclass=ABCMeta):
-    """Performs requests to the ORS API services."""
+    """Performs requests to the API service of choice."""
 
-    def __init__(self, base_url, user_agent=None, timeout=None, retry_timeout=None, requests_kwargs=None,
+    def __init__(self, base_url, key=None, user_agent=None, timeout=None, retry_timeout=None, requests_kwargs=None,
                  retry_over_query_limit=True):
         """
 
         :param base_url: The base URL for the request. Defaults to the ORS API
             server. Should not have a trailing slash.
+        :type base_url: string
+
+        :param key: They key for authorization used as GET param or POST auth header.
         :type base_url: string
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
@@ -78,6 +81,7 @@ class Router(metaclass=ABCMeta):
 
         self._session = requests.Session()
         self._base_url = base_url
+        self._authorization_key = key
 
         self._retry_over_query_limit = retry_over_query_limit
         self._retry_timeout = timedelta(seconds=retry_timeout or options.default_retry_timeout)
@@ -156,17 +160,15 @@ class Router(metaclass=ABCMeta):
             time.sleep(delay_seconds * (random.random() + 0.5))
 
         authed_url = self._generate_auth_url(url,
-                                             get_params,
+                                             get_params
                                              )
 
         # Default to the client-level self.requests_kwargs, with method-level
         # requests_kwargs arg overriding.
         requests_kwargs = requests_kwargs or {}
         final_requests_kwargs = dict(self._requests_kwargs, **requests_kwargs)
-
         # Determine GET/POST.
         requests_method = self._session.get
-
         if post_json is not None:
             requests_method = self._session.post
             final_requests_kwargs["json"] = post_json
@@ -215,7 +217,11 @@ class Router(metaclass=ABCMeta):
     @staticmethod
     def _get_body(response):
         status_code = response.status_code
-        body = response.json()
+
+        try:
+            body = response.json()
+        except json.decoder.JSONDecodeError:
+            raise exceptions._JSONParseError("Can't decode JSON response")
 
         if status_code == 429:
             raise exceptions._OverQueryLimit(
@@ -240,6 +246,7 @@ class Router(metaclass=ABCMeta):
 
         return body
 
+
     @staticmethod
     def _generate_auth_url(path, params):
         """Returns the path and query string portion of the request URL, first
@@ -254,9 +261,11 @@ class Router(metaclass=ABCMeta):
         :rtype: string
 
         """
-
-        if type(params) is dict:
+        
+        if isinstance(params, dict):
             params = sorted(dict(**params).items())
+        elif isinstance(params, (list, tuple)):
+            params = sorted(params)
 
         return path + "?" + requests.utils.unquote_unreserved(urlencode(params))
 

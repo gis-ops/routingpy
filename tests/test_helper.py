@@ -16,6 +16,50 @@ PARAM_GEOJSON_LINE = {'type': 'LineString', 'coordinates': PARAM_LINE}
 PARAM_GEOJSON_POLY = {'type': 'Polygon', 'coordinates': PARAM_POLY}
 
 ENDPOINTS_QUERIES = {
+    'graphhopper': {
+        'directions': {
+            'coordinates': PARAM_LINE_MULTI,
+            'profile': 'car',
+            'elevation': True, 
+            'points_encoded': True,
+            'format': 'json',
+            'instructions': False,
+            'locale': 'en',
+            'calc_points': False,
+            'optimize': True,
+            'debug': True,
+            'point_hint': False,
+            'details': ['tolls', 'time'],
+            'ch_disable': True,
+            'weighting': 'short_fastest',
+            'heading': [PARAM_INT_SMALL, PARAM_INT_SMALL, PARAM_INT_SMALL],
+            'heading_penalty': 100,
+            'pass_through': True,
+            'block_area': ",".join(list(map(str, reversed(PARAM_POINT)))),
+            'avoid': ['tunnel', 'ford'],
+            'algorithm': 'alternative_route',
+            'round_trip_distance': 10000,
+            'round_trip_seed': 3,
+            'alternative_route_max_paths': 2,
+            'alternative_route_max_weight_factor': 1.7,
+            'alternative_route_max_share_factor': 0.7
+        },
+        'matrix': {
+            'coordinates': PARAM_LINE_MULTI,
+            'profile': 'car',
+            'out_array': ['weights', 'times', 'distance'],
+            'debug': True
+        },
+        'isochrones': {
+            'coordinates': PARAM_POINT,
+            'profile': 'car',
+            'distance_limit': 1000,
+            'time_limit': 1000,
+            'buckets': 5,
+            'reverse_flow': True,
+            'debug': False
+        }
+    },
     'valhalla': {
         'directions': {
             'coordinates': PARAM_LINE_MULTI,
