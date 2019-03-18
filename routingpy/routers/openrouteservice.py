@@ -32,7 +32,7 @@ class ORS(Router):
         """
         Initializes an openrouteservice client.
 
-        :param key: ORS API key. Required if https://api.openrouteservice.org is used.
+        :param key: Mapbox API key. Required
         :type key: str
 
         :param base_url: The base URL for the request. Defaults to the ORS API

@@ -29,7 +29,7 @@ class MapboxValhalla(Valhalla):
         """
         Initializes a Valhalla client.
 
-        :param api_key: ORS API key. Required if https://api.openrouteservice.org is used.
+        :param api_key: Mapbox API key.
         :type api_key: str
 
         :param base_url: The base URL for the request. Defaults to the ORS API
