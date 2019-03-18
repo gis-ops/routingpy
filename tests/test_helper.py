@@ -123,6 +123,50 @@ ENDPOINTS_QUERIES = {
             'units': 'mi',
             'id': 'wacko'
         },
+    },
+    'ors': {
+        'directions': {
+            'coordinates': PARAM_LINE,
+            'profile': 'driving-car',
+            'preference': 'fastest',
+            'units': 'mi',
+            'language': 'en',
+            'geometry': 'true',
+            'geometry_simplify': 'false',
+            'instructions': 'false',
+            'instructions_format': 'html',
+            'roundabout_exits': 'true',
+            'attributes': ['avgspeed'],
+            'radiuses': [PARAM_INT_SMALL] * 2,
+            'bearings': [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 2,
+            'elevation': 'true',
+            'extra_info': ['roadaccessrestrictions'],
+            'options': {
+                'avoid_features': [
+                    'highways',
+                    'tollways'
+                ]
+            }
+        },
+        'isochrones': {
+            'coordinates': PARAM_LINE,
+             'profile': 'cycling-regular',
+             'range_type': 'distance',
+             'range': [PARAM_INT_BIG],
+             'units': 'm',
+             'location_type': 'destination',
+             'attributes': ['area', 'reachfactor'],
+             'interval': [PARAM_INT_SMALL]
+         },
+        'matrix': {
+            'coordinates': PARAM_LINE,
+             'sources': [1],
+             'destinations': [0],
+             'profile': 'driving-car',
+             'metrics': ['duration', 'distance'],
+             'resolve_locations': 'true',
+             'units': 'mi',
+        }
     }
 }
 
@@ -315,51 +359,4 @@ ENDPOINTS_EXPECTED = {
             "units": 'mi'
         },
     },
-    'ors': {
-        'directions': {
-            'coordinates': PARAM_LINE,
-            'profile': 'driving-car',
-            'preference': 'fastest',
-            'format': 'geojson',
-            'units': 'mi',
-            'language': 'en',
-            'geometry': 'true',
-            'geometry_simplify': 'false',
-            'instructions': 'false',
-            'instructions_format': 'html',
-            'roundabout_exits': 'true',
-            'attributes': ['avgspeed'],
-            'radiuses': [PARAM_INT_SMALL] * 2,
-            'bearings': [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 2,
-            'elevation': 'true',
-            'extra_info': ['roadaccessrestrictions'],
-            'optimized': 'false',
-            'options': {
-                'avoid_features': [
-                    'highways',
-                    'tollways'
-                ]
-            }
-        },
-        'isochrones': {
-            'locations': PARAM_LINE,
-             'profile': 'cycling-regular',
-             'range_type': 'distance',
-             'range': [PARAM_INT_BIG],
-             'units': 'm',
-             'location_type': 'destination',
-             'attributes': ['area', 'reachfactor'],
-             'interval': [PARAM_INT_SMALL]
-         },
-        'matrix': {
-            'locations': PARAM_LINE,
-             'sources': [1],
-             'destinations': [0],
-             'profile': 'driving-car',
-             'metrics': ['duration', 'distance'],
-             'resolve_locations': 'true',
-             'units': 'mi',
-             'optimized': 'false'
-        }
-    }
 }

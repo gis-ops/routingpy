@@ -27,7 +27,7 @@ class ORS(Router):
 
     _DEFAULT_BASE_URL = 'https://api.openrouteservice.org'
 
-    def __init__(self, key=None, base_url=_DEFAULT_BASE_URL, user_agent=None, timeout=None,
+    def __init__(self, api_key=None, base_url=_DEFAULT_BASE_URL, user_agent=None, timeout=None,
                  retry_timeout=None, requests_kwargs=None, retry_over_query_limit=False):
         """
         Initializes an openrouteservice client.
@@ -53,23 +53,24 @@ class ORS(Router):
             http://docs.python-requests.org/en/latest/api/#main-interface
         :type requests_kwargs: dict
 
-        :param queries_per_minute: Number of queries per second permitted.
-            If the rate limit is reached, the client will sleep for the
-            appropriate amount of time before it runs the current query.
-            Note, it won't help to initiate another client. This saves you the
-            trouble of raised exceptions.
-        :type queries_per_minute: int
+        :param retry_over_query_limit: If True, the client will retry when query
+            limit is reached (HTTP 429). Default False.
+        :type retry_over_query_limit: bool
         """
 
-        if base_url == self._DEFAULT_BASE_URL and key is None:
+        if base_url == self._DEFAULT_BASE_URL and api_key is None:
             raise KeyError("API key must be specified.")
+
+        requests_kwargs = requests_kwargs or {}
+        headers = requests_kwargs.get('headers') or {}
+        headers.update({'Authorization': api_key})
         requests_kwargs.update({
-            'Authorization': key
+            'headers': headers
         })
 
         super(ORS, self).__init__(base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit)
 
-    def directions(self, coordinates, profile, format, preference=None, units=None,
+    def directions(self, coordinates, profile, format='geojson', preference=None, units=None,
                    language=None, geometry=None, geometry_simplify=None, instructions=None, instructions_format=None,
                    roundabout_exits=None, attributes=None, radiuses=None, maneuvers=None, bearings=None,
                    continue_straight=None, elevation=None, extra_info=None, suppress_warnings=None,
@@ -181,9 +182,10 @@ class ORS(Router):
         :rtype: dict
         """
 
-        params = {"coordinates": coordinates,
-                  "profile": profile,
-                  "format": format}
+        params = {
+            "coordinates": coordinates,
+            "profile": profile
+        }
 
         if preference:
             params["preference"] = preference
@@ -385,9 +387,3 @@ class ORS(Router):
             params["units"] = units
 
         return self._request("/v2/matrix/" + profile + '/json', get_params={}, post_json=params, dry_run=dry_run)
-
-    def optimization(self):
-        pass
-
-    def map_matching(self):
-        pass
