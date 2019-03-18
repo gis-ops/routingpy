@@ -28,7 +28,7 @@ class Graphhopper(Router):
 
     _DEFAULT_BASE_URL = "https://graphhopper.com/api/1"
 
-    def __init__(self, base_url=_DEFAULT_BASE_URL, api_key=None, user_agent=None, timeout=None,
+    def __init__(self, api_key=None, base_url=_DEFAULT_BASE_URL, user_agent=None, timeout=None,
                  retry_timeout=None, requests_kwargs={}, retry_over_query_limit=False):
 
         """
