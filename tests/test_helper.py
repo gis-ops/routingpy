@@ -16,6 +16,55 @@ PARAM_GEOJSON_LINE = {'type': 'LineString', 'coordinates': PARAM_LINE}
 PARAM_GEOJSON_POLY = {'type': 'Polygon', 'coordinates': PARAM_POLY}
 
 ENDPOINTS_QUERIES = {
+    'osrm': {
+        'directions': {
+            'coordinates': PARAM_LINE_MULTI,
+            'profile': 'car',
+            'radiuses': [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
+            'bearings': [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
+            'alternatives': True,
+            'steps': True,
+            'annotations': True,
+            'geometries': 'geojson',
+            'overview': 'simplified',
+            'continue_straight': True
+        },
+        'matrix': {
+            'coordinates': PARAM_LINE_MULTI,
+            'profile': 'car',
+            'radiuses': [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
+            'bearings': [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
+        }
+    },
+    'mapbox_osrm': {
+        'directions': {
+            'coordinates': PARAM_LINE_MULTI,
+            'profile': 'driving',
+            'radiuses': [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
+            'bearings': [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
+            'alternatives': True,
+            'steps': True,
+            'annotations': ['duration', 'distance', 'speed'],
+            'geometries': 'geojson',
+            'overview': 'simplified',
+            'continue_straight': True,
+            'exclude': 'motorway',
+            'approaches': ['curb'] * 3,
+            'banner_instructions': True,
+            'language': 'de',
+            'roundabout_exits': True,
+            'voice_instructions': True,
+            'voice_units': 'metric',
+            'waypoint_names': ['a', 'b', 'c'],
+            'waypoint_targets': PARAM_LINE_MULTI
+        },
+        'matrix': {
+            'coordinates': PARAM_LINE_MULTI,
+            'profile': 'driving',
+            'annotations': ['distance', 'duration'],
+            'fallback_speed': PARAM_INT_SMALL
+        }
+    },
     'graphhopper': {
         'directions': {
             'coordinates': PARAM_LINE_MULTI,
@@ -171,6 +220,28 @@ ENDPOINTS_QUERIES = {
 }
 
 ENDPOINTS_EXPECTED = {
+    'mapbox_osrm': {
+        'directions': {
+            'alternatives': 'true',
+            'annotations': 'duration,distance,speed',
+            'approaches': ';curb;curb;curb',
+            'banner_instuctions': 'true',
+            'bearings': '50,50;50,50;50,50',
+            'continue_straight': 'true',
+            'coordinates': '8.688641,49.420577;8.680916,49.415776;8.780916,49.445776',
+            'exclude': 'motorway',
+            'geometries': 'geojson',
+            'language': 'de',
+            'overview': 'simplified',
+            'radiuses': '500;500;500',
+            'roundabout_exits': 'true',
+            'steps': 'true',
+            'voice_units': 'metric',
+            'voide_instructions': 'true',
+            'waypoint_names': 'a;b;c',
+            'waypoint_targets': ';8.688641,49.420577;8.680916,49.415776;8.780916,49.445776'
+        }
+    },
     'valhalla': {
         'directions': {
             "locations": [

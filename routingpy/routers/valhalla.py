@@ -21,9 +21,7 @@ Core client functionality, common across all API requests.
 
 from .base import Router
 from routingpy import convert
-import json
 from operator import itemgetter
-from copy import deepcopy
 
 class Valhalla(Router):
     """Performs requests to a Valhalla instance."""
@@ -33,7 +31,7 @@ class Valhalla(Router):
         """
         Initializes a Valhalla client.
 
-        :param key: ORS API key. Required if https://api.openrouteservice.org is used.
+        :param key: Mapbox API key. Required if base_url='https://api.mapbox.com/valhalla/v1'.
         :type key: str
 
         :param base_url: The base URL for the request. Defaults to the ORS API
