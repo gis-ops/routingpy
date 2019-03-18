@@ -21,6 +21,8 @@ Core client functionality, common across all API requests.
 from .base import Router
 from routingpy import convert
 
+from operator import itemgetter
+
 class Graphhopper(Router):
     """Performs requests to the Graphhopper API services."""
 
@@ -137,7 +139,7 @@ class Graphhopper(Router):
             road_class (motorway, primary, ...), road_environment, and surface. The returned format for one details 
             is [fromRef, toRef, value]. The ref references the points of the response. Multiple details are possible 
             via multiple key value pairs details=time&details=toll
-        :type details: bool            
+        :type details: list of str
 
         :param ch_disable: Always use ch_disable=true in combination with one or more parameters of this table. 
             Default False.
@@ -168,37 +170,33 @@ class Graphhopper(Router):
 
         :param avoid: Optional semicolon separated parameter. Specify which road classes you would like to avoid 
             (currently only supported for motor vehicles like car). Possible values are ferry, motorway, toll, tunnel and ford.
-        :type avoid: str
+        :type avoid: list of str
         
-        :algorithm: Optional parameter. round_trip or alternative_route.
+        :param algorithm: Optional parameter. round_trip or alternative_route.
         :type algorithm: str 
 
-        :round_trip_distance: If algorithm=round_trip this parameter configures approximative length of the resulting round trip.
+        :param round_trip_distance: If algorithm=round_trip this parameter configures approximative length of the resulting round trip.
             Default 10000.
         :type round_trip_distance: int
 
-        :round_trip_seed: If algorithm=round_trip this parameter introduces randomness if e.g. the first try wasn't good.
+        :param round_trip_seed: If algorithm=round_trip this parameter introduces randomness if e.g. the first try wasn't good.
             Default 0.
         :type round_trip_seed: int
 
-        :round_trip_seed: If algorithm=round_trip this parameter introduces randomness if e.g. the first try wasn't good.
-            Default 0.
-        :type round_trip_seed: int
-
-        :alternative_route_max_paths: If algorithm=alternative_route this parameter sets the number of maximum paths 
+        :param alternative_route_max_paths: If algorithm=alternative_route this parameter sets the number of maximum paths
             which should be calculated. Increasing can lead to worse alternatives.
             Default 2.
         :type alternative_route_max_paths: int
 
-        :alternative_route_max_weight_factor: If algorithm=alternative_route this parameter sets the factor by which the alternatives 
+        :param alternative_route_max_weight_factor: If algorithm=alternative_route this parameter sets the factor by which the alternatives
             routes can be longer than the optimal route. Increasing can lead to worse alternatives.
             Default 1.4.
-        :type alternative_route_max_weight_factor: int
+        :type alternative_route_max_weight_factor: float
 
-        :alternative_route_max_share_factor: If algorithm=alternative_route this parameter specifies how much alternatives 
+        :param alternative_route_max_share_factor: If algorithm=alternative_route this parameter specifies how much alternatives
             routes can have maximum in common with the optimal route. Increasing can lead to worse alternatives.
             Default 0.6.
-        :type alternative_route_max_share_factor: int
+        :type alternative_route_max_share_factor: float
        
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
@@ -211,10 +209,9 @@ class Graphhopper(Router):
             ('profile', profile)
         ]
 
-        
         for coordinate in coordinates:
-            coord_latlng = reversed(coordinate)
-            params.append(("point", ",".join(map(str,coord_latlng))))
+            coord_latlng = reversed([convert._format_float(f) for f in coordinate])
+            params.append(("point", ",".join(coord_latlng)))
 
         if self._authorization_key is not None:
             params.append(("key", self._authorization_key))
@@ -249,7 +246,7 @@ class Graphhopper(Router):
         ### all below params will only work if ch is disabled
         
         if details is not None:
-            params.append(("details", convert._convert_bool(details)))
+            params.extend([("details", detail) for detail in details])
 
         if ch_disable is not None:
             params.append(("ch.disable", convert._convert_bool(ch_disable)))
@@ -258,7 +255,7 @@ class Graphhopper(Router):
             params.append(("weighting", weighting))
 
         if heading is not None:
-            params.append(("heading", heading))
+            params.append(("heading", convert._delimit_list(heading)))
 
         if heading_penalty is not None:
             params.append(("heading_penalty", heading_penalty))
@@ -267,10 +264,10 @@ class Graphhopper(Router):
             params.append(("pass_through", convert._convert_bool(pass_through)))
 
         if block_area is not None:
-            params.append(("heading_penalty", block_area))
+            params.append(("block_area", block_area))
 
         if avoid is not None:
-            params.append(("avoid", avoid))
+            params.append(("avoid", convert._delimit_list(avoid, ';')))
     
         if algorithm is not None:
 
@@ -285,11 +282,7 @@ class Graphhopper(Router):
             if algorithm == 'alternative_route':
 
                 if alternative_route_max_paths is not None:
-                    params.append(("alternative_route.max_paths", alternative_route.max_paths))
-
-                if alternative_route_max_weight_factor is not None:
-                    
-                    params.append(("alternative_route.max_weight_factor", alternative_route_max_weight_factor))
+                    params.append(("alternative_route.max_paths", alternative_route_max_paths))
 
                 if alternative_route_max_weight_factor is not None:
                     params.append(("alternative_route.max_weight_factor", alternative_route_max_weight_factor))
@@ -341,8 +334,8 @@ class Graphhopper(Router):
             ('profile', profile)
         ]
 
-        coord_latlng = reversed(coordinates)
-        params.append(("point", ",".join(map(str,coord_latlng))))
+        coord_latlng = reversed([convert._format_float(f) for f in coordinates])
+        params.append(("point", ",".join(coord_latlng)))
 
         if self._authorization_key is not None:
             params.append(("key", self._authorization_key))
@@ -388,7 +381,7 @@ class Graphhopper(Router):
         :type to_coordinates: list
 
         :param out_array: Specifies which arrays should be included in the response. Specify one or more of the following 
-            options 'weights', 'times', 'distances'. To specify more than one array use e.g. out_array=times&out_array=distances. 
+            options 'weights', 'times', 'distances'.
             The units of the entries of distances are meters, of times are seconds and of weights is arbitrary and it can differ 
             for different vehicles or versions of this API.
             Default "weights".
@@ -407,30 +400,38 @@ class Graphhopper(Router):
         if self._authorization_key is not None:
             params.append(("key", self._authorization_key))
 
-        
-        if sources is not None and destinations is not None:
-            for idx in sources:
-                try: 
-                    coord_latlng = reversed(coordinates[idx])
-                    params.append(("from_point", ",".join(map(str,coord_latlng))))
-                except IndexError: 
-                    raise IndexError("Source index {} out of range in coordinates {}.".format(idx, coordinates))
-        
-            for idx in destinations:
-                try:
-                    coord_latlng = reversed(coordinates[idx])
-                    params.append(("to_point", ",".join(map(str,coord_latlng))))
-                except IndexError: 
-                    raise IndexError("Destination index {} out of range in coordinates {}.".format(idx, coordinates))
-
-        elif sources is None or destinations is None:
-            raise ValueError("Sources and destinations are reciprocal, please add both.")
+        if sources is None and destinations is None:
+            coordinates = (reversed([convert._format_float(f) for f in coord]) for coord in coordinates)
+            params.extend([('point', ",".join(coord)) for coord in coordinates])
 
         else:
-            for coordinate in coordinates:
-                coord_latlng = reversed(coordinate)
-                params.append(("point", ",".join(map(str,coord_latlng))))
-            
+            sources_out = coordinates
+            destinations_out = coordinates
+            try:
+                for idx in sources:
+                    sources_out = []
+                    sources_out.append(coordinates[idx])
+            except IndexError:
+                raise IndexError("Parameter sources out of coordinates range at index {}.".format(idx))
+            except TypeError:
+                # Raised when sources == None
+                pass
+            try:
+                for idx in destinations:
+                    destinations_out = []
+                    destinations_out.append(coordinates[idx])
+            except IndexError:
+                raise IndexError("Parameter destinations out of coordinates range at index {}.".format(idx))
+            except TypeError:
+                # Raised when destinations == None
+                pass
+
+            sources_out = (reversed([convert._format_float(f) for f in coord]) for coord in sources_out)
+            params.extend([("from_point", ",".join(coord)) for coord in sources_out])
+
+            destinations_out = (reversed([convert._format_float(f) for f in coord]) for coord in destinations_out)
+            params.extend([("to_point", ",".join(coord)) for coord in destinations_out])
+
         if out_array is not None:
             for e in out_array:
                 params.append(("out_array", e))
@@ -438,13 +439,5 @@ class Graphhopper(Router):
         if debug is not None:
             params.append(('debug', convert._convert_bool(debug)))
 
-        print(params)
-
         return self._request('/matrix', get_params=params, dry_run=dry_run)
-
-    def optimization(self):
-        pass
-
-    def map_matching(self):
-        pass
 
