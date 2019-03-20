@@ -403,6 +403,7 @@ class ORS(Router):
             for idx, isochrone in enumerate(response['features'])
         ]
 
+
     def distance_matrix(self,
                         coordinates,
                         profile,
@@ -484,3 +485,4 @@ class ORS(Router):
         durations = response.get('durations')
         distances = response.get('distances')
         return Matrix(durations, distances, response)
+

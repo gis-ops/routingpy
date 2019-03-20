@@ -14,7 +14,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-
 """
 Core client functionality, common across all API requests.
 """
@@ -28,8 +27,13 @@ class MapBoxOSRM(Router):
 
     _base_url = 'https://api.mapbox.com'
 
-    def __init__(self, api_key, user_agent=None, timeout=None,
-                 retry_timeout=None, requests_kwargs=None, retry_over_query_limit=False):
+    def __init__(self,
+                 api_key,
+                 user_agent=None,
+                 timeout=None,
+                 retry_timeout=None,
+                 requests_kwargs=None,
+                 retry_over_query_limit=False):
         """
         Initializes an OSRM client.
 
@@ -64,12 +68,31 @@ class MapBoxOSRM(Router):
 
         self.api_key = api_key
 
-        super(MapBoxOSRM, self).__init__(self._base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit)
+        super(MapBoxOSRM, self).__init__(self._base_url, user_agent, timeout,
+                                         retry_timeout, requests_kwargs,
+                                         retry_over_query_limit)
 
-    def directions(self, coordinates, profile, radiuses=None, bearings=None, alternatives=None, steps=None,
-                   continue_straight=None, annotations=None, geometries=None, overview=None, exclude=None,
-                   approaches=None, banner_instructions=None, language=None, roundabout_exits=None,
-                   voice_instructions=None, voice_units=None, waypoint_names=None, waypoint_targets=None, dry_run=None):
+    def directions(self,
+                   coordinates,
+                   profile,
+                   radiuses=None,
+                   bearings=None,
+                   alternatives=None,
+                   steps=None,
+                   continue_straight=None,
+                   annotations=None,
+                   geometries=None,
+                   overview=None,
+                   exclude=None,
+                   approaches=None,
+                   banner_instructions=None,
+                   language=None,
+                   roundabout_exits=None,
+                   voice_instructions=None,
+                   voice_units=None,
+                   waypoint_names=None,
+                   waypoint_targets=None,
+                   dry_run=None):
         """Get directions between an origin point and a destination point.
 
         For more information, visit http://project-osrm.org/docs/v5.5.1/api/#route-service.
@@ -176,17 +199,19 @@ class MapBoxOSRM(Router):
         :rtype: dict
         """
 
-        coords = convert._delimit_list([convert._delimit_list([convert._format_float(f) for f in pair]) for pair in coordinates], ';')
+        coords = convert._delimit_list([
+            convert._delimit_list([convert._format_float(f) for f in pair])
+            for pair in coordinates
+        ], ';')
 
-        params = {
-            'coordinates': coords
-        }
+        params = {'coordinates': coords}
 
         if radiuses:
             params["radiuses"] = convert._delimit_list(radiuses, ';')
 
         if bearings:
-            params["bearings"] = convert._delimit_list([convert._delimit_list(pair) for pair in bearings], ';')
+            params["bearings"] = convert._delimit_list(
+                [convert._delimit_list(pair) for pair in bearings], ';')
 
         if alternatives is not None:
             params["alternatives"] = convert._convert_bool(alternatives)
@@ -195,7 +220,8 @@ class MapBoxOSRM(Router):
             params["steps"] = convert._convert_bool(steps)
 
         if continue_straight is not None:
-            params["continue_straight"] = convert._convert_bool(continue_straight)
+            params["continue_straight"] = convert._convert_bool(
+                continue_straight)
 
         if annotations is not None:
             params["annotations"] = convert._delimit_list(annotations)
@@ -213,35 +239,52 @@ class MapBoxOSRM(Router):
             params['approaches'] = ';' + convert._delimit_list(approaches, ';')
 
         if banner_instructions:
-            params['banner_instuctions'] = convert._convert_bool(banner_instructions)
+            params['banner_instuctions'] = convert._convert_bool(
+                banner_instructions)
 
         if language:
             params['language'] = language
 
         if roundabout_exits:
-            params['roundabout_exits'] = convert._convert_bool(roundabout_exits)
+            params['roundabout_exits'] = convert._convert_bool(
+                roundabout_exits)
 
         if voice_instructions:
-            params['voide_instructions'] = convert._convert_bool(voice_instructions)
+            params['voide_instructions'] = convert._convert_bool(
+                voice_instructions)
 
         if voice_units:
             params['voice_units'] = voice_units
 
         if waypoint_names:
-            params['waypoint_names'] = convert._delimit_list(waypoint_names, ';')
+            params['waypoint_names'] = convert._delimit_list(
+                waypoint_names, ';')
 
         if waypoint_targets:
-            params['waypoint_targets'] = ';' + convert._delimit_list([convert._delimit_list([convert._format_float(f) for f in pair]) for pair in waypoint_targets], ';')
+            params['waypoint_targets'] = ';' + convert._delimit_list([
+                convert._delimit_list([convert._format_float(f) for f in pair])
+                for pair in waypoint_targets
+            ], ';')
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
-        return self._request("/directions/v5/mapbox/" + profile, get_params=get_params, post_params=params, dry_run=dry_run)
+        return self._request(
+            "/directions/v5/mapbox/" + profile,
+            get_params=get_params,
+            post_params=params,
+            dry_run=dry_run)
 
     def isochrones(self):
         raise NotImplementedError
 
-    def distance_matrix(self, coordinates, profile, annotations=None, fallback_speed=None, sources=None,
-                        destinations=None, dry_run=None):
+    def distance_matrix(self,
+                        coordinates,
+                        profile,
+                        annotations=None,
+                        fallback_speed=None,
+                        sources=None,
+                        destinations=None,
+                        dry_run=None):
         """
         Gets travel distance and time for a matrix of origins and destinations.
 
@@ -280,11 +323,12 @@ class MapBoxOSRM(Router):
         :rtype: dict
         """
 
-        coords = convert._delimit_list([convert._delimit_list([convert._format_float(f) for f in pair]) for pair in coordinates], ';')
+        coords = convert._delimit_list([
+            convert._delimit_list([convert._format_float(f) for f in pair])
+            for pair in coordinates
+        ], ';')
 
-        params = {
-            'access_token': self.api_key
-        }
+        params = {'access_token': self.api_key}
 
         if sources:
             params['sources'] = convert._delimit_list(sources, ';')
@@ -298,4 +342,7 @@ class MapBoxOSRM(Router):
         if fallback_speed:
             params['fallback_speed'] = str(fallback_speed)
 
-        return self._request("/directions-matrix/v1/mapbox/" + profile + '/' + coords, get_params=params, dry_run=dry_run)
+        return self._request(
+            "/directions-matrix/v1/mapbox/" + profile + '/' + coords,
+            get_params=params,
+            dry_run=dry_run)

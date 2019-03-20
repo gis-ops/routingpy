@@ -16,31 +16,29 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-
 """Converts Python types to string representations suitable for ORS API server.
 """
+
 
 def _pipe_list(arg):
     """Convert list of values to pipe-delimited string"""
     if not _is_list(arg):
-        raise TypeError(
-            "Expected a list or tuple, "
-            "but got {}".format(type(arg).__name__))
-    return "|".join(map(str,arg))
+        raise TypeError("Expected a list or tuple, "
+                        "but got {}".format(type(arg).__name__))
+    return "|".join(map(str, arg))
 
 
 def _delimit_list(arg, delimiter=','):
     """Convert list to delimiter-separated string"""
     if not _is_list(arg):
-        raise TypeError(
-            "Expected a list or tuple, "
-            "but got {}".format(type(arg).__name__))
+        raise TypeError("Expected a list or tuple, "
+                        "but got {}".format(type(arg).__name__))
     return delimiter.join(map(str, arg))
 
 
 def _convert_bool(boolean):
     """Convert to stringified boolean"""
-        
+
     return str(boolean).lower()
 
 
@@ -84,9 +82,8 @@ def _build_coords(arg):
     if _is_list(arg):
         return _pipe_list(_concat_coords(arg))
     else:
-        raise TypeError(
-            "Expected a list or tuple of lng/lat tuples or lists, "
-            "but got {}".format(type(arg).__name__))
+        raise TypeError("Expected a list or tuple of lng/lat tuples or lists, "
+                        "but got {}".format(type(arg).__name__))
 
 
 def _concat_coords(arg):
@@ -105,13 +102,12 @@ def _concat_coords(arg):
 
 
 def _is_list(arg):
-    """Checks if arg is list-like."""    
+    """Checks if arg is list-like."""
     if isinstance(arg, dict):
         return False
-    if isinstance(arg, str): # Python 3-only, as str has __iter__
+    if isinstance(arg, str):  # Python 3-only, as str has __iter__
         return False
-    return (not _has_method(arg, "strip")
-            and _has_method(arg, "__getitem__")
+    return (not _has_method(arg, "strip") and _has_method(arg, "__getitem__")
             or _has_method(arg, "__iter__"))
 
 

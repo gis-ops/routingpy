@@ -44,7 +44,8 @@ def _decode(expression, precision=5, is3d=False):
 
     https://github.com/hicsail/polyline/commit/ddd12e85c53d394404952754e39c91f63a808656
     """
-    coordinates, index, lat, lng, z, length, factor = [], 0, 0, 0, 0, len(expression), float(10 ** precision)
+    coordinates, index, lat, lng, z, length, factor = [], 0, 0, 0, 0, len(
+        expression), float(10**precision)
 
     while index < length:
         lat_change, index = _trans(expression, index)
