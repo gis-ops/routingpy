@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 Google Inc. All rights reserved.
-#
-# Modifications Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2019 GIS OPS UG. All rights reserved.
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -52,17 +50,17 @@ def _decode(expression, precision=5, is3d=False):
         lat += lat_change
         lng += lng_change
         if not is3d:
-            coordinates.append((lat / factor, lng / factor))
+            coordinates.append((lng / factor, lat / factor))
         else:
             z_change, index = _trans(expression, index)
             z += z_change
-            coordinates.append((lat / factor, lng / factor, z / 100))
+            coordinates.append((lng / factor, lat / factor, z / 100))
 
     return coordinates
 
 
 def decode_polyline5(polyline, is3d=False):
-    """Decodes an encoded polyline string which was encoded with a precision of 5.
+    """Decodes an encoded polyline string which was encoded with a precision of 5. Output will be in [Lon, Lat] order.
 
     :param polyline: An encoded polyline, only the geometry.
     :type polyline: str
@@ -71,7 +69,7 @@ def decode_polyline5(polyline, is3d=False):
         support this. Default False.
     :type is3d: bool
 
-    :returns: List of decoded coordinates with precision 5.
+    :returns: List of decoded coordinates with precision 5 in [Lon, Lat] order.
     :rtype: list
     """
 
@@ -79,7 +77,7 @@ def decode_polyline5(polyline, is3d=False):
 
 
 def decode_polyline6(polyline, is3d=False):
-    """Decodes an encoded polyline string which was encoded with a precision of 6.
+    """Decodes an encoded polyline string which was encoded with a precision of 6. Output will be in [Lon, Lat] order.
 
     :param polyline: An encoded polyline, only the geometry.
     :type polyline: str
@@ -88,7 +86,7 @@ def decode_polyline6(polyline, is3d=False):
         support this. Default False.
     :type is3d: bool
 
-    :returns: List of decoded coordinates with precision 6.
+    :returns: List of decoded coordinates with precision 6 in [Lon, Lat] order.
     :rtype: list
     """
 
