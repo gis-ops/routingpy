@@ -16,6 +16,35 @@ PARAM_GEOJSON_LINE = {'type': 'LineString', 'coordinates': PARAM_LINE}
 PARAM_GEOJSON_POLY = {'type': 'Polygon', 'coordinates': PARAM_POLY}
 
 ENDPOINTS_QUERIES = {
+    'google': {
+        'directions': {
+            'coordinates': PARAM_LINE_MULTI,
+            'profile': 'driving',
+            'alternatives': True,
+            'avoid': ["tolls", "ferries"],
+            'optimize': False,
+            'language': 'de',
+            'region': 'de',
+            'units': 'metrics',
+            'arrival_time': 1567512000,
+            'traffic_model': 'optimistic',
+            'transit_mode': ['bus', 'rail'],
+            'transit_routing_preference': 'less_walking'
+        },
+        'matrix': {
+            'coordinates': PARAM_LINE_MULTI,
+            'profile': 'driving',
+            'avoid': ["tolls", "ferries"],
+            'language': 'de',
+            'region': 'de',
+            'units': 'metrics',
+            'arrival_time': 1567512000,
+            'traffic_model': 'optimistic',
+            'transit_mode': ['bus', 'rail'],
+            'transit_routing_preference': 'less_walking'
+
+        }
+    },
     'osrm': {
         'directions': {
             'coordinates': PARAM_LINE_MULTI,
