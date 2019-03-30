@@ -75,4 +75,4 @@ class Matrix(object):
         return f'Matrix({self.durations}, {self.distances})'
 
     def __str__(self):
-        return f'Matrix(Durations: {self.durations}, Distances: {self.distances})'
+        return str(self.raw)

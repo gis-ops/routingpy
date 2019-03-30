@@ -43,4 +43,4 @@ class Isochrone(object):
         return f'Isochrone({self.geometry}, {self.range})'
 
     def __str__(self):
-        return f'Isochrone(Geometry: {len(self.geometry)} coordinates, Range: {self.range})'
+        return str(self.raw)

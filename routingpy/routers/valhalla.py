@@ -19,6 +19,11 @@ Core client functionality, common across all API requests.
 """
 
 from .base import Router
+from routingpy import utils
+from routingpy.direction import Direction
+from routingpy.isochrone import Isochrone
+from routingpy.matrix import Matrix
+
 from operator import itemgetter
 
 
@@ -214,8 +219,8 @@ class Valhalla(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: A route from provided coordinates and restrictions.
+        :rtype: :class:`routingpy.direction.Direction`
         """
 
         params = dict(costing=profile)
@@ -248,11 +253,34 @@ class Valhalla(Router):
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
-        return self._request(
-            "/route",
-            get_params=get_params,
-            post_params=params,
-            dry_run=dry_run)
+        return self._parse_direction_json(
+            self._request(
+                "/route",
+                get_params=get_params,
+                post_params=params,
+                dry_run=dry_run), units)
+
+    @staticmethod
+    def _parse_direction_json(response, units):
+        if response is None:
+            return None
+
+        geometry, duration, distance = [], 0, 0
+        for leg in response['trip']['legs']:
+            geometry.extend([
+                list(reversed(coord))
+                for coord in utils.decode_polyline6(leg['shape'])
+            ])
+            duration += leg['summary']['time']
+
+            factor = 0.621371 if units == 'mi' else 1
+            distance += int(leg['summary']['length'] * 1000 * factor)
+
+        return Direction(
+            geometry=geometry,
+            duration=duration,
+            distance=distance,
+            raw=response)
 
     def isochrones(self,
                    coordinates,
@@ -330,8 +358,8 @@ class Valhalla(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: An isochrone with the specified range.
+        :rtype: list of :class:`routingpy.isochrone.Isochrone`
         """
 
         locations = self._build_locations(coordinates)
@@ -378,11 +406,22 @@ class Valhalla(Router):
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
-        return self._request(
-            "/isochrone",
-            get_params=get_params,
-            post_params=params,
-            dry_run=dry_run)
+        return self._parse_isochrone_json(
+            self._request(
+                "/isochrone",
+                get_params=get_params,
+                post_params=params,
+                dry_run=dry_run), range)
+
+    @staticmethod
+    def _parse_isochrone_json(response, range):
+        if response is None:
+            return None
+        return [
+            Isochrone(isochrone['geometry']['coordinates'], range[idx],
+                      isochrone)
+            for idx, isochrone in enumerate(response['features'])
+        ]
 
     def distance_matrix(self,
                         coordinates,
@@ -432,8 +471,8 @@ class Valhalla(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: A matrix from the specified sources and destinations.
+        :rtype: :class:`routingpy.matrix.Matrix`
             """
 
         params = {
@@ -472,11 +511,27 @@ class Valhalla(Router):
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
-        return self._request(
-            '/sources_to_targets',
-            get_params=get_params,
-            post_params=params,
-            dry_run=dry_run)
+        return self._parse_matrix_json(
+            self._request(
+                '/sources_to_targets',
+                get_params=get_params,
+                post_params=params,
+                dry_run=dry_run), units)
+
+    @staticmethod
+    def _parse_matrix_json(response, units):
+        if response is None:
+            return None
+
+        factor = 0.621371 if units == 'mi' else 1
+        durations = [[destination['time'] for destination in origin]
+                     for origin in response['sources_to_targets']]
+        distances = [[
+            int(destination['distance'] * 1000 * factor)
+            for destination in origin
+        ] for origin in response['sources_to_targets']]
+
+        return Matrix(durations=durations, distances=distances, raw=response)
 
     def _build_locations(self, coordinates):
         """Build the locations object for all methods"""
