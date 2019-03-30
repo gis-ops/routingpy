@@ -54,4 +54,4 @@ class Direction(object):
         return f'Direction({self.geometry}, {self.duration}, {self.distance}'
 
     def __str__(self):
-        return f'Directions(Geometry: {len(self.geometry)} waypoints, Duration: {self.duration} secs, Distance: {self.distance} m'
+        return str(self.raw)
