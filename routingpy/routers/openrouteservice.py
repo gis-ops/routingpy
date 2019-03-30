@@ -485,4 +485,3 @@ class ORS(Router):
         durations = response.get('durations')
         distances = response.get('distances')
         return Matrix(durations, distances, response)
-
