@@ -131,8 +131,8 @@ ENDPOINTS_QUERIES = {
         'isochrones': {
             'coordinates': PARAM_POINT,
             'profile': 'car',
-            'distance_limit': 1000,
-            'time_limit': 1000,
+            'range': [1000],
+            'range_type': None,
             'buckets': 5,
             'reverse_flow': True,
             'debug': False
