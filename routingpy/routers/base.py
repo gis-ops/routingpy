@@ -16,7 +16,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-
 """
 Core client functionality, common across all API requests.
 """
@@ -44,12 +43,18 @@ class options(object):
     default_timeout = 60
     default_retry_timeout = 60
     default_user_agent = _DEFAULT_USER_AGENT
+    default_proxies = None
 
 
 class Router(metaclass=ABCMeta):
     """Performs requests to the API service of choice."""
 
-    def __init__(self, base_url, user_agent=None, timeout=None, retry_timeout=None, requests_kwargs=None,
+    def __init__(self,
+                 base_url,
+                 user_agent=None,
+                 timeout=None,
+                 retry_timeout=None,
+                 requests_kwargs=None,
                  retry_over_query_limit=True):
         """
 
@@ -83,19 +88,24 @@ class Router(metaclass=ABCMeta):
         self._base_url = base_url
 
         self._retry_over_query_limit = retry_over_query_limit
-        self._retry_timeout = timedelta(seconds=retry_timeout or options.default_retry_timeout)
+        self._retry_timeout = timedelta(
+            seconds=retry_timeout or options.default_retry_timeout)
 
         self._requests_kwargs = requests_kwargs or {}
         add_headers = {
-                "User-Agent": user_agent or options.default_user_agent,
-                'Content-Type': 'application/json'
-            }
+            "User-Agent": user_agent or options.default_user_agent,
+            'Content-Type': 'application/json'
+        }
         try:
             self._requests_kwargs['headers'].update(add_headers)
         except KeyError:
             self._requests_kwargs.update({'headers': add_headers})
-        add_timeout = self._requests_kwargs.get('timeout') or timeout or options.default_timeout
+        add_timeout = self._requests_kwargs.get(
+            'timeout') or timeout or options.default_timeout
+        proxies = self._requests_kwargs.get(
+            'proxies') or options.default_proxies
         self._requests_kwargs['timeout'] = add_timeout
+        self._requests_kwargs['proxies'] = proxies
 
         self._req = None
 
@@ -153,14 +163,12 @@ class Router(metaclass=ABCMeta):
             # 0.5 * (1.5 ^ i) is an increased sleep time of 1.5x per iteration,
             # starting at 0.5s when retry_counter=1. The first retry will occur
             # at 1, so subtract that first.
-            delay_seconds = 1.5 ** (retry_counter - 1)
+            delay_seconds = 1.5**(retry_counter - 1)
 
             # Jitter this value by 50% and pause.
             time.sleep(delay_seconds * (random.random() + 0.5))
 
-        authed_url = self._generate_auth_url(url,
-                                             get_params
-                                             )
+        authed_url = self._generate_auth_url(url, get_params)
 
         # Default to the client-level self.requests_kwargs, with method-level
         # requests_kwargs arg overriding.
@@ -174,8 +182,9 @@ class Router(metaclass=ABCMeta):
 
         # Only print URL and parameters for dry_run
         if dry_run:
-            print("url:\n{}\nParameters:\n{}".format(self._base_url + authed_url,
-                                                     json.dumps(final_requests_kwargs, indent=2)))
+            print("url:\n{}\nParameters:\n{}".format(
+                self._base_url + authed_url,
+                json.dumps(final_requests_kwargs, indent=2)))
             return
 
         try:
@@ -188,26 +197,35 @@ class Router(metaclass=ABCMeta):
 
         if response.status_code in _RETRIABLE_STATUSES:
             # Retry request.
-            warnings.warn('Server down.\nRetrying for the {}th time.'.format(retry_counter + 1),
-                          UserWarning)
+            warnings.warn(
+                'Server down.\nRetrying for the {}th time.'.format(
+                    retry_counter + 1), UserWarning)
 
-            return self._request(url, get_params, post_params, first_request_time,
-                                 retry_counter + 1, requests_kwargs)
+            return self._request(url, get_params, post_params,
+                                 first_request_time, retry_counter + 1,
+                                 requests_kwargs)
 
         try:
             result = self._get_body(response)
 
             return result
         except exceptions._RetriableRequest as e:
-            if isinstance(e, exceptions._OverQueryLimit) and not self._retry_over_query_limit:
+            if isinstance(e, exceptions._OverQueryLimit
+                          ) and not self._retry_over_query_limit:
                 raise
 
-            warnings.warn('Rate limit exceeded.\nRetrying for the {}th time.'.format(retry_counter + 1),
-                          UserWarning)
+            warnings.warn(
+                'Rate limit exceeded.\nRetrying for the {}th time.'.format(
+                    retry_counter + 1), UserWarning)
             # Retry request.
-            return self._request(url, get_params, post_params, first_request_time,
-                                 retry_counter + 1, requests_kwargs,
-                                )
+            return self._request(
+                url,
+                get_params,
+                post_params,
+                first_request_time,
+                retry_counter + 1,
+                requests_kwargs,
+            )
 
     @property
     def req(self):
@@ -223,28 +241,18 @@ class Router(metaclass=ABCMeta):
             raise exceptions._JSONParseError("Can't decode JSON response")
 
         if status_code == 429:
-            raise exceptions._OverQueryLimit(
-                status_code, body
-            )
+            raise exceptions._OverQueryLimit(status_code, body)
 
         if 400 <= status_code < 500:
-            raise exceptions.RouterApiError(
-                status_code, body
-            )
+            raise exceptions.RouterApiError(status_code, body)
 
         if 500 <= status_code:
-            raise exceptions.RouterServerError(
-                status_code, body
-            )
+            raise exceptions.RouterServerError(status_code, body)
 
         if status_code != 200:
-            raise exceptions.RouterError(
-                status_code,
-                body
-            )
+            raise exceptions.RouterError(status_code, body)
 
         return body
-
 
     @staticmethod
     def _generate_auth_url(path, params):
@@ -260,13 +268,14 @@ class Router(metaclass=ABCMeta):
         :rtype: string
 
         """
-        
+
         if isinstance(params, dict):
             params = sorted(dict(**params).items())
         elif isinstance(params, (list, tuple)):
             params = sorted(params)
 
-        return path + "?" + requests.utils.unquote_unreserved(urlencode(params))
+        return path + "?" + requests.utils.unquote_unreserved(
+            urlencode(params))
 
     @abstractmethod
     def directions(self):
