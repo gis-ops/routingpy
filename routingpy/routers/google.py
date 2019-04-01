@@ -26,9 +26,13 @@ class Google(Router):
 
     _base_url = "https://maps.googleapis.com/maps/api"
 
-    def __init__(self, api_key, user_agent=None, timeout=None,
-                 retry_timeout=None, requests_kwargs={}, retry_over_query_limit=False):
-
+    def __init__(self,
+                 api_key,
+                 user_agent=None,
+                 timeout=None,
+                 retry_timeout=None,
+                 requests_kwargs={},
+                 retry_over_query_limit=False):
         """
         Initializes a Google client.
 
@@ -63,13 +67,15 @@ class Google(Router):
 
         self.key = api_key
 
-        super(Google, self).__init__(self._base_url, user_agent, timeout, retry_timeout, requests_kwargs,
+        super(Google, self).__init__(self._base_url, user_agent, timeout,
+                                     retry_timeout, requests_kwargs,
                                      retry_over_query_limit)
 
     class WayPoint(object):
         """
         Optionally construct a waypoint from this class with additional attributes, such as via.
         """
+
         def __init__(self, position, waypoint_type='coords', stopover=True):
             """
             Constructs a waypoint with additional information, such as via or encoded lines.
@@ -93,22 +99,36 @@ class Google(Router):
 
             waypoint = ''
             if self.waypoint_type == 'coords':
-                waypoint += convert._delimit_list(list(reversed(self.position)))
+                waypoint += convert._delimit_list(
+                    list(reversed(self.position)))
             elif self.waypoint_type == 'place_id':
                 waypoint += self.waypoint_type + ':' + self.position
             elif self.waypoint_type == 'enc':
                 waypoint += self.waypoint_type + ':' + self.position + ':'
             else:
-                raise ValueError("waypoint_type only supports enc, place_id, coords")
+                raise ValueError(
+                    "waypoint_type only supports enc, place_id, coords")
 
             if not self.stopover:
                 waypoint = 'via:' + waypoint
 
             return waypoint
 
-    def directions(self, coordinates, profile, alternatives=None, avoid=None, optimize=None, language=None,
-                   region=None, units=None, arrival_time=None, departure_time=None, traffic_model=None,
-                   transit_mode=None, transit_routing_preference=None, dry_run=None):
+    def directions(self,
+                   coordinates,
+                   profile,
+                   alternatives=None,
+                   avoid=None,
+                   optimize=None,
+                   language=None,
+                   region=None,
+                   units=None,
+                   arrival_time=None,
+                   departure_time=None,
+                   traffic_model=None,
+                   transit_mode=None,
+                   transit_routing_preference=None,
+                   dry_run=None):
         """Get directions between an origin point and a destination point.
 
         For more information, visit https://developers.google.com/maps/documentation/directions/intro.
@@ -173,28 +193,32 @@ class Google(Router):
         :rtype: dict
         """
 
-        params = {
-            'profile': profile
-        }
+        params = {'profile': profile}
 
         origin, destination = coordinates[0], coordinates[-1]
         if isinstance(origin, (list, tuple)):
             params['origin'] = convert._delimit_list(list(reversed(origin)))
         elif isinstance(origin, self.WayPoint):
-            raise TypeError("The first and last coordinates must be list/tuple of [lon, lat]")
+            raise TypeError(
+                "The first and last coordinates must be list/tuple of [lon, lat]"
+            )
 
         if isinstance(destination, (list, tuple)):
-            params['destination'] = convert._delimit_list(list(reversed(destination)))
+            params['destination'] = convert._delimit_list(
+                list(reversed(destination)))
         elif isinstance(origin, self.WayPoint):
             print('bla')
-            raise TypeError("The first and last coordinates must be list/tuple of [lon, lat]")
+            raise TypeError(
+                "The first and last coordinates must be list/tuple of [lon, lat]"
+            )
 
         if len(coordinates) > 2:
             waypoints = []
             s = slice(1, -1)
             for coord in coordinates[s]:
                 if isinstance(coord, (list, tuple)):
-                    waypoints.append(convert._delimit_list(list(reversed(coord))))
+                    waypoints.append(
+                        convert._delimit_list(list(reversed(coord))))
                 elif isinstance(coord, self.WayPoint):
                     waypoints.append(coord.make_waypoint())
             if optimize:
@@ -238,14 +262,31 @@ class Google(Router):
         if transit_routing_preference:
             params['transit_routing_preference'] = transit_routing_preference
 
-        return self._request('/directions/json', get_params=params, dry_run=dry_run)
+        return self._request(
+            '/directions/json', get_params=params, dry_run=dry_run)
+
+    @staticmethod
+    def _parse_direction_json(response, alternatives):
+        pass
 
     def isochrones(self):
         raise NotImplementedError
 
-    def distance_matrix(self, coordinates, profile, sources=None, destinations=None, avoid=None, language=None,
-                   region=None, units=None, arrival_time=None, departure_time=None, traffic_model=None,
-                   transit_mode=None, transit_routing_preference=None, dry_run=None):
+    def distance_matrix(self,
+                        coordinates,
+                        profile,
+                        sources=None,
+                        destinations=None,
+                        avoid=None,
+                        language=None,
+                        region=None,
+                        units=None,
+                        arrival_time=None,
+                        departure_time=None,
+                        traffic_model=None,
+                        transit_mode=None,
+                        transit_routing_preference=None,
+                        dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
         :param coordinates: Specifiy multiple points for which the weight-, route-, time- or distance-matrix should be calculated.
@@ -310,9 +351,7 @@ class Google(Router):
         :returns: raw JSON response
         :rtype: dict
         """
-        params = {
-            'profile': profile
-        }
+        params = {'profile': profile}
 
         waypoints = []
         for coord in coordinates:
@@ -330,10 +369,12 @@ class Google(Router):
 
         destinations_coords = waypoints
         if destinations is not None:
-            destinations_coords = itemgetter(*destinations)(destinations_coords)
+            destinations_coords = itemgetter(*destinations)(
+                destinations_coords)
             if not isinstance(destinations_coords, (list, tuple)):
                 destinations_coords = [destinations_coords]
-        params['destinations'] = convert._delimit_list(destinations_coords, '|')
+        params['destinations'] = convert._delimit_list(destinations_coords,
+                                                       '|')
 
         if self.key is not None:
             params["key"] = self.key
@@ -365,5 +406,5 @@ class Google(Router):
         if transit_routing_preference:
             params['transit_routing_preference'] = transit_routing_preference
 
-        return self._request('/distancematrix/json', get_params=params, dry_run=dry_run)
-
+        return self._request(
+            '/distancematrix/json', get_params=params, dry_run=dry_run)

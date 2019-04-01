@@ -201,8 +201,8 @@ class ORS(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: A route from provided coordinates and restrictions.
+        :rtype: :class:`routingpy.direction.Direction`
         """
 
         params = {"coordinates": coordinates, "profile": profile}
@@ -357,8 +357,8 @@ class ORS(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: An isochrone with the specified range.
+        :rtype: list of :class:`routingpy.isochrone.Isochrone`
         """
 
         params = {
@@ -415,44 +415,44 @@ class ORS(Router):
                         dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
-            :param coordinates: One or more pairs of lng/lat values.
-            :type coordinates: a single location, or a list of locations, where a
-                location is a list or tuple of lng,lat values
+        :param coordinates: One or more pairs of lng/lat values.
+        :type coordinates: a single location, or a list of locations, where a
+            location is a list or tuple of lng,lat values
 
-            :param profile: Specifies the mode of transport to use when calculating
-                directions. One of ["driving-car", "driving-hgv", "foot-walking",
-                "foot-hiking", "cycling-regular", "cycling-road", "cycling-mountain",
-                "cycling-electric",]. Default "driving-car".
-            :type profile: str
+        :param profile: Specifies the mode of transport to use when calculating
+            directions. One of ["driving-car", "driving-hgv", "foot-walking",
+            "foot-hiking", "cycling-regular", "cycling-road", "cycling-mountain",
+            "cycling-electric",]. Default "driving-car".
+        :type profile: str
 
-            :param sources: A list of indices that refer to the list of locations
-                (starting with 0). If not passed, all indices are considered.
-            :type sources: list or tuple
+        :param sources: A list of indices that refer to the list of locations
+            (starting with 0). If not passed, all indices are considered.
+        :type sources: list or tuple
 
-            :param destinations: A list of indices that refer to the list of locations
-                (starting with 0). If not passed, all indices are considered.
-            :type destinations: list or tuple
+        :param destinations: A list of indices that refer to the list of locations
+            (starting with 0). If not passed, all indices are considered.
+        :type destinations: list or tuple
 
-            :param metrics: Specifies a list of returned metrics. One or more of ["distance",
-                "duration"]. Default ['duration'].
-            :type metrics: list of str
+        :param metrics: Specifies a list of returned metrics. One or more of ["distance",
+            "duration"]. Default ['duration'].
+        :type metrics: list of str
 
-            :param resolve_locations: Specifies whether given locations are resolved or
-                not. If set 'true', every element in destinations and sources will
-                contain the name element that identifies the name of the closest street.
-                Default False.
-            :type resolve_locations: bool
+        :param resolve_locations: Specifies whether given locations are resolved or
+            not. If set 'true', every element in destinations and sources will
+            contain the name element that identifies the name of the closest street.
+            Default False.
+        :type resolve_locations: bool
 
-            :param units: Specifies the unit system to use when displaying results.
-                One of ["m", "km", "m"]. Default "m".
-            :type units: str
+        :param units: Specifies the unit system to use when displaying results.
+            One of ["m", "km", "m"]. Default "m".
+        :type units: str
 
-            :param dry_run: Print URL and parameters without sending the request.
-            :param dry_run: bool
+        :param dry_run: Print URL and parameters without sending the request.
+        :param dry_run: bool
 
-            :returns: raw JSON response
-            :rtype: dict
-            """
+        :returns: A matrix from the specified sources and destinations.
+        :rtype: :class:`routingpy.matrix.Matrix`
+        """
 
         params = {"locations": coordinates, "profile": profile}
 

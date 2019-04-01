@@ -19,6 +19,10 @@ Core client functionality, common across all API requests.
 """
 from .base import Router
 from routingpy import convert
+from routingpy import utils
+from routingpy.direction import Direction
+from routingpy.isochrone import Isochrone
+from routingpy.matrix import Matrix
 
 from operator import itemgetter
 
@@ -111,25 +115,25 @@ class Graphhopper(Router):
             from in order of visit.
         :type coordinates: list, tuple
 
-        :param profile: The vehicle for which the route should be calculated. 
+        :param profile: The vehicle for which the route should be calculated.
             Default "car".
-            Other vehicle profiles are listed here: 
+            Other vehicle profiles are listed here:
             https://graphhopper.com/api/1/docs/supported-vehicle-profiles/
         :type profile: str
 
-        :param format: Specifies the resulting format of the route, for json the content type will be application/json. 
+        :param format: Specifies the resulting format of the route, for json the content type will be application/json.
             Default "json".
         :type format: str
 
-        :param language: Language for routing instructions. The locale of the resulting turn instructions. 
+        :param language: Language for routing instructions. The locale of the resulting turn instructions.
             E.g. pt_PT for Portuguese or de for German. Default "en".
         :type language: str
 
-        :param optimize: If false the order of the locations will be identical to the order of the point parameters. 
-            If you have more than 2 points you can set this optimize parameter to true and the points will be sorted 
-            regarding the minimum overall time - e.g. suiteable for sightseeing tours or salesman. 
-            Keep in mind that the location limit of the Route Optimization API applies and the credit costs are higher! 
-            Note to all customers with a self-hosted license: this parameter is only available if your package includes 
+        :param optimize: If false the order of the locations will be identical to the order of the point parameters.
+            If you have more than 2 points you can set this optimize parameter to true and the points will be sorted
+            regarding the minimum overall time - e.g. suiteable for sightseeing tours or salesman.
+            Keep in mind that the location limit of the Route Optimization API applies and the credit costs are higher!
+            Note to all customers with a self-hosted license: this parameter is only available if your package includes
             the Route Optimization API. Default False.
         :type geometry: bool
 
@@ -137,15 +141,15 @@ class Graphhopper(Router):
             Default True.
         :type instructions: bool
 
-        :param elevation: If true a third dimension - the elevation - is included in the polyline or in the GeoJson. 
-            IMPORTANT: If enabled you have to use a modified version of the decoding method or set points_encoded to false. 
-            See the points_encoded attribute for more details. Additionally a request can fail if the vehicle does not 
+        :param elevation: If true a third dimension - the elevation - is included in the polyline or in the GeoJson.
+            IMPORTANT: If enabled you have to use a modified version of the decoding method or set points_encoded to false.
+            See the points_encoded attribute for more details. Additionally a request can fail if the vehicle does not
             support elevation. See the features object for every vehicle.
             Default False.
         :type elevation: bool
 
-        :param points_encoded: If false the coordinates in point and snapped_waypoints are returned as array using the order 
-            [lon,lat,elevation] for every point. If true the coordinates will be encoded as string leading to less bandwith usage. 
+        :param points_encoded: If false the coordinates in point and snapped_waypoints are returned as array using the order
+            [lon,lat,elevation] for every point. If true the coordinates will be encoded as string leading to less bandwith usage.
             Default True
         :type elevation: bool
 
@@ -156,34 +160,34 @@ class Graphhopper(Router):
         :param debug: If true, the output will be formated.
             Default False
         :type elevation: bool
-        
-        :param point_hint: Optional parameter. Specifies a hint for each point parameter to prefer a certain street for the 
-            closest location lookup. E.g. if there is an address or house with two or more neighboring streets you can control 
+
+        :param point_hint: Optional parameter. Specifies a hint for each point parameter to prefer a certain street for the
+            closest location lookup. E.g. if there is an address or house with two or more neighboring streets you can control
             for which street the closest location is looked up.
         :type point_hint: bool
 
-        :param details: Optional parameter. Optional parameter to retrieve path details. You can request additional details for the 
-            route: street_name and time. For all motor vehicles we additionally support max_speed, toll (no, all, hgv), 
-            road_class (motorway, primary, ...), road_environment, and surface. The returned format for one details 
-            is [fromRef, toRef, value]. The ref references the points of the response. Multiple details are possible 
+        :param details: Optional parameter. Optional parameter to retrieve path details. You can request additional details for the
+            route: street_name and time. For all motor vehicles we additionally support max_speed, toll (no, all, hgv),
+            road_class (motorway, primary, ...), road_environment, and surface. The returned format for one details
+            is [fromRef, toRef, value]. The ref references the points of the response. Multiple details are possible
             via multiple key value pairs details=time&details=toll
         :type details: list of str
 
-        :param ch_disable: Always use ch_disable=true in combination with one or more parameters of this table. 
+        :param ch_disable: Always use ch_disable=true in combination with one or more parameters of this table.
             Default False.
         :type ch_disable: bool
 
-        :param weighting: Which kind of 'best' route calculation you need. Other options are shortest 
+        :param weighting: Which kind of 'best' route calculation you need. Other options are shortest
             (e.g. for vehicle=foot or bike) and short_fastest if not only time but also distance is expensive.
             Default "fastest".
-        :type weighting: str           
-        
-        :param heading: Optional parameter. Favour a heading direction for a certain point. Specify either one heading for the start point or as
-            many as there are points. In this case headings are associated by their order to the specific points. 
-            Headings are given as north based clockwise angle between 0 and 360 degree. 
-        :type heading: list of int   
+        :type weighting: str
 
-        :param heading_penalty: Optional parameter. Penalty for omitting a specified heading. The penalty corresponds to the accepted time 
+        :param heading: Optional parameter. Favour a heading direction for a certain point. Specify either one heading for the start point or as
+            many as there are points. In this case headings are associated by their order to the specific points.
+            Headings are given as north based clockwise angle between 0 and 360 degree.
+        :type heading: list of int
+
+        :param heading_penalty: Optional parameter. Penalty for omitting a specified heading. The penalty corresponds to the accepted time
             delay in seconds in comparison to the route without a heading.
             Default 120.
         :type heading_penalty: int
@@ -192,16 +196,16 @@ class Graphhopper(Router):
             Default False.
         :type pass_through: bool
 
-        :param block_area: Optional parameter. Block road access via a point with the format 
+        :param block_area: Optional parameter. Block road access via a point with the format
             latitude,longitude or an area defined by a circle lat,lon,radius or a rectangle lat1,lon1,lat2,lon2.
         :type block_area: str
 
-        :param avoid: Optional semicolon separated parameter. Specify which road classes you would like to avoid 
+        :param avoid: Optional semicolon separated parameter. Specify which road classes you would like to avoid
             (currently only supported for motor vehicles like car). Possible values are ferry, motorway, toll, tunnel and ford.
         :type avoid: list of str
-        
+
         :param algorithm: Optional parameter. round_trip or alternative_route.
-        :type algorithm: str 
+        :type algorithm: str
 
         :param round_trip_distance: If algorithm=round_trip this parameter configures approximative length of the resulting round trip.
             Default 10000.
@@ -225,7 +229,7 @@ class Graphhopper(Router):
             routes can have maximum in common with the optimal route. Increasing can lead to worse alternatives.
             Default 0.6.
         :type alternative_route_max_share_factor: float
-       
+
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
@@ -301,6 +305,8 @@ class Graphhopper(Router):
 
         if algorithm is not None:
 
+            params.append(('algorithm', algorithm))
+
             if algorithm == 'round_trip':
 
                 if round_trip_distance is not None:
@@ -319,13 +325,43 @@ class Graphhopper(Router):
                     params.append(("alternative_route.max_weight_factor",
                                    alternative_route_max_weight_factor))
 
-        return self._request('/route', get_params=params, dry_run=dry_run)
+                if alternative_route_max_share_factor:
+                    params.append(("alternative_route_max_share_factor",
+                                   alternative_route_max_share_factor))
+
+        return self._parse_directions_json(
+            self._request('/route', get_params=params, dry_run=dry_run),
+            algorithm, elevation)
+
+    @staticmethod
+    def _parse_directions_json(response, algorithm, elevation):
+        if response is None:
+            return None
+
+        if algorithm == 'alternative_route':
+            routes = []
+            for route in response['paths']:
+                geometry = [
+                    list(reversed(coord)) for coord in utils.decode_polyline5(
+                        route['points'], elevation)
+                ]
+                routes.append(
+                    Direction(geometry, route['time'], route['distance']))
+            return routes
+        else:
+            geometry = [
+                list(reversed(coord)) for coord in utils.decode_polyline5(
+                    response['paths'][0]['points'], elevation)
+            ]
+
+            return Direction(geometry, response['paths'][0]['time'],
+                             response['paths'][0]['distance'])
 
     def isochrones(self,
                    coordinates,
                    profile,
-                   distance_limit=None,
-                   time_limit=None,
+                   range,
+                   range_type=None,
                    buckets=None,
                    reverse_flow=None,
                    debug=None,
@@ -333,35 +369,36 @@ class Graphhopper(Router):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
         :param coordinates: One coordinate pair denoting the location.
-        :type coordinates: tuple
+        :type coordinates: tuple/list
 
-        :param profile: Specifies the mode of transport. 
-            One of bike, car, foot or 
+        :param profile: Specifies the mode of transport.
+            One of bike, car, foot or
             https://graphhopper.com/api/1/docs/supported-vehicle-profiles/Default.
             Default "car".
         :type profile: str
 
-        :param distance_limit: Specify which time the vehicle should travel. In seconds.
-            Default 600.
-        :type distance_limit: int
+        :param range: Maximum range to calculate distances/durations for. You can also specify
+            the ``buckets`` variable to break the single value into more isochrones. For compatibility reasons,
+            this parameter is expressed as list. In meters or seconds.
+        :type range: list/tuple of int
 
-        :param time_limit: Instead of time_limit you can also specify the distance 
-            the vehicle should travel. In meter.
-        :type time_limit: int
+        :param range_type: Set ``time`` for isochrones or ``distance`` for equidistants.
+            Default 'time'.
+        :type sources: str
 
         :param buckets: For how many sub intervals an additional polygon should be calculated.
             Default 1.
         :type buckets: int
-    
+
         :param reverse_flow: If false the flow goes from point to the polygon,
-            if true the flow goes from the polygon "inside" to the point. 
+            if true the flow goes from the polygon "inside" to the point.
             Default False.
         :param reverse_flow: bool
-        
+
         :param debug: If true, the output will be formatted.
             Default False
         :type debug: bool
-    
+
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
@@ -369,7 +406,18 @@ class Graphhopper(Router):
         :rtype: dict
         """
 
-        params = [('profile', profile)]
+        params = [
+            ('profile', profile),
+        ]
+
+        if convert._is_list(range):
+            if range_type in (None, 'time'):
+                params.append(('time_limit', range[0]))
+            elif range_type == 'distance':
+                params.append(('distance_limit', range[0]))
+        else:
+            raise TypeError(
+                f"Parameter range={range} must be of type list or tuple")
 
         coord_latlng = reversed(
             [convert._format_float(f) for f in coordinates])
@@ -377,12 +425,6 @@ class Graphhopper(Router):
 
         if self.key is not None:
             params.append(("key", self.key))
-
-        if distance_limit is not None:
-            params.append(('distance_limit', distance_limit))
-
-        if time_limit is not None:
-            params.append(('time_limit', time_limit))
 
         if buckets is not None:
             params.append(('buckets', buckets))
@@ -394,7 +436,23 @@ class Graphhopper(Router):
         if debug is not None:
             params.append(('debug', convert._convert_bool(debug)))
 
-        return self._request("/isochrone", get_params=params, dry_run=dry_run)
+        return self._parse_isochrone_json(
+            self._request("/isochrone", get_params=params, dry_run=dry_run),
+            range[0], buckets)
+
+    @staticmethod
+    def _parse_isochrone_json(response, ranges, buckets):
+        if response is None:
+            return None
+
+        isochrones = []
+        for bucket in range(buckets):
+            isochrones.append(
+                Isochrone(
+                    geometry=response['polygons'][bucket],
+                    range=int(ranges * (1 - (bucket / buckets)))))
+
+        return isochrones
 
     def distance_matrix(self,
                         coordinates,
@@ -406,33 +464,33 @@ class Graphhopper(Router):
                         dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
-        :param coordinates: Specifiy multiple points for which the weight-, route-, time- or distance-matrix should be calculated. 
-            In this case the starts are identical to the destinations. 
-            If there are N points, then NxN entries will be calculated. 
-            The order of the point parameter is important. Specify at least three points. 
+        :param coordinates: Specifiy multiple points for which the weight-, route-, time- or distance-matrix should be calculated.
+            In this case the starts are identical to the destinations.
+            If there are N points, then NxN entries will be calculated.
+            The order of the point parameter is important. Specify at least three points.
             Cannot be used together with from_point or to_point. Is a string with the format latitude,longitude.
         :type coordinates: list, tuple
 
-        :param profile: Specifies the mode of transport. 
+        :param profile: Specifies the mode of transport.
             One of bike, car, foot or
             https://graphhopper.com/api/1/docs/supported-vehicle-profiles/Default.
             Default "car".
         :type profile: str
 
-        :param sources: The starting points for the routes. 
+        :param sources: The starting points for the routes.
             Specifies an index referring to coordinates.
         :type from_coordinates: list
 
         :param destinations: The destination points for the routes. Specifies an index referring to coordinates.
         :type to_coordinates: list
 
-        :param out_array: Specifies which arrays should be included in the response. Specify one or more of the following 
+        :param out_array: Specifies which arrays should be included in the response. Specify one or more of the following
             options 'weights', 'times', 'distances'.
-            The units of the entries of distances are meters, of times are seconds and of weights is arbitrary and it can differ 
+            The units of the entries of distances are meters, of times are seconds and of weights is arbitrary and it can differ
             for different vehicles or versions of this API.
             Default "weights".
-        :type out_array: list           
-    
+        :type out_array: list
+
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
@@ -494,4 +552,13 @@ class Graphhopper(Router):
         if debug is not None:
             params.append(('debug', convert._convert_bool(debug)))
 
-        return self._request('/matrix', get_params=params, dry_run=dry_run)
+        return self._parse_matrix_json(
+            self._request('/matrix', get_params=params, dry_run=dry_run), )
+
+    @staticmethod
+    def _parse_matrix_json(response):
+        if response is None:
+            return None
+        durations = response.get('times')
+        distances = response.get('distances')
+        return Matrix(durations, distances, response)
