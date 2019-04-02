@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import random
+import datetime
 
 PARAM_POINT = [8.34234, 48.23424]
 PARAM_LINE = [[8.688641, 49.420577], [8.680916, 49.415776]]
@@ -92,6 +93,118 @@ ENDPOINTS_QUERIES = {
             'profile': 'driving',
             'annotations': ['distance', 'duration'],
             'fallback_speed': PARAM_INT_SMALL
+        }
+    },
+    'heremaps': {
+        'directions': {
+            'coordinates':
+            PARAM_LINE_MULTI,
+            'profile':
+            'truck;fastest',
+            'request_id':
+            101,
+            'avoid_areas': [[(8.688641, 49.420577), (8.680916, 49.415776)],
+                            [(8.780916, 49.445776), (8.780916, 49.445776)]],
+            'avoid_links': [-53623477],
+            'avoid_seasonal_closures':
+            True,
+            'avoid_turns':
+            'difficult',
+            'exclude_zones': [510, 511],
+            'exclude_zone_types': ['vignette', 'congestionPricing'],
+            'exclude_countries': ['AUT', 'CHE'],
+            'departure':
+            datetime.datetime(2019, 3, 29, 3, 0),
+            'alternatives':
+            3,
+            'metric_system':
+            'metric',
+            'view_bounds': [(8.688641, 49.420577), (8.680916, 49.415776)],
+            'resolution': {
+                'viewresolution': 300,
+                'snapresolution': 300
+            },
+            'instruction_format':
+            'text',
+            'language':
+            'en-us',
+            'json_attributes':
+            9,
+            'route_attributes': [
+                'waypoints', 'summary', 'summaryByCountry', 'shape',
+                'boundingBox', 'legs', 'notes', 'lines', 'routeId', 'groups',
+                'tickets', 'incidents', 'zones'
+            ],
+            'leg_attributes':
+            ['maneuvers', 'waypoint', 'length', 'travelTime'],
+            'maneuver_attributes': ['position', 'length', 'travelTime'],
+            'link_attributes': ['shape', 'speedLimit'],
+            'generalization_tolerances': [0.1, 0.01],
+            'vehicle_type':
+            'diesel,5.5',
+            'license_plate':
+            'lastcharacter:5',
+            'max_number_of_changes':
+            5,
+            'combine_change':
+            False,
+            'truck_type':
+            'truck',
+            'trailers_count':
+            3,
+            'shipped_hazardous_goods': ['gas', 'flammable'],
+            'limited_weight':
+            10,
+            'weight_per_axle':
+            100,
+            'height':
+            20,
+            'width':
+            10,
+            'length':
+            10,
+            'truck_restriction_penalty':
+            'soft',
+            'return_elevation':
+            True,
+            'consumption_model':
+            'default',
+            'speed_profile':
+            'fast',
+        },
+        'matrix': {
+            'coordinates': [[8.688641, 49.420577], [8.680916, 49.415776],
+                            [8.780916, 49.445776]],
+            'sources': [0, 1],
+            'destinations': [2],
+            'profile':
+            'car;fastest',
+            'summary_attributes': ['traveltime', 'costfactor'],
+            'truck_type':
+            'truck',
+            'trailers_count':
+            3,
+            'shipped_hazardous_goods': ['gas', 'flammable'],
+            'limited_weight':
+            10,
+            'weight_per_axle':
+            100,
+            'height':
+            20,
+            'width':
+            10,
+            'length':
+            10,
+        },
+        'isochrones': {
+            'coordinates': PARAM_POINT,
+            'ranges': [1000, 2000, 3000],
+            'range_type': 'distance',
+            'profile': 'car;fastest',
+            'center_type': 'start',
+            'request_id': 101,
+            'single_component': False,
+            'quality': 1
         }
     },
     'graphhopper': {

@@ -16,20 +16,26 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-
 """
 Defines exceptions that are thrown by the ORS client.
 """
 
+
 class ValidationError(Exception):
     """Something went wrong during cerberus validation"""
+
     def __init__(self, errors):
         for error in errors:
-            msg = '\n'.join(["Argument '{}': {}".format(error, errors[error][0]) for error in errors])
+            msg = '\n'.join([
+                "Argument '{}': {}".format(error, errors[error][0])
+                for error in errors
+            ])
         Exception.__init__(self, msg)
+
 
 class RouterError(Exception):
     """Represents an exception returned by the remote API."""
+
     def __init__(self, status, message=None):
         self.status = status
         self.message = message
@@ -40,31 +46,39 @@ class RouterError(Exception):
         else:
             return "%s (%s)" % (self.status, self.message)
 
+
 class RouterApiError(RouterError):
     """Represents an exception returned by a routing engine, i.e. 400 <= HTTP status code <= 500"""
+
 
 class RouterServerError(RouterError):
     """Represents an exception returned by a server, i.e. 500 <= HTTP"""
 
+
 class HTTPError(Exception):
     """An unexpected HTTP error occurred."""
+
     def __init__(self, status_code):
         self.status_code = status_code
 
     def __str__(self):
         return "HTTP Error: %d" % self.status_code
 
+
 class Timeout(Exception):
     """The request timed out."""
     pass
+
 
 class _JSONParseError(Exception):
     """The Json response can't be parsed.."""
     pass
 
+
 class _RetriableRequest(Exception):
     """Signifies that the request can be retried."""
     pass
+
 
 class _OverQueryLimit(RouterError, _RetriableRequest):
     """Signifies that the request failed because the client exceeded its query rate limit.

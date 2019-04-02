@@ -14,7 +14,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-
 """
 Core client functionality, common across all API requests.
 """
@@ -28,8 +27,13 @@ class OSRM(Router):
 
     _DEFAULT_BASE_URL = 'https://router.project-osrm.org'
 
-    def __init__(self, base_url=_DEFAULT_BASE_URL, user_agent=None, timeout=None,
-                 retry_timeout=None, requests_kwargs=None, retry_over_query_limit=False):
+    def __init__(self,
+                 base_url=_DEFAULT_BASE_URL,
+                 user_agent=None,
+                 timeout=None,
+                 retry_timeout=None,
+                 requests_kwargs=None,
+                 retry_over_query_limit=False):
         """
         Initializes an OSRM client.
 
@@ -59,10 +63,22 @@ class OSRM(Router):
         :type queries_per_minute: int
         """
 
-        super(OSRM, self).__init__(base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit)
+        super(OSRM,
+              self).__init__(base_url, user_agent, timeout, retry_timeout,
+                             requests_kwargs, retry_over_query_limit)
 
-    def directions(self, coordinates, profile, radiuses=None, bearings=None, alternatives=None, steps=None,
-                   continue_straight=None, annotations=None, geometries=None, overview=None, dry_run=None):
+    def directions(self,
+                   coordinates,
+                   profile,
+                   radiuses=None,
+                   bearings=None,
+                   alternatives=None,
+                   steps=None,
+                   continue_straight=None,
+                   annotations=None,
+                   geometries=None,
+                   overview=None,
+                   dry_run=None):
         """Get directions between an origin point and a destination point.
 
         For more information, visit http://project-osrm.org/docs/v5.5.1/api/#route-service.
@@ -121,7 +137,10 @@ class OSRM(Router):
         :rtype: dict
         """
 
-        coords = convert._delimit_list([convert._delimit_list([convert._format_float(f) for f in pair]) for pair in coordinates], ';')
+        coords = convert._delimit_list([
+            convert._delimit_list([convert._format_float(f) for f in pair])
+            for pair in coordinates
+        ], ';')
 
         params = dict()
 
@@ -129,7 +148,8 @@ class OSRM(Router):
             params["radiuses"] = convert._delimit_list(radiuses, ';')
 
         if bearings:
-            params["bearings"] = convert._delimit_list([convert._delimit_list(pair) for pair in bearings], ';')
+            params["bearings"] = convert._delimit_list(
+                [convert._delimit_list(pair) for pair in bearings], ';')
 
         if alternatives is not None:
             params["alternatives"] = convert._convert_bool(alternatives)
@@ -138,7 +158,8 @@ class OSRM(Router):
             params["steps"] = convert._convert_bool(steps)
 
         if continue_straight is not None:
-            params["continue_straight"] = convert._convert_bool(continue_straight)
+            params["continue_straight"] = convert._convert_bool(
+                continue_straight)
 
         if annotations is not None:
             params["annotations"] = convert._convert_bool(annotations)
@@ -149,13 +170,22 @@ class OSRM(Router):
         if overview is not None:
             params["overview"] = convert._convert_bool(overview)
 
-        return self._request("/route/v1/" + profile + '/' + coords, get_params=params, dry_run=dry_run)
+        return self._request(
+            "/route/v1/" + profile + '/' + coords,
+            get_params=params,
+            dry_run=dry_run)
 
     def isochrones(self):
         raise NotImplementedError
 
-    def distance_matrix(self, coordinates, profile, radiuses=None, bearings=None, sources=None,
-                        destinations=None, dry_run=None):
+    def distance_matrix(self,
+                        coordinates,
+                        profile,
+                        radiuses=None,
+                        bearings=None,
+                        sources=None,
+                        destinations=None,
+                        dry_run=None):
         """
         Gets travel distance and time for a matrix of origins and destinations.
 
@@ -201,7 +231,10 @@ class OSRM(Router):
         :rtype: dict
         """
 
-        coords = convert._delimit_list([convert._delimit_list([convert._format_float(f) for f in pair]) for pair in coordinates], ';')
+        coords = convert._delimit_list([
+            convert._delimit_list([convert._format_float(f) for f in pair])
+            for pair in coordinates
+        ], ';')
 
         params = dict()
 
@@ -211,4 +244,7 @@ class OSRM(Router):
         if destinations:
             params['destinations'] = convert._delimit_list(destinations, ';')
 
-        return self._request("/table/v1/" + profile + '/' + coords, get_params=params, dry_run=dry_run)
+        return self._request(
+            "/table/v1/" + profile + '/' + coords,
+            get_params=params,
+            dry_run=dry_run)

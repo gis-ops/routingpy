@@ -102,8 +102,10 @@ class Router(metaclass=ABCMeta):
             self._requests_kwargs.update({'headers': add_headers})
         add_timeout = self._requests_kwargs.get(
             'timeout') or timeout or options.default_timeout
+
         proxies = self._requests_kwargs.get(
             'proxies') or options.default_proxies
+
         self._requests_kwargs['timeout'] = add_timeout
         self._requests_kwargs['proxies'] = proxies
 
