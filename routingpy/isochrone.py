@@ -5,7 +5,7 @@
 
 class Isochrones(object):
     """
-    Contains parsed isochrones and the raw response. Access via properties ``isochrones`` and ``raw``.
+    Contains a list of isochrones and the complete raw response. Access via properties ``isochrones`` and ``raw``.
     """
 
     def __init__(self, isochrones=None, raw=None):
@@ -35,10 +35,12 @@ class Isochrones(object):
     def __str__(self):
         return str(self.raw)
 
+    #TODO: add list-like magic methods, so 'for iso in isochrones' is possible (NOT 'for iso in isochrones.isochrones'!)
 
-class Isochrone(Isochrones):
+
+class Isochrone(object):
     """
-    Contains a parsed isochrone response. Access via properties ``geometry`` and ``range``.
+    Contains a parsed single isochrone response. Access via properties ``geometry`` and ``range``.
     """
 
     def __init__(self, geometry=None, range=None):

@@ -21,7 +21,7 @@ Core client functionality, common across all API requests.
 from .base import Router
 from routingpy import utils
 from routingpy.direction import Direction
-from routingpy.isochrone import Isochrone
+from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
 
 
@@ -397,12 +397,10 @@ class ORS(Router):
     def _parse_isochrone_json(response, range):
         if response is None:
             return None
-        return [
-            Isochrone(isochrone['geometry']['coordinates'], range[idx],
-                      isochrone)
+        return Isochrones([
+            Isochrone(isochrone['geometry']['coordinates'], range[idx])
             for idx, isochrone in enumerate(response['features'])
-        ]
-
+        ], response)
 
     def distance_matrix(self,
                         coordinates,

@@ -21,7 +21,7 @@ from .base import Router
 from routingpy import convert
 from routingpy import utils
 from routingpy.direction import Direction
-from routingpy.isochrone import Isochrone
+from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
 
 from operator import itemgetter
@@ -452,7 +452,7 @@ class Graphhopper(Router):
                     geometry=response['polygons'][bucket],
                     range=int(ranges * (1 - (bucket / buckets)))))
 
-        return isochrones
+        return Isochrones(isochrones, response)
 
     def distance_matrix(self,
                         coordinates,
