@@ -35,7 +35,14 @@ class Isochrones(object):
     def __str__(self):
         return str(self.raw)
 
-    #TODO: add list-like magic methods, so 'for iso in isochrones' is possible (NOT 'for iso in isochrones.isochrones'!)
+    def __getitem__(self, item):
+        return self._isochrones[item]
+
+    def __iter__(self):
+        return iter(self._isochrones)
+
+    def __len__(self):
+        return len(self._isochrones)
 
 
 class Isochrone(object):
@@ -43,9 +50,10 @@ class Isochrone(object):
     Contains a parsed single isochrone response. Access via properties ``geometry`` and ``range``.
     """
 
-    def __init__(self, geometry=None, range=None):
+    def __init__(self, geometry=None, range=None, center=None):
         self._geometry = geometry
         self._range = range
+        self._center = center
 
     @property
     def range(self):
@@ -65,8 +73,18 @@ class Isochrone(object):
         """
         return self._geometry
 
+    @property
+    def center(self):
+        """
+        The center coordinate in [lon, lat] of the isochrone. Might deviate from the input coordinate.
+        Not available for all routing engines (e.g. GraphHopper).
+
+        :rtype: list of float
+        """
+        return self._center
+
     def __repr__(self):
         return f'Isochrone({self.geometry}, {self.range})'
 
     def __str__(self):
-        return str(self.geometry)
+        return str(self.raw)

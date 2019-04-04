@@ -20,7 +20,7 @@ Core client functionality, common across all API requests.
 from .base import Router
 from routingpy import convert
 from routingpy import utils
-from routingpy.direction import Direction
+from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
 
@@ -346,8 +346,9 @@ class Graphhopper(Router):
                         route['points'], elevation)
                 ]
                 routes.append(
-                    Direction(geometry, route['time'], route['distance']))
-            return routes
+                    Direction(geometry, route['time'], route['distance'],
+                              route))
+            return Directions(routes, response)
         else:
             geometry = [
                 list(reversed(coord)) for coord in utils.decode_polyline5(
@@ -355,7 +356,7 @@ class Graphhopper(Router):
             ]
 
             return Direction(geometry, response['paths'][0]['time'],
-                             response['paths'][0]['distance'])
+                             response['paths'][0]['distance'], response)
 
     def isochrones(self,
                    coordinates,

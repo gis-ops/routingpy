@@ -21,7 +21,7 @@ Core client functionality, common across all API requests.
 from .base import Router
 from routingpy import convert
 from routingpy import utils
-from routingpy.direction import Direction
+from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrones, Isochrone
 from routingpy.matrix import Matrix
 from itertools import cycle
@@ -584,22 +584,35 @@ class HereMaps(Router):
             self._request(
                 convert._delimit_list(["/calculateroute", format], '.'),
                 get_params=params,
-                dry_run=dry_run))
+                dry_run=dry_run),
+            alternatives=alternatives)
 
     @staticmethod
-    def _parse_direction_json(response):
+    def _parse_direction_json(response, alternatives):
         if response is None:
             return None
 
-        geometry = response['response']['route'][0]['shape']
-        duration = int(response['response']['route'][0]['summary']['baseTime'])
-        distance = int(response['response']['route'][0]['summary']['distance'])
+        if alternatives > 1:
+            routes = []
+            for route in response['response']['route']:
+                routes.append(
+                    Direction(route['shape'], route['summary']['baseTime'],
+                              route['summary']['distance']))
 
-        return Direction(
-            geometry=geometry,
-            duration=duration,
-            distance=distance,
-            raw=response)
+            return Directions(routes, response)
+
+        else:
+            geometry = response['response']['route'][0]['shape']
+            duration = int(
+                response['response']['route'][0]['summary']['baseTime'])
+            distance = int(
+                response['response']['route'][0]['summary']['distance'])
+
+            return Direction(
+                geometry=geometry,
+                duration=duration,
+                distance=distance,
+                raw=response)
 
     def isochrones(self,
                    coordinates,

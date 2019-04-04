@@ -398,7 +398,8 @@ class ORS(Router):
         if response is None:
             return None
         return Isochrones([
-            Isochrone(isochrone['geometry']['coordinates'], range[idx])
+            Isochrone(isochrone['geometry']['coordinates'], range[idx],
+                      isochrone['properties']['center'])
             for idx, isochrone in enumerate(response['features'])
         ], response)
 
