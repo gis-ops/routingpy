@@ -39,7 +39,7 @@ class Directions(object):
         return self._raw
 
     def __repr__(self):
-        return f'Isochrones({self._directions}, {self.raw})'
+        return f'Directions({self._directions}, {self.raw})'
 
     def __str__(self):
         return str(self.raw)

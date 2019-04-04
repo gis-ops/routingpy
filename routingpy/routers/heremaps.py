@@ -599,14 +599,14 @@ class HereMaps(Router):
                     Direction(route['shape'], route['summary']['baseTime'],
                               route['summary']['distance']))
 
-            return Directions(routes, response)
+            return Directions(directions=routes, raw=response)
 
         else:
-            geometry = response['response']['route'][0]['shape']
+            geometry = response['response']['route'][0].get('shape')
             duration = int(
-                response['response']['route'][0]['summary']['baseTime'])
+                response['response']['route'][0]['summary'].get('baseTime'))
             distance = int(
-                response['response']['route'][0]['summary']['distance'])
+                response['response']['route'][0]['summary'].get('distance'))
 
             return Direction(
                 geometry=geometry,
