@@ -1,5 +1,5 @@
 """
-:class:`.Matrix` returns directions results.
+:class:`Matrix` returns directions results.
 """
 
 
@@ -20,15 +20,15 @@ class Matrix(object):
 
             [
                 [
-                    duration(origin1-destination1,
-                    duration(origin1-destination2,
-                    duration[origin1-destination3,
+                    duration(origin1-destination1),
+                    duration(origin1-destination2),
+                    duration[origin1-destination3),
                     ...
                 ],
                 [
-                    duration(origin2-destination1,
-                    duration(origin2-destination2,
-                    duration[origin3-destination3,
+                    duration(origin2-destination1),
+                    duration(origin2-destination2),
+                    duration[origin3-destination3),
                     ...
                 },
                 ...
@@ -45,15 +45,15 @@ class Matrix(object):
 
             [
                 [
-                    duration(origin1-destination1,
-                    duration(origin1-destination2,
-                    duration[origin1-destination3,
+                    duration(origin1-destination1),
+                    duration(origin1-destination2),
+                    duration[origin1-destination3),
                     ...
                 ],
                 [
-                    duration(origin2-destination1,
-                    duration(origin2-destination2,
-                    duration[origin3-destination3,
+                    duration(origin2-destination1),
+                    duration(origin2-destination2),
+                    duration[origin3-destination3),
                     ...
                 },
                 ...
@@ -67,6 +67,7 @@ class Matrix(object):
     def raw(self):
         """
         Returns the route's raw, unparsed response. For details, consult the routing engine's API documentation.
+
         :rtype: dict or None
         """
         return self._raw

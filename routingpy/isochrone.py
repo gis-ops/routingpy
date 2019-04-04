@@ -1,11 +1,12 @@
 """
-:class:`.Isochrone` returns directions results.
+:class:`Isochrone` returns directions results.
 """
 
 
 class Isochrones(object):
     """
-    Contains a list of isochrones and the complete raw response. Access via properties ``isochrones`` and ``raw``.
+    Contains a list of :class:`Isochrone`, which can be iterated over or accessed by index. The property
+     ``raw`` contains the complete raw response of the isochrone request.
     """
 
     def __init__(self, isochrones=None, raw=None):
@@ -47,7 +48,7 @@ class Isochrones(object):
 
 class Isochrone(object):
     """
-    Contains a parsed single isochrone response. Access via properties ``geometry`` and ``range``.
+    Contains a parsed single isochrone response. Access via properties ``geometry``, ``center`` and``range``.
     """
 
     def __init__(self, geometry=None, range=None, center=None):

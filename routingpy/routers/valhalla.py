@@ -359,7 +359,7 @@ class Valhalla(Router):
         :param dry_run: bool
 
         :returns: An isochrone with the specified range.
-        :rtype: list of :class:`routingpy.isochrone.Isochrone`
+        :rtype: :class:`routingpy.isochrone.Isochrones`
         """
 
         locations = self._build_locations(coordinates)

@@ -274,6 +274,10 @@ class MapBoxOSRM(Router):
             post_params=params,
             dry_run=dry_run)
 
+    @staticmethod
+    def _parse_direction_json():
+        pass
+
     def isochrones(self):
         raise NotImplementedError
 
@@ -346,3 +350,7 @@ class MapBoxOSRM(Router):
             "/directions-matrix/v1/mapbox/" + profile + '/' + coords,
             get_params=params,
             dry_run=dry_run)
+
+    @staticmethod
+    def _parse_matrix_json():
+        pass

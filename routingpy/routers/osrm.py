@@ -175,6 +175,10 @@ class OSRM(Router):
             get_params=params,
             dry_run=dry_run)
 
+    @staticmethod
+    def _parse_direction_json():
+        pass
+
     def isochrones(self):
         raise NotImplementedError
 
@@ -248,3 +252,7 @@ class OSRM(Router):
             "/table/v1/" + profile + '/' + coords,
             get_params=params,
             dry_run=dry_run)
+
+    @staticmethod
+    def _parse_matrix_json():
+        pass

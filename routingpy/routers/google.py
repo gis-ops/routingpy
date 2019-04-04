@@ -16,7 +16,9 @@
 #
 
 from .base import Router
-from routingpy import convert
+from routingpy import convert, utils
+from routingpy.direction import Directions, Direction
+from routingpy.matrix import Matrix
 
 from operator import itemgetter
 
@@ -189,8 +191,8 @@ class Google(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: One or multiple route(s) from provided coordinates and restrictions.
+        :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
         params = {'profile': profile}
@@ -262,12 +264,48 @@ class Google(Router):
         if transit_routing_preference:
             params['transit_routing_preference'] = transit_routing_preference
 
-        return self._request(
-            '/directions/json', get_params=params, dry_run=dry_run)
+        return self._parse_direction_json(
+            self._request(
+                '/directions/json', get_params=params, dry_run=dry_run),
+            alternatives)
 
     @staticmethod
     def _parse_direction_json(response, alternatives):
-        pass
+        if response is None:
+            return None
+
+        if alternatives:
+            routes = []
+            for route in response['routes']:
+                geometry = []
+                duration, distance = 0, 0
+                for leg in route['legs']:
+                    duration += leg['duration']['value']
+                    distance += leg['distance']['value']
+                    for step in leg['steps']:
+                        geometry.extend([
+                            list(reversed(coords)) for coords in
+                            utils.decode_polyline5(step['polyline']['points'])
+                        ])
+                routes.append(
+                    Direction(
+                        geometry=geometry,
+                        duration=duration,
+                        distance=distance))
+            return Directions(routes, response)
+        else:
+            geometry = []
+            duration, distance = 0, 0
+            for leg in response['routes'][0]['legs']:
+                duration = leg['duration']['value']
+                distance = leg['distance']['value']
+                for step in leg['steps']:
+                    geometry.extend([
+                        list(reversed(coords)) for coords in
+                        utils.decode_polyline5(step['polyline']['points'])
+                    ])
+            return Direction(
+                geometry=geometry, duration=duration, distance=distance)
 
     def isochrones(self):
         raise NotImplementedError
@@ -348,8 +386,8 @@ class Google(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: A matrix from the specified sources and destinations.
+        :rtype: :class:`routingpy.matrix.Matrix`
         """
         params = {'profile': profile}
 
@@ -406,5 +444,22 @@ class Google(Router):
         if transit_routing_preference:
             params['transit_routing_preference'] = transit_routing_preference
 
-        return self._request(
-            '/distancematrix/json', get_params=params, dry_run=dry_run)
+        return self._parse_matrix_json(
+            self._request(
+                '/distancematrix/json', get_params=params, dry_run=dry_run))
+
+    @staticmethod
+    def _parse_matrix_json(response):
+        if response is None:
+            return None
+
+        durations = [[
+            destination['duration']['value']
+            for destination in origin['elements']
+        ] for origin in response['rows']]
+        distances = [[
+            destination['distance']['value']
+            for destination in origin['elements']
+        ] for origin in response['rows']]
+
+        return Matrix(durations, distances, response)
