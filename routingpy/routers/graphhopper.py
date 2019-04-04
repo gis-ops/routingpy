@@ -362,8 +362,8 @@ class Graphhopper(Router):
                    coordinates,
                    profile,
                    range,
+                   buckets=1,
                    range_type=None,
-                   buckets=None,
                    reverse_flow=None,
                    debug=None,
                    dry_run=None):
@@ -460,7 +460,7 @@ class Graphhopper(Router):
                         profile,
                         sources=None,
                         destinations=None,
-                        out_array=None,
+                        out_array=['weights', 'times', 'distances'],
                         debug=None,
                         dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
@@ -562,4 +562,4 @@ class Graphhopper(Router):
             return None
         durations = response.get('times')
         distances = response.get('distances')
-        return Matrix(durations, distances, response)
+        return Matrix(durations=durations, distances=distances, raw=response)

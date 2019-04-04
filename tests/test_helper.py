@@ -17,13 +17,187 @@ PARAM_GEOJSON_POINT = {'type': 'Point', 'coordinates': PARAM_POINT}
 PARAM_GEOJSON_LINE = {'type': 'LineString', 'coordinates': PARAM_LINE}
 PARAM_GEOJSON_POLY = {'type': 'Polygon', 'coordinates': PARAM_POLY}
 
+ENDPOINTS_RESPONSES = {
+    'graphhopper': {
+        'directions': {
+            "paths": [{
+                "distance": 15239.553,
+                "time": 2349463,
+                "points": "korlHun~s@inUAiBP"
+            },
+                      {
+                          "distance": 15239.553,
+                          "time": 2349463,
+                          "points": "korlHun~s@inUAiBP"
+                      },
+                      {
+                          "distance": 15239.553,
+                          "time": 2349463,
+                          "points": "korlHun~s@inUAiBP"
+                      }]
+        },
+        'isochrones': {
+            "polygons": [
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type":
+                        "Polygon",
+                        "coordinates":
+                        [[[8.345841896068496, 48.23514181901086, 1.0],
+                          [8.340545650732793, 48.23651784814562, 1.5],
+                          [8.340935036709944, 48.23593307068795, 1.5]]]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type":
+                        "Polygon",
+                        "coordinates":
+                        [[[8.345999848380682, 48.23155678581201, 2.0],
+                          [8.348431345412836, 48.234402721399135, 2.0],
+                          [8.348099422039823, 48.23458791489723, 2.0]]]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type":
+                        "Polygon",
+                        "coordinates":
+                        [[[8.349068835729408, 48.2354851976518, 2.5],
+                          [8.34836307396443, 48.23601708826144],
+                          [8.342155162442218, 48.23711268388732, 2.5]]]
+                    }
+                }
+            ]
+        },
+        'matrix': {
+            "distances": [[0, 1181, 13965], [1075, 0, 14059],
+                          [14120, 13766, 0]],
+            "times": [[0, 255, 2122], [242, 0, 2094], [2144, 2019, 0]],
+            "weights": [[0.0, 272.99, 2331.526], [258.115, 0.0, 2305.121],
+                        [2356.307, 2225.083, 0.0]]
+        }
+    },
+    'heremaps': {
+        'directions': {
+            'response': {
+                'route': [{
+                    'shape': [
+                        '8.6841352,49.4161567,560.0',
+                        '8.683039,49.4174594,560.0'
+                    ],
+                    'summary': {
+                        'distance': 27084,
+                        'trafficTime': 2830,
+                        'baseTime': 2830,
+                        'travelTime': 2830
+                    }
+                },
+                          {
+                              'shape': [
+                                  '8.6841352,49.4161567,560.0',
+                                  '8.683039,49.4174594,560.0'
+                              ],
+                              'summary': {
+                                  'distance': 27084,
+                                  'trafficTime': 2830,
+                                  'baseTime': 2830,
+                                  'travelTime': 2830
+                              }
+                          },
+                          {
+                              'shape': [
+                                  '8.6841352,49.4161567,560.0',
+                                  '8.683039,49.4174594,560.0'
+                              ],
+                              'summary': {
+                                  'distance': 27084,
+                                  'trafficTime': 2830,
+                                  'baseTime': 2830,
+                                  'travelTime': 2830
+                              }
+                          }]
+            }
+        },
+        'isochrones': {
+            'response': {
+                'center': {
+                    'latitude': 8.3423399,
+                    'longitude': 48.23424
+                },
+                'isoline': [{
+                    'range':
+                    1000,
+                    'component': [{
+                        'id':
+                        0,
+                        'shape':
+                        ['8.3724403,48.2271481', '8.3729553,48.2272339']
+                    }]
+                },
+                            {
+                                'range':
+                                2000,
+                                'component': [{
+                                    'id':
+                                    0,
+                                    'shape': [
+                                        '8.3724403,48.2271481',
+                                        '8.3729553,48.2272339'
+                                    ]
+                                }]
+                            },
+                            {
+                                'range':
+                                3000,
+                                'component': [{
+                                    'id':
+                                    0,
+                                    'shape': [
+                                        '8.3724403,48.2271481',
+                                        '8.3729553,48.2272339'
+                                    ]
+                                }]
+                            }]
+            }
+        },
+        'matrix': {
+            "response": {
+                "matrixEntry": [
+                    {
+                        "startIndex": 0,
+                        "destinationIndex": 0,
+                        "summary": {
+                            "distance": 1398,
+                            "travelTime": 82,
+                            "costFactor": 82
+                        }
+                    },
+                    {
+                        "startIndex": 1,
+                        "destinationIndex": 0,
+                        "summary": {
+                            "distance": 1188,
+                            "travelTime": 69,
+                            "costFactor": 69
+                        }
+                    },
+                ]
+            }
+        }
+    }
+}
+
 ENDPOINTS_QUERIES = {
     'google': {
         'directions': {
             'coordinates': PARAM_LINE_MULTI,
             'profile': 'driving',
             'alternatives': True,
-            'avoid': ["tolls", "ferries"],
+            'avoid': ['tolls', 'ferries'],
             'optimize': False,
             'language': 'de',
             'region': 'de',
@@ -36,7 +210,7 @@ ENDPOINTS_QUERIES = {
         'matrix': {
             'coordinates': PARAM_LINE_MULTI,
             'profile': 'driving',
-            'avoid': ["tolls", "ferries"],
+            'avoid': ['tolls', 'ferries'],
             'language': 'de',
             'region': 'de',
             'units': 'metrics',
@@ -226,7 +400,7 @@ ENDPOINTS_QUERIES = {
             'heading': [PARAM_INT_SMALL, PARAM_INT_SMALL, PARAM_INT_SMALL],
             'heading_penalty': 100,
             'pass_through': True,
-            'block_area': ",".join(list(map(str, reversed(PARAM_POINT)))),
+            'block_area': ','.join(list(map(str, reversed(PARAM_POINT)))),
             'avoid': ['tunnel', 'ford'],
             'algorithm': 'alternative_route',
             'round_trip_distance': 10000,
@@ -238,7 +412,7 @@ ENDPOINTS_QUERIES = {
         'matrix': {
             'coordinates': PARAM_LINE_MULTI,
             'profile': 'car',
-            'out_array': ['weights', 'times', 'distance'],
+            'out_array': ['weights', 'times', 'distances'],
             'debug': True
         },
         'isochrones': {
@@ -389,128 +563,128 @@ ENDPOINTS_EXPECTED = {
     },
     'valhalla': {
         'directions': {
-            "locations": [
+            'locations': [
                 {
-                    "lat": 49.420577,
-                    "lon": 8.688641
+                    'lat': 49.420577,
+                    'lon': 8.688641
                 },
                 {
-                    "lat": 49.415776,
-                    "lon": 8.680916
+                    'lat': 49.415776,
+                    'lon': 8.680916
                 },
                 {
-                    "lat": 49.445776,
-                    "lon": 8.780916
+                    'lat': 49.445776,
+                    'lon': 8.780916
                 },
             ],
-            "costing":
-            "auto",
-            "costing_options": {
-                "auto": {
-                    "maneuver_penalty": 50,
-                    "toll_booth_cost": 50,
-                    "country_crossing_penalty": 50
+            'costing':
+            'auto',
+            'costing_options': {
+                'auto': {
+                    'maneuver_penalty': 50,
+                    'toll_booth_cost': 50,
+                    'country_crossing_penalty': 50
                 }
             },
-            "directions_options": {
-                "units": "mi",
-                "language": "pirate",
-                "directions_type": "none"
+            'directions_options': {
+                'units': 'mi',
+                'language': 'pirate',
+                'directions_type': 'none'
             },
-            "avoid_locations": [{
-                "lon": 8.34234,
-                "lat": 48.23424
+            'avoid_locations': [{
+                'lon': 8.34234,
+                'lat': 48.23424
             }],
-            "date_time": {
-                "type": 1,
-                "value": "2019-03-03T08:06"
+            'date_time': {
+                'type': 1,
+                'value': '2019-03-03T08:06'
             },
-            "id":
-            "wacko"
+            'id':
+            'wacko'
         },
         'isochrones': {
-            "locations": [{
-                "lat": PARAM_POINT[1],
-                "lon": PARAM_POINT[0]
+            'locations': [{
+                'lat': PARAM_POINT[1],
+                'lon': PARAM_POINT[0]
             }],
-            "costing":
-            "auto",
-            "costing_options": {
-                "auto": {
-                    "maneuver_penalty": 50,
-                    "toll_booth_cost": 50,
-                    "country_crossing_penalty": 50
+            'costing':
+            'auto',
+            'costing_options': {
+                'auto': {
+                    'maneuver_penalty': 50,
+                    'toll_booth_cost': 50,
+                    'country_crossing_penalty': 50
                 }
             },
-            "contours": [{
-                "time": 10,
-                "color": 'ff0000'
+            'contours': [{
+                'time': 10,
+                'color': 'ff0000'
             }, {
-                "time": 20,
-                "color": "00FF00"
+                'time': 20,
+                'color': '00FF00'
             }],
-            "avoid_locations": [{
-                "lon": 8.34234,
-                "lat": 48.23424
+            'avoid_locations': [{
+                'lon': 8.34234,
+                'lat': 48.23424
             }],
-            "date_time": {
-                "type": 1,
-                "value": "2019-03-03T08:06"
+            'date_time': {
+                'type': 1,
+                'value': '2019-03-03T08:06'
             },
-            "id":
-            "wacko",
-            "denoise":
+            'id':
+            'wacko',
+            'denoise':
             0.1,
-            "polygons":
+            'polygons':
             True,
-            "generalize":
+            'generalize':
             0.5,
         },
         'matrix': {
-            "sources": [
+            'sources': [
                 {
-                    "lat": 49.420577,
-                    "lon": 8.688641
+                    'lat': 49.420577,
+                    'lon': 8.688641
                 },
                 {
-                    "lat": 49.415776,
-                    "lon": 8.680916
+                    'lat': 49.415776,
+                    'lon': 8.680916
                 },
                 {
-                    "lat": 49.445776,
-                    "lon": 8.780916
-                },
-            ],
-            "targets": [
-                {
-                    "lat": 49.420577,
-                    "lon": 8.688641
-                },
-                {
-                    "lat": 49.415776,
-                    "lon": 8.680916
-                },
-                {
-                    "lat": 49.445776,
-                    "lon": 8.780916
+                    'lat': 49.445776,
+                    'lon': 8.780916
                 },
             ],
-            "costing":
-            "auto",
-            "costing_options": {
-                "auto": {
-                    "maneuver_penalty": 50,
-                    "toll_booth_cost": 50,
-                    "country_crossing_penalty": 50
+            'targets': [
+                {
+                    'lat': 49.420577,
+                    'lon': 8.688641
+                },
+                {
+                    'lat': 49.415776,
+                    'lon': 8.680916
+                },
+                {
+                    'lat': 49.445776,
+                    'lon': 8.780916
+                },
+            ],
+            'costing':
+            'auto',
+            'costing_options': {
+                'auto': {
+                    'maneuver_penalty': 50,
+                    'toll_booth_cost': 50,
+                    'country_crossing_penalty': 50
                 }
             },
-            "avoid_locations": [{
-                "lon": 8.34234,
-                "lat": 48.23424
+            'avoid_locations': [{
+                'lon': 8.34234,
+                'lat': 48.23424
             }],
-            "id":
-            "wacko",
-            "units":
+            'id':
+            'wacko',
+            'units':
             'mi'
         },
     },

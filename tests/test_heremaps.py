@@ -19,6 +19,10 @@
 """Tests for the HereMaps module."""
 
 from routingpy import HereMaps
+from routingpy.direction import Direction, Directions
+from routingpy.isochrone import Isochrones, Isochrone
+from routingpy.matrix import Matrix
+
 from tests.test_helper import *
 import tests as _test
 
@@ -43,7 +47,7 @@ class HereMapsTest(_test.TestCase):
             responses.GET,
             'https://route.api.here.com/routing/7.2/calculateroute.json',
             status=200,
-            json={},
+            json=ENDPOINTS_RESPONSES[self.name]['directions'],
             content_type='application/json')
 
         routes = self.client.directions(**query)
@@ -64,17 +68,87 @@ class HereMapsTest(_test.TestCase):
             responses.calls[0].request.url)
 
     @responses.activate
-    def test_full_isochrones(self):
+    def test_directions_object_response(self):
+        query = ENDPOINTS_QUERIES[self.name]['directions']
+        query['alternatives'] = 1
+
+        responses.add(
+            responses.GET,
+            'https://route.api.here.com/routing/7.2/calculateroute.json',
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['directions'],
+            content_type='application/json')
+
+        routes = self.client.directions(**query)
+        self.assertEqual(1, len(responses.calls))
+        self.assertURLEqual(
+            'https://route.api.here.com/routing/7.2/calculateroute.json?alternatives=1&app_code=sample_app_code&'
+            'app_id=sample_app_id&avoidAreas=8.688641%2C49.420577%3B8.680916%2C49.415776%218.780916%2C49.445776%3B8.780916%2C49.445776&'
+            'avoidLinks=-53623477&avoidSeasonalClosures=true&avoidTurns=difficult&combineChange=false&consumptionModel=default&'
+            'departure=2019-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
+            'excludeZones=510%2C511&generalizationTolerances=0.1%2C0.01&height=20&instructionFormat=text&jsonAttributes=9&'
+            'legAttributes=maneuvers%2Cwaypoint%2Clength%2CtravelTime&length=10&licensePlate=lastcharacter%3A5&limitedWeight=10&'
+            'linkAttributes=shape%2CspeedLimit&maneuverAttributes=position%2Clength%2CtravelTime&maxNumberOfChanges=5&'
+            'metricSystem=metric&mode=truck%3Bfastest&requestId=101&resolution=300%3A300&returnElevation=true&'
+            'routeAttributes=waypoints%2Csummary%2CsummaryByCountry%2Cshape%2CboundingBox%2Clegs%2Cnotes%2Clines%2CrouteId%2Cgroups%2Ctickets%2Cincidents%2Czones&'
+            'shippedHazardousGoods=gas%2Cflammable&speedProfile=fast&trailersCount=3&truckRestrictionPenalty=soft&truckType=truck&vehicleType=diesel%2C5.5&'
+            'viewBounds=8.688641%2C49.420577%3B8.680916%2C49.415776&waypoint0=geo%218.688641%2C49.420577&waypoint1=geo%218.680916%2C49.415776&'
+            'waypoint2=geo%218.780916%2C49.445776&weightPerAxle=100&width=10',
+            responses.calls[0].request.url)
+
+        self.assertIsInstance(routes, Direction)
+        self.assertIsInstance(routes.geometry, list)
+        self.assertIsInstance(routes.duration, int)
+        self.assertIsInstance(routes.distance, int)
+
+    @responses.activate
+    def test_directions_object_response_alternatives(self):
+        query = ENDPOINTS_QUERIES[self.name]['directions']
+        query['alternatives'] = 3
+        responses.add(
+            responses.GET,
+            'https://route.api.here.com/routing/7.2/calculateroute.json',
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['directions'],
+            content_type='application/json')
+
+        routes = self.client.directions(**query)
+        self.assertEqual(1, len(responses.calls))
+        self.assertURLEqual(
+            'https://route.api.here.com/routing/7.2/calculateroute.json?alternatives=3&app_code=sample_app_code&'
+            'app_id=sample_app_id&avoidAreas=8.688641%2C49.420577%3B8.680916%2C49.415776%218.780916%2C49.445776%3B8.780916%2C49.445776&'
+            'avoidLinks=-53623477&avoidSeasonalClosures=true&avoidTurns=difficult&combineChange=false&consumptionModel=default&'
+            'departure=2019-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
+            'excludeZones=510%2C511&generalizationTolerances=0.1%2C0.01&height=20&instructionFormat=text&jsonAttributes=9&'
+            'legAttributes=maneuvers%2Cwaypoint%2Clength%2CtravelTime&length=10&licensePlate=lastcharacter%3A5&limitedWeight=10&'
+            'linkAttributes=shape%2CspeedLimit&maneuverAttributes=position%2Clength%2CtravelTime&maxNumberOfChanges=5&'
+            'metricSystem=metric&mode=truck%3Bfastest&requestId=101&resolution=300%3A300&returnElevation=true&'
+            'routeAttributes=waypoints%2Csummary%2CsummaryByCountry%2Cshape%2CboundingBox%2Clegs%2Cnotes%2Clines%2CrouteId%2Cgroups%2Ctickets%2Cincidents%2Czones&'
+            'shippedHazardousGoods=gas%2Cflammable&speedProfile=fast&trailersCount=3&truckRestrictionPenalty=soft&truckType=truck&vehicleType=diesel%2C5.5&'
+            'viewBounds=8.688641%2C49.420577%3B8.680916%2C49.415776&waypoint0=geo%218.688641%2C49.420577&waypoint1=geo%218.680916%2C49.415776&'
+            'waypoint2=geo%218.780916%2C49.445776&weightPerAxle=100&width=10',
+            responses.calls[0].request.url)
+
+        self.assertIsInstance(routes, Directions)
+        self.assertIsInstance(routes.__getitem__(0), Direction)
+        self.assertIsInstance(routes.__getitem__(1), Direction)
+        self.assertIsInstance(routes.__getitem__(2), Direction)
+        self.assertIsInstance(routes.__getitem__(0).geometry, list)
+        self.assertIsInstance(routes.__getitem__(1).geometry, list)
+        self.assertIsInstance(routes.__getitem__(2).geometry, list)
+
+    @responses.activate
+    def test_full_isochrones_response_object(self):
         query = ENDPOINTS_QUERIES[self.name]['isochrones']
 
         responses.add(
             responses.GET,
             'https://isoline.route.api.here.com/routing/7.2/calculateisoline.json',
             status=200,
-            json={},
+            json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
             content_type='application/json')
 
-        matrix = self.client.isochrones(**query)
+        isochrones = self.client.isochrones(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
@@ -82,6 +156,14 @@ class HereMapsTest(_test.TestCase):
             'app_id=sample_app_id&mode=car%3Bfastest&quality=1&range=1000%2C2000%2C3000&rangeType=distance&'
             'singleComponent=false&start=geo%218.34234%2C48.23424',
             responses.calls[0].request.url)
+
+        self.assertIsInstance(isochrones, Isochrones)
+        self.assertIsInstance(isochrones.__getitem__(0), Isochrone)
+        self.assertIsInstance(isochrones.__getitem__(1), Isochrone)
+        self.assertIsInstance(isochrones.__getitem__(2), Isochrone)
+        self.assertIsInstance(isochrones.__getitem__(0).geometry, list)
+        self.assertIsInstance(isochrones.__getitem__(1).geometry, list)
+        self.assertIsInstance(isochrones.__getitem__(2).geometry, list)
 
     @responses.activate
     def test_full_matrix(self):
@@ -91,7 +173,7 @@ class HereMapsTest(_test.TestCase):
             responses.GET,
             'https://matrix.route.api.here.com/routing/7.2/calculatematrix.json',
             status=200,
-            json={},
+            json=ENDPOINTS_RESPONSES[self.name]['matrix'],
             content_type='application/json')
 
         matrix = self.client.distance_matrix(**query)
@@ -103,6 +185,10 @@ class HereMapsTest(_test.TestCase):
             'mode=car%3Bfastest&shippedHazardousGoods=gas%2Cflammable&start0=geo%218.688641%2C49.420577&'
             'start1=geo%218.680916%2C49.415776&summaryAttributes=traveltime%2Ccostfactor&trailersCount=3&truckType=truck&'
             'weightPerAxle=100&width=10', responses.calls[0].request.url)
+
+        self.assertIsInstance(matrix, Matrix)
+        self.assertIsInstance(matrix.durations, list)
+        self.assertIsInstance(matrix.distances, list)
 
     def test_index_sources_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
