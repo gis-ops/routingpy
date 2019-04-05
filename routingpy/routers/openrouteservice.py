@@ -278,8 +278,10 @@ class ORS(Router):
 
         if format == 'geojson':
             geometry = response['features'][0]['geometry']['coordinates']
-            duration = int(response['features'][0]['properties']['duration'])
-            distance = int(response['features'][0]['properties']['distance'])
+            duration = int(
+                response['features'][0]['properties']['summary']['duration'])
+            distance = int(
+                response['features'][0]['properties']['summary']['distance'])
         elif format == 'json':
             geometry = [
                 list(reversed(coord)) for coord in utils.decode_polyline6(
@@ -391,17 +393,21 @@ class ORS(Router):
                 "/v2/isochrones/" + profile + '/geojson',
                 get_params={},
                 post_params=params,
-                dry_run=dry_run), range)
+                dry_run=dry_run))
 
     @staticmethod
-    def _parse_isochrone_json(response, range):
+    def _parse_isochrone_json(response):
         if response is None:
             return None
-        return Isochrones([
-            Isochrone(isochrone['geometry']['coordinates'], range[idx],
-                      isochrone['properties']['center'])
-            for idx, isochrone in enumerate(response['features'])
-        ], response)
+
+        return Isochrones(
+            isochrones=[
+                Isochrone(isochrone['geometry']['coordinates'],
+                          isochrone['properties']['value'],
+                          isochrone['properties']['center'])
+                for idx, isochrone in enumerate(response['features'])
+            ],
+            raw=response)
 
     def distance_matrix(self,
                         coordinates,

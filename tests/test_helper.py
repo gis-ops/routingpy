@@ -18,6 +18,165 @@ PARAM_GEOJSON_LINE = {'type': 'LineString', 'coordinates': PARAM_LINE}
 PARAM_GEOJSON_POLY = {'type': 'Polygon', 'coordinates': PARAM_POLY}
 
 ENDPOINTS_RESPONSES = {
+    'google': {
+        "directions": {
+            "routes": [{
+                "legs": [{
+                    "distance": {
+                        "value": 541359
+                    },
+                    "duration": {
+                        "value": 19448
+                    },
+                    "steps": [
+                        {
+                            "distance": {
+                                "value": 280
+                            },
+                            "duration": {
+                                "value": 67
+                            },
+                            "polyline": {
+                                "points":
+                                "ayotGvy_sMV]t@_APk@DOFW@O@OAwADiE?k@Hq@@UHuG@s@@{@DiIDsFDkG@aIAa@?WAUASGe@Im@EYEOCOO_@Kk@Ie@Oe@GWKUMWwAoCmDmGwB}D_AgBoAaCqCaGuA_D}@_BIS]m@KQMUy@}AwAgCk@cAiB_D{AsCcBwCmAsBm@aAoAuBeB{Bm@sAe@mAMa@Qi@Uy@e@eB[eAIUOm@u@iCi@eCaA}DcAyCy@qB{EiIMU"
+                            },
+                        },
+                        {
+                            "distance": {
+                                "value": 2493
+                            },
+                            "duration": {
+                                "value": 511
+                            },
+                            "polyline": {
+                                "points":
+                                "ayotGvy_sMV]t@_APk@DOFW@O@OAwADiE?k@Hq@@UHuG@s@@{@DiIDsFDkG@aIAa@?WAUASGe@Im@EYEOCOO_@Kk@Ie@Oe@GWKUMWwAoCmDmGwB}D_AgBoAaCqCaGuA_D}@_BIS]m@KQMUy@}AwAgCk@cAiB_D{AsCcBwCmAsBm@aAoAuBeB{Bm@sAe@mAMa@Qi@Uy@e@eB[eAIUOm@u@iCi@eCaA}DcAyCy@qB{EiIMU"
+                            },
+                        }
+                    ]
+                }]
+            }]
+        },
+        'matrix': {
+            "rows": [{
+                "elements": [{
+                    "distance": {
+                        "text": "225 mi",
+                        "value": 361957
+                    },
+                    "duration": {
+                        "text": "3 hours 50 mins",
+                        "value": 13813
+                    }
+                }]
+            }]
+        }
+    },
+    'ors': {
+        'directions': {
+            "json": {
+                "routes": [{
+                    "summary": {
+                        "distance": 850.5,
+                        "duration": 191.4
+                    },
+                    "geometry":
+                    "ihrlHir~s@cFFcAKeB_@_B]g@IUAQB]PaCr@y@cJeBXe@qJ_@kH??"
+                }]
+            },
+            "geojson": {
+                "type":
+                "FeatureCollection",
+                "features": [{
+                    "type": "Feature",
+                    "geometry": {
+                        "coordinates": [[8.681495, 49.41461],
+                                        [8.681445, 49.415755]],
+                        "type":
+                        "LineString"
+                    },
+                    "properties": {
+                        "summary": {
+                            "distance": 850.5,
+                            "duration": 191.4
+                        }
+                    },
+                }]
+            }
+        },
+        "isochrones": {
+            "type":
+            "FeatureCollection",
+            "bbox": [8.688474, 8.681829, 49.42577, 49.420176],
+            "features": [{
+                "type": "Feature",
+                "properties": {
+                    "group_index": 0,
+                    "value": 100,
+                    "center": [8.684162488752957, 49.4230724075398]
+                },
+                "geometry": {
+                    "coordinates": [[[8.684544, 49.423295],
+                                     [8.684665, 49.423101],
+                                     [8.684706, 49.423036]]],
+                    "type":
+                    "Polygon"
+                }
+            },
+                         {
+                             "type": "Feature",
+                             "properties": {
+                                 "group_index": 0,
+                                 "value": 200,
+                                 "center":
+                                 [8.684162488752957, 49.4230724075398]
+                             },
+                             "geometry": {
+                                 "coordinates": [[[8.683974, 49.423982],
+                                                  [8.684035, 49.423627],
+                                                  [8.685104, 49.422131]]],
+                                 "type":
+                                 "Polygon"
+                             }
+                         },
+                         {
+                             "type": "Feature",
+                             "properties": {
+                                 "group_index": 0,
+                                 "value": 300,
+                                 "center":
+                                 [8.684162488752957, 49.4230724075398]
+                             },
+                             "geometry": {
+                                 "coordinates": [[[8.68261, 49.423744],
+                                                  [8.682671, 49.423389],
+                                                  [8.683764, 49.421902]]],
+                                 "type":
+                                 "Polygon"
+                             }
+                         },
+                         {
+                             "type": "Feature",
+                             "properties": {
+                                 "group_index": 0,
+                                 "value": 400,
+                                 "center":
+                                 [8.684162488752957, 49.4230724075398]
+                             },
+                             "geometry": {
+                                 "coordinates": [[[8.681829, 49.424426],
+                                                  [8.682416, 49.421699],
+                                                  [8.686179, 49.420176]]],
+                                 "type":
+                                 "Polygon"
+                             }
+                         }]
+        },
+        "matrix": {
+            "durations": [[7900.34], [0], [136841.92], [483295.5]],
+            "distances": [[125414.58], [0], [2383943.25], [10037064]]
+        }
+    },
     'graphhopper': {
         'directions': {
             "paths": [{

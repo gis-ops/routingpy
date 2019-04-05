@@ -209,7 +209,6 @@ class Google(Router):
             params['destination'] = convert._delimit_list(
                 list(reversed(destination)))
         elif isinstance(origin, self.WayPoint):
-            print('bla')
             raise TypeError(
                 "The first and last coordinates must be list/tuple of [lon, lat]"
             )

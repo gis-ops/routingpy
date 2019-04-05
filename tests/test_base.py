@@ -44,7 +44,7 @@ class RouterMock(base.Router):
 
 class BaseTest(_test.TestCase):
     def setUp(self):
-        self.router = RouterMock("https://httpbin.org")
+        self.router = RouterMock("https://httpbin.org/")
         self.params = {'c': 'd', 'a': 'b', '1': '2'}
 
     def test_options(self):
@@ -132,7 +132,7 @@ class BaseTest(_test.TestCase):
             status=200,
             content_type='application/json')
 
-        req = self.router.directions(url='/routes', get_params={'a': 'b'})
+        req = self.router.directions(url='routes', get_params={'a': 'b'})
 
         assert isinstance(self.router.req, requests.PreparedRequest)
         self.assertEqual('https://httpbin.org/routes?a=b', self.router.req.url)
