@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 Google Inc. All rights reserved.
-#
-# Modifications Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2019 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -16,7 +14,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-
 """Tests for utils module."""
 
 from routingpy import utils
@@ -24,7 +21,6 @@ import tests as _test
 
 
 class UtilsTest(_test.TestCase):
-
     def setUp(self):
         self.coords2d_5prec = '__`t@smslHfo@~\\'
         self.coords3d_5prec = '__`t@smslH_sVfo@~\\etjG'
@@ -39,7 +35,8 @@ class UtilsTest(_test.TestCase):
     def test_polyline5_3d_decoding(self):
 
         decoded = [(8.68864, 49.42058, 120.96), (8.68092, 49.41578, 1491.39)]
-        self.assertEqual(decoded, utils.decode_polyline5(self.coords3d_5prec, True))
+        self.assertEqual(decoded,
+                         utils.decode_polyline5(self.coords3d_5prec, True))
 
     def test_polyline6_2d_decoding(self):
 
@@ -48,5 +45,7 @@ class UtilsTest(_test.TestCase):
 
     def test_polyline6_3d_decoding(self):
 
-        decoded = [(8.688641, 49.420577, 120.96), (8.680916, 49.415776, 1491.39)]
-        self.assertEqual(decoded, utils.decode_polyline6(self.coords3d_6prec, True))
+        decoded = [(8.688641, 49.420577, 120.96), (8.680916, 49.415776,
+                                                   1491.39)]
+        self.assertEqual(decoded,
+                         utils.decode_polyline6(self.coords3d_6prec, True))

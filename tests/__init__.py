@@ -1,6 +1,5 @@
-# Copyright 2014 Google Inc. All rights reserved.
-#
-# Modifications Copyright (C) 2019 GIS OPS UG.
+# -*- coding: utf-8 -*-
+# Copyright (C) 2019 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -22,7 +21,6 @@ from urllib.parse import urlparse, parse_qsl
 
 
 class TestCase(unittest.TestCase):
-
     def assertURLEqual(self, first, second, msg=None):
         """Check that two arguments are equivalent URLs. Ignores the order of
         query arguments.
