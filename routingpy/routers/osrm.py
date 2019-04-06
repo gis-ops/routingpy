@@ -20,6 +20,8 @@ Core client functionality, common across all API requests.
 
 from .base import Router
 from routingpy import convert
+from routingpy.direction import Directions, Direction
+from routingpy.matrix import Matrix
 
 
 class OSRM(Router):
@@ -133,8 +135,8 @@ class OSRM(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: One or multiple route(s) from provided coordinates and restrictions.
+        :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
         coords = convert._delimit_list([
@@ -170,14 +172,28 @@ class OSRM(Router):
         if overview is not None:
             params["overview"] = convert._convert_bool(overview)
 
-        return self._request(
-            "/route/v1/" + profile + '/' + coords,
-            get_params=params,
-            dry_run=dry_run)
+        return self._parse_direction_json(
+            self._request(
+                "/route/v1/" + profile + '/' + coords,
+                get_params=params,
+                dry_run=dry_run), alternatives)
 
     @staticmethod
-    def _parse_direction_json():
-        pass
+    def _parse_direction_json(response, alternatives):
+        if response is None:
+            return None
+
+        if alternatives:
+            routes = []
+            for route in response['routes']:
+                routes.append(
+                    Direction(route['geometry']['coordinates'],
+                              route['duration'], route['distance'], route))
+            return Directions(routes, response)
+        else:
+            return Direction(response['routes'][0]['geometry']['coordinates'],
+                             response['routes'][0]['duration'],
+                             response['routes'][0]['distance'], response)
 
     def isochrones(self):
         raise NotImplementedError
@@ -231,8 +247,8 @@ class OSRM(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: A matrix from the specified sources and destinations.
+        :rtype: :class:`routingpy.matrix.Matrix`
         """
 
         coords = convert._delimit_list([
@@ -248,11 +264,16 @@ class OSRM(Router):
         if destinations:
             params['destinations'] = convert._delimit_list(destinations, ';')
 
-        return self._request(
-            "/table/v1/" + profile + '/' + coords,
-            get_params=params,
-            dry_run=dry_run)
+        return self._parse_matrix_json(
+            self._request(
+                "/table/v1/" + profile + '/' + coords,
+                get_params=params,
+                dry_run=dry_run))
 
     @staticmethod
-    def _parse_matrix_json():
-        pass
+    def _parse_matrix_json(response):
+        if response is None:
+            return None
+
+        return Matrix(
+            durations=response['durations'], distances=None, raw=response)
