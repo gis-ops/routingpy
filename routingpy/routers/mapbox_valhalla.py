@@ -15,6 +15,7 @@
 # the License.
 
 from .valhalla import Valhalla
+from .base import DEFAULT
 
 
 class MapboxValhalla(Valhalla):
@@ -25,7 +26,7 @@ class MapboxValhalla(Valhalla):
     def __init__(self,
                  api_key,
                  user_agent=None,
-                 timeout=None,
+                 timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs=None,
                  retry_over_query_limit=False):

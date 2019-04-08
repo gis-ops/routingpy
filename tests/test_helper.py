@@ -33,6 +33,81 @@ PARAM_GEOJSON_LINE = {'type': 'LineString', 'coordinates': PARAM_LINE}
 PARAM_GEOJSON_POLY = {'type': 'Polygon', 'coordinates': PARAM_POLY}
 
 ENDPOINTS_RESPONSES = {
+    'valhalla': {
+        'directions': {
+            "trip": {
+                'legs':
+                [{
+                    "shape":
+                    '}wpulAvkxblCtJpGu}@hrCkAvDsAdEm@xBkAvDeK`\\ssAthE{iAjpDyiAlpD',
+                    "summary": {
+                        'length': 100,
+                        "time": 100
+                    }
+                },
+                 {
+                     "shape":
+                     '}wpulAvkxblCtJpGu}@hrCkAvDsAdEm@xBkAvDeK`\\ssAthE{iAjpD',
+                     "summary": {
+                         'length': 50,
+                         "time": 50
+                     }
+                 }]
+            }
+        },
+        "isochrones": {
+            "type":
+            "FeatureCollection",
+            "bbox": [8.688474, 8.681829, 49.42577, 49.420176],
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "group_index": 0,
+                        "value": 100,
+                        "center": [8.684162488752957, 49.4230724075398]
+                    },
+                    "geometry": {
+                        "coordinates": [[[8.684544, 49.423295],
+                                         [8.684665, 49.423101],
+                                         [8.684706, 49.423036]]],
+                        "type":
+                        "Polygon"
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "group_index": 0,
+                        "value": 100,
+                        "center": [8.684162488752957, 49.4230724075398]
+                    },
+                    "geometry": {
+                        "coordinates": [[[8.684544, 49.423295],
+                                         [8.684665, 49.423101],
+                                         [8.684706, 49.423036]]],
+                        "type":
+                        "Polygon"
+                    }
+                },
+            ]
+        },
+        "matrix": {
+            'sources_to_targets': [[{
+                "distance": 0,
+                "time": 0
+            }, {
+                "distance": 100,
+                "time": 100
+            }], [{
+                "distance": 100,
+                "time": 100
+            }, {
+                "distance": 0,
+                "time": 0
+            }]]
+        }
+    },
     'osrm': {
         'directions': {
             'routes': [{
@@ -58,6 +133,43 @@ ENDPOINTS_RESPONSES = {
                 "duration": 100,
                 "distance": 100
             }]
+        },
+        "isochrones": {
+            "type":
+            "FeatureCollection",
+            "bbox": [8.688474, 8.681829, 49.42577, 49.420176],
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "group_index": 0,
+                        "value": 100,
+                        "center": [8.684162488752957, 49.4230724075398]
+                    },
+                    "geometry": {
+                        "coordinates": [[[8.684544, 49.423295],
+                                         [8.684665, 49.423101],
+                                         [8.684706, 49.423036]]],
+                        "type":
+                        "Polygon"
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "group_index": 0,
+                        "value": 100,
+                        "center": [8.684162488752957, 49.4230724075398]
+                    },
+                    "geometry": {
+                        "coordinates": [[[8.684544, 49.423295],
+                                         [8.684665, 49.423101],
+                                         [8.684706, 49.423036]]],
+                        "type":
+                        "Polygon"
+                    }
+                },
+            ]
         },
         "matrix": {
             "durations": [[1, 2, 3], [4, 5, 6]]
@@ -450,7 +562,7 @@ ENDPOINTS_QUERIES = {
             'profile': 'driving',
             'radiuses': [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
             'bearings': [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
-            'alternatives': True,
+            'alternatives': 3,
             'steps': True,
             'annotations': ['duration', 'distance', 'speed'],
             'geometries': 'geojson',
@@ -465,6 +577,15 @@ ENDPOINTS_QUERIES = {
             'voice_units': 'metric',
             'waypoint_names': ['a', 'b', 'c'],
             'waypoint_targets': PARAM_LINE_MULTI
+        },
+        'isochrones': {
+            'coordinates': PARAM_POINT,
+            'profile': 'mapbox/driving',
+            'intervals': [600, 1200],
+            'contours_colors': ['ff0000', '00FF00'],
+            'polygons': True,
+            'generalize': 0.5,
+            'denoise': 0.1,
         },
         'matrix': {
             'coordinates': PARAM_LINE_MULTI,
@@ -622,8 +743,8 @@ ENDPOINTS_QUERIES = {
         'isochrones': {
             'coordinates': PARAM_POINT,
             'profile': 'car',
-            'range': [1000],
-            'range_type': None,
+            'intervals': [1000],
+            'interval_type': None,
             'buckets': 5,
             'reverse_flow': True,
             'debug': False
@@ -657,7 +778,7 @@ ENDPOINTS_QUERIES = {
             },
             'profile': 'auto',
             'id': 'wacko',
-            'range': [600, 1200],
+            'intervals': [600, 1200],
             'colors': ['ff0000', '00FF00'],
             'polygons': True,
             'avoid_locations': PARAM_POINT,
@@ -705,12 +826,11 @@ ENDPOINTS_QUERIES = {
         'isochrones': {
             'coordinates': PARAM_LINE,
             'profile': 'cycling-regular',
-            'range_type': 'distance',
-            'range': [PARAM_INT_BIG],
+            'interval_type': 'distance',
+            'intervals': [PARAM_INT_BIG],
             'units': 'm',
             'location_type': 'destination',
-            'attributes': ['area', 'reachfactor'],
-            'interval': [PARAM_INT_SMALL]
+            'attributes': ['area', 'reachfactor']
         },
         'matrix': {
             'coordinates': PARAM_LINE,

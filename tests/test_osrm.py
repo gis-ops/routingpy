@@ -60,6 +60,7 @@ class OSRMTest(_test.TestCase):
         self.assertIsInstance(routes.distance, int)
         self.assertIsInstance(routes.duration, int)
         self.assertIsInstance(routes.geometry, list)
+        self.assertIsInstance(routes.raw, dict)
 
     @responses.activate
     def test_full_directions_alternatives(self):
@@ -88,6 +89,7 @@ class OSRMTest(_test.TestCase):
         self.assertIsInstance(routes[0].duration, int)
         self.assertIsInstance(routes[0].distance, int)
         self.assertIsInstance(routes[0].geometry, list)
+        self.assertIsInstance(routes[0].raw, dict)
 
     @responses.activate
     def test_full_matrix(self):

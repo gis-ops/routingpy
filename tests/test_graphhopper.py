@@ -38,28 +38,6 @@ class GraphhopperTest(_test.TestCase):
 
     @responses.activate
     def test_full_directions(self):
-        query = ENDPOINTS_QUERIES[self.name]['directions']
-
-        responses.add(
-            responses.GET,
-            'https://graphhopper.com/api/1/route',
-            status=200,
-            json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json')
-
-        routes = self.client.directions(**query)
-        self.assertEqual(1, len(responses.calls))
-        self.assertURLEqual(
-            'https://graphhopper.com/api/1/route?algorithm=alternative_route&alternative_route.max_paths=2&'
-            'alternative_route.max_weight_factor=1.7&alternative_route_max_share_factor=0.7&avoid=tunnel%3Bford&'
-            'block_area=48.23424%2C8.34234&calc_points=false&ch.disable=true&debug=true&details=time&details=tolls&'
-            'elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&'
-            'optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&'
-            'point=49.445776%2C8.780916&point_hint=false&points_encoded=true&profile=car&type=json&weighting=short_fastest',
-            responses.calls[0].request.url)
-
-    @responses.activate
-    def test_directions_object_response(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['directions'])
         query['algorithm'] = None
 
@@ -86,7 +64,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertIsInstance(routes.distance, int)
 
     @responses.activate
-    def test_directions_object_response_alternatives(self):
+    def test_full_directions_alternatives(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['directions'])
 
         responses.add(
@@ -108,15 +86,15 @@ class GraphhopperTest(_test.TestCase):
             responses.calls[0].request.url)
 
         self.assertIsInstance(routes, Directions)
+        self.assertEqual(3, len(routes))
         self.assertIsInstance(routes[0], Direction)
-        self.assertIsInstance(routes[1], Direction)
-        self.assertIsInstance(routes[2], Direction)
         self.assertIsInstance(routes[0].geometry, list)
-        self.assertIsInstance(routes[1].geometry, list)
-        self.assertIsInstance(routes[2].geometry, list)
+        self.assertIsInstance(routes[0].duration, int)
+        self.assertIsInstance(routes[0].distance, int)
+        self.assertIsInstance(routes[0].raw, dict)
 
     @responses.activate
-    def test_full_isochrones_response_object(self):
+    def test_full_isochrones(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['isochrones'])
         query['buckets'] = 3
 
@@ -135,12 +113,12 @@ class GraphhopperTest(_test.TestCase):
             responses.calls[0].request.url)
 
         self.assertIsInstance(isochrones, Isochrones)
+        self.assertEqual(3, len(isochrones))
         self.assertIsInstance(isochrones[0], Isochrone)
-        self.assertIsInstance(isochrones[1], Isochrone)
-        self.assertIsInstance(isochrones[2], Isochrone)
-        self.assertIsInstance(isochrones[0].geometry, object)
-        self.assertIsInstance(isochrones[1].geometry, object)
-        self.assertIsInstance(isochrones[2].geometry, object)
+        self.assertIsInstance(isochrones[0].geometry, list)
+        self.assertIsInstance(isochrones[0].raw, dict)
+        self.assertIsInstance(isochrones[0].range, int)
+        self.assertEqual(isochrones[0].center, None)
 
     @responses.activate
     def test_full_matrix(self):
@@ -163,6 +141,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.durations, list)
         self.assertIsInstance(matrix.distances, list)
+        self.assertIsInstance(matrix.raw, dict)
 
     @responses.activate
     def test_few_sources_destinations_matrix(self):

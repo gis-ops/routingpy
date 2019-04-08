@@ -41,12 +41,16 @@ class Valhalla(Router):
         """
         Initializes a Valhalla client.
 
-        :param key: Mapbox API key. Required if base_url='https://api.mapbox.com/valhalla/v1'.
-        :type key: str
+        :param api_key: Mapbox API key. Required if base_url='https://api.mapbox.com/valhalla/v1'.
+        :type api_key: str
 
         :param base_url: The base URL for the request. Defaults to the ORS API
             server. Should not have a trailing slash.
         :type base_url: str
+
+        :param user_agent: User-Agent to send with the requests to routing API.
+            Overrides ``options.default_user_agent``.
+        :type user_agent: str
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
             seconds. Specify "None" for no timeout.
@@ -95,16 +99,16 @@ class Valhalla(Router):
             reverse direction at the through locations. If no type is provided, the type is assumed to be a break.
             The order has to correspond to ``coordinates`` and be of the same length.
             More info at: https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#locations
-            :type type: list/tuple of str
+            :type type: list of str
 
             :param heading: Preferred direction of travel for the start from the location. The heading is indicated
                 in degrees from north in a clockwise direction, where north is 0°, east is 90°,
                 south is 180°, and west is 270°.
-            :type heading: list/tuple of int
+            :type heading: list of int
 
             :param heading_tolerance: How close in degrees a given street's angle must be in order for it
                 to be considered as in the same direction of the heading parameter. The default value is 60 degrees.
-            :type heading_tolerance: list/tuple of int
+            :type heading_tolerance: list of int
 
             :param minimum_reachability: Minimum number of nodes (intersections) reachable for a given edge (road between
                 intersections) to consider that edge as belonging to a connected region. When correlating this
@@ -113,21 +117,21 @@ class Valhalla(Router):
                 to be a disconnected island and we'll search for more candidates until we find at least one that
                 isn't considered a disconnected island. If this value is larger than the configured service limit
                 it will be clamped to that limit. The default is a minimum of 50 reachable nodes.
-            :type minimum_reachability: list/tuple of int
+            :type minimum_reachability: list of int
 
             :param radius: The number of meters about this input location within which edges (roads between intersections)
                 will be considered as candidates for said location. When correlating this location to the route network,
                 try to only return results within this distance (meters) from this location. If there are no candidates
                 within this distance it will return the closest candidate within reason. If this value is larger than
                 the configured service limit it will be clamped to that limit. The default is 0 meters.
-            :type radius: list/tuple of int
+            :type radius: list of int
 
             :param rank_candidates: Whether or not to rank the edge candidates for this location. The ranking is used
                 as a penalty within the routing algorithm so that some edges will be penalized more heavily than others.
                 If true candidates will be ranked according to their distance from the input and various other attributes.
                 If false the candidates will all be treated as equal which should lead to routes that are just the most
                 optimal path with emphasis about which edges were selected.
-            :type rank_candidates: list/tuple of bool
+            :type rank_candidates: list of bool
             """
 
             self._position = position
@@ -175,11 +179,12 @@ class Valhalla(Router):
                    dry_run=None):
         """Get directions between an origin point and a destination point.
 
-        For more information, visit https://openrouteservice.org/documentation/.
+        For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md.
 
         :param coordinates: The coordinates tuple the route should be calculated
-            from in order of visit. One coordinate pair takes the form [Longitude, Latitude].
-        :type coordinates: list, tuple of coordinates lists/tuples
+            from in order of visit. Can be a list/tuple of [lon, lat] or :class:`Valhalla.WayPoint` instance or
+            a combination of both.
+        :type coordinates: list of list or list of :class:`Valhalla.WayPoint`
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["auto", "auto_shorter", "bicycle", "bus", "hov", "motor_scooter",
@@ -205,13 +210,13 @@ class Valhalla(Router):
 
         :param avoid_locations: A set of locations to exclude or avoid within a route.
             Specified as a list of coordinates, similar to coordinates object.
-        :type avoid_locations: list/tuple of coordinates lists/tuples
+        :type avoid_locations: list of list or list of :class:`Valhalla.WayPoint`
 
         :param date_time: This is the local date and time at the location. Field ``type``: 0: Current departure time,
             1: Specified departure time. Field ``value```: the date and time is specified
             in ISO 8601 format (YYYY-MM-DDThh:mm), local time.
             E.g. date_time = {type: 0, value: 2019-03-03T08:06:23}
-        :type date_time: datetime.datetime() or str
+        :type date_time: dict
 
         :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
         :type id: str
@@ -285,7 +290,7 @@ class Valhalla(Router):
     def isochrones(self,
                    coordinates,
                    profile,
-                   range,
+                   intervals,
                    colors=None,
                    polygons=None,
                    denoise=None,
@@ -298,19 +303,19 @@ class Valhalla(Router):
                    date_time=None,
                    id=None,
                    dry_run=None):
-        """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
+        """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
 
-        For more information, visit https://openrouteservice.org/documentation/.
+        For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/isochrone/api-reference.md.
 
         :param coordinates: One pair of lng/lat values. Takes the form [Longitude, Latitude].
-        :type coordinates: list/tuple
+        :type coordinates: list of float
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["auto", "bicycle", "multimodal", "pedestrian".
         :type profile: str
 
-        :param range: Time ranges to calculate isochrones for. Up to 4 ranges are possible. In seconds.
-        :type range: list of int
+        :param intervals: Time ranges to calculate isochrones for. Up to 4 ranges are possible. In seconds.
+        :type intervals: list of int
 
         :param colors: The color for the output of the contour. Specify it as a Hex value, but without the #, such as
             "color":"ff0000" for red. If no color is specified, the isochrone service will assign a default color to the output.
@@ -343,14 +348,14 @@ class Valhalla(Router):
 
         :param avoid_locations: A set of locations to exclude or avoid within a route.
             Specified as a list of coordinates, similar to coordinates object.
-        :type avoid_locations: list/tuple of coordinates lists/tuples
+        :type avoid_locations: list of list
 
         :param date_time: This is the local date and time at the location. Field ``type``: 0: Current departure time,
             1: Specified departure time. Field ``value```: the date and time is specified
             in format YYYY-MM-DDThh:mm, local time.
 
             E.g. date_time = {type: 0, value: 2019-03-03T08:06}
-        :type date_time: datetime.datetime() or str
+        :type date_time: dict
 
         :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
         :type id: str
@@ -365,7 +370,7 @@ class Valhalla(Router):
         locations = self._build_locations(coordinates)
 
         contours = []
-        for idx, r in enumerate(range):
+        for idx, r in enumerate(intervals):
             d = {'time': int(r / 60)}
             if colors:
                 try:
@@ -411,14 +416,15 @@ class Valhalla(Router):
                 "/isochrone",
                 get_params=get_params,
                 post_params=params,
-                dry_run=dry_run), range)
+                dry_run=dry_run), intervals)
 
     @staticmethod
-    def _parse_isochrone_json(response, range):
+    def _parse_isochrone_json(response, intervals):
         if response is None:
             return None
         return Isochrones([
-            Isochrone(isochrone['geometry']['coordinates'], range[idx])
+            Isochrone(isochrone['geometry']['coordinates'], intervals[idx],
+                      None, isochrone)
             for idx, isochrone in enumerate(response['features'])
         ], response)
 
@@ -435,21 +441,19 @@ class Valhalla(Router):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
         :param coordinates: Multiple pairs of lng/lat values.
-        :type coordinates: list/tuple of lists/tuples
+        :type coordinates: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
-            directions. One of ["driving-car", "driving-hgv", "foot-walking",
-            "foot-hiking", "cycling-regular", "cycling-road", "cycling-mountain",
-            "cycling-electric",]. Default "driving-car".
+            matrices. One of ["auto", "bicycle", "multimodal", "pedestrian".
         :type profile: str
 
         :param sources: A list of indices that refer to the list of locations
             (starting with 0). If not passed, all indices are considered.
-        :type sources: list or tuple
+        :type sources: list of int
 
         :param destinations: A list of indices that refer to the list of locations
             (starting with 0). If not passed, all indices are considered.
-        :type destinations: list or tuple
+        :type destinations: list of int
 
         :param options: Profiles can have several options that can be adjusted to develop the route path,
             as well as for estimating time along the path. Only specify the actual options dict, the profile
@@ -459,7 +463,7 @@ class Valhalla(Router):
 
         :param avoid_locations: A set of locations to exclude or avoid within a route.
             Specified as a list of coordinates, similar to coordinates object.
-        :type avoid_locations: list/tuple of coordinates lists/tuples
+        :type avoid_locations: list of list
 
         :param units: Distance units for output. One of ['mi', 'km']. Default km.
         :type units: str

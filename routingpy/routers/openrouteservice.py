@@ -302,9 +302,8 @@ class ORS(Router):
     def isochrones(self,
                    coordinates,
                    profile,
-                   range,
-                   range_type,
-                   interval=None,
+                   intervals,
+                   interval_type,
                    units=None,
                    location_type=None,
                    smoothing=None,
@@ -322,20 +321,13 @@ class ORS(Router):
             "cycling-electric",]. Default "driving-car".
         :type profile: str
 
-        :param range_type: Set 'time' for isochrones or 'distance' for equidistants.
+        :param interval_type: Set 'time' for isochrones or 'distance' for equidistants.
             Default 'time'.
-        :type sources: str
+        :type interval_type: str
 
-        :param range: Ranges to calculate distances/durations for. This can be
-            a list of multiple ranges, e.g. [600, 1200, 1400] or a single value list.
-            In the latter case, you can also specify the 'interval' variable to break
-            the single value into more isochrones. In meters or seconds.
-        :type range: list of int
-
-        :param interval: Segments isochrones or equidistants for one 'range' value.
-            Only has effect if used with a single 'range' value.
-            In meters or seconds.
-        :type interval: int
+        :param intervals: Ranges to calculate distances/durations for. This can be
+            a list of multiple ranges, e.g. [600, 1200, 1400]. In meters or seconds.
+        :type intervals: list of int
 
         :param units: Specifies the unit system to use when displaying results.
             One of ["m", "km", "m"]. Default "m".
@@ -368,12 +360,9 @@ class ORS(Router):
         params = {
             "locations": coordinates,
             "profile": profile,
-            "range": range,
-            "range_type": range_type
+            "range": intervals,
+            "range_type": interval_type
         }
-
-        if interval:
-            params['interval'] = interval
 
         if units:
             params["units"] = units
@@ -406,7 +395,7 @@ class ORS(Router):
             isochrones=[
                 Isochrone(isochrone['geometry']['coordinates'],
                           isochrone['properties']['value'],
-                          isochrone['properties']['center'])
+                          isochrone['properties']['center'], isochrone)
                 for idx, isochrone in enumerate(response['features'])
             ],
             raw=response)

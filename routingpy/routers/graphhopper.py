@@ -107,28 +107,23 @@ class Graphhopper(Router):
                    dry_run=None):
         """Get directions between an origin point and a destination point.
 
-        TODO: change URL
-        For more information, visit https://openrouteservice.org/documentation/.
+        For more information, visit https://docs.graphhopper.com/#tag/Routing-API/paths/~1route/get.
 
         :param coordinates: The coordinates tuple the route should be calculated
             from in order of visit.
         :type coordinates: list of list or tuple of tuple
 
-        TODO: list all profiles
-        :param profile: The vehicle for which the route should be calculated.
-            Default "car". Other vehicle profiles are listed here:
-            https://graphhopper.com/api/1/docs/supported-vehicle-profiles/
+        :param profile: The vehicle for which the route should be calculated. One of ["car" "bike" "foot" "hike" "mtb"
+            "racingbike" "scooter" "truck" "small_truck"]. Default "car".
         :type profile: str
 
-        TODO: are there other formats even?
         :param format: Specifies the resulting format of the route, for json the content type will be application/json.
             Default "json".
         :type format: str
 
-        TODO: why is there no language in parameters?
-        :param language: Language for routing instructions. The locale of the resulting turn instructions.
+        :param locale: Language for routing instructions. The locale of the resulting turn instructions.
             E.g. pt_PT for Portuguese or de for German. Default "en".
-        :type language: str
+        :type locale: str
 
         :param optimize: If false the order of the locations will be identical to the order of the point parameters.
             If you have more than 2 points you can set this optimize parameter to ``True`` and the points will be sorted
@@ -362,13 +357,15 @@ class Graphhopper(Router):
     def isochrones(self,
                    coordinates,
                    profile,
-                   range,
+                   intervals,
                    buckets=1,
-                   range_type=None,
+                   interval_type=None,
                    reverse_flow=None,
                    debug=None,
                    dry_run=None):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
+
+        For mroe details visit https://docs.graphhopper.com/#tag/Isochrone-API.
 
         :param coordinates: One coordinate pair denoting the location.
         :type coordinates: tuple of float or list of float
@@ -379,14 +376,14 @@ class Graphhopper(Router):
             Default "car".
         :type profile: str
 
-        :param range: Maximum range to calculate distances/durations for. You can also specify
+        :param intervals: Maximum range to calculate distances/durations for. You can also specify
             the ``buckets`` variable to break the single value into more isochrones. For compatibility reasons,
             this parameter is expressed as list. In meters or seconds.
-        :type range: list of int or tuple of int
+        :type intervals: list of int or tuple of int
 
-        :param range_type: Set ``time`` for isochrones or ``distance`` for equidistants.
+        :param interval_type: Set ``time`` for isochrones or ``distance`` for equidistants.
             Default 'time'.
-        :type range_type: str
+        :type interval_type: str
 
         :param buckets: For how many sub intervals an additional polygon should be calculated.
             Default 1.
@@ -413,10 +410,10 @@ class Graphhopper(Router):
         ]
 
         if convert._is_list(range):
-            if range_type in (None, 'time'):
-                params.append(('time_limit', range[0]))
-            elif range_type == 'distance':
-                params.append(('distance_limit', range[0]))
+            if interval_type in (None, 'time'):
+                params.append(('time_limit', intervals[0]))
+            elif interval_type == 'distance':
+                params.append(('distance_limit', intervals[0]))
         else:
             raise TypeError(
                 f"Parameter range={range} must be of type list or tuple")
@@ -440,10 +437,10 @@ class Graphhopper(Router):
 
         return self._parse_isochrone_json(
             self._request("/isochrone", get_params=params, dry_run=dry_run),
-            range[0], buckets)
+            intervals[0], buckets)
 
     @staticmethod
-    def _parse_isochrone_json(response, ranges, buckets):
+    def _parse_isochrone_json(response, intervals, buckets):
         if response is None:
             return None
 
@@ -451,8 +448,10 @@ class Graphhopper(Router):
         for bucket in range(buckets):
             isochrones.append(
                 Isochrone(
-                    geometry=response['polygons'][bucket],
-                    range=int(ranges * (1 - (bucket / buckets)))))
+                    geometry=response['polygons'][bucket]['geometry']
+                    ['coordinates'],
+                    range=int(intervals * (1 - (bucket / buckets))),
+                    raw=response['polygons'][bucket]))
 
         return Isochrones(isochrones, response)
 
@@ -465,6 +464,8 @@ class Graphhopper(Router):
                         debug=None,
                         dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
+
+        For more details visit https://docs.graphhopper.com/#tag/Matrix-API.
 
         :param coordinates: Specifiy multiple points for which the weight-, route-, time- or distance-matrix should be calculated.
             In this case the starts are identical to the destinations.

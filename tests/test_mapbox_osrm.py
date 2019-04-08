@@ -83,7 +83,7 @@ class MapboxOSRMTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "coordinates=8.688641%2C49.420577%3B8.680916%2C49.415776%3B8.780916%2C49.445776&"
-            "radiuses=500%3B500%3B500&bearings=50%2C50%3B50%2C50%3B50%2C50&alternatives=true&steps=true&"
+            "radiuses=500%3B500%3B500&bearings=50%2C50%3B50%2C50%3B50%2C50&alternatives=3&steps=true&"
             "continue_straight=true&annotations=duration%2Cdistance%2Cspeed&geometries=geojson&"
             "overview=simplified&exclude=motorway&approaches=%3Bcurb%3Bcurb%3Bcurb&banner_instuctions=true&"
             "language=de&roundabout_exits=true&voide_instructions=true&voice_units=metric&"
@@ -91,6 +91,7 @@ class MapboxOSRMTest(_test.TestCase):
             "8.780916%2C49.445776", responses.calls[0].request.body)
         self.assertIsInstance(routes, Directions)
         self.assertIsInstance(routes[0], Direction)
+        self.assertEqual(1, len(routes))
         self.assertIsInstance(routes[0].geometry, list)
         self.assertIsInstance(routes[0].duration, int)
         self.assertIsInstance(routes[0].distance, int)
@@ -118,6 +119,8 @@ class MapboxOSRMTest(_test.TestCase):
         self.assertEqual(2, len(iso))
         self.assertIsInstance(iso[0], Isochrone)
         self.assertIsInstance(iso[0].geometry, list)
+        self.assertIsInstance(iso[0].range, int)
+        self.assertEqual(iso[0].center, None)
         self.assertIsInstance(iso[0].raw, dict)
 
     @responses.activate
