@@ -125,7 +125,7 @@ class Direction(object):
         return self._raw
 
     def __repr__(self):
-        return f'Direction({self.geometry}, {self.duration}, {self.distance}'
+        return f'Direction({self.geometry}, {self.duration}, {self.distance})'
 
     def __str__(self):
         return str(self.raw)
