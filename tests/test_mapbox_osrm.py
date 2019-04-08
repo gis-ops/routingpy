@@ -18,12 +18,13 @@
 
 from routingpy import MapBoxOSRM
 from routingpy import convert
+from routingpy.direction import Directions, Direction
+from routingpy.matrix import Matrix
 from tests.test_helper import *
 import tests as _test
 
 import responses
 from copy import deepcopy
-import json
 
 
 class MapboxOSRMTest(_test.TestCase):
@@ -34,24 +35,65 @@ class MapboxOSRMTest(_test.TestCase):
 
     @responses.activate
     def test_full_directions(self):
-        query = ENDPOINTS_QUERIES[self.name]['directions']
-        expected = ENDPOINTS_EXPECTED[self.name]['directions']
-        coords = convert._delimit_list(
-            [convert._delimit_list(pair) for pair in query['coordinates']],
-            ';')
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]['directions'])
+        query['alternatives'] = False
 
         responses.add(
             responses.POST,
             'https://api.mapbox.com/directions/v5/mapbox/{}'.format(
                 query['profile']),
             status=200,
-            json=query,
-            content_type='application/json')
+            json=ENDPOINTS_RESPONSES['mapbox_osrm']['directions'],
+            content_type='application/x-www-form-urlencoded',
+            headers={'Content-Type': 'application/x-www-form-urlencoded'})
 
         routes = self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(expected, json.loads(responses.calls[0].request.body))
+        self.assertURLEqual(
+            "coordinates=8.688641%2C49.420577%3B8.680916%2C49.415776%3B8.780916%2C49.445776&"
+            "radiuses=500%3B500%3B500&bearings=50%2C50%3B50%2C50%3B50%2C50&alternatives=false&steps=true&"
+            "continue_straight=true&annotations=duration%2Cdistance%2Cspeed&geometries=geojson&"
+            "overview=simplified&exclude=motorway&approaches=%3Bcurb%3Bcurb%3Bcurb&banner_instuctions=true&"
+            "language=de&roundabout_exits=true&voide_instructions=true&voice_units=metric&"
+            "waypoint_names=a%3Bb%3Bc&waypoint_targets=%3B8.688641%2C49.420577%3B8.680916%2C49.415776%3B"
+            "8.780916%2C49.445776", responses.calls[0].request.body)
+        self.assertIsInstance(routes, Direction)
+        self.assertIsInstance(routes.geometry, list)
+        self.assertIsInstance(routes.duration, int)
+        self.assertIsInstance(routes.distance, int)
+        self.assertIsInstance(routes.raw, dict)
+
+    @responses.activate
+    def test_full_directions_alternatives(self):
+        query = ENDPOINTS_QUERIES[self.name]['directions']
+
+        responses.add(
+            responses.POST,
+            'https://api.mapbox.com/directions/v5/mapbox/{}'.format(
+                query['profile']),
+            status=200,
+            json=ENDPOINTS_RESPONSES['mapbox_osrm']['directions'],
+            content_type='application/x-www-form-urlencoded',
+            headers={'Content-Type': 'application/x-www-form-urlencoded'})
+
+        routes = self.client.directions(**query)
+
+        self.assertEqual(1, len(responses.calls))
+        self.assertURLEqual(
+            "coordinates=8.688641%2C49.420577%3B8.680916%2C49.415776%3B8.780916%2C49.445776&"
+            "radiuses=500%3B500%3B500&bearings=50%2C50%3B50%2C50%3B50%2C50&alternatives=true&steps=true&"
+            "continue_straight=true&annotations=duration%2Cdistance%2Cspeed&geometries=geojson&"
+            "overview=simplified&exclude=motorway&approaches=%3Bcurb%3Bcurb%3Bcurb&banner_instuctions=true&"
+            "language=de&roundabout_exits=true&voide_instructions=true&voice_units=metric&"
+            "waypoint_names=a%3Bb%3Bc&waypoint_targets=%3B8.688641%2C49.420577%3B8.680916%2C49.415776%3B"
+            "8.780916%2C49.445776", responses.calls[0].request.body)
+        self.assertIsInstance(routes, Directions)
+        self.assertIsInstance(routes[0], Direction)
+        self.assertIsInstance(routes[0].geometry, list)
+        self.assertIsInstance(routes[0].duration, int)
+        self.assertIsInstance(routes[0].distance, int)
+        self.assertIsInstance(routes.raw, dict)
 
     @responses.activate
     def test_full_matrix(self):
@@ -65,7 +107,7 @@ class MapboxOSRMTest(_test.TestCase):
             'https://api.mapbox.com/directions-matrix/v1/mapbox/{}/{}'.format(
                 query['profile'], coords),
             status=200,
-            json={},
+            json=ENDPOINTS_RESPONSES['mapbox_osrm']['matrix'],
             content_type='application/json')
 
         matrix = self.client.distance_matrix(**query)
@@ -91,7 +133,7 @@ class MapboxOSRMTest(_test.TestCase):
             'https://api.mapbox.com/directions-matrix/v1/mapbox/{}/{}'.format(
                 query['profile'], coords),
             status=200,
-            json={},
+            json=ENDPOINTS_RESPONSES['mapbox_osrm']['matrix'],
             content_type='application/json')
 
         resp = self.client.distance_matrix(**query)

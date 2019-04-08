@@ -18,8 +18,10 @@
 Core client functionality, common across all API requests.
 """
 
-from .base import Router
+from .base import Router, DEFAULT
 from routingpy import convert
+from routingpy.direction import Direction, Directions
+from routingpy.matrix import Matrix
 
 
 class MapBoxOSRM(Router):
@@ -30,19 +32,19 @@ class MapBoxOSRM(Router):
     def __init__(self,
                  api_key,
                  user_agent=None,
-                 timeout=None,
+                 timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs=None,
                  retry_over_query_limit=False):
         """
-        Initializes an OSRM client.
+        Initializes a Mapbox OSRM client.
 
-        :param key: ORS API key. Required if https://api.openrouteservice.org is used.
-        :type key: str
+        :param api_key: Mapbox API key.
+        :type api_key: str
 
-        :param base_url: The base URL for the request. Defaults to the OSRM demo API
-            server. Should not have a trailing slash.
-        :type base_url: str
+        :param user_agent: User-Agent to send with the requests to routing API.
+            Overrides ``options.default_user_agent``.
+        :type user_agent: str
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
             seconds. Specify "None" for no timeout.
@@ -58,12 +60,9 @@ class MapBoxOSRM(Router):
             http://docs.python-requests.org/en/latest/api/#main-interface
         :type requests_kwargs: dict
 
-        :param queries_per_minute: Number of queries per second permitted.
-            If the rate limit is reached, the client will sleep for the
-            appropriate amount of time before it runs the current query.
-            Note, it won't help to initiate another client. This saves you the
-            trouble of raised exceptions.
-        :type queries_per_minute: int
+        :param retry_over_query_limit: If True, the client will retry when query
+            limit is reached (HTTP 429). Default False.
+        :type retry_over_query_limit: bool
         """
 
         self.api_key = api_key
@@ -95,11 +94,12 @@ class MapBoxOSRM(Router):
                    dry_run=None):
         """Get directions between an origin point and a destination point.
 
+        TODO: change URL to Mapbox
         For more information, visit http://project-osrm.org/docs/v5.5.1/api/#route-service.
 
         :param coordinates: The coordinates tuple the route should be calculated
             from in order of visit.
-        :type coordinates: list, tuple
+        :type coordinates: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["driving-traffic", "driving", "walking", "cycling"].
@@ -120,7 +120,7 @@ class MapBoxOSRM(Router):
             from true north. If the deviation is not set, then the default value of
             100 degrees is used. The number of pairs must correspond to the number
             of waypoints.
-        :type bearings: list, tuple of int lists/tuples
+        :type bearings: list of list of int
 
         :param alternatives: Search for alternative routes and return as well. A result cannot be guaranteed.
             Default false.
@@ -190,13 +190,13 @@ class MapBoxOSRM(Router):
             of the street, left or right, for each target based on the waypoint_targets and the driving direction. The
             maneuver.modifier, banner and voice instructions will be updated with the computed side of street. The
             number of waypoint_targets must be the same as the number of coordinates.
-        :type waypoint_targets: list of lists of float
+        :type waypoint_targets: list of list of float
 
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: One or multiple route(s) from provided coordinates and restrictions.
+        :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
         coords = convert._delimit_list([
@@ -268,15 +268,35 @@ class MapBoxOSRM(Router):
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
-        return self._request(
-            "/directions/v5/mapbox/" + profile,
-            get_params=get_params,
-            post_params=params,
-            dry_run=dry_run)
+        return self._parse_direction_json(
+            self._request(
+                "/directions/v5/mapbox/" + profile,
+                get_params=get_params,
+                post_params=params,
+                dry_run=dry_run,
+                requests_kwargs={
+                    "headers": {
+                        "Content-Type": 'application/x-www-form-urlencoded'
+                    }
+                },
+            ), alternatives)
 
     @staticmethod
-    def _parse_direction_json():
-        pass
+    def _parse_direction_json(response, alternatives):
+        if response is None:
+            return None
+
+        if alternatives:
+            routes = []
+            for route in response['routes']:
+                routes.append(
+                    Direction(route['geometry']['coordinates'],
+                              route['duration'], route['distance'], route))
+            return Directions(routes, response)
+        else:
+            return Direction(response['routes'][0]['geometry']['coordinates'],
+                             response['routes'][0]['duration'],
+                             response['routes'][0]['distance'], response)
 
     def isochrones(self):
         raise NotImplementedError
@@ -284,23 +304,32 @@ class MapBoxOSRM(Router):
     def distance_matrix(self,
                         coordinates,
                         profile,
-                        annotations=None,
-                        fallback_speed=None,
                         sources=None,
                         destinations=None,
+                        annotations=None,
+                        fallback_speed=None,
                         dry_run=None):
         """
         Gets travel distance and time for a matrix of origins and destinations.
 
+        TODO: change URL to Mapbox
         For more information visit http://project-osrm.org/docs/v5.5.1/api/#table-service.
 
         :param coordinates: The coordinates tuple the route should be calculated
             from in order of visit.
-        :type coordinates: list, tuple
+        :type coordinates: list or tuple
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["car", "bike", "foot"].
         :type profile: str
+
+        :param sources: A list of indices that refer to the list of locations
+            (starting with 0). If not passed, all indices are considered.
+        :type sources: list or tuple
+
+        :param destinations: A list of indices that refer to the list of locations
+            (starting with 0). If not passed, all indices are considered.
+        :type destinations: list or tuple
 
         :param annotations: Used to specify the resulting matrices. One or more of ["duration", "distance"]. Default
             ["duration"]
@@ -312,19 +341,11 @@ class MapBoxOSRM(Router):
             estimate between the source and destination based on the provided speed value.
         :type fallback_speed: int
 
-        :param sources: A list of indices that refer to the list of locations
-            (starting with 0). If not passed, all indices are considered.
-        :type sources: list or tuple
-
-        :param destinations: A list of indices that refer to the list of locations
-            (starting with 0). If not passed, all indices are considered.
-        :type destinations: list or tuple
-
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: A matrix from the specified sources and destinations.
+        :rtype: :class:`routingpy.matrix.Matrix`
         """
 
         coords = convert._delimit_list([
@@ -346,11 +367,16 @@ class MapBoxOSRM(Router):
         if fallback_speed:
             params['fallback_speed'] = str(fallback_speed)
 
-        return self._request(
-            "/directions-matrix/v1/mapbox/" + profile + '/' + coords,
-            get_params=params,
-            dry_run=dry_run)
+        return self._parse_matrix_json(
+            self._request(
+                "/directions-matrix/v1/mapbox/" + profile + '/' + coords,
+                get_params=params,
+                dry_run=dry_run))
 
     @staticmethod
-    def _parse_matrix_json():
-        pass
+    def _parse_matrix_json(response):
+        if response is None:
+            return None
+
+        return Matrix(
+            durations=response['durations'], distances=None, raw=response)
