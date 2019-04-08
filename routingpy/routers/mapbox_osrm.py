@@ -21,6 +21,7 @@ Core client functionality, common across all API requests.
 from .base import Router, DEFAULT
 from routingpy import convert
 from routingpy.direction import Direction, Directions
+from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
 
 
@@ -94,8 +95,7 @@ class MapBoxOSRM(Router):
                    dry_run=None):
         """Get directions between an origin point and a destination point.
 
-        TODO: change URL to Mapbox
-        For more information, visit http://project-osrm.org/docs/v5.5.1/api/#route-service.
+        For more information, visit https://docs.mapbox.com/api/navigation/#directions.
 
         :param coordinates: The coordinates tuple the route should be calculated
             from in order of visit.
@@ -298,8 +298,89 @@ class MapBoxOSRM(Router):
                              response['routes'][0]['duration'],
                              response['routes'][0]['distance'], response)
 
-    def isochrones(self):
-        raise NotImplementedError
+    def isochrones(self,
+                   coordinates,
+                   profile,
+                   intervals,
+                   contours_colors=None,
+                   polygons=None,
+                   denoise=None,
+                   generalize=None,
+                   dry_run=None):
+        """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
+
+        For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/isochrone/api-reference.md.
+
+        :param coordinates: One pair of lng/lat values. Takes the form [Longitude, Latitude].
+        :type coordinates: list of float
+
+        :param profile: Specifies the mode of transport to use when calculating
+            directions. One of ["mapbox/driving", "mapbox/walking", "mapbox/cycling".
+        :type profile: str
+
+        :param intervals: Time ranges to calculate isochrones for. Up to 4 ranges are possible. In seconds.
+        :type intervals: list of int
+
+        :param contours_colors: The color for the output of the contour. Specify it as a Hex value, but without the #, such as
+            "color":"ff0000" for red. If no color is specified, the isochrone service will assign a default color to the output.
+        :type contours_colors: list of str
+
+        :param polygons: Controls whether polygons or linestrings are returned in GeoJSON geometry. Default False.
+        :type polygons: bool
+
+        :param denoise: Can be used to remove smaller contours. In range [0, 1]. A value of 1 will only return the largest contour
+            for a given time value. A value of 0.5 drops any contours that are less than half the area of the largest
+            contour in the set of contours for that same time value. Default 1.
+        :type denoise: float
+
+        :param generalize: A floating point value in meters used as the tolerance for Douglas-Peucker generalization.
+            Note: Generalization of contours can lead to self-intersections, as well as intersections of adjacent contours.
+        :type generalize: float
+
+        :param dry_run: Print URL and parameters without sending the request.
+        :param dry_run: bool
+
+        :returns: An isochrone with the specified range.
+        :rtype: :class:`routingpy.isochrone.Isochrones`
+        """
+
+        params = {
+            "contours_minutes":
+            convert._delimit_list([x / 60 for x in sorted(intervals)], ','),
+            'access_token':
+            self.api_key
+        }
+
+        coordinates = convert._delimit_list(coordinates, ',')
+
+        if contours_colors:
+            params["contours_colors"] = convert._delimit_list(
+                contours_colors, ',')
+
+        if polygons is not None:
+            params['polygons'] = polygons
+
+        if denoise:
+            params['denoise'] = denoise
+
+        if generalize:
+            params['generalize'] = generalize
+
+        return self._parse_isochrone_json(
+            self._request(
+                "/isochrone/v1/" + profile + '/' + coordinates,
+                get_params=params,
+                dry_run=dry_run), intervals)
+
+    @staticmethod
+    def _parse_isochrone_json(response, intervals):
+        if response is None:
+            return None
+        return Isochrones([
+            Isochrone(isochrone['geometry']['coordinates'], intervals[idx],
+                      None, isochrone)
+            for idx, isochrone in enumerate(response['features'])
+        ], response)
 
     def distance_matrix(self,
                         coordinates,
@@ -312,8 +393,7 @@ class MapBoxOSRM(Router):
         """
         Gets travel distance and time for a matrix of origins and destinations.
 
-        TODO: change URL to Mapbox
-        For more information visit http://project-osrm.org/docs/v5.5.1/api/#table-service.
+        For more information visit https://docs.mapbox.com/api/navigation/#matrix.
 
         :param coordinates: The coordinates tuple the route should be calculated
             from in order of visit.

@@ -19,6 +19,7 @@
 from routingpy import MapBoxOSRM
 from routingpy import convert
 from routingpy.direction import Directions, Direction
+from routingpy.isochrone import Isochrones, Isochrone
 from routingpy.matrix import Matrix
 from tests.test_helper import *
 import tests as _test
@@ -94,6 +95,30 @@ class MapboxOSRMTest(_test.TestCase):
         self.assertIsInstance(routes[0].duration, int)
         self.assertIsInstance(routes[0].distance, int)
         self.assertIsInstance(routes.raw, dict)
+
+    @responses.activate
+    def test_full_isochrones(self):
+        query = ENDPOINTS_QUERIES[self.name]['isochrones']
+
+        responses.add(
+            responses.GET,
+            f'https://api.mapbox.com/isochrone/v1/{query["profile"]}/{convert._delimit_list(query["coordinates"])}',
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
+            content_type='application/json')
+
+        iso = self.client.isochrones(**query)
+
+        self.assertEqual(1, len(responses.calls))
+        self.assertURLEqual(
+            'https://api.mapbox.com/isochrone/v1/mapbox/driving/8.34234,48.23424?access_token=sample_key&'
+            'contours_colors=ff0000%2C00FF00&contours_minutes=10.0%2C20.0&denoise=0.1&generalize=0.5&polygons=True',
+            responses.calls[0].request.url)
+        self.assertIsInstance(iso, Isochrones)
+        self.assertEqual(2, len(iso))
+        self.assertIsInstance(iso[0], Isochrone)
+        self.assertIsInstance(iso[0].geometry, list)
+        self.assertIsInstance(iso[0].raw, dict)
 
     @responses.activate
     def test_full_matrix(self):
