@@ -14,7 +14,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-"""Converts Python types to string representations suitable for ORS API server.
+"""Converts Python types to string representations suitable for GET queries.
 """
 
 

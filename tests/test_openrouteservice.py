@@ -17,7 +17,7 @@
 """Tests for the openrouteservice module."""
 
 from routingpy import ORS
-from routingpy.direction import Direction, Directions
+from routingpy.direction import Direction
 from routingpy.isochrone import Isochrones, Isochrone
 from routingpy.matrix import Matrix
 from copy import deepcopy
@@ -157,12 +157,12 @@ class ORSTest(_test.TestCase):
         self.assertEqual(expected, json.loads(responses.calls[0].request.body))
 
         self.assertIsInstance(isochrones, Isochrones)
-        self.assertIsInstance(isochrones.__getitem__(0), Isochrone)
-        self.assertIsInstance(isochrones.__getitem__(1), Isochrone)
-        self.assertIsInstance(isochrones.__getitem__(2), Isochrone)
-        self.assertIsInstance(isochrones.__getitem__(0).geometry, object)
-        self.assertIsInstance(isochrones.__getitem__(1).geometry, object)
-        self.assertIsInstance(isochrones.__getitem__(2).geometry, object)
+        self.assertIsInstance(isochrones[0], Isochrone)
+        self.assertIsInstance(isochrones[1], Isochrone)
+        self.assertIsInstance(isochrones[2], Isochrone)
+        self.assertIsInstance(isochrones[0].geometry, object)
+        self.assertIsInstance(isochrones[1].geometry, object)
+        self.assertIsInstance(isochrones[2].geometry, object)
 
     @responses.activate
     def test_full_matrix(self):

@@ -30,15 +30,6 @@ class Isochrones(object):
         self._raw = raw
 
     @property
-    def isochrones(self):
-        """
-        Holds the individual isochrone objects
-
-        :rtype: list or None
-        """
-        return self._isochrones
-
-    @property
     def raw(self):
         """
         Returns the route's raw, unparsed response. For details, consult the routing engine's API documentation.
@@ -47,7 +38,7 @@ class Isochrones(object):
         return self._raw
 
     def __repr__(self):
-        return f'Isochrones({self.isochrones}, {self.raw})'
+        return f'Isochrones({self._isochrones}, {self.raw})'
 
     def __str__(self):
         return str(self.raw)
@@ -64,22 +55,14 @@ class Isochrones(object):
 
 class Isochrone(object):
     """
-    Contains a parsed single isochrone response. Access via properties ``geometry``, ``center`` and``range``.
+    Contains a parsed single isochrone response. Access via properties ``geometry``, ``center`` and ``raw``.
     """
 
-    def __init__(self, geometry=None, range=None, center=None):
+    def __init__(self, geometry=None, range=None, center=None, raw=None):
         self._geometry = geometry
-        self._range = range
+        self._range = int(range)
         self._center = center
-
-    @property
-    def range(self):
-        """
-        The range of the isochrone. The unit is in meters or seconds.
-
-        :rtype: int
-        """
-        return self._range
+        self._raw = raw
 
     @property
     def geometry(self):
@@ -100,8 +83,26 @@ class Isochrone(object):
         """
         return self._center
 
+    @property
+    def range(self):
+        """
+        The range of the isochrone in seconds or in meters.
+
+        :return: int
+        """
+        return self._range
+
+    @property
+    def raw(self):
+        """
+        Returns the isochrone's raw, unparsed response. For details, consult the routing engine's API documentation.
+
+        :rtype: dict
+        """
+        return self._raw
+
     def __repr__(self):
         return f'Isochrone({self.geometry}, {self.range})'
 
     def __str__(self):
-        return str(self.raw)
+        return str(self._raw)

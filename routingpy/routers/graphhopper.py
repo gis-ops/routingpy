@@ -14,17 +14,13 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-"""
-Core client functionality, common across all API requests.
-"""
-from .base import Router
+
+from .base import Router, DEFAULT
 from routingpy import convert
 from routingpy import utils
 from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
-
-from operator import itemgetter
 
 
 class Graphhopper(Router):
@@ -36,19 +32,23 @@ class Graphhopper(Router):
                  api_key=None,
                  base_url=_DEFAULT_BASE_URL,
                  user_agent=None,
-                 timeout=None,
+                 timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs={},
                  retry_over_query_limit=False):
         """
         Initializes an graphhopper client.
 
-        :param key: GH API key. Required if https://graphhopper.com/api is used.
-        :type key: str
+        :param api_key: GH API key. Required if https://graphhopper.com/api is used.
+        :type api_key: str
 
         :param base_url: The base URL for the request. Defaults to the GH API
             server. Should not have a trailing slash.
         :type base_url: str
+
+        :param user_agent: User-Agent to send with the requests to routing API.
+            Overrides ``options.default_user_agent``.
+        :type user_agent: string
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
             seconds. Specify "None" for no timeout.
@@ -64,12 +64,10 @@ class Graphhopper(Router):
             http://docs.python-requests.org/en/latest/api/#main-interface
         :type requests_kwargs: dict
 
-        :param queries_per_minute: Number of queries per second permitted.
-            If the rate limit is reached, the client will sleep for the
-            appropriate amount of time before it runs the current query.
-            Note, it won't help to initiate another client. This saves you the
-            trouble of raised exceptions.
-        :type queries_per_minute: int
+        :param retry_over_query_limit: If True, client will not raise an exception
+            on HTTP 429, but instead jitter a sleeping timer to pause between
+            requests until HTTP 200 or retry_timeout is reached.
+        :type retry_over_query_limit: bool
         """
 
         if base_url == self._DEFAULT_BASE_URL and api_key is None:
@@ -109,33 +107,36 @@ class Graphhopper(Router):
                    dry_run=None):
         """Get directions between an origin point and a destination point.
 
+        TODO: change URL
         For more information, visit https://openrouteservice.org/documentation/.
 
         :param coordinates: The coordinates tuple the route should be calculated
             from in order of visit.
-        :type coordinates: list, tuple
+        :type coordinates: list of list or tuple of tuple
 
+        TODO: list all profiles
         :param profile: The vehicle for which the route should be calculated.
-            Default "car".
-            Other vehicle profiles are listed here:
+            Default "car". Other vehicle profiles are listed here:
             https://graphhopper.com/api/1/docs/supported-vehicle-profiles/
         :type profile: str
 
+        TODO: are there other formats even?
         :param format: Specifies the resulting format of the route, for json the content type will be application/json.
             Default "json".
         :type format: str
 
+        TODO: why is there no language in parameters?
         :param language: Language for routing instructions. The locale of the resulting turn instructions.
             E.g. pt_PT for Portuguese or de for German. Default "en".
         :type language: str
 
         :param optimize: If false the order of the locations will be identical to the order of the point parameters.
-            If you have more than 2 points you can set this optimize parameter to true and the points will be sorted
+            If you have more than 2 points you can set this optimize parameter to ``True`` and the points will be sorted
             regarding the minimum overall time - e.g. suiteable for sightseeing tours or salesman.
             Keep in mind that the location limit of the Route Optimization API applies and the credit costs are higher!
             Note to all customers with a self-hosted license: this parameter is only available if your package includes
             the Route Optimization API. Default False.
-        :type geometry: bool
+        :type optimize: bool
 
         :param instructions: Specifies whether to return turn-by-turn instructions.
             Default True.
@@ -148,18 +149,18 @@ class Graphhopper(Router):
             Default False.
         :type elevation: bool
 
-        :param points_encoded: If false the coordinates in point and snapped_waypoints are returned as array using the order
+        :param points_encoded: If ``False`` the coordinates in point and snapped_waypoints are returned as array using the order
             [lon,lat,elevation] for every point. If true the coordinates will be encoded as string leading to less bandwith usage.
-            Default True
-        :type elevation: bool
+            Default True.
+        :type points_encoded: bool
 
-        :param calc_points: If the points for the route should be calculated at all printing out only distance and time.
-            Default True
-        :type elevation: bool
+        :param calc_points: If the points for the route should be calculated at all, printing out only distance and time.
+            Default True.
+        :type calc_points: bool
 
-        :param debug: If true, the output will be formated.
-            Default False
-        :type elevation: bool
+        :param debug: If ``True``, the output will be formated.
+            Default False.
+        :type debug: bool
 
         :param point_hint: Optional parameter. Specifies a hint for each point parameter to prefer a certain street for the
             closest location lookup. E.g. if there is an address or house with two or more neighboring streets you can control
@@ -233,8 +234,8 @@ class Graphhopper(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: One or multiple route(s) from provided coordinates and restrictions.
+        :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
         params = [('profile', profile)]
@@ -370,7 +371,7 @@ class Graphhopper(Router):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
         :param coordinates: One coordinate pair denoting the location.
-        :type coordinates: tuple/list
+        :type coordinates: tuple of float or list of float
 
         :param profile: Specifies the mode of transport.
             One of bike, car, foot or
@@ -381,11 +382,11 @@ class Graphhopper(Router):
         :param range: Maximum range to calculate distances/durations for. You can also specify
             the ``buckets`` variable to break the single value into more isochrones. For compatibility reasons,
             this parameter is expressed as list. In meters or seconds.
-        :type range: list/tuple of int
+        :type range: list of int or tuple of int
 
         :param range_type: Set ``time`` for isochrones or ``distance`` for equidistants.
             Default 'time'.
-        :type sources: str
+        :type range_type: str
 
         :param buckets: For how many sub intervals an additional polygon should be calculated.
             Default 1.
@@ -403,8 +404,8 @@ class Graphhopper(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: An isochrone with the specified range.
+        :rtype: :class:`routingpy.isochrone.Isochrones`
         """
 
         params = [
@@ -460,7 +461,7 @@ class Graphhopper(Router):
                         profile,
                         sources=None,
                         destinations=None,
-                        out_array=['weights', 'times', 'distances'],
+                        out_array=['times', 'distances'],
                         debug=None,
                         dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
@@ -470,7 +471,7 @@ class Graphhopper(Router):
             If there are N points, then NxN entries will be calculated.
             The order of the point parameter is important. Specify at least three points.
             Cannot be used together with from_point or to_point. Is a string with the format latitude,longitude.
-        :type coordinates: list, tuple
+        :type coordinates: list of list or tuple of tuple or list of tuple or tuple of list
 
         :param profile: Specifies the mode of transport.
             One of bike, car, foot or
@@ -480,23 +481,23 @@ class Graphhopper(Router):
 
         :param sources: The starting points for the routes.
             Specifies an index referring to coordinates.
-        :type from_coordinates: list
+        :type sources: list of int
 
         :param destinations: The destination points for the routes. Specifies an index referring to coordinates.
-        :type to_coordinates: list
+        :type destinations: list of int
 
         :param out_array: Specifies which arrays should be included in the response. Specify one or more of the following
             options 'weights', 'times', 'distances'.
             The units of the entries of distances are meters, of times are seconds and of weights is arbitrary and it can differ
             for different vehicles or versions of this API.
-            Default "weights".
-        :type out_array: list
+            Default ["times", "distance"].
+        :type out_array: list of str
 
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: A matrix from the specified sources and destinations.
+        :rtype: :class:`routingpy.matrix.Matrix`
         """
         params = [('profile', profile)]
 

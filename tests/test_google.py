@@ -18,7 +18,6 @@
 
 from routingpy import Google
 from routingpy.direction import Direction, Directions
-from routingpy.isochrone import Isochrones, Isochrone
 from routingpy.matrix import Matrix
 
 from tests.test_helper import *
@@ -56,8 +55,8 @@ class GoogleTest(_test.TestCase):
             responses.calls[0].request.url)
 
         self.assertIsInstance(routes, Directions)
-        self.assertIsInstance(routes.__getitem__(0), Direction)
-        self.assertIsInstance(routes.__getitem__(0).geometry, list)
+        self.assertIsInstance(routes[0], Direction)
+        self.assertIsInstance(routes[0].geometry, list)
 
     @responses.activate
     def test_full_directions_no_alternatives(self):

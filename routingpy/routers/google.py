@@ -15,7 +15,7 @@
 # the License.
 #
 
-from .base import Router
+from .base import Router, DEFAULT
 from routingpy import convert, utils
 from routingpy.direction import Directions, Direction
 from routingpy.matrix import Matrix
@@ -31,23 +31,22 @@ class Google(Router):
     def __init__(self,
                  api_key,
                  user_agent=None,
-                 timeout=None,
+                 timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs={},
-                 retry_over_query_limit=False):
+                 retry_over_query_limit=True):
         """
         Initializes a Google client.
 
         :param key: API key.
         :type key: str
 
-        :param user_agent: User Agent to be used when requesting. Can be globally set in routingpy.options.
-            Default 'routingpy.<version string>'.
+        :param user_agent: User Agent to be used when requesting. Eefault 'routingpy.<version string>'.
         :type user_agent: str
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
-            seconds. Specify "None" for no timeout.
-        :type timeout: int
+            seconds. Specify ``None`` for no timeout.
+        :type timeout: int or None
 
         :param retry_timeout: Timeout across multiple retriable requests, in
             seconds.
@@ -59,12 +58,10 @@ class Google(Router):
             http://docs.python-requests.org/en/latest/api/#main-interface
         :type requests_kwargs: dict
 
-        :param queries_per_minute: Number of queries per second permitted.
-            If the rate limit is reached, the client will sleep for the
-            appropriate amount of time before it runs the current query.
-            Note, it won't help to initiate another client. This saves you the
-            trouble of raised exceptions.
-        :type queries_per_minute: int
+        :param retry_over_query_limit: If True, client will not raise an exception
+            on HTTP 429, but instead jitter a sleeping timer to pause between
+            requests until HTTP 200 or retry_timeout is reached.
+        :type retry_over_query_limit: bool
         """
 
         self.key = api_key
@@ -75,7 +72,7 @@ class Google(Router):
 
     class WayPoint(object):
         """
-        Optionally construct a waypoint from this class with additional attributes, such as via.
+        Optionally construct a waypoint from this class with additional attributes.
         """
 
         def __init__(self, position, waypoint_type='coords', stopover=True):
@@ -137,9 +134,9 @@ class Google(Router):
 
         :param coordinates: The coordinates tuple the route should be calculated
             from in order of visit. Can be a list/tuple of [lon, lat], a list/tuple of address strings, Google's
-            Place ID's or a combination of these. Note, the first and last location have to be specified as [lon, lat].
+            Place ID's, a :class:`Google.WayPoint` instance or a combination of these. Note, the first and last location have to be specified as [lon, lat].
             Optionally, specify ``optimize=true`` for via waypoint optimization.
-        :type coordinates: list, tuple of lists/tuples of float or str
+        :type coordinates: list of list or list of :class:`Google.WayPoint`
 
         :param profile: The vehicle for which the route should be calculated.
             Default "driving". One of ['driving', 'walking', 'bicycling', 'transit'].
@@ -326,25 +323,20 @@ class Google(Router):
                         dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
-        :param coordinates: Specifiy multiple points for which the weight-, route-, time- or distance-matrix should be calculated.
-            In this case the starts are identical to the destinations.
-            If there are N points, then NxN entries will be calculated.
-            The order of the point parameter is important. Specify at least three points.
-            Cannot be used together with from_point or to_point. Is a string with the format latitude,longitude.
-        :type coordinates: list, tuple
+        :param coordinates: Two or more pairs of lng/lat values.
+        :type coordinates: list of list
 
-        :param profile: Specifies the mode of transport.
-            One of bike, car, foot or
-            https://graphhopper.com/api/1/docs/supported-vehicle-profiles/Default.
-            Default "car".
+        :param profile: The vehicle for which the route should be calculated.
+            Default "driving". One of ['driving', 'walking', 'bicycling', 'transit'].
         :type profile: str
 
-        :param sources: The starting points for the routes.
-            Specifies an index referring to coordinates.
-        :type sources: list
+        :param sources: A list of indices that refer to the list of locations
+            (starting with 0). If not passed, all indices are considered.
+        :type sources: list or tuple
 
-        :param destinations: The destination points for the routes. Specifies an index referring to coordinates.
-        :type destinations: list
+        :param destinations: A list of indices that refer to the list of locations
+            (starting with 0). If not passed, all indices are considered.
+        :type destinations: list or tuple
 
         :param avoid: Indicates that the calculated route(s) should avoid the indicated features. One or more of
             ['tolls', 'highways', 'ferries', 'indoor']. Default None.
@@ -367,6 +359,7 @@ class Google(Router):
 
         :param departure_time: Specifies the desired time of departure. You can specify the time as an integer in
             seconds since midnight, January 1, 1970 UTC.
+        :type departure_time: int
 
         :param traffic_model: Specifies the assumptions to use when calculating time in traffic. One of ['best_guess',
             'pessimistic', 'optimistic'. See https://developers.google.com/maps/documentation/directions/intro#optional-parameters
@@ -375,7 +368,7 @@ class Google(Router):
 
         :param transit_mode: Specifies one or more preferred modes of transit. One or more of ['bus', 'subway', 'train',
             'tram', 'rail'].
-        :type transit_mode: list/tuple of str
+        :type transit_mode: list of str or tuple of str
 
         :param transit_routing_preference: Specifies preferences for transit routes. Using this parameter, you can bias
             the options returned, rather than accepting the default best route chosen by the API. One of ['less_walking',

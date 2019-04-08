@@ -82,7 +82,7 @@ class Matrix(object):
     @property
     def raw(self):
         """
-        Returns the route's raw, unparsed response. For details, consult the routing engine's API documentation.
+        Returns the matrices raw, unparsed response. For details, consult the routing engine's API documentation.
 
         :rtype: dict or None
         """

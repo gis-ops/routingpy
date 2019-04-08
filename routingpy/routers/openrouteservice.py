@@ -14,9 +14,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-"""
-Core client functionality, common across all API requests.
-"""
 
 from .base import Router
 from routingpy import utils
@@ -41,12 +38,16 @@ class ORS(Router):
         """
         Initializes an openrouteservice client.
 
-        :param key: Mapbox API key. Required
-        :type key: str
+        :param api_key: ORS API key. Required if https://api.openrouteservice.org is used.
+        :type api_key: str
 
         :param base_url: The base URL for the request. Defaults to the ORS API
             server. Should not have a trailing slash.
         :type base_url: str
+
+        :param user_agent: User-Agent to send with the requests to routing API.
+            Overrides ``options.default_user_agent``.
+        :type user_agent: string
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
             seconds. Specify "None" for no timeout.
@@ -102,11 +103,12 @@ class ORS(Router):
                    dry_run=None):
         """Get directions between an origin point and a destination point.
 
+        TODO: change URL I think
         For more information, visit https://openrouteservice.org/documentation/.
 
         :param coordinates: The coordinates tuple the route should be calculated
             from in order of visit.
-        :type coordinates: list, tuple
+        :type coordinates: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["driving-car", "driving-hgv", "foot-walking",
@@ -142,7 +144,7 @@ class ORS(Router):
 
         :param instructions_format: Specifies the the output format for instructions.
             One of ["text", "html"]. Default "text".
-        :type instructions_format: string
+        :type instructions_format: str
 
         :param roundabout_exits: Provides bearings of the entrance and all passed
             roundabout exits. Adds the 'exit_bearings' array to the 'step' object
@@ -151,7 +153,7 @@ class ORS(Router):
 
         :param attributes: Returns route attributes on ["avgspeed", "detourfactor", "percentage"].
             Must be a list of strings. Default None.
-        :type attributes: list, tuple of str
+        :type attributes: list of str
 
         :param maneuvers: Specifies whether the maneuver object is included into the step object or not. Default: False.
         :type maneuvers bool
@@ -161,7 +163,7 @@ class ORS(Router):
             The values must be greater than 0, the value of -1 specifies no limit in
             the search. The number of radiuses must correspond to the number of waypoints.
             Default 50 km (ORS backend).
-        :type radiuses: list or tuple
+        :type radiuses: list of int
 
         :param bearings: Specifies a list of pairs (bearings and
             deviations) to filter the segments of the road network a waypoint can
@@ -176,7 +178,7 @@ class ORS(Router):
             of waypoints-1 or waypoints. If the bearing information for the last waypoint
             is given, then this will control the sector from which the destination
             waypoint may be reached.
-        :type bearings: list, tuple
+        :type bearings: list of list
 
         :param continue_straight: Forces the route to keep going straight at waypoints not
             restricting u-turns even if u-turns would be faster. Default False.
@@ -189,7 +191,7 @@ class ORS(Router):
         :param extra_info: Returns additional information on ["steepness", "suitability",
             "surface", "waycategory", "waytype", "tollways", "traildifficulty", "roadaccessrestrictions"].
             Must be a list of strings. Default None.
-        :type extra_info: list, tuple of str
+        :type extra_info: list of str
 
         :param suppress_warnings: Tells the system to not return any warning messages in extra_info.
         :type suppress_warnings: bool
@@ -312,7 +314,7 @@ class ORS(Router):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
         :param coordinates: One pair of lng/lat values.
-        :type coordinates: list, tuple
+        :type coordinates: list of float
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["driving-car", "driving-hgv", "foot-walking",
@@ -420,9 +422,8 @@ class ORS(Router):
                         dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
-        :param coordinates: One or more pairs of lng/lat values.
-        :type coordinates: a single location, or a list of locations, where a
-            location is a list or tuple of lng,lat values
+        :param coordinates: Two or more pairs of lng/lat values.
+        :type coordinates: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["driving-car", "driving-hgv", "foot-walking",
@@ -432,11 +433,11 @@ class ORS(Router):
 
         :param sources: A list of indices that refer to the list of locations
             (starting with 0). If not passed, all indices are considered.
-        :type sources: list or tuple
+        :type sources: list of int
 
         :param destinations: A list of indices that refer to the list of locations
             (starting with 0). If not passed, all indices are considered.
-        :type destinations: list or tuple
+        :type destinations: list of int
 
         :param metrics: Specifies a list of returned metrics. One or more of ["distance",
             "duration"]. Default ['duration'].

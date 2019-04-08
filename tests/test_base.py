@@ -49,7 +49,7 @@ class BaseTest(_test.TestCase):
         options.default_user_agent = "my_agent"
         options.default_timeout = 10
         options.default_retry_timeout = 10
-        options.default_proxies = {'proxies': '192.103.10.102'}
+        options.default_proxies = {'https': '192.103.10.102'}
         new_router = RouterMock('https://foo.bar')
         req_kwargs = {
             'timeout': options.default_timeout,
@@ -59,7 +59,7 @@ class BaseTest(_test.TestCase):
             },
             'proxies': options.default_proxies
         }
-        self.assertEqual(req_kwargs, new_router._requests_kwargs)
+        self.assertEqual(req_kwargs, new_router.requests_kwargs)
 
     def test_urlencode(self):
         encoded_params = self.router._generate_auth_url(
@@ -115,9 +115,9 @@ class BaseTest(_test.TestCase):
         client = RouterMock(
             "https://httpbin.org", requests_kwargs=dict(timeout, **headers))
 
-        self.assertDictContainsSubset(timeout, client._requests_kwargs)
+        self.assertDictContainsSubset(timeout, client.requests_kwargs)
         self.assertDictContainsSubset(headers['headers'],
-                                      client._requests_kwargs['headers'])
+                                      client.requests_kwargs['headers'])
 
     @responses.activate
     def test_req_property(self):

@@ -29,22 +29,13 @@ class Directions(object):
         Initialize a :class:`Directions` instance to hold multiple :class:`Direction` instances in a list-like fashion.
 
         :param directions: List of :class:`Direction` objects
-        :type directions: list/tuple of :class:`Direction`
+        :type directions: list of :class:`Direction`
 
         :param raw: The whole raw directions response of the routing engine.
         :type raw: dict
         """
         self._directions = directions
         self._raw = raw
-
-    @property
-    def directions(self):
-        """
-        Holds the individual direction objects.
-
-        :rtype: list of :class:`Direction` or None
-        """
-        return self._directions
 
     @property
     def raw(self):
@@ -72,7 +63,7 @@ class Directions(object):
 
 class Direction(object):
     """
-    Contains a parsed directions response. Access via properties ``geometry`` and ``raw``.
+    Contains a parsed directions response. Access via properties ``geometry``, ``duration``, ``distance`` and ``raw``.
     """
 
     def __init__(self, geometry=None, duration=None, distance=None, raw=None):
@@ -80,7 +71,7 @@ class Direction(object):
         Initialize a :class:`Direction` object to hold the properties of a directions request.
 
         :param geometry: The geometry list in [[lon1, lat1], [lon2, lat2]] order.
-        :type geometry: list of lists of float
+        :type geometry: list of list
 
         :param duration: The duration of the direction in seconds.
         :type duration: int or float

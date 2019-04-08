@@ -14,17 +14,12 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-"""
-Core client functionality, common across all API requests.
-"""
 
-from .base import Router
+from .base import Router, DEFAULT
 from routingpy import convert
-from routingpy import utils
 from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrones, Isochrone
 from routingpy.matrix import Matrix
-from itertools import cycle
 
 
 class HereMaps(Router):
@@ -35,24 +30,23 @@ class HereMaps(Router):
     def __init__(self,
                  app_id=None,
                  app_code=None,
-                 base_url=_DEFAULT_BASE_URL,
                  user_agent=None,
-                 timeout=None,
+                 timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs=None,
                  retry_over_query_limit=False):
         """
-        Initializes an HERE Maps client.
+        Initializes a HERE Maps client.
 
         :param app_id: HERE Maps app id. 
-        :type key: str
+        :type app_id: str
 
         :param app_code: HERE Maps app code.
-        :type key: str
+        :type app_code: str
 
-        :param base_url: The base URL for the request. Defaults to the ORS API
-            server. Should not have a trailing slash.
-        :type base_url: str
+        :param user_agent: User-Agent to send with the requests to routing API.
+            Overrides ``options.default_user_agent``.
+        :type user_agent: string
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
             seconds. Specify "None" for no timeout.
@@ -73,17 +67,21 @@ class HereMaps(Router):
         :type retry_over_query_limit: bool
         """
 
-        if base_url == self._DEFAULT_BASE_URL and app_id is None and app_code is None:
+        if app_id is None and app_code is None:
             raise KeyError("HERE Maps app_id and app_code must be specified.")
 
         self.app_code = app_code
         self.app_id = app_id
 
-        super(HereMaps,
-              self).__init__(base_url, user_agent, timeout, retry_timeout,
-                             requests_kwargs, retry_over_query_limit)
+        super(HereMaps, self).__init__(self._DEFAULT_BASE_URL, user_agent,
+                                       timeout, retry_timeout, requests_kwargs,
+                                       retry_over_query_limit)
 
     class WayPoint(object):
+        """
+        Optionally construct a waypoint from this class with additional attributes.
+        """
+
         def __init__(self,
                      position,
                      waypoint_type=None,
@@ -91,6 +89,28 @@ class HereMaps(Router):
                      transit_radius='',
                      user_label='',
                      heading=''):
+            """
+            Constructs a waypoint with additional information.
+
+            TODO: Fill in all info on parameters
+            :param position:
+            :type position:
+
+            :param waypoint_type:
+            :type waypoint_type:
+
+            :param stopover_duration:
+            :type stopover_duration:
+
+            :param transit_radius:
+            :type transit_radius:
+
+            :param user_label:
+            :type user_label:
+
+            :param heading:
+            :type heading:
+            """
 
             self.position = position
             self.waypoint_type = waypoint_type
@@ -118,11 +138,30 @@ class HereMaps(Router):
             return convert._delimit_list(here_waypoint, '!')
 
     class RoutingMode(object):
+        """
+        TODO: What does this do?
+        """
+
         def __init__(self,
                      mode_type='fastest',
                      mode_transport_type='car',
                      mode_traffic=None,
                      features=None):
+            """
+            TODO: fill in all parameters!
+
+            :param mode_type:
+            :type mode_type:
+
+            :param mode_transport_type:
+            :type mode_transport_type:
+
+            :param mode_traffic:
+            :type mode_traffic:
+
+            :param features:
+            :type features:
+            """
 
             self.mode_type = mode_type
             self.mode_transport_type = mode_transport_type
@@ -204,19 +243,23 @@ class HereMaps(Router):
                    dry_run=None):
         """Get directions between an origin point and a destination point.
 
+        # TODO: Overall, pls take care that docstrings are legible. I.e. actually make sense and fit in the bounds
+        # TODO: of the viewer
+
         For more information, https://developer.here.com/documentation/routing/topics/resource-calculate-route.html.
 
-        :param coordinates: The coordinate object with optional additional extras
-            from in order of visit.
+        :param coordinates: The coordinates tuple the route should be calculated
+            from in order of visit. Can be a list/tuple of [lon, lat] or :class:`HereMaps.WayPoint` instance or a
+            combination of those. For further explanation, see
             https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
-        :type coordinates: obj
+        :type coordinates: list of list or list of :class:`HereMaps.WayPoint`
 
         :param profile: Specifies the routing mode of transport and further options
             https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
         :type profile: str or obj
 
         :param format: Currently only "json" supported. 
-        :type format: strs
+        :type format: str
 
         :param request_id: Clients may pass in an arbitrary string to trace request processing through the system. 
             The RequestId is mirrored in the MetaInfo element of the response structure.
@@ -224,9 +267,11 @@ class HereMaps(Router):
 
         :param avoid_areas: Areas which the route must not cross. Array of BoundingBox. Example with 2 bounding boxes
             https://developer.here.com/documentation/routing/topics/resource-param-type-bounding-box.html
+        TODO: Be clear on what the input is.. I guess: list of list of list
         :type avoid_areas: list, list, tuple
 
         :param avoid_links: Links which the route must not cross. The list of LinkIdTypes.
+        TODO: list of str?
         :type avoid_areas: list, string
 
         :param avoid_seasonal_closures: The optional avoid seasonal closures boolean flag can be specified to avoid usage of seasonally closed links.
@@ -239,26 +284,32 @@ class HereMaps(Router):
 
         :param allowed_zones: Identifiers of zones where routing engine should not take zone restrictions into account (for example in case of a special permission to access a restricted environmental zone). 
             https://developer.here.com/documentation/routing/topics/resource-get-routing-zones.html
+        TODO: list of int? list or int?
         :type allowed_zones: list, int
 
         :param exclude_zones: Identifiers of zones which the route must not cross under any circumstances.
             https://developer.here.com/documentation/routing/topics/resource-get-routing-zones.html
+        TODO: list of int? list or int?
         :type exclude_zones: list, int
 
         :param exclude_zone_types: List of zone types which the route must not cross under any circumstances.
             https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html#resource-type-enumerations__enum-routing-zone-type-type
+        TODO: list of str?
         :type exclude_zone_types: list, str
 
-        :param exclude_countries: Countries that must be excluded from route calculation. 
+        :param exclude_countries: Countries that must be excluded from route calculation.
+        TODO: list of str?
         :type exclude_zone_types: list, str
 
         :param departure: Time when travel is expected to start. Traffic speed and incidents are taken into account when calculating the route (note that in case of a past departure time the historical traffic is limited to one year). 
             You can use now to specify the current time. Specify either departure or arrival, not both.
             When the optional timezone offset is not specified, the time is assumed to be the local.
+        TODO: What's the format? Can't be datetime.datetime, never imported. Pls be accurate.
         :type departure: datetime
 
         :param arrival: Time when travel is expected to end. Specify either departure or arrival, not both.
             When the optional timezone offset is not specified, the time is assumed to be the local.
+        TODO: What's the format? Can't be datetime.datetime, never imported. Pls be accurate.
         :type arrival: datetime        
 
         :param alternatives: Maximum number of alternative routes that will be calculated and returned. Alternative routes can be unavailable, thus they are not guaranteed to be returned. If at least one via point is used in a route request, returning alternative routes is not supported. 0 stands for "no alternative routes", i.e. only best route is returned. 
@@ -268,7 +319,7 @@ class HereMaps(Router):
         :type metric_system: str
 
         :param view_bounds: If the view bounds are given in the request then only route shape points which fit into these bounds will be returned. The route shape beyond the view bounds is reduced to the points which are referenced by links, legs or maneuvers. 
-        :type view_bounds: list, tuple
+        :type view_bounds: list or tuple
 
         :param resolution: Specifies the resolution of the view and a possible snap resolution in meters per pixel in the response. You must specify a whole, positive integer.
             If you specify only one value, then this value defines the view resolution only.
@@ -291,29 +342,36 @@ class HereMaps(Router):
 
         :param representation: Define which elements are included in the response as part of the data representation of the route. 
             https://developer.here.com/documentation/routing/topics/resource-param-type-route-representation-options.html#type-route-represenation-mode
+        TODO: list of str?
         :type representation: list, str
 
         :param route_attributes: Define which attributes are included in the response as part of the data representation of the route. Defaults to waypoints, summary, legs and additionally lines if publicTransport or publicTransportTimeTable mode is used. 
             https://developer.here.com/documentation/routing/topics/resource-param-type-route-representation-options.html#type-route-attribute
+        TODO: list of str?
         :type route_attributes: list, str
 
         :param leg_attributes: Define which attributes are included in the response as part of the data representation of the route legs. Defaults to maneuvers, waypoint, length, travelTime.
             https://developer.here.com/documentation/routing/topics/resource-param-type-route-representation-options.html#type-route-leg-attribute
+        TODO: list of str?
         :type leg_attributes: list, str
 
         :param maneuver_attributes: Define which attributes are included in the response as part of the data representation of the route maneuvers. Defaults to position, length, travelTime. 
             https://developer.here.com/documentation/routing/topics/resource-param-type-route-representation-options.html#type-maneuver-attribute
+        TODO: list of str?
         :type maneuver_attributes: list, str
 
         :param link_attributes: Define which attributes are included in the response as part of the data representation of the route links. Defaults to shape, speedLimit.
             https://developer.here.com/documentation/routing/topics/resource-param-type-route-representation-options.html#type-route-link-attribute
+        TODO: list of str?
         :type link_attributes: list, str
 
         :param line_attributes: Sequence of attribute keys of the fields that are included in public transport line elements. If not specified, defaults to lineForeground, lineBackground.
             https://developer.here.com/documentation/routing/topics/resource-param-type-route-representation-options.html#type-public-transport-line-attribute
+        TODO: list of str?
         :type line_attributes: list, str
 
-        :param generalization_tolerances: Specifies the desired tolerances for generalizations of the base route geometry. Tolerances are given in degrees of longitude or latitude on a spherical approximation of the Earth. One meter is approximately equal to 0:00001 degrees at typical latitudes. 
+        :param generalization_tolerances: Specifies the desired tolerances for generalizations of the base route geometry. Tolerances are given in degrees of longitude or latitude on a spherical approximation of the Earth. One meter is approximately equal to 0:00001 degrees at typical latitudes.
+        TODO: list of float?
         :type generalization_tolerances: list, float
 
         :param param vehicle_type: Specifies type of vehicle engine and average fuel consumption, which can be used to estimate CO2 emission for the route summary.
@@ -328,6 +386,7 @@ class HereMaps(Router):
 
         :param avoid_transport_types: Public transport types that shall not be included in the response route. Please refer to Enumeration Types for a list of supported values. 
             https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html
+        TODO: list of str?
         :type avoid_transport_types: list, str 
 
         :param walk_time_multiplier: Allows to prefer or avoid public transport routes with longer walking distances. A value > 1.0 means a slower walking speed and will prefer routes with less walking distance. The provided value must be between 0.01 and 100.
@@ -350,6 +409,7 @@ class HereMaps(Router):
 
         :param shipped_hazardous_goods: Truck routing only, list of hazardous materials in the vehicle. Please refer to the enumeration type HazardousGoodTypeType for available values. Note the value allhazardousGoods does not apply to the request parameter.
             https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html#resource-type-enumerations__enum-hazardous-good-type-type
+        TODO: list of str?
         :type shipped_hazardous_goods: list, str
 
         :param limited_weight: Truck routing only, vehicle weight including trailers and shipped goods, in tons. The provided value must be between 0 and 1000.
@@ -368,6 +428,7 @@ class HereMaps(Router):
         :type length: int        
 
         :param tunnel_category: Truck routing only, specifies the tunnel category to restrict certain route links. The route will pass only through tunnels of a less strict category.
+        TODO: list of str?
         :type tunnel_category: list, str
 
         :param truck_restriction_penalty: Truck routing only, specifies the penalty type on violated truck restrictions. Defaults to strict. Refer to the enumeration type TruckRestrictionPenaltyType for details on available values. 
@@ -391,11 +452,11 @@ class HereMaps(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: One or multiple route(s) from provided coordinates and restrictions.
+        :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
-        self._base_url = 'https://route.api.here.com/routing/7.2'
+        self.base_url = 'https://route.api.here.com/routing/7.2'
         params = {}
 
         params["app_code"] = self.app_code
@@ -418,6 +479,7 @@ class HereMaps(Router):
         if request_id is not None:
             params["requestId"] = request_id
 
+        # TODO: I have no idea how this is supposed to work.. What's the input? Be more specific in docstrings pls..
         if avoid_areas is not None:
             params["avoidAreas"] = convert._delimit_list([
                 convert._delimit_list([
@@ -647,15 +709,16 @@ class HereMaps(Router):
 
         For more information, https://developer.here.com/documentation/routing/topics/resource-calculate-isoline.html.
 
-        :param coordinates: The coordinate object with optional additional extras
-            from in order of visit.
-            https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
-        :type coordinates: obj
+        :param coordinates: One pair of lng/lat values.
+        :type coordinates: list of float
 
+        TODO: can we pls at least show the options for positional arguments?
         :param profile: Specifies the routing mode of transport and further options
             https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
+        TODO: What is obj??
         :type profile: str or obj
 
+        TODO: all other routers have 'range' instead of 'ranges'. Pls be consistent.
         :param ranges: Range of isoline. Several comma separated values can be specified. The unit is defined by parameter rangetype.
         :type ranges: list, int
 
@@ -673,10 +736,12 @@ class HereMaps(Router):
         :param departure: Time when travel is expected to start. Traffic speed and incidents are taken into account when calculating the route (note that in case of a past departure time the historical traffic is limited to one year). 
             You can use now to specify the current time. Specify either departure or arrival, not both.
             When the optional timezone offset is not specified, the time is assumed to be the local.
+        TODO: What's the format? Can't be datetime.datetime, never imported. Pls be accurate.
         :type departure: datetime
 
         :param arrival: Time when travel is expected to end. Specify either departure or arrival, not both.
             When the optional timezone offset is not specified, the time is assumed to be the local.
+        TODO: What's the format? Can't be datetime.datetime, never imported. Pls be accurate.
         :type arrival: datetime    
 
         :param single_component: If set to true the isoline service will always return single polygon, instead of creating a separate polygon for each ferry separated island. Default value is false.
@@ -703,6 +768,7 @@ class HereMaps(Router):
 
         :param shipped_hazardous_goods: Truck routing only, list of hazardous materials in the vehicle. Please refer to the enumeration type HazardousGoodTypeType for available values. Note the value allhazardousGoods does not apply to the request parameter.
             https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html#resource-type-enumerations__enum-hazardous-good-type-type
+        TODO: list of str?
         :type shipped_hazardous_goods: list, str
 
         :param limited_weight: Truck routing only, vehicle weight including trailers and shipped goods, in tons. The provided value must be between 0 and 1000.
@@ -721,6 +787,7 @@ class HereMaps(Router):
         :type length: int        
 
         :param tunnel_category: Truck routing only, specifies the tunnel category to restrict certain route links. The route will pass only through tunnels of a less strict category.
+        TODO: list of str?
         :type tunnel_category: list, str
 
         :param consumption_model: If you request information on consumption, you must provide a consumption model. The possible values are default and standard. When you specify the value standard, you must provide additional information in the query parameter customconsumptiondetails
@@ -741,7 +808,7 @@ class HereMaps(Router):
         :rtype: dict
         """
 
-        self._base_url = 'https://isoline.route.api.here.com/routing/7.2'
+        self.base_url = 'https://isoline.route.api.here.com/routing/7.2'
         params = {}
 
         params["app_code"] = self.app_code
@@ -836,6 +903,7 @@ class HereMaps(Router):
                     if 'shape' in component:
                         range_polygons.append(component['shape'])
 
+        # TODO: Specify 'center' coordinate from response
             geometries.append(
                 Isochrone(geometry=range_polygons, range=ranges[idx]))
 
@@ -869,6 +937,7 @@ class HereMaps(Router):
             dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
+            TODO: be more accurate. Hope coordinates is not only obj. What can be passed?? See directions.
             :param coordinates: The coordinate object with optional additional extras
                 from in order of visit.
                 https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
@@ -876,14 +945,15 @@ class HereMaps(Router):
 
             :param profile: Specifies the routing mode of transport and further options
                 https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
+            TODO: Why obj? What is that?
             :type profile: str or obj
 
             :param sources: The starting points for the matrix. 
                 Specifies an index referring to coordinates.
-            :type sources: list
+            :type sources: list of int
 
             :param destinations: The destination points for the routes. Specifies an index referring to coordinates.
-            :type destinations: list
+            :type destinations: list of int
 
             :param search_range: Defines the maximum search range for destination waypoints, in meters. This parameter is especially useful for optimizing matrix calculation where the maximum desired effective distance is known in advance. Destination waypoints with a longer effective distance than specified by searchRange will be skipped. The parameter is optional. In pedestrian mode the default search range is 20 km. If parameter is omitted in other modes, no range limit will apply.
             :type search_range: int
@@ -900,7 +970,7 @@ class HereMaps(Router):
             :type avoid_turns: str  
 
             :param exclude_countries: Countries that must be excluded from route calculation. 
-            :type exclude_zone_types: list, str  
+            :type exclude_countries: list, str
 
             :param departure: Time when travel is expected to start. Traffic speed and incidents are taken into account when calculating the route (note that in case of a past departure time the historical traffic is limited to one year). 
                 You can use now to specify the current time. Specify either departure or arrival, not both.
@@ -954,8 +1024,7 @@ class HereMaps(Router):
             :returns: raw JSON response
             :rtype: dict
             """
-
-        self._base_url = 'https://matrix.route.api.here.com/routing/7.2'
+        self.base_url = 'https://matrix.route.api.here.com/routing/7.2'
         params = {}
 
         params["app_code"] = self.app_code

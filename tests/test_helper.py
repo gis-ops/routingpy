@@ -33,6 +33,36 @@ PARAM_GEOJSON_LINE = {'type': 'LineString', 'coordinates': PARAM_LINE}
 PARAM_GEOJSON_POLY = {'type': 'Polygon', 'coordinates': PARAM_POLY}
 
 ENDPOINTS_RESPONSES = {
+    'osrm': {
+        'directions': {
+            'routes': [{
+                "geometry": {
+                    "coordinates": [[8.681495, 49.41461],
+                                    [8.681445, 49.415755]]
+                },
+                "duration": 100,
+                "distance": 100
+            }]
+        },
+        "matrix": {
+            "durations": [[1, 2, 3], [4, 5, 6]]
+        }
+    },
+    'mapbox_osrm': {
+        'directions': {
+            'routes': [{
+                "geometry": {
+                    "coordinates": [[8.681495, 49.41461],
+                                    [8.681445, 49.415755]]
+                },
+                "duration": 100,
+                "distance": 100
+            }]
+        },
+        "matrix": {
+            "durations": [[1, 2, 3], [4, 5, 6]]
+        }
+    },
     'google': {
         "directions": {
             "routes": [{
@@ -695,46 +725,6 @@ ENDPOINTS_QUERIES = {
 }
 
 ENDPOINTS_EXPECTED = {
-    'mapbox_osrm': {
-        'directions': {
-            'alternatives':
-            'true',
-            'annotations':
-            'duration,distance,speed',
-            'approaches':
-            ';curb;curb;curb',
-            'banner_instuctions':
-            'true',
-            'bearings':
-            '50,50;50,50;50,50',
-            'continue_straight':
-            'true',
-            'coordinates':
-            '8.688641,49.420577;8.680916,49.415776;8.780916,49.445776',
-            'exclude':
-            'motorway',
-            'geometries':
-            'geojson',
-            'language':
-            'de',
-            'overview':
-            'simplified',
-            'radiuses':
-            '500;500;500',
-            'roundabout_exits':
-            'true',
-            'steps':
-            'true',
-            'voice_units':
-            'metric',
-            'voide_instructions':
-            'true',
-            'waypoint_names':
-            'a;b;c',
-            'waypoint_targets':
-            ';8.688641,49.420577;8.680916,49.415776;8.780916,49.445776'
-        }
-    },
     'valhalla': {
         'directions': {
             'locations': [

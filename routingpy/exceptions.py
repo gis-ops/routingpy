@@ -19,18 +19,6 @@ Defines exceptions that are thrown by the ORS client.
 """
 
 
-class ValidationError(Exception):
-    """Something went wrong during cerberus validation"""
-
-    def __init__(self, errors):
-        for error in errors:
-            msg = '\n'.join([
-                "Argument '{}': {}".format(error, errors[error][0])
-                for error in errors
-            ])
-        Exception.__init__(self, msg)
-
-
 class RouterError(Exception):
     """Represents an exception returned by the remote API."""
 
@@ -68,17 +56,17 @@ class Timeout(Exception):
     pass
 
 
-class _JSONParseError(Exception):
+class JSONParseError(Exception):
     """The Json response can't be parsed.."""
     pass
 
 
-class _RetriableRequest(Exception):
+class RetriableRequest(Exception):
     """Signifies that the request can be retried."""
     pass
 
 
-class _OverQueryLimit(RouterError, _RetriableRequest):
+class OverQueryLimit(RouterError, RetriableRequest):
     """Signifies that the request failed because the client exceeded its query rate limit.
 
     Normally we treat this as a retriable condition, but we allow the calling code to specify that these requests should

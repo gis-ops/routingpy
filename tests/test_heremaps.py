@@ -128,12 +128,12 @@ class HereMapsTest(_test.TestCase):
             responses.calls[0].request.url)
 
         self.assertIsInstance(routes, Directions)
-        self.assertIsInstance(routes.__getitem__(0), Direction)
-        self.assertIsInstance(routes.__getitem__(1), Direction)
-        self.assertIsInstance(routes.__getitem__(2), Direction)
-        self.assertIsInstance(routes.__getitem__(0).geometry, list)
-        self.assertIsInstance(routes.__getitem__(1).geometry, list)
-        self.assertIsInstance(routes.__getitem__(2).geometry, list)
+        self.assertIsInstance(routes[0], Direction)
+        self.assertIsInstance(routes[1], Direction)
+        self.assertIsInstance(routes[2], Direction)
+        self.assertIsInstance(routes[0].geometry, list)
+        self.assertIsInstance(routes[1].geometry, list)
+        self.assertIsInstance(routes[2].geometry, list)
 
     @responses.activate
     def test_full_isochrones_response_object(self):
@@ -156,12 +156,12 @@ class HereMapsTest(_test.TestCase):
             responses.calls[0].request.url)
 
         self.assertIsInstance(isochrones, Isochrones)
-        self.assertIsInstance(isochrones.__getitem__(0), Isochrone)
-        self.assertIsInstance(isochrones.__getitem__(1), Isochrone)
-        self.assertIsInstance(isochrones.__getitem__(2), Isochrone)
-        self.assertIsInstance(isochrones.__getitem__(0).geometry, list)
-        self.assertIsInstance(isochrones.__getitem__(1).geometry, list)
-        self.assertIsInstance(isochrones.__getitem__(2).geometry, list)
+        self.assertIsInstance(isochrones[0], Isochrone)
+        self.assertIsInstance(isochrones[1], Isochrone)
+        self.assertIsInstance(isochrones[2], Isochrone)
+        self.assertIsInstance(isochrones[0].geometry, list)
+        self.assertIsInstance(isochrones[1].geometry, list)
+        self.assertIsInstance(isochrones[2].geometry, list)
 
     @responses.activate
     def test_full_matrix(self):

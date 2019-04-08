@@ -14,9 +14,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-"""
-Core client functionality, common across all API requests.
-"""
 
 from .base import Router
 from routingpy import convert
@@ -43,6 +40,10 @@ class OSRM(Router):
             server. Should not have a trailing slash.
         :type base_url: str
 
+        :param user_agent: User-Agent to send with the requests to routing API.
+            Overrides ``options.default_user_agent``.
+        :type user_agent: string
+
         :param timeout: Combined connect and read timeout for HTTP requests, in
             seconds. Specify "None" for no timeout.
         :type timeout: int
@@ -57,12 +58,9 @@ class OSRM(Router):
             http://docs.python-requests.org/en/latest/api/#main-interface
         :type requests_kwargs: dict
 
-        :param queries_per_minute: Number of queries per second permitted.
-            If the rate limit is reached, the client will sleep for the
-            appropriate amount of time before it runs the current query.
-            Note, it won't help to initiate another client. This saves you the
-            trouble of raised exceptions.
-        :type queries_per_minute: int
+        :param retry_over_query_limit: If True, the client will retry when query
+            limit is reached (HTTP 429). Default False.
+        :type retry_over_query_limit: bool
         """
 
         super(OSRM,
@@ -87,7 +85,7 @@ class OSRM(Router):
 
         :param coordinates: The coordinates tuple the route should be calculated
             from in order of visit.
-        :type coordinates: list, tuple
+        :type coordinates: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["car", "bike", "foot"].
@@ -97,7 +95,7 @@ class OSRM(Router):
             meters) that limit the search of nearby road segments to every given waypoint.
             The values must be greater than 0, an empty element signifies to use the backend default
             radius. The number of radiuses must correspond to the number of waypoints.
-        :type radiuses: list or tuple
+        :type radiuses: list of int
 
         :param bearings: Specifies a list of pairs (bearings and
             deviations) to filter the segments of the road network a waypoint can
@@ -108,10 +106,10 @@ class OSRM(Router):
             from true north. If the deviation is not set, then the default value of
             100 degrees is used. The number of pairs must correspond to the number
             of waypoints.
-        :type bearings: list, tuple of int lists/tuples
+        :type bearings: list of list
 
-        :param alternatives: Search for alternative routes. A result cannot be guaranteed. Accepts an integer.
-            Default false.
+        :param alternatives: Search for alternative routes. A result cannot be guaranteed. Accepts an integer or False.
+            Default False.
         :type alternatives: bool or int
 
         :param steps: Return route steps for each route leg. Default false.
@@ -212,8 +210,8 @@ class OSRM(Router):
         For more information visit http://project-osrm.org/docs/v5.5.1/api/#table-service.
 
         :param coordinates: The coordinates tuple the route should be calculated
-            from in order of visit.
-        :type coordinates: list, tuple
+            from.
+        :type coordinates: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["car", "bike", "foot"].
@@ -223,7 +221,7 @@ class OSRM(Router):
             meters) that limit the search of nearby road segments to every given waypoint.
             The values must be greater than 0, an empty element signifies to use the backend default
             radius. The number of radiuses must correspond to the number of waypoints.
-        :type radiuses: list or tuple
+        :type radiuses: list of int
 
         :param bearings: Specifies a list of pairs (bearings and
             deviations) to filter the segments of the road network a waypoint can
@@ -234,15 +232,15 @@ class OSRM(Router):
             from true north. If the deviation is not set, then the default value of
             100 degrees is used. The number of pairs must correspond to the number
             of waypoints.
-        :type bearings: list, tuple of int lists/tuples
+        :type bearings: list of list
 
         :param sources: A list of indices that refer to the list of locations
             (starting with 0). If not passed, all indices are considered.
-        :type sources: list or tuple
+        :type sources: list of int
 
         :param destinations: A list of indices that refer to the list of locations
             (starting with 0). If not passed, all indices are considered.
-        :type destinations: list or tuple
+        :type destinations: list of int
 
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
