@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 Google Inc. All rights reserved.
-#
-# Modifications Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2019 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -16,7 +14,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-"""Converts Python types to string representations suitable for ORS API server.
+"""Converts Python types to string representations suitable for GET queries.
 """
 
 

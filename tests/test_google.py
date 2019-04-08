@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 Google Inc. All rights reserved.
-#
-# Modifications Copyright (C) 2018 HeiGIT, University of Heidelberg.
+# Copyright (C) 2019 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -16,10 +14,12 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-
 """Tests for the Google module."""
 
 from routingpy import Google
+from routingpy.direction import Direction, Directions
+from routingpy.matrix import Matrix
+
 from tests.test_helper import *
 import tests as _test
 
@@ -38,11 +38,12 @@ class GoogleTest(_test.TestCase):
     def test_full_directions(self):
         query = ENDPOINTS_QUERIES[self.name]['directions']
 
-        responses.add(responses.GET,
-                      'https://maps.googleapis.com/maps/api/directions/json',
-                      status=200,
-                      json={},
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            'https://maps.googleapis.com/maps/api/directions/json',
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['directions'],
+            content_type='application/json')
 
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
@@ -51,8 +52,37 @@ class GoogleTest(_test.TestCase):
             'avoid=tolls%7Cferries&destination=49.445776%2C8.780916&key=sample_key&language=de&origin=49.420577%2C8.688641&'
             'profile=driving&region=de&traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&'
             'units=metrics&waypoints=49.415776%2C8.680916',
-            responses.calls[0].request.url
-        )
+            responses.calls[0].request.url)
+
+        self.assertIsInstance(routes, Directions)
+        self.assertIsInstance(routes[0], Direction)
+        self.assertIsInstance(routes[0].geometry, list)
+
+    @responses.activate
+    def test_full_directions_no_alternatives(self):
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]['directions'])
+        query['alternatives'] = False
+
+        responses.add(
+            responses.GET,
+            'https://maps.googleapis.com/maps/api/directions/json',
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['directions'],
+            content_type='application/json')
+
+        routes = self.client.directions(**query)
+        self.assertEqual(1, len(responses.calls))
+        self.assertURLEqual(
+            'https://maps.googleapis.com/maps/api/directions/json?alternatives=false&arrival_time=1567512000&'
+            'avoid=tolls%7Cferries&destination=49.445776%2C8.780916&key=sample_key&language=de&origin=49.420577%2C8.688641&'
+            'profile=driving&region=de&traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&'
+            'units=metrics&waypoints=49.415776%2C8.680916',
+            responses.calls[0].request.url)
+
+        self.assertIsInstance(routes, Direction)
+        self.assertIsInstance(routes.geometry, list)
+        self.assertIsInstance(routes.duration, int)
+        self.assertIsInstance(routes.distance, int)
 
     @responses.activate
     def test_waypoint_generator_directions(self):
@@ -61,18 +91,21 @@ class GoogleTest(_test.TestCase):
             PARAM_LINE_MULTI[1],
             Google.WayPoint('osazgqo@/@', 'enc', False),
             Google.WayPoint(PARAM_LINE_MULTI[1], 'coords', True),
-            Google.WayPoint('EiNNYXJrdHBsLiwgNjkxMTcgSGVpZGVsYmVyZywgR2VybWFueSIuKiwKFAoSCdubgq0HwZdHEdclR2bm32EmEhQKEgmTG6mCBsGXRxF38ZZ8m5j3VQ', 'place_id', False),
+            Google.WayPoint(
+                'EiNNYXJrdHBsLiwgNjkxMTcgSGVpZGVsYmVyZywgR2VybWFueSIuKiwKFAoSCdubgq0HwZdHEdclR2bm32EmEhQKEgmTG6mCBsGXRxF38ZZ8m5j3VQ',
+                'place_id', False),
             PARAM_LINE_MULTI[0],
         ]
         query['optimize'] = True
 
-        responses.add(responses.GET,
-                      'https://maps.googleapis.com/maps/api/directions/json',
-                      status=200,
-                      json={},
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            'https://maps.googleapis.com/maps/api/directions/json',
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['directions'],
+            content_type='application/json')
 
-        resp = self.client.directions(**query)
+        directions = self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
@@ -81,14 +114,14 @@ class GoogleTest(_test.TestCase):
             'origin=49.415776%2C8.680916&profile=driving&region=de&traffic_model=optimistic&transit_mode=bus%7Crail&t'
             'ransit_routing_preference=less_walking&units=metrics&waypoints=optimize%3Atrue%7Cvia%3Aenc%3Aosazgqo%40%2F%40%3A%7C49.415776%2C8.680916%7C'
             'via%3Aplace_id%3AEiNNYXJrdHBsLiwgNjkxMTcgSGVpZGVsYmVyZywgR2VybWFueSIuKiwKFAoSCdubgq0HwZdHEdclR2bm32EmEhQKEgmTG6mCBsGXRxF38ZZ8m5j3VQ',
-            responses.calls[0].request.url
-        )
+            responses.calls[0].request.url)
 
         # Test if 'bla' triggers a ValueError
-        query['coordinates'].insert(1, Google.WayPoint(PARAM_LINE_MULTI[0], 'bla', True))
+        query['coordinates'].insert(
+            1, Google.WayPoint(PARAM_LINE_MULTI[0], 'bla', True))
 
         with self.assertRaises(ValueError):
-            resp = self.client.directions(**query)
+            matrix = self.client.directions(**query)
 
         # Test if origin=WayPoint triggers a TypeError
         query['coordinates'] = [
@@ -103,11 +136,12 @@ class GoogleTest(_test.TestCase):
     def test_full_matrix(self):
         query = ENDPOINTS_QUERIES[self.name]['matrix']
 
-        responses.add(responses.GET,
-                      'https://maps.googleapis.com/maps/api/distancematrix/json',
-                      status=200,
-                      json={},
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            'https://maps.googleapis.com/maps/api/distancematrix/json',
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['matrix'],
+            content_type='application/json')
 
         matrix = self.client.distance_matrix(**query)
 
@@ -117,8 +151,11 @@ class GoogleTest(_test.TestCase):
             'destinations=49.420577%2C8.688641%7C49.415776%2C8.680916%7C49.445776%2C8.780916&key=sample_key&language=de&'
             'origins=49.420577%2C8.688641%7C49.415776%2C8.680916%7C49.445776%2C8.780916&profile=driving&region=de&'
             'traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&units=metrics',
-            responses.calls[0].request.url
-        )
+            responses.calls[0].request.url)
+
+        self.assertIsInstance(matrix, Matrix)
+        self.assertIsInstance(matrix.durations, list)
+        self.assertIsInstance(matrix.distances, list)
 
     @responses.activate
     def test_few_sources_destinations_matrix(self):
@@ -126,40 +163,43 @@ class GoogleTest(_test.TestCase):
         query['sources'] = [1]
         query['destinations'] = [0]
 
-        responses.add(responses.GET,
-                      'https://maps.googleapis.com/maps/api/distancematrix/json',
-                      status=200,
-                      json={},
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            'https://maps.googleapis.com/maps/api/distancematrix/json',
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['matrix'],
+            content_type='application/json')
 
-        resp = self.client.distance_matrix(**query)
+        matrix = self.client.distance_matrix(**query)
 
         query['sources'] = None
         query['destinations'] = [1, 2]
 
-        responses.add(responses.GET,
-                      'https://maps.googleapis.com/maps/api/distancematrix/json',
-                      status=200,
-                      json={},
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            'https://maps.googleapis.com/maps/api/distancematrix/json',
+            status=200,
+            json={},
+            content_type='application/json')
 
-        resp = self.client.distance_matrix(**query)
+        matrix = self.client.distance_matrix(**query)
 
         self.assertEqual(2, len(responses.calls))
         self.assertURLEqual(
             'https://maps.googleapis.com/maps/api/distancematrix/json?arrival_time=1567512000&avoid=tolls%7Cferries&'
             'destinations=49.420577%2C8.688641&key=sample_key&language=de&origins=49.415776%2C8.680916&profile=driving&'
             'region=de&traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&'
-            'units=metrics',
-            responses.calls[0].request.url
-        )
+            'units=metrics', responses.calls[0].request.url)
         self.assertURLEqual(
             'https://maps.googleapis.com/maps/api/distancematrix/json?arrival_time=1567512000&avoid=tolls%7Cferries&'
             'destinations=49.415776%2C8.680916%7C49.445776%2C8.780916&key=sample_key&language=de&'
             'origins=49.420577%2C8.688641%7C49.415776%2C8.680916%7C49.445776%2C8.780916&profile=driving&region=de&'
             'traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&units=metrics',
-            responses.calls[1].request.url
-        )
+            responses.calls[1].request.url)
+
+        self.assertIsInstance(matrix, Matrix)
+        self.assertIsInstance(matrix.durations, list)
+        self.assertIsInstance(matrix.distances, list)
 
     @responses.activate
     def test_waypoint_generator_matrix(self):
@@ -168,15 +208,18 @@ class GoogleTest(_test.TestCase):
             PARAM_LINE_MULTI[1],
             Google.WayPoint('osazgqo@/@', 'enc', False),
             Google.WayPoint(PARAM_LINE_MULTI[1], 'coords', True),
-            Google.WayPoint('EiNNYXJrdHBsLiwgNjkxMTcgSGVpZGVsYmVyZywgR2VybWFueSIuKiwKFAoSCdubgq0HwZdHEdclR2bm32EmEhQKEgmTG6mCBsGXRxF38ZZ8m5j3VQ', 'place_id', False),
+            Google.WayPoint(
+                'EiNNYXJrdHBsLiwgNjkxMTcgSGVpZGVsYmVyZywgR2VybWFueSIuKiwKFAoSCdubgq0HwZdHEdclR2bm32EmEhQKEgmTG6mCBsGXRxF38ZZ8m5j3VQ',
+                'place_id', False),
             PARAM_LINE_MULTI[0],
         ]
 
-        responses.add(responses.GET,
-                      'https://maps.googleapis.com/maps/api/distancematrix/json',
-                      status=200,
-                      json={},
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            'https://maps.googleapis.com/maps/api/distancematrix/json',
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['matrix'],
+            content_type='application/json')
 
         matrix = self.client.distance_matrix(**query)
 
@@ -187,7 +230,4 @@ class GoogleTest(_test.TestCase):
             'EiNNYXJrdHBsLiwgNjkxMTcgSGVpZGVsYmVyZywgR2VybWFueSIuKiwKFAoSCdubgq0HwZdHEdclR2bm32EmEhQKEgmTG6mCBsGXRxF38ZZ8m5j3VQ%7C49.420577%2C8.688641&'
             'key=sample_key&language=de&origins=49.415776%2C8.680916%7Cvia%3Aenc%3Aosazgqo%40%2F%40%3A%7C49.415776%2C8.680916%7Cvia%3Aplace_id%3AEiNNYXJrdHBsLiwgNjkxMTcgSGVpZGVsYmVyZywgR2VybWFueSIuKiwKFAoSCdubgq0HwZdHEdclR2bm32EmEhQKEgmTG6mCBsGXRxF38ZZ8m5j3VQ%7C49.420577%2C8.688641&'
             'profile=driving&region=de&traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&units=metrics',
-            responses.calls[0].request.url
-        )
-  
-
+            responses.calls[0].request.url)

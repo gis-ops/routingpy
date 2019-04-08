@@ -14,14 +14,11 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-"""
-Core client functionality, common across all API requests.
-"""
 
 from .base import Router
 from routingpy import utils
 from routingpy.direction import Direction
-from routingpy.isochrone import Isochrone
+from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
 
 
@@ -41,12 +38,16 @@ class ORS(Router):
         """
         Initializes an openrouteservice client.
 
-        :param key: Mapbox API key. Required
-        :type key: str
+        :param api_key: ORS API key. Required if https://api.openrouteservice.org is used.
+        :type api_key: str
 
         :param base_url: The base URL for the request. Defaults to the ORS API
             server. Should not have a trailing slash.
         :type base_url: str
+
+        :param user_agent: User-Agent to send with the requests to routing API.
+            Overrides ``options.default_user_agent``.
+        :type user_agent: string
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
             seconds. Specify "None" for no timeout.
@@ -102,11 +103,12 @@ class ORS(Router):
                    dry_run=None):
         """Get directions between an origin point and a destination point.
 
+        TODO: change URL I think
         For more information, visit https://openrouteservice.org/documentation/.
 
         :param coordinates: The coordinates tuple the route should be calculated
             from in order of visit.
-        :type coordinates: list, tuple
+        :type coordinates: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["driving-car", "driving-hgv", "foot-walking",
@@ -142,7 +144,7 @@ class ORS(Router):
 
         :param instructions_format: Specifies the the output format for instructions.
             One of ["text", "html"]. Default "text".
-        :type instructions_format: string
+        :type instructions_format: str
 
         :param roundabout_exits: Provides bearings of the entrance and all passed
             roundabout exits. Adds the 'exit_bearings' array to the 'step' object
@@ -151,7 +153,7 @@ class ORS(Router):
 
         :param attributes: Returns route attributes on ["avgspeed", "detourfactor", "percentage"].
             Must be a list of strings. Default None.
-        :type attributes: list, tuple of str
+        :type attributes: list of str
 
         :param maneuvers: Specifies whether the maneuver object is included into the step object or not. Default: False.
         :type maneuvers bool
@@ -161,7 +163,7 @@ class ORS(Router):
             The values must be greater than 0, the value of -1 specifies no limit in
             the search. The number of radiuses must correspond to the number of waypoints.
             Default 50 km (ORS backend).
-        :type radiuses: list or tuple
+        :type radiuses: list of int
 
         :param bearings: Specifies a list of pairs (bearings and
             deviations) to filter the segments of the road network a waypoint can
@@ -176,7 +178,7 @@ class ORS(Router):
             of waypoints-1 or waypoints. If the bearing information for the last waypoint
             is given, then this will control the sector from which the destination
             waypoint may be reached.
-        :type bearings: list, tuple
+        :type bearings: list of list
 
         :param continue_straight: Forces the route to keep going straight at waypoints not
             restricting u-turns even if u-turns would be faster. Default False.
@@ -189,7 +191,7 @@ class ORS(Router):
         :param extra_info: Returns additional information on ["steepness", "suitability",
             "surface", "waycategory", "waytype", "tollways", "traildifficulty", "roadaccessrestrictions"].
             Must be a list of strings. Default None.
-        :type extra_info: list, tuple of str
+        :type extra_info: list of str
 
         :param suppress_warnings: Tells the system to not return any warning messages in extra_info.
         :type suppress_warnings: bool
@@ -201,8 +203,8 @@ class ORS(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: A route from provided coordinates and restrictions.
+        :rtype: :class:`routingpy.direction.Direction`
         """
 
         params = {"coordinates": coordinates, "profile": profile}
@@ -278,8 +280,10 @@ class ORS(Router):
 
         if format == 'geojson':
             geometry = response['features'][0]['geometry']['coordinates']
-            duration = int(response['features'][0]['properties']['duration'])
-            distance = int(response['features'][0]['properties']['distance'])
+            duration = int(
+                response['features'][0]['properties']['summary']['duration'])
+            distance = int(
+                response['features'][0]['properties']['summary']['distance'])
         elif format == 'json':
             geometry = [
                 list(reversed(coord)) for coord in utils.decode_polyline6(
@@ -298,9 +302,8 @@ class ORS(Router):
     def isochrones(self,
                    coordinates,
                    profile,
-                   range,
-                   range_type,
-                   interval=None,
+                   intervals,
+                   interval_type,
                    units=None,
                    location_type=None,
                    smoothing=None,
@@ -310,7 +313,7 @@ class ORS(Router):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
         :param coordinates: One pair of lng/lat values.
-        :type coordinates: list, tuple
+        :type coordinates: list of float
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["driving-car", "driving-hgv", "foot-walking",
@@ -318,20 +321,13 @@ class ORS(Router):
             "cycling-electric",]. Default "driving-car".
         :type profile: str
 
-        :param range_type: Set 'time' for isochrones or 'distance' for equidistants.
+        :param interval_type: Set 'time' for isochrones or 'distance' for equidistants.
             Default 'time'.
-        :type sources: str
+        :type interval_type: str
 
-        :param range: Ranges to calculate distances/durations for. This can be
-            a list of multiple ranges, e.g. [600, 1200, 1400] or a single value list.
-            In the latter case, you can also specify the 'interval' variable to break
-            the single value into more isochrones. In meters or seconds.
-        :type range: list of int
-
-        :param interval: Segments isochrones or equidistants for one 'range' value.
-            Only has effect if used with a single 'range' value.
-            In meters or seconds.
-        :type interval: int
+        :param intervals: Ranges to calculate distances/durations for. This can be
+            a list of multiple ranges, e.g. [600, 1200, 1400]. In meters or seconds.
+        :type intervals: list of int
 
         :param units: Specifies the unit system to use when displaying results.
             One of ["m", "km", "m"]. Default "m".
@@ -357,19 +353,16 @@ class ORS(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: An isochrone with the specified range.
+        :rtype: :class:`routingpy.isochrone.Isochrones`
         """
 
         params = {
             "locations": coordinates,
             "profile": profile,
-            "range": range,
-            "range_type": range_type
+            "range": intervals,
+            "range_type": interval_type
         }
-
-        if interval:
-            params['interval'] = interval
 
         if units:
             params["units"] = units
@@ -391,18 +384,21 @@ class ORS(Router):
                 "/v2/isochrones/" + profile + '/geojson',
                 get_params={},
                 post_params=params,
-                dry_run=dry_run), range)
+                dry_run=dry_run))
 
     @staticmethod
-    def _parse_isochrone_json(response, range):
+    def _parse_isochrone_json(response):
         if response is None:
             return None
-        return [
-            Isochrone(isochrone['geometry']['coordinates'], range[idx],
-                      isochrone)
-            for idx, isochrone in enumerate(response['features'])
-        ]
 
+        return Isochrones(
+            isochrones=[
+                Isochrone(isochrone['geometry']['coordinates'],
+                          isochrone['properties']['value'],
+                          isochrone['properties']['center'], isochrone)
+                for idx, isochrone in enumerate(response['features'])
+            ],
+            raw=response)
 
     def distance_matrix(self,
                         coordinates,
@@ -415,44 +411,43 @@ class ORS(Router):
                         dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
-            :param coordinates: One or more pairs of lng/lat values.
-            :type coordinates: a single location, or a list of locations, where a
-                location is a list or tuple of lng,lat values
+        :param coordinates: Two or more pairs of lng/lat values.
+        :type coordinates: list of list
 
-            :param profile: Specifies the mode of transport to use when calculating
-                directions. One of ["driving-car", "driving-hgv", "foot-walking",
-                "foot-hiking", "cycling-regular", "cycling-road", "cycling-mountain",
-                "cycling-electric",]. Default "driving-car".
-            :type profile: str
+        :param profile: Specifies the mode of transport to use when calculating
+            directions. One of ["driving-car", "driving-hgv", "foot-walking",
+            "foot-hiking", "cycling-regular", "cycling-road", "cycling-mountain",
+            "cycling-electric",]. Default "driving-car".
+        :type profile: str
 
-            :param sources: A list of indices that refer to the list of locations
-                (starting with 0). If not passed, all indices are considered.
-            :type sources: list or tuple
+        :param sources: A list of indices that refer to the list of locations
+            (starting with 0). If not passed, all indices are considered.
+        :type sources: list of int
 
-            :param destinations: A list of indices that refer to the list of locations
-                (starting with 0). If not passed, all indices are considered.
-            :type destinations: list or tuple
+        :param destinations: A list of indices that refer to the list of locations
+            (starting with 0). If not passed, all indices are considered.
+        :type destinations: list of int
 
-            :param metrics: Specifies a list of returned metrics. One or more of ["distance",
-                "duration"]. Default ['duration'].
-            :type metrics: list of str
+        :param metrics: Specifies a list of returned metrics. One or more of ["distance",
+            "duration"]. Default ['duration'].
+        :type metrics: list of str
 
-            :param resolve_locations: Specifies whether given locations are resolved or
-                not. If set 'true', every element in destinations and sources will
-                contain the name element that identifies the name of the closest street.
-                Default False.
-            :type resolve_locations: bool
+        :param resolve_locations: Specifies whether given locations are resolved or
+            not. If set 'true', every element in destinations and sources will
+            contain the name element that identifies the name of the closest street.
+            Default False.
+        :type resolve_locations: bool
 
-            :param units: Specifies the unit system to use when displaying results.
-                One of ["m", "km", "m"]. Default "m".
-            :type units: str
+        :param units: Specifies the unit system to use when displaying results.
+            One of ["m", "km", "m"]. Default "m".
+        :type units: str
 
-            :param dry_run: Print URL and parameters without sending the request.
-            :param dry_run: bool
+        :param dry_run: Print URL and parameters without sending the request.
+        :param dry_run: bool
 
-            :returns: raw JSON response
-            :rtype: dict
-            """
+        :returns: A matrix from the specified sources and destinations.
+        :rtype: :class:`routingpy.matrix.Matrix`
+        """
 
         params = {"locations": coordinates, "profile": profile}
 
@@ -485,4 +480,3 @@ class ORS(Router):
         durations = response.get('durations')
         distances = response.get('distances')
         return Matrix(durations, distances, response)
-

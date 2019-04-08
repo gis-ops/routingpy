@@ -18,8 +18,11 @@
 Core client functionality, common across all API requests.
 """
 
-from .base import Router
+from .base import Router, DEFAULT
 from routingpy import convert
+from routingpy.direction import Direction, Directions
+from routingpy.isochrone import Isochrone, Isochrones
+from routingpy.matrix import Matrix
 
 
 class MapBoxOSRM(Router):
@@ -30,19 +33,19 @@ class MapBoxOSRM(Router):
     def __init__(self,
                  api_key,
                  user_agent=None,
-                 timeout=None,
+                 timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs=None,
                  retry_over_query_limit=False):
         """
-        Initializes an OSRM client.
+        Initializes a Mapbox OSRM client.
 
-        :param key: ORS API key. Required if https://api.openrouteservice.org is used.
-        :type key: str
+        :param api_key: Mapbox API key.
+        :type api_key: str
 
-        :param base_url: The base URL for the request. Defaults to the OSRM demo API
-            server. Should not have a trailing slash.
-        :type base_url: str
+        :param user_agent: User-Agent to send with the requests to routing API.
+            Overrides ``options.default_user_agent``.
+        :type user_agent: str
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
             seconds. Specify "None" for no timeout.
@@ -58,12 +61,9 @@ class MapBoxOSRM(Router):
             http://docs.python-requests.org/en/latest/api/#main-interface
         :type requests_kwargs: dict
 
-        :param queries_per_minute: Number of queries per second permitted.
-            If the rate limit is reached, the client will sleep for the
-            appropriate amount of time before it runs the current query.
-            Note, it won't help to initiate another client. This saves you the
-            trouble of raised exceptions.
-        :type queries_per_minute: int
+        :param retry_over_query_limit: If True, the client will retry when query
+            limit is reached (HTTP 429). Default False.
+        :type retry_over_query_limit: bool
         """
 
         self.api_key = api_key
@@ -95,11 +95,11 @@ class MapBoxOSRM(Router):
                    dry_run=None):
         """Get directions between an origin point and a destination point.
 
-        For more information, visit http://project-osrm.org/docs/v5.5.1/api/#route-service.
+        For more information, visit https://docs.mapbox.com/api/navigation/#directions.
 
         :param coordinates: The coordinates tuple the route should be calculated
             from in order of visit.
-        :type coordinates: list, tuple
+        :type coordinates: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["driving-traffic", "driving", "walking", "cycling"].
@@ -120,7 +120,7 @@ class MapBoxOSRM(Router):
             from true north. If the deviation is not set, then the default value of
             100 degrees is used. The number of pairs must correspond to the number
             of waypoints.
-        :type bearings: list, tuple of int lists/tuples
+        :type bearings: list of list of int
 
         :param alternatives: Search for alternative routes and return as well. A result cannot be guaranteed.
             Default false.
@@ -190,13 +190,13 @@ class MapBoxOSRM(Router):
             of the street, left or right, for each target based on the waypoint_targets and the driving direction. The
             maneuver.modifier, banner and voice instructions will be updated with the computed side of street. The
             number of waypoint_targets must be the same as the number of coordinates.
-        :type waypoint_targets: list of lists of float
+        :type waypoint_targets: list of list of float
 
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: One or multiple route(s) from provided coordinates and restrictions.
+        :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
         coords = convert._delimit_list([
@@ -268,35 +268,148 @@ class MapBoxOSRM(Router):
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
-        return self._request(
-            "/directions/v5/mapbox/" + profile,
-            get_params=get_params,
-            post_params=params,
-            dry_run=dry_run)
+        return self._parse_direction_json(
+            self._request(
+                "/directions/v5/mapbox/" + profile,
+                get_params=get_params,
+                post_params=params,
+                dry_run=dry_run,
+                requests_kwargs={
+                    "headers": {
+                        "Content-Type": 'application/x-www-form-urlencoded'
+                    }
+                },
+            ), alternatives)
 
-    def isochrones(self):
-        raise NotImplementedError
+    @staticmethod
+    def _parse_direction_json(response, alternatives):
+        if response is None:
+            return None
+
+        if alternatives:
+            routes = []
+            for route in response['routes']:
+                routes.append(
+                    Direction(route['geometry']['coordinates'],
+                              route['duration'], route['distance'], route))
+            return Directions(routes, response)
+        else:
+            return Direction(response['routes'][0]['geometry']['coordinates'],
+                             response['routes'][0]['duration'],
+                             response['routes'][0]['distance'], response)
+
+    def isochrones(self,
+                   coordinates,
+                   profile,
+                   intervals,
+                   contours_colors=None,
+                   polygons=None,
+                   denoise=None,
+                   generalize=None,
+                   dry_run=None):
+        """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
+
+        For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/isochrone/api-reference.md.
+
+        :param coordinates: One pair of lng/lat values. Takes the form [Longitude, Latitude].
+        :type coordinates: list of float
+
+        :param profile: Specifies the mode of transport to use when calculating
+            directions. One of ["mapbox/driving", "mapbox/walking", "mapbox/cycling".
+        :type profile: str
+
+        :param intervals: Time ranges to calculate isochrones for. Up to 4 ranges are possible. In seconds.
+        :type intervals: list of int
+
+        :param contours_colors: The color for the output of the contour. Specify it as a Hex value, but without the #, such as
+            "color":"ff0000" for red. If no color is specified, the isochrone service will assign a default color to the output.
+        :type contours_colors: list of str
+
+        :param polygons: Controls whether polygons or linestrings are returned in GeoJSON geometry. Default False.
+        :type polygons: bool
+
+        :param denoise: Can be used to remove smaller contours. In range [0, 1]. A value of 1 will only return the largest contour
+            for a given time value. A value of 0.5 drops any contours that are less than half the area of the largest
+            contour in the set of contours for that same time value. Default 1.
+        :type denoise: float
+
+        :param generalize: A floating point value in meters used as the tolerance for Douglas-Peucker generalization.
+            Note: Generalization of contours can lead to self-intersections, as well as intersections of adjacent contours.
+        :type generalize: float
+
+        :param dry_run: Print URL and parameters without sending the request.
+        :param dry_run: bool
+
+        :returns: An isochrone with the specified range.
+        :rtype: :class:`routingpy.isochrone.Isochrones`
+        """
+
+        params = {
+            "contours_minutes":
+            convert._delimit_list([x / 60 for x in sorted(intervals)], ','),
+            'access_token':
+            self.api_key
+        }
+
+        coordinates = convert._delimit_list(coordinates, ',')
+
+        if contours_colors:
+            params["contours_colors"] = convert._delimit_list(
+                contours_colors, ',')
+
+        if polygons is not None:
+            params['polygons'] = polygons
+
+        if denoise:
+            params['denoise'] = denoise
+
+        if generalize:
+            params['generalize'] = generalize
+
+        return self._parse_isochrone_json(
+            self._request(
+                "/isochrone/v1/" + profile + '/' + coordinates,
+                get_params=params,
+                dry_run=dry_run), intervals)
+
+    @staticmethod
+    def _parse_isochrone_json(response, intervals):
+        if response is None:
+            return None
+        return Isochrones([
+            Isochrone(isochrone['geometry']['coordinates'], intervals[idx],
+                      None, isochrone)
+            for idx, isochrone in enumerate(response['features'])
+        ], response)
 
     def distance_matrix(self,
                         coordinates,
                         profile,
-                        annotations=None,
-                        fallback_speed=None,
                         sources=None,
                         destinations=None,
+                        annotations=None,
+                        fallback_speed=None,
                         dry_run=None):
         """
         Gets travel distance and time for a matrix of origins and destinations.
 
-        For more information visit http://project-osrm.org/docs/v5.5.1/api/#table-service.
+        For more information visit https://docs.mapbox.com/api/navigation/#matrix.
 
         :param coordinates: The coordinates tuple the route should be calculated
             from in order of visit.
-        :type coordinates: list, tuple
+        :type coordinates: list or tuple
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["car", "bike", "foot"].
         :type profile: str
+
+        :param sources: A list of indices that refer to the list of locations
+            (starting with 0). If not passed, all indices are considered.
+        :type sources: list or tuple
+
+        :param destinations: A list of indices that refer to the list of locations
+            (starting with 0). If not passed, all indices are considered.
+        :type destinations: list or tuple
 
         :param annotations: Used to specify the resulting matrices. One or more of ["duration", "distance"]. Default
             ["duration"]
@@ -308,19 +421,11 @@ class MapBoxOSRM(Router):
             estimate between the source and destination based on the provided speed value.
         :type fallback_speed: int
 
-        :param sources: A list of indices that refer to the list of locations
-            (starting with 0). If not passed, all indices are considered.
-        :type sources: list or tuple
-
-        :param destinations: A list of indices that refer to the list of locations
-            (starting with 0). If not passed, all indices are considered.
-        :type destinations: list or tuple
-
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
-        :returns: raw JSON response
-        :rtype: dict
+        :returns: A matrix from the specified sources and destinations.
+        :rtype: :class:`routingpy.matrix.Matrix`
         """
 
         coords = convert._delimit_list([
@@ -342,7 +447,16 @@ class MapBoxOSRM(Router):
         if fallback_speed:
             params['fallback_speed'] = str(fallback_speed)
 
-        return self._request(
-            "/directions-matrix/v1/mapbox/" + profile + '/' + coords,
-            get_params=params,
-            dry_run=dry_run)
+        return self._parse_matrix_json(
+            self._request(
+                "/directions-matrix/v1/mapbox/" + profile + '/' + coords,
+                get_params=params,
+                dry_run=dry_run))
+
+    @staticmethod
+    def _parse_matrix_json(response):
+        if response is None:
+            return None
+
+        return Matrix(
+            durations=response['durations'], distances=None, raw=response)

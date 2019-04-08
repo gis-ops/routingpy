@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 Google Inc. All rights reserved.
-#
-# Modifications Copyright (C) 2018 HeiGIT, University of Heidelberg.
+# Copyright (C) 2019 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -16,10 +14,14 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-
-"""Tests for the Graphhopper module."""
+"""Tests for the openrouteservice module."""
 
 from routingpy import ORS
+from routingpy.direction import Direction
+from routingpy.isochrone import Isochrones, Isochrone
+from routingpy.matrix import Matrix
+from copy import deepcopy
+
 from tests.test_helper import *
 import tests as _test
 
@@ -35,54 +37,93 @@ class ORSTest(_test.TestCase):
         self.client = ORS(api_key=self.key)
 
     @responses.activate
-    def test_full_directions(self):
+    def test_directions_json(self):
         query = ENDPOINTS_QUERIES[self.name]['directions']
 
-        responses.add(responses.POST,
-                      'https://api.openrouteservice.org/v2/directions/{}/geojson'.format(query['profile']),
-                      status=200,
-                      json=query,
-                      content_type='application/json')
+        responses.add(
+            responses.POST,
+            'https://api.openrouteservice.org/v2/directions/{}/json'.format(
+                query['profile']),
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['directions']['json'],
+            content_type='application/json')
+
+        routes = self.client.directions(**query, format='json')
+
+        self.assertEqual(1, len(responses.calls))
+        self.assertEqual(query, json.loads(responses.calls[0].request.body))
+
+        self.assertIsInstance(routes, Direction)
+        self.assertIsInstance(routes.geometry, list)
+        self.assertIsInstance(routes.duration, int)
+        self.assertIsInstance(routes.distance, int)
+
+    @responses.activate
+    def test_directions_geojson(self):
+        query = ENDPOINTS_QUERIES[self.name]['directions']
+
+        responses.add(
+            responses.POST,
+            'https://api.openrouteservice.org/v2/directions/{}/geojson'.format(
+                query['profile']),
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['directions']['geojson'],
+            content_type='application/json')
 
         routes = self.client.directions(**query, format='geojson')
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(
-            query,
-            json.loads(responses.calls[0].request.body)
-        )
+        self.assertEqual(query, json.loads(responses.calls[0].request.body))
+
+        self.assertIsInstance(routes, Direction)
+        self.assertIsInstance(routes.geometry, list)
+        self.assertIsInstance(routes.duration, int)
+        self.assertIsInstance(routes.distance, int)
 
     @responses.activate
     def test_full_isochrones(self):
-        query = ENDPOINTS_QUERIES[self.name]['isochrones']
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]['isochrones'])
 
-        responses.add(responses.POST,
-                      'https://api.openrouteservice.org/v2/isochrones/{}/geojson'.format(query['profile']),
-                      status=200,
-                      json=query,
-                      content_type='application/json')
+        responses.add(
+            responses.POST,
+            'https://api.openrouteservice.org/v2/isochrones/{}/geojson'.format(
+                query['profile']),
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
+            content_type='application/json')
 
-        matrix = self.client.isochrones(**query)
+        isochrones = self.client.isochrones(**query)
 
         expected = query
         expected['locations'] = expected['coordinates']
+        expected['range'] = expected['intervals']
+        expected['range_type'] = expected['interval_type']
         del expected['coordinates']
+        del expected['intervals']
+        del expected['interval_type']
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(
-            expected,
-            json.loads(responses.calls[0].request.body)
-        )
+        self.assertEqual(expected, json.loads(responses.calls[0].request.body))
+
+        self.assertIsInstance(isochrones, Isochrones)
+        self.assertEqual(4, len(isochrones))
+        self.assertIsInstance(isochrones[0], Isochrone)
+        self.assertIsInstance(isochrones[0].geometry, list)
+        self.assertIsInstance(isochrones[0].center, list)
+        self.assertIsInstance(isochrones[0].range, int)
+        self.assertIsInstance(isochrones[0].raw, dict)
 
     @responses.activate
     def test_full_matrix(self):
-        query = ENDPOINTS_QUERIES[self.name]['matrix']
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
 
-        responses.add(responses.POST,
-                      'https://api.openrouteservice.org/v2/matrix/{}/json'.format(query['profile']),
-                      status=200,
-                      json=query,
-                      content_type='application/json')
+        responses.add(
+            responses.POST,
+            'https://api.openrouteservice.org/v2/matrix/{}/json'.format(
+                query['profile']),
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['matrix'],
+            content_type='application/json')
 
         matrix = self.client.distance_matrix(**query)
 
@@ -91,22 +132,26 @@ class ORSTest(_test.TestCase):
         del expected['coordinates']
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(
-            expected,
-            json.loads(responses.calls[0].request.body)
-        )
+        self.assertEqual(expected, json.loads(responses.calls[0].request.body))
+
+        self.assertIsInstance(matrix, Matrix)
+        self.assertIsInstance(matrix.durations, list)
+        self.assertIsInstance(matrix.distances, list)
 
     @responses.activate
     def test_key_in_header(self):
         # Test that API key is being put in the Authorization header
         query = ENDPOINTS_QUERIES['ors']['directions']
 
-        responses.add(responses.POST,
-                      'https://api.openrouteservice.org/v2/directions/{}/geojson'.format(query['profile']),
-                      json=query,
-                      status=200,
-                      content_type='application/json')
+        responses.add(
+            responses.POST,
+            'https://api.openrouteservice.org/v2/directions/{}/geojson'.format(
+                query['profile']),
+            json=ENDPOINTS_RESPONSES[self.name]['directions']['geojson'],
+            status=200,
+            content_type='application/json')
 
         resp = self.client.directions(**query)
 
-        self.assertDictContainsSubset({'Authorization': self.key}, responses.calls[0].request.headers)
+        self.assertDictContainsSubset({'Authorization': self.key},
+                                      responses.calls[0].request.headers)

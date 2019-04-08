@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 Google Inc. All rights reserved.
-#
-# Modifications Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2019 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -17,6 +15,7 @@
 # the License.
 
 from .valhalla import Valhalla
+from .base import DEFAULT
 
 
 class MapboxValhalla(Valhalla):
@@ -27,7 +26,7 @@ class MapboxValhalla(Valhalla):
     def __init__(self,
                  api_key,
                  user_agent=None,
-                 timeout=None,
+                 timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs=None,
                  retry_over_query_limit=False):

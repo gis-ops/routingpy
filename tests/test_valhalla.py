@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2014 Google Inc. All rights reserved.
-#
-# Modifications Copyright (C) 2018 HeiGIT, University of Heidelberg.
+# Copyright (C) 2019 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -19,6 +17,9 @@
 """Tests for the Valhalla module."""
 
 from routingpy import Valhalla
+from routingpy.direction import Direction
+from routingpy.isochrone import Isochrones, Isochrone
+from routingpy.matrix import Matrix
 from tests.test_helper import *
 import tests as _test
 
@@ -43,12 +44,17 @@ class ValhallaTest(_test.TestCase):
             responses.POST,
             'https://api.mapbox.com/valhalla/v1/route',
             status=200,
-            json=expected,
+            json=ENDPOINTS_RESPONSES[self.name]['directions'],
             content_type='application/json')
         routes = self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body), expected)
+        self.assertIsInstance(routes, Direction)
+        self.assertIsInstance(routes.distance, int)
+        self.assertIsInstance(routes.duration, int)
+        self.assertIsInstance(routes.geometry, list)
+        self.assertIsInstance(routes.raw, dict)
 
     @responses.activate
     def test_waypoint_generator(self):
@@ -76,7 +82,7 @@ class ValhallaTest(_test.TestCase):
             responses.POST,
             'https://api.mapbox.com/valhalla/v1/route',
             status=200,
-            json=expected,
+            json=ENDPOINTS_RESPONSES[self.name]['directions'],
             content_type='application/json')
         routes = self.client.directions(**query)
 
@@ -92,13 +98,20 @@ class ValhallaTest(_test.TestCase):
             responses.POST,
             'https://api.mapbox.com/valhalla/v1/isochrone',
             status=200,
-            json=expected,
+            json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
             content_type='application/json')
 
-        routes = self.client.isochrones(**query)
+        iso = self.client.isochrones(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body), expected)
+        self.assertIsInstance(iso, Isochrones)
+        self.assertEqual(2, len(iso))
+        self.assertIsInstance(iso[0], Isochrone)
+        self.assertIsInstance(iso[0].geometry, list)
+        self.assertIsInstance(iso[0].range, int)
+        self.assertEqual(iso[0].center, None)
+        self.assertIsInstance(iso[0].raw, dict)
 
     # TODO: test colors having less items than range
     @responses.activate
@@ -110,13 +123,17 @@ class ValhallaTest(_test.TestCase):
             responses.POST,
             'https://api.mapbox.com/valhalla/v1/sources_to_targets',
             status=200,
-            json=expected,
+            json=ENDPOINTS_RESPONSES[self.name]['matrix'],
             content_type='application/json')
 
-        routes = self.client.distance_matrix(**query)
+        matrix = self.client.distance_matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body), expected)
+        self.assertIsInstance(matrix, Matrix)
+        self.assertIsInstance(matrix.durations, list)
+        self.assertIsInstance(matrix.distances, list)
+        self.assertIsInstance(matrix.raw, dict)
 
     @responses.activate
     def test_few_sources_destinations_matrix(self):
@@ -134,7 +151,7 @@ class ValhallaTest(_test.TestCase):
             responses.POST,
             'https://api.mapbox.com/valhalla/v1/sources_to_targets',
             status=200,
-            json=expected,
+            json=ENDPOINTS_RESPONSES[self.name]['matrix'],
             content_type='application/json')
 
         routes = self.client.distance_matrix(**query)
