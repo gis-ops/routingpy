@@ -48,9 +48,6 @@ class Directions(object):
     def __repr__(self):
         return f'Directions({self._directions}, {self.raw})'
 
-    def __str__(self):
-        return str(self.raw)
-
     def __getitem__(self, item):
         return self._directions[item]
 
@@ -126,6 +123,3 @@ class Direction(object):
 
     def __repr__(self):
         return f'Direction({self.geometry}, {self.duration}, {self.distance})'
-
-    def __str__(self):
-        return str(self.raw)

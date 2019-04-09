@@ -30,18 +30,23 @@ class Isochrones(object):
         self._raw = raw
 
     @property
+    def isochrones(self):
+        """
+        Returns the isochrone objects.
+        :rtype: dict or None
+        """
+        return self._isochrones
+
+    @property
     def raw(self):
         """
-        Returns the route's raw, unparsed response. For details, consult the routing engine's API documentation.
+        Returns the isochrones's raw, unparsed response. For details, consult the routing engine's API documentation.
         :rtype: dict or None
         """
         return self._raw
 
     def __repr__(self):
         return f'Isochrones({self._isochrones}, {self.raw})'
-
-    def __str__(self):
-        return str(self.raw)
 
     def __getitem__(self, item):
         return self._isochrones[item]
@@ -103,6 +108,3 @@ class Isochrone(object):
 
     def __repr__(self):
         return f'Isochrone({self.geometry}, {self.range})'
-
-    def __str__(self):
-        return str(self._raw)

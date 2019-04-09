@@ -391,14 +391,16 @@ class ORS(Router):
         if response is None:
             return None
 
-        return Isochrones(
-            isochrones=[
-                Isochrone(isochrone['geometry']['coordinates'],
-                          isochrone['properties']['value'],
-                          isochrone['properties']['center'], isochrone)
-                for idx, isochrone in enumerate(response['features'])
-            ],
-            raw=response)
+        isochrones = []
+        for idx, isochrone in enumerate(response['features']):
+            isochrones.append(
+                Isochrone(
+                    geometry=isochrone['geometry']['coordinates'][0],
+                    range=isochrone['properties']['value'],
+                    center=isochrone['properties']['center'],
+                    raw=isochrone))
+
+        return Isochrones(isochrones=isochrones, raw=response)
 
     def distance_matrix(self,
                         coordinates,
