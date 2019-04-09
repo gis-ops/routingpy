@@ -40,9 +40,6 @@ class Isochrones(object):
     def __repr__(self):
         return f'Isochrones({self._isochrones}, {self.raw})'
 
-    def __str__(self):
-        return str(self.raw)
-
     def __getitem__(self, item):
         return self._isochrones[item]
 
@@ -103,6 +100,3 @@ class Isochrone(object):
 
     def __repr__(self):
         return f'Isochrone({self.geometry}, {self.range})'
-
-    def __str__(self):
-        return str(self._raw)
