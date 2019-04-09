@@ -342,17 +342,22 @@ class Graphhopper(Router):
                         route['points'], elevation)
                 ]
                 routes.append(
-                    Direction(geometry, route['time'], route['distance'],
-                              route))
+                    Direction(
+                        geometry=geometry,
+                        duration=route['time'] / 1000,
+                        distance=route['distance'],
+                        raw=route))
             return Directions(routes, response)
         else:
             geometry = [
                 list(reversed(coord)) for coord in utils.decode_polyline5(
                     response['paths'][0]['points'], elevation)
             ]
-
-            return Direction(geometry, response['paths'][0]['time'],
-                             response['paths'][0]['distance'], response)
+            return Direction(
+                geometry=geometry,
+                duration=response['paths'][0]['time'] / 1000,
+                distance=response['paths'][0]['distance'],
+                raw=response)
 
     def isochrones(self,
                    coordinates,
@@ -419,7 +424,7 @@ class Graphhopper(Router):
                 f"Parameter range={range} must be of type list or tuple")
 
         coord_latlng = reversed(
-            [convert._format_float(f) for f in coordinates])
+            [convert._format_float(f) for f in coordinates[0]])
         params.append(("point", ",".join(coord_latlng)))
 
         if self.key is not None:

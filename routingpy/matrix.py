@@ -90,6 +90,3 @@ class Matrix(object):
 
     def __repr__(self):
         return f'Matrix({self.durations}, {self.distances})'
-
-    def __str__(self):
-        return str(self.raw)

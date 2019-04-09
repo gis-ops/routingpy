@@ -46,7 +46,7 @@ class HereMaps(Router):
 
         :param user_agent: User-Agent to send with the requests to routing API.
             Overrides ``options.default_user_agent``.
-        :type user_agent: string
+        :type user_agent: str
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
             seconds. Specify "None" for no timeout.
@@ -91,25 +91,35 @@ class HereMaps(Router):
                      heading=''):
             """
             Constructs a waypoint with additional information.
+            https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
 
-            TODO: Fill in all info on parameters
-            :param position:
-            :type position:
+            :param position: Indicates that the parameter contains a geographical position.
+            :type position: list
 
-            :param waypoint_type:
-            :type waypoint_type:
+            :param waypoint_type: 180 degree turns are allowed for stopOver but not for passThrough.
+                Waypoints defined through a drag-n-drop action should be marked as pass-through. 
+                PassThrough waypoints will not appear in the list of maneuvers.
+            :type waypoint_type: str
 
-            :param stopover_duration:
-            :type stopover_duration:
+            :param stopover_duration: Stopover delay in seconds. 
+                Impacts time-aware calculations. Ignored for passThrough.
+            :type stopover_duration: int
 
-            :param transit_radius:
-            :type transit_radius:
+            :param transit_radius: Matching Links are selected within the 
+                specified TransitRadius, in meters. 
+                For example to drive past a city without necessarily going into the 
+                city center you can specify the coordinates of the center and a 
+                TransitRadius of 5000m.
+            :type transit_radius: int
 
-            :param user_label:
-            :type user_label:
+            :param user_label: Custom label identifying this waypoint.
+            :type user_label: str
 
-            :param heading:
-            :type heading:
+            :param heading: Heading in degrees starting at true north and continuing 
+                clockwise around the compass. 
+                North is 0 degrees, East is 90 degrees, South is 180 degrees, 
+                and West is 270 degrees.
+            :type heading: int
             """
 
             self.position = position
@@ -139,7 +149,7 @@ class HereMaps(Router):
 
     class RoutingMode(object):
         """
-        TODO: What does this do?
+        Optionally construct the routing mode from this class with additional attributes.
         """
 
         def __init__(self,
@@ -148,19 +158,20 @@ class HereMaps(Router):
                      mode_traffic=None,
                      features=None):
             """
-            TODO: fill in all parameters!
+            https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
 
-            :param mode_type:
-            :type mode_type:
+            :param mode_type: RoutingType relevant to calculation.
+            :type mode_type: str
 
-            :param mode_transport_type:
-            :type mode_transport_type:
+            :param mode_transport_type: Specify which mode of transport to calculate the route for.
+            :type mode_transport_type: str
 
-            :param mode_traffic:
-            :type mode_traffic:
+            :param mode_traffic: Specify whether to optimize a route for traffic.
+            :type mode_traffic: bool
 
-            :param features:
-            :type features:
+            :param features: Route feature weightings to be applied when calculating 
+                the route. As many as required.
+            :type features: dict
             """
 
             self.mode_type = mode_type
@@ -243,9 +254,6 @@ class HereMaps(Router):
                    dry_run=None):
         """Get directions between an origin point and a destination point.
 
-        # TODO: Overall, pls take care that docstrings are legible. I.e. actually make sense and fit in the bounds
-        # TODO: of the viewer
-
         For more information, https://developer.here.com/documentation/routing/topics/resource-calculate-route.html.
 
         :param coordinates: The coordinates tuple the route should be calculated
@@ -254,198 +262,278 @@ class HereMaps(Router):
             https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
         :type coordinates: list of list or list of :class:`HereMaps.WayPoint`
 
-        :param profile: Specifies the routing mode of transport and further options
+        :param profile: Specifies the routing mode of transport and further options.
+            Can be a str or :class:`HereMaps.RoutingMode`
             https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
-        :type profile: str or obj
+        :type profile: str or :class:`HereMaps.RoutingMode`
 
         :param format: Currently only "json" supported. 
         :type format: str
 
-        :param request_id: Clients may pass in an arbitrary string to trace request processing through the system. 
-            The RequestId is mirrored in the MetaInfo element of the response structure.
+        :param request_id: Clients may pass in an arbitrary string to trace request 
+            processing through the system. The RequestId is mirrored in the MetaInfo 
+            element of the response structure.
         :type request_id: str
 
-        :param avoid_areas: Areas which the route must not cross. Array of BoundingBox. Example with 2 bounding boxes
+        :param avoid_areas: Areas which the route must not cross. Array of BoundingBox. 
+            Example with 2 bounding boxes
             https://developer.here.com/documentation/routing/topics/resource-param-type-bounding-box.html
-        TODO: Be clear on what the input is.. I guess: list of list of list
-        :type avoid_areas: list, list, tuple
+        :type avoid_areas: list of list of list
 
         :param avoid_links: Links which the route must not cross. The list of LinkIdTypes.
-        TODO: list of str?
-        :type avoid_areas: list, string
+        :type avoid_areas: list of str
 
-        :param avoid_seasonal_closures: The optional avoid seasonal closures boolean flag can be specified to avoid usage of seasonally closed links.
-            Examples of seasonally closed links are roads that may be closed during the winter due to weather conditions or ferries that may be out of operation for the season (based on past closure dates).
+        :param avoid_seasonal_closures: The optional avoid seasonal closures boolean 
+            flag can be specified to avoid usage of seasonally closed links.
+            Examples of seasonally closed links are roads that may be closed during the 
+            winter due to weather conditions or ferries that may be out of operation 
+            for the season (based on past closure dates).
         :type avoid_seasonal_closures: bool
 
-        :param avoid_turns: List of turn types that the route should avoid. Defaults to empty list. 
+        :param avoid_turns: List of turn types that the route should avoid. 
+            Defaults to empty list. 
             https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html
         :type avoid_turns: str
 
-        :param allowed_zones: Identifiers of zones where routing engine should not take zone restrictions into account (for example in case of a special permission to access a restricted environmental zone). 
+        :param allowed_zones: Identifiers of zones where routing engine should 
+            not take zone restrictions into account (for example in case of a 
+            special permission to access a restricted environmental zone).
             https://developer.here.com/documentation/routing/topics/resource-get-routing-zones.html
-        TODO: list of int? list or int?
-        :type allowed_zones: list, int
+        :type allowed_zones: list of int
 
-        :param exclude_zones: Identifiers of zones which the route must not cross under any circumstances.
+        :param exclude_zones: Identifiers of zones which the route must not cross 
+            under any circumstances.
             https://developer.here.com/documentation/routing/topics/resource-get-routing-zones.html
-        TODO: list of int? list or int?
-        :type exclude_zones: list, int
+        :type exclude_zones: list of int
 
-        :param exclude_zone_types: List of zone types which the route must not cross under any circumstances.
-            https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html#resource-type-enumerations__enum-routing-zone-type-type
-        TODO: list of str?
-        :type exclude_zone_types: list, str
+        :param exclude_zone_types: List of zone types which the route must not 
+            cross under any circumstances.
+            https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html
+            #resource-type-enumerations__enum-routing-zone-type-type
+        :type exclude_zone_types: list of str
 
         :param exclude_countries: Countries that must be excluded from route calculation.
-        TODO: list of str?
-        :type exclude_zone_types: list, str
+        :type exclude_zone_types: list of str
 
-        :param departure: Time when travel is expected to start. Traffic speed and incidents are taken into account when calculating the route (note that in case of a past departure time the historical traffic is limited to one year). 
-            You can use now to specify the current time. Specify either departure or arrival, not both.
+        :param departure: Time when travel is expected to start. Traffic speed and 
+            incidents are taken into account
+            when calculating the route (note that in case of a past
+            departure time the historical traffic is limited to one year).  
+            You can use now to specify the current time. Specify either departure 
+            or arrival, not both. When the optional timezone offset is not 
+            specified, the time is assumed to be the local.
+            Formatted as iso time, e.g. 2018-07-04T17:00:00+02.
+        :type departure: str
+
+        :param arrival: Time when travel is expected to end. Specify either 
+            departure or arrival, not both.
             When the optional timezone offset is not specified, the time is assumed to be the local.
-        TODO: What's the format? Can't be datetime.datetime, never imported. Pls be accurate.
-        :type departure: datetime
+            Formatted as iso time, e.g. 2018-07-04T17:00:00+02.
+        :type arrival: str        
 
-        :param arrival: Time when travel is expected to end. Specify either departure or arrival, not both.
-            When the optional timezone offset is not specified, the time is assumed to be the local.
-        TODO: What's the format? Can't be datetime.datetime, never imported. Pls be accurate.
-        :type arrival: datetime        
-
-        :param alternatives: Maximum number of alternative routes that will be calculated and returned. Alternative routes can be unavailable, thus they are not guaranteed to be returned. If at least one via point is used in a route request, returning alternative routes is not supported. 0 stands for "no alternative routes", i.e. only best route is returned. 
+        :param alternatives: Maximum number of alternative routes that will be 
+            calculated and returned. Alternative routes can be unavailable, thus 
+            they are not guaranteed to be returned. If at least one via point is used
+            in a route request, returning alternative routes is not supported. 
+            0 stands for "no alternative routes", i.e. only best route is returned.
         :type alternatives: int
 
-        :param metric_system: Defines the measurement system used in instruction text. When imperial is selected, units used are based on the language specified in the request. Defaults to metric when not specified.
+        :param metric_system: Defines the measurement system used in instruction text. 
+            When imperial is selected, units used are based on the language specified 
+            in the request. Defaults to metric when not specified.
         :type metric_system: str
 
-        :param view_bounds: If the view bounds are given in the request then only route shape points which fit into these bounds will be returned. The route shape beyond the view bounds is reduced to the points which are referenced by links, legs or maneuvers. 
+        :param view_bounds: If the view bounds are given in the request then only 
+            route shape points which fit into these bounds will be returned. 
+            The route shape beyond the view bounds is reduced to the points which
+            are referenced by links, legs or maneuvers.
         :type view_bounds: list or tuple
 
-        :param resolution: Specifies the resolution of the view and a possible snap resolution in meters per pixel in the response. You must specify a whole, positive integer.
+        :param resolution: Specifies the resolution of the view and a possible snap 
+            resolution in meters per pixel in the response. You must specify a whole, positive integer.
             If you specify only one value, then this value defines the view resolution only.
             You can use snap resolution to adjust waypoint links to the resolution of the client display.
-        :type resolution: obj
+            e.g. {'viewresolution': 300,'snapresolution': 300}
+        :type resolution: dict
 
         :param instruction_format: Defines the representation format of the maneuver's instruction text. Html or txt.
         :type instruction_format: str
 
-        :param language: A list of languages for all textual information, the first supported language is used. If there are no matching supported languages the response is an error. Defaults to en-us. 
+        :param language: A list of languages for all textual information, 
+            the first supported language is used. If there are no matching supported 
+            languages the response is an error. Defaults to en-us.
             https://developer.here.com/documentation/routing/topics/resource-param-type-languages.html#languages
         :type language: str
 
-        :param json_attributes: Flag to control JSON output. Combine parameters by adding their values. 
+        :param json_attributes: Flag to control JSON output. Combine parameters 
+            by adding their values. 
             https://developer.here.com/documentation/routing/topics/resource-param-type-json-representation.html
         :type json_attributes: int
 
         :param json_callback: Name of a user-defined function used to wrap the JSON response.
         :type json_callback: str
 
-        :param representation: Define which elements are included in the response as part of the data representation of the route. 
+        :param representation: Define which elements are included in the response 
+            as part of the data representation
+            of the route.
             https://developer.here.com/documentation/routing/topics/resource-param-type-route-representation-options.html#type-route-represenation-mode
-        TODO: list of str?
-        :type representation: list, str
+        :type representation: list of str
 
-        :param route_attributes: Define which attributes are included in the response as part of the data representation of the route. Defaults to waypoints, summary, legs and additionally lines if publicTransport or publicTransportTimeTable mode is used. 
+        :param route_attributes: Define which attributes are included in the 
+            response as part of the data representation of the route. Defaults to 
+            waypoints, summary, legs and additionally lines if publicTransport or
+            publicTransportTimeTable mode is used.
             https://developer.here.com/documentation/routing/topics/resource-param-type-route-representation-options.html#type-route-attribute
-        TODO: list of str?
-        :type route_attributes: list, str
+        :type route_attributes: list of str
 
-        :param leg_attributes: Define which attributes are included in the response as part of the data representation of the route legs. Defaults to maneuvers, waypoint, length, travelTime.
+        :param leg_attributes: Define which attributes are included in the response 
+            as part of the data representation
+            of the route legs. Defaults to maneuvers, waypoint, length, travelTime.
             https://developer.here.com/documentation/routing/topics/resource-param-type-route-representation-options.html#type-route-leg-attribute
-        TODO: list of str?
-        :type leg_attributes: list, str
+        :type leg_attributes: list of str
 
-        :param maneuver_attributes: Define which attributes are included in the response as part of the data representation of the route maneuvers. Defaults to position, length, travelTime. 
+        :param maneuver_attributes: Define which attributes are included in the 
+            response as part of the data
+            representation of the route maneuvers. Defaults to position, length, travelTime.
             https://developer.here.com/documentation/routing/topics/resource-param-type-route-representation-options.html#type-maneuver-attribute
-        TODO: list of str?
-        :type maneuver_attributes: list, str
+        :type maneuver_attributes: list of str
 
-        :param link_attributes: Define which attributes are included in the response as part of the data representation of the route links. Defaults to shape, speedLimit.
+        :param link_attributes: Define which attributes are included in the response 
+            as part of the data representation of the route links. Defaults to shape, speedLimit.
             https://developer.here.com/documentation/routing/topics/resource-param-type-route-representation-options.html#type-route-link-attribute
-        TODO: list of str?
-        :type link_attributes: list, str
+        :type link_attributes: list of str
 
-        :param line_attributes: Sequence of attribute keys of the fields that are included in public transport line elements. If not specified, defaults to lineForeground, lineBackground.
+        :param line_attributes: Sequence of attribute keys of the fields that are 
+            included in public transport line elements. If not specified, 
+            defaults to lineForeground, lineBackground.
             https://developer.here.com/documentation/routing/topics/resource-param-type-route-representation-options.html#type-public-transport-line-attribute
-        TODO: list of str?
-        :type line_attributes: list, str
+        :type line_attributes: list of str
 
-        :param generalization_tolerances: Specifies the desired tolerances for generalizations of the base route geometry. Tolerances are given in degrees of longitude or latitude on a spherical approximation of the Earth. One meter is approximately equal to 0:00001 degrees at typical latitudes.
-        TODO: list of float?
-        :type generalization_tolerances: list, float
+        :param generalization_tolerances: Specifies the desired tolerances for 
+            generalizations of the base route geometry. Tolerances are given in 
+            degrees of longitude or latitude on a spherical approximation of the Earth.
+            One meter is approximately equal to 0:00001 degrees at typical latitudes.
+        :type generalization_tolerances: list of float
 
-        :param param vehicle_type: Specifies type of vehicle engine and average fuel consumption, which can be used to estimate CO2 emission for the route summary.
+        :param param vehicle_type: Specifies type of vehicle engine and average 
+            fuel consumption, which can be used to estimate CO2 emission for
+            the route summary.
             https://developer.here.com/documentation/routing/topics/resource-param-type-vehicle-type.html
         :type vehicle_type: str
 
-        :param param license_plate: Specifies fragments of vehicle's license plate number. The lastcharacter is currently the only supported fragment type. The license plate parameter enables evaluation of license plate based vehicle restrictions like odd/even scheme in Indonesia.
+        :param param license_plate: Specifies fragments of vehicle's license plate number. 
+            The lastcharacter is currently the only supported fragment type. 
+            The license plate parameter enables evaluation of license plate
+            based vehicle restrictions like odd/even scheme in Indonesia.
         :type license_plate: str
 
-        :param max_number_of_changes: Restricts number of changes in a public transport route to a given value. The parameter does not filter resulting alternatives. Instead, it affects route calculation so that only routes containing at most the given number of changes are considered. The provided value must be between 0 and 10. 
+        :param max_number_of_changes: Restricts number of changes in a public 
+            transport route to a given value. The parameter does not filter resulting 
+            alternatives. Instead, it affects route calculation so that only
+            routes containing at most the given number of changes are considered. 
+            The provided value must be between 0 and 10.
         :type max_number_of_changes: int
 
-        :param avoid_transport_types: Public transport types that shall not be included in the response route. Please refer to Enumeration Types for a list of supported values. 
+        :param avoid_transport_types: Public transport types that shall not be included 
+            in the response route. Please refer to Enumeration Types for a list of supported values.
             https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html
-        TODO: list of str?
-        :type avoid_transport_types: list, str 
+        :type avoid_transport_types: list of str 
 
-        :param walk_time_multiplier: Allows to prefer or avoid public transport routes with longer walking distances. A value > 1.0 means a slower walking speed and will prefer routes with less walking distance. The provided value must be between 0.01 and 100.
+        :param walk_time_multiplier: Allows to prefer or avoid public transport 
+            routes with longer walking distances. A value > 1.0 means a slower 
+            walking speed and will prefer routes with less walking distance.
+            The provided value must be between 0.01 and 100.
         :type walk_time_multiplier: float
 
-        :param walk_speed: Specifies speed which will be used by a service as a walking speed for pedestrian routing (meters per second). This parameter affects pedestrian, publicTransport and publicTransportTimetable modes. The provided value must be between 0.5 and 2.
+        :param walk_speed: Specifies speed which will be used by a service as a 
+            walking speed for pedestrian routing (meters per second). 
+            This parameter affects pedestrian, publicTransport and publicTransportTimetable modes.
+            The provided value must be between 0.5 and 2.
         :type walk_speed: float
 
-        :param walk_radius: Allows the user to specify a maximum distance to the start and end stations of a public transit route. Only valid for publicTransport and publicTransportTimetable routes. The provided value must be between 0 and 6000.
+        :param walk_radius: Allows the user to specify a maximum distance to the 
+            start and end stations of a public transit route. Only valid for 
+            publicTransport and publicTransportTimetable routes.
+            The provided value must be between 0 and 6000.
         :type walk_radius: int
 
-        :param combine_change: Enables the change maneuver in the route response, which indicates a public transit line change. In the absence of this maneuver, each line change is represented with a pair of subsequent enter and leave maneuvers. We recommend enabling combineChange behavior wherever possible, to simplify client-side development.
+        :param combine_change: Enables the change maneuver in the route response, 
+            which indicates a public transit line change. In the absence of this 
+            maneuver, each line change is represented with a pair of subsequent enter
+            and leave maneuvers. We recommend enabling combineChange behavior wherever 
+            possible, to simplify client-side development.
         :type combine_change: bool
 
         :param truck_type: Truck routing only, specifies the vehicle type. Defaults to truck.
         :type truck_type: str
 
-        :param trailers_count: Truck routing only, specifies number of trailers pulled by a vehicle. The provided value must be between 0 and 4. Defaults to 0.
+        :param trailers_count: Truck routing only, specifies number of trailers 
+            pulled by a vehicle. The provided value must be between 0 and 4. 
+            Defaults to 0.
         :type trailers_count: int
 
-        :param shipped_hazardous_goods: Truck routing only, list of hazardous materials in the vehicle. Please refer to the enumeration type HazardousGoodTypeType for available values. Note the value allhazardousGoods does not apply to the request parameter.
+        :param shipped_hazardous_goods: Truck routing only, list of hazardous 
+            materials in the vehicle. Please refer to the enumeration type 
+            HazardousGoodTypeType for available values. 
+            Note the value allhazardousGoods does not apply to the request parameter.
             https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html#resource-type-enumerations__enum-hazardous-good-type-type
-        TODO: list of str?
-        :type shipped_hazardous_goods: list, str
+        :type shipped_hazardous_goods: list of str
 
-        :param limited_weight: Truck routing only, vehicle weight including trailers and shipped goods, in tons. The provided value must be between 0 and 1000.
+        :param limited_weight: Truck routing only, vehicle weight including 
+            trailers and shipped goods, in tons. The provided value must be between 0 and 1000.
         :type limited_weight: int
 
-        :param weight_per_axle: Truck routing only, vehicle weight per axle in tons. The provided value must be between 0 and 1000.
+        :param weight_per_axle: Truck routing only, vehicle weight per axle in 
+            tons. The provided value must be between 0 and 1000.
         :type limited_weight: int
 
-        :param height: Truck routing only, vehicle height in meters. The provided value must be between 0 and 50.
+        :param height: Truck routing only, vehicle height in meters.
+            The provided value must be between 0 and 50.
         :type height: int
 
-        :param width: Truck routing only, vehicle width in meters. The provided value must be between 0 and 50.
+        :param width: Truck routing only, vehicle width in meters. 
+            The provided value must be between 0 and 50.
         :type width: int  
 
-        :param length: Truck routing only, vehicle length in meters. The provided value must be between 0 and 300.
+        :param length: Truck routing only, vehicle length in meters.
+            The provided value must be between 0 and 300.
         :type length: int        
 
-        :param tunnel_category: Truck routing only, specifies the tunnel category to restrict certain route links. The route will pass only through tunnels of a less strict category.
-        TODO: list of str?
-        :type tunnel_category: list, str
+        :param tunnel_category: Truck routing only, specifies the tunnel category 
+            to restrict certain route links. The route will pass only through tunnels 
+            of a less strict category.
+        :type tunnel_category: list of str
 
-        :param truck_restriction_penalty: Truck routing only, specifies the penalty type on violated truck restrictions. Defaults to strict. Refer to the enumeration type TruckRestrictionPenaltyType for details on available values. 
+        :param truck_restriction_penalty: Truck routing only, specifies the 
+            penalty type on violated truck restrictions. Defaults to strict. 
+            Refer to the enumeration type TruckRestrictionPenaltyType for 
+            details on available values. 
             https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html#resource-type-enumerations__enum-truck-restriction-penalty-type
         :type truck_restriction_penalty: str
 
-        :param return_elevation: If set to true, all shapes inside routing response will consist of 3 values instead of 2. Third value will be elevation. If there are no elevation data available for given shape point, elevation will be interpolated from surrounding points. In case there is no elevation data available for any of the shape points, elevation will be 0.0. If jsonattributes=32, elevation cannot be returned.
+        :param return_elevation: If set to true, all shapes inside routing response
+            will consist of 3 values instead of 2. Third value will be elevation. 
+            If there are no elevation data available for given shape point, 
+            elevation will be interpolated from surrounding points. In case 
+            there is no elevation data available for any of the shape points, 
+            elevation will be 0.0. If jsonattributes=32, elevation cannot be returned.
         :type return_elevation: bool
 
-        :param consumption_model: If you request information on consumption, you must provide a consumption model. The possible values are default and standard. When you specify the value standard, you must provide additional information in the query parameter customconsumptiondetails
+        :param consumption_model: If you request information on consumption, 
+            you must provide a consumption model. The possible values are default 
+            and standard. When you specify the value standard, you must provide 
+            additional information in the query parameter customconsumptiondetails
         :type consumption_model: str
 
-        :param custom_consumption_details: Provides vehicle specific information for use in the consumption model. This information can include such things as the amount of energy consumed while travelling at a given speed.
+        :param custom_consumption_details: Provides vehicle specific information 
+            for use in the consumption model. This information can include such 
+            things as the amount of energy consumed while travelling at a given speed.
             https://developer.here.com/documentation/routing/topics/resource-param-type-custom-consumption-details.html#type-standard
         :type custom_consumption_details: str
 
-        :param speed_profile: Specifies the speed profile variant for a given routing mode. The speed profile affects travel time estimation as well as roads evaluation when computing the fastest route. Note that computed routes might differ depending on a used profile.
+        :param speed_profile: Specifies the speed profile variant for a given routing mode. 
+            The speed profile affects travel time estimation as well as roads evaluation 
+            when computing the fastest route. Note that computed routes might differ depending on a used profile.
             https://developer.here.com/documentation/routing/topics/resource-param-type-speed-profile-type.html
         :type speed_profile: str
 
@@ -454,6 +542,7 @@ class HereMaps(Router):
 
         :returns: One or multiple route(s) from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
+
         """
 
         self.base_url = 'https://route.api.here.com/routing/7.2'
@@ -479,7 +568,6 @@ class HereMaps(Router):
         if request_id is not None:
             params["requestId"] = request_id
 
-        # TODO: I have no idea how this is supposed to work.. What's the input? Be more specific in docstrings pls..
         if avoid_areas is not None:
             params["avoidAreas"] = convert._delimit_list([
                 convert._delimit_list([
@@ -514,9 +602,9 @@ class HereMaps(Router):
                 exclude_countries, ',')
 
         if departure is not None:
-            params["departure"] = departure.isoformat()
+            params["departure"] = departure
         elif arrival is not None:
-            params["arrival"] = arrival.isoformat()
+            params["arrival"] = arrival
 
         if alternatives is not None:
             params["alternatives"] = alternatives
@@ -654,7 +742,7 @@ class HereMaps(Router):
         if response is None:
             return None
 
-        if alternatives > 1:
+        if alternatives is not None and alternatives > 1:
             routes = []
             for route in response['response']['route']:
                 routes.append(
@@ -679,8 +767,8 @@ class HereMaps(Router):
     def isochrones(self,
                    coordinates,
                    profile,
-                   ranges=None,
-                   range_type=None,
+                   intervals,
+                   interval_type,
                    format='json',
                    center_type='start',
                    request_id=None,
@@ -712,17 +800,15 @@ class HereMaps(Router):
         :param coordinates: One pair of lng/lat values.
         :type coordinates: list of float
 
-        TODO: can we pls at least show the options for positional arguments?
-        :param profile: Specifies the routing mode of transport and further options
+        :param profile: Specifies the routing mode of transport and further options.
+            Can be a str or :class:`HereMaps.RoutingMode`
             https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
-        TODO: What is obj??
-        :type profile: str or obj
+        :type profile: str or :class:`HereMaps.RoutingMode`
 
-        TODO: all other routers have 'range' instead of 'ranges'. Pls be consistent.
-        :param ranges: Range of isoline. Several comma separated values can be specified. The unit is defined by parameter rangetype.
-        :type ranges: list, int
+        :param intervals: Range of isoline. Several comma separated values can be specified. The unit is defined by parameter rangetype.
+        :type ranges: list of int
 
-        :param range_type: Specifies type of range. Possible values are distance, time, consumption. For distance the unit is meters. For time the unit is seconds. For consumption it is defined by consumption model
+        :param interval_type: Specifies type of range. Possible values are distance, time, consumption. For distance the unit is meters. For time the unit is seconds. For consumption it is defined by consumption model
         :type range_type: str
 
         :param format: Currently only "json" supported. 
@@ -733,71 +819,104 @@ class HereMaps(Router):
             It cannot be used in combination with start parameter. 
         :type center_type: str
 
-        :param departure: Time when travel is expected to start. Traffic speed and incidents are taken into account when calculating the route (note that in case of a past departure time the historical traffic is limited to one year). 
-            You can use now to specify the current time. Specify either departure or arrival, not both.
-            When the optional timezone offset is not specified, the time is assumed to be the local.
-        TODO: What's the format? Can't be datetime.datetime, never imported. Pls be accurate.
-        :type departure: datetime
+        :param departure: Time when travel is expected to start. Traffic speed and 
+            incidents are taken into account
+            when calculating the route (note that in case of a past
+            departure time the historical traffic is limited to one year).  
+            You can use now to specify the current time. Specify either departure 
+            or arrival, not both. When the optional timezone offset is not 
+            specified, the time is assumed to be the local.
+            Formatted as iso time, e.g. 2018-07-04T17:00:00+02.
+        :type departure: str
 
-        :param arrival: Time when travel is expected to end. Specify either departure or arrival, not both.
+        :param arrival: Time when travel is expected to end. Specify either 
+            departure or arrival, not both.
             When the optional timezone offset is not specified, the time is assumed to be the local.
-        TODO: What's the format? Can't be datetime.datetime, never imported. Pls be accurate.
-        :type arrival: datetime    
+            Formatted as iso time, e.g. 2018-07-04T17:00:00+02.
+        :type arrival: str        
 
-        :param single_component: If set to true the isoline service will always return single polygon, instead of creating a separate polygon for each ferry separated island. Default value is false.
+        :param single_component: If set to true the isoline service will always 
+            return single polygon, instead of creating a separate polygon 
+            for each ferry separated island. Default value is false.
         :type single_component: bool
 
-        :param resolution: Allows to specify level of detail needed for the isoline polygon. Unit is meters per pixel. Higher resolution may cause increased response time from the service.
+        :param resolution: Allows to specify level of detail needed for the
+            isoline polygon. Unit is meters per pixel. Higher resolution may 
+            cause increased response time from the service.
         :type resolution: int
 
-        :param max_points: Allows to limit amount of points in the returned isoline. If isoline consists of multiple components, sum of points from all components is considered. Each component will have at least 2 points, so it is possible that more points than maxpoints value will be returned. This is in case when 2 * number of components is higher than maxpoints. Enlarging number of maxpoints may cause increased response time from the service.
+        :param max_points: Allows to limit amount of points in the returned 
+            isoline. If isoline consists of multiple components, sum of points from 
+            all components is considered. Each component will have at least 2 points, 
+            so it is possible that more points than maxpoints value will be returned. 
+            This is in case when 2 * number of components is higher than maxpoints. 
+            Enlarging number of maxpoints may cause increased response time from the service.
         :type max_points: int
 
-        :param quality: Allows to reduce the quality of the isoline in favor of the response time. Allowed values are 1, 2, 3. Default value is 1 and it is the best quality.
+        :param quality: Allows to reduce the quality of the isoline in favor 
+            of the response time. Allowed values are 1, 2, 3. 
+            Default value is 1 and it is the best quality.
         :type quality: int
 
-        :param json_attributes: Flag to control JSON output. Combine parameters by adding their values. 
+        :param json_attributes: Flag to control JSON output. 
+            Combine parameters by adding their values. 
             https://developer.here.com/documentation/routing/topics/resource-param-type-json-representation.html
         :type json_attributes: int
 
         :param truck_type: Truck routing only, specifies the vehicle type. Defaults to truck.
         :type truck_type: str
 
-        :param trailers_count: Truck routing only, specifies number of trailers pulled by a vehicle. The provided value must be between 0 and 4. Defaults to 0.
+        :param trailers_count: Truck routing only, specifies number of trailers 
+            pulled by a vehicle. The provided value must be between 0 and 4. Defaults to 0.
         :type trailers_count: int
 
-        :param shipped_hazardous_goods: Truck routing only, list of hazardous materials in the vehicle. Please refer to the enumeration type HazardousGoodTypeType for available values. Note the value allhazardousGoods does not apply to the request parameter.
+        :param shipped_hazardous_goods: Truck routing only, list of hazardous 
+            materials in the vehicle. Please refer to the enumeration type 
+            HazardousGoodTypeType for available values. 
+            Note the value allhazardousGoods does not apply to the request parameter.
             https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html#resource-type-enumerations__enum-hazardous-good-type-type
-        TODO: list of str?
-        :type shipped_hazardous_goods: list, str
+        :type shipped_hazardous_goods: list of str
 
-        :param limited_weight: Truck routing only, vehicle weight including trailers and shipped goods, in tons. The provided value must be between 0 and 1000.
+        :param limited_weight: Truck routing only, vehicle weight including 
+            trailers and shipped goods, in tons. The provided value must be between 0 and 1000.
         :type limited_weight: int
 
-        :param weight_per_axle: Truck routing only, vehicle weight per axle in tons. The provided value must be between 0 and 1000.
+        :param weight_per_axle: Truck routing only, vehicle weight per axle in tons. 
+            The provided value must be between 0 and 1000.
         :type limited_weight: int
 
-        :param height: Truck routing only, vehicle height in meters. The provided value must be between 0 and 50.
+        :param height: Truck routing only, vehicle height in meters. 
+            The provided value must be between 0 and 50.
         :type height: int
 
-        :param width: Truck routing only, vehicle width in meters. The provided value must be between 0 and 50.
+        :param width: Truck routing only, vehicle width in meters. 
+            The provided value must be between 0 and 50.
         :type width: int  
 
-        :param length: Truck routing only, vehicle length in meters. The provided value must be between 0 and 300.
+        :param length: Truck routing only, vehicle length in meters. 
+            The provided value must be between 0 and 300.
         :type length: int        
 
-        :param tunnel_category: Truck routing only, specifies the tunnel category to restrict certain route links. The route will pass only through tunnels of a less strict category.
-        TODO: list of str?
-        :type tunnel_category: list, str
+        :param tunnel_category: Truck routing only, specifies the tunnel category to 
+            restrict certain route links. The route will pass only through tunnels of a less strict category.
+        :type tunnel_category: list of str
 
-        :param consumption_model: If you request information on consumption, you must provide a consumption model. The possible values are default and standard. When you specify the value standard, you must provide additional information in the query parameter customconsumptiondetails
+        :param consumption_model: If you request information on consumption, you must 
+            provide a consumption model. The possible values are default and standard. 
+            When you specify the value standard, you must provide additional 
+            information in the query parameter customconsumptiondetails
         :type consumption_model: str
 
-        :param custom_consumption_details: Provides vehicle specific information for use in the consumption model. This information can include such things as the amount of energy consumed while travelling at a given speed.
+        :param custom_consumption_details: Provides vehicle specific information 
+            for use in the consumption model. This information can include such 
+            things as the amount of energy consumed while travelling at a given speed.
             https://developer.here.com/documentation/routing/topics/resource-param-type-custom-consumption-details.html#type-standard
         :type custom_consumption_details: str
 
-        :param speed_profile: Specifies the speed profile variant for a given routing mode. The speed profile affects travel time estimation as well as roads evaluation when computing the fastest route. Note that computed routes might differ depending on a used profile.
+        :param speed_profile: Specifies the speed profile variant for a given 
+            routing mode. The speed profile affects travel time estimation as 
+            well as roads evaluation when computing the fastest route. 
+            Note that computed routes might differ depending on a used profile.
             https://developer.here.com/documentation/routing/topics/resource-param-type-speed-profile-type.html
         :type speed_profile: str
 
@@ -818,18 +937,18 @@ class HereMaps(Router):
             params[center_type] = coordinates.make_waypoint()
         elif isinstance(coordinates, (list, tuple)):
             params[center_type] = 'geo!' + convert._delimit_list(
-                [convert._format_float(f) for f in coordinates], ',')
+                [convert._format_float(f) for f in coordinates[0]], ',')
 
         if isinstance(profile, str):
             params["mode"] = profile
         elif isinstance(profile, self.RoutingMode):
             params["mode"] = profile.make_routing_mode()
 
-        if ranges is not None:
-            params["range"] = convert._delimit_list(ranges, ',')
+        if intervals is not None:
+            params["range"] = convert._delimit_list(intervals, ',')
 
-        if range_type is not None:
-            params["rangeType"] = range_type
+        if interval_type is not None:
+            params["rangeType"] = interval_type
 
         if single_component is not None:
             params["singleComponent"] = convert._convert_bool(single_component)
@@ -888,10 +1007,10 @@ class HereMaps(Router):
             self._request(
                 convert._delimit_list(["/calculateisoline", format], '.'),
                 get_params=params,
-                dry_run=dry_run), ranges)
+                dry_run=dry_run), intervals)
 
     @staticmethod
-    def _parse_isochrone_json(response, ranges):
+    def _parse_isochrone_json(response, intervals):
         if response is None:
             return None
 
@@ -901,11 +1020,18 @@ class HereMaps(Router):
             if 'component' in isochrones:
                 for component in isochrones['component']:
                     if 'shape' in component:
-                        range_polygons.append(component['shape'])
+                        coordinates_list = []
+                        for coordinates in component['shape']:
+                            coordinates_list.append(
+                                [float(f) for f in coordinates.split(",")])
+                        range_polygons.append(coordinates_list)
 
-        # TODO: Specify 'center' coordinate from response
             geometries.append(
-                Isochrone(geometry=range_polygons, range=ranges[idx]))
+                Isochrone(
+                    geometry=range_polygons,
+                    range=intervals[idx],
+                    center=list(response['response']['start']
+                                ['mappedPosition'].values())))
 
         return Isochrones(isochrones=geometries, raw=response)
 
@@ -937,86 +1063,120 @@ class HereMaps(Router):
             dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
-            TODO: be more accurate. Hope coordinates is not only obj. What can be passed?? See directions.
-            :param coordinates: The coordinate object with optional additional extras
-                from in order of visit.
+            :param coordinates: The coordinates tuple the route should be calculated
+                from in order of visit. Can be a list/tuple of [lon, lat] or :class:`HereMaps.WayPoint` instance or a
+                combination of those. For further explanation, see
                 https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
-            :type coordinates: obj
+            :type coordinates: list of list or list of :class:`HereMaps.WayPoint`
 
-            :param profile: Specifies the routing mode of transport and further options
+            :param profile: Specifies the routing mode of transport and further options.
+                Can be a str or :class:`HereMaps.RoutingMode`
                 https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
-            TODO: Why obj? What is that?
-            :type profile: str or obj
+            :type profile: str or :class:`HereMaps.RoutingMode`
 
             :param sources: The starting points for the matrix. 
                 Specifies an index referring to coordinates.
             :type sources: list of int
 
-            :param destinations: The destination points for the routes. Specifies an index referring to coordinates.
+            :param destinations: The destination points for the routes. 
+                Specifies an index referring to coordinates.
             :type destinations: list of int
 
-            :param search_range: Defines the maximum search range for destination waypoints, in meters. This parameter is especially useful for optimizing matrix calculation where the maximum desired effective distance is known in advance. Destination waypoints with a longer effective distance than specified by searchRange will be skipped. The parameter is optional. In pedestrian mode the default search range is 20 km. If parameter is omitted in other modes, no range limit will apply.
+            :param search_range: Defines the maximum search range for destination 
+                waypoints, in meters. This parameter is especially useful for optimizing 
+                matrix calculation where the maximum desired effective distance is known 
+                in advance. Destination waypoints with a longer effective distance than 
+                specified by searchRange will be skipped. The parameter is optional. 
+                In pedestrian mode the default search range is 20 km. 
+                If parameter is omitted in other modes, no range limit will apply.
             :type search_range: int
 
-            :param avoid_areas: Areas which the route must not cross. Array of BoundingBox. Example with 2 bounding boxes
+            :param avoid_areas: Areas which the route must not cross. 
+                Array of BoundingBox. Example with 2 bounding boxes
                 https://developer.here.com/documentation/routing/topics/resource-param-type-bounding-box.html
-            :type avoid_areas: list, list, tuple
+            :type avoid_areas: list of list of list
 
-            :param avoid_links: Links which the route must not cross. The list of LinkIdTypes.
-            :type avoid_areas: list, string
+            :param avoid_links: Links which the route must not cross. 
+              The list of LinkIdTypes.
+            :type avoid_areas: list of string
 
             :param avoid_turns: List of turn types that the route should avoid. Defaults to empty list. 
-                https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html
+              https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html
             :type avoid_turns: str  
 
             :param exclude_countries: Countries that must be excluded from route calculation. 
-            :type exclude_countries: list, str
+            :type exclude_countries: list of str
 
-            :param departure: Time when travel is expected to start. Traffic speed and incidents are taken into account when calculating the route (note that in case of a past departure time the historical traffic is limited to one year). 
-                You can use now to specify the current time. Specify either departure or arrival, not both.
-                When the optional timezone offset is not specified, the time is assumed to be the local.
-            :type departure: datetime
+            :param departure: Time when travel is expected to start. Traffic speed and 
+                incidents are taken into account
+                when calculating the route (note that in case of a past
+                departure time the historical traffic is limited to one year).  
+                You can use now to specify the current time. Specify either departure 
+                or arrival, not both. When the optional timezone offset is not 
+                specified, the time is assumed to be the local.
+                Formatted as iso time, e.g. 2018-07-04T17:00:00+02.
+            :type departure: str
 
-            :param matrix_attributes: Defines which attributes are included in the response as part of the data representation of the route matrix entries. Defaults to indices and summary. 
-                https://developer.here.com/documentation/routing/topics/resource-calculate-matrix.html#resource-calculate-matrix__matrix-route-attribute-type
-            :type matrix_attributes: list, str
+            :param matrix_attributes: Defines which attributes are included in the 
+              response as part of the data representation of the route matrix entries. 
+              Defaults to indices and summary. 
+              https://developer.here.com/documentation/routing/topics/resource-calculate-matrix.html#resource-calculate-matrix__matrix-route-attribute-type
+            :type matrix_attributes: list of str
 
-            :param summary_attributes: Defines which attributes are included in the response as part of the data representation of the matrix entries summaries. Defaults to costfactor.  
+            :param summary_attributes: Defines which attributes are included in 
+                the response as part of the data representation of the matrix 
+                entries summaries. Defaults to costfactor.  
                 https://developer.here.com/documentation/routing/topics/resource-calculate-matrix.html#resource-calculate-matrix__matrix-route-summary-attribute-type
-            :type matrix_attributes: list, str
+            :type matrix_attributes: list of str
 
-            :param truck_type: Truck routing only, specifies the vehicle type. Defaults to truck.
+            :param truck_type: Truck routing only, specifies the vehicle type. 
+                Defaults to truck.
             :type truck_type: str
 
-            :param trailers_count: Truck routing only, specifies number of trailers pulled by a vehicle. The provided value must be between 0 and 4. Defaults to 0.
+            :param trailers_count: Truck routing only, specifies number of 
+                trailers pulled by a vehicle. The provided value must be between 0 and 4. 
+                Defaults to 0.
             :type trailers_count: int
 
-            :param shipped_hazardous_goods: Truck routing only, list of hazardous materials in the vehicle. Please refer to the enumeration type HazardousGoodTypeType for available values. Note the value allhazardousGoods does not apply to the request parameter.
+            :param shipped_hazardous_goods: Truck routing only, list of hazardous
+                materials in the vehicle. Please refer to the enumeration type 
+                HazardousGoodTypeType for available values. Note the value 
+                allhazardousGoods does not apply to the request parameter.
                 https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html#resource-type-enumerations__enum-hazardous-good-type-type
-            :type shipped_hazardous_goods: list, str
+            :type shipped_hazardous_goods: list of str
 
-            :param limited_weight: Truck routing only, vehicle weight including trailers and shipped goods, in tons. The provided value must be between 0 and 1000.
+            :param limited_weight: Truck routing only, vehicle weight including 
+                trailers and shipped goods, in tons. The provided value must be 
+                between 0 and 1000.
             :type limited_weight: int
 
-            :param weight_per_axle: Truck routing only, vehicle weight per axle in tons. The provided value must be between 0 and 1000.
+            :param weight_per_axle: Truck routing only, vehicle weight per axle 
+                in tons. The provided value must be between 0 and 1000.
             :type limited_weight: int
 
-            :param height: Truck routing only, vehicle height in meters. The provided value must be between 0 and 50.
+            :param height: Truck routing only, vehicle height in meters. The 
+                provided value must be between 0 and 50.
             :type height: int
 
-            :param width: Truck routing only, vehicle width in meters. The provided value must be between 0 and 50.
+            :param width: Truck routing only, vehicle width in meters. 
+                The provided value must be between 0 and 50.
             :type width: int  
 
-            :param length: Truck routing only, vehicle length in meters. The provided value must be between 0 and 300.
+            :param length: Truck routing only, vehicle length in meters. 
+                The provided value must be between 0 and 300.
             :type length: int        
 
-            :param tunnel_category: Truck routing only, specifies the tunnel category to restrict certain route links. The route will pass only through tunnels of a less strict category.
-            :type tunnel_category: list, str
+            :param tunnel_category: Truck routing only, specifies the tunnel 
+                category to restrict certain route links. The route will pass 
+                only through tunnels of a less strict category.
+            :type tunnel_category: list of str
 
-            :param speed_profile: Specifies the speed profile variant for a given routing mode. The speed profile affects travel time estimation as well as roads evaluation when computing the fastest route. Note that computed routes might differ depending on a used profile.
+            :param speed_profile: Specifies the speed profile variant for a given 
+                routing mode. The speed profile affects travel time estimation as 
+                well as roads evaluation when computing the fastest route. 
+                Note that computed routes might differ depending on a used profile.
                 https://developer.here.com/documentation/routing/topics/resource-param-type-speed-profile-type.html
             :type speed_profile: str
-
 
             :param dry_run: Print URL and parameters without sending the request.
             :param dry_run: bool
