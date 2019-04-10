@@ -16,9 +16,10 @@
 #
 
 from .base import Router
-from routingpy import convert
+from routingpy import convert, utils
 from routingpy.direction import Directions, Direction
 from routingpy.matrix import Matrix
+from pprint import pprint
 
 
 class OSRM(Router):
@@ -174,24 +175,39 @@ class OSRM(Router):
             self._request(
                 "/route/v1/" + profile + '/' + coords,
                 get_params=params,
-                dry_run=dry_run), alternatives)
+                dry_run=dry_run), alternatives, geometries)
 
     @staticmethod
-    def _parse_direction_json(response, alternatives):
+    def _parse_direction_json(response, alternatives, geometry_format):
         if response is None:
             return None
+
+        def _parse_geometry(route_geometry):
+            if geometry_format in (None, 'polyline'):
+                geometry = utils.decode_polyline5(route_geometry, is3d=False)
+            elif geometry_format == 'polyline6':
+                geometry = utils.decode_polyline6(route_geometry, is3d=False)
+            elif geometry_format == 'geojson':
+                geometry = route_geometry['coordinates']
+            else:
+                raise ValueError(
+                    "OSRM: parameter geometries needs one of ['polyline', 'polyline6', 'geojson"
+                )
+            return geometry
 
         if alternatives:
             routes = []
             for route in response['routes']:
                 routes.append(
-                    Direction(route['geometry']['coordinates'],
-                              route['duration'], route['distance'], route))
+                    Direction(
+                        _parse_geometry(route['geometry']), route['duration'],
+                        route['distance'], route))
             return Directions(routes, response)
         else:
-            return Direction(response['routes'][0]['geometry']['coordinates'],
-                             response['routes'][0]['duration'],
-                             response['routes'][0]['distance'], response)
+            return Direction(
+                _parse_geometry(response['routes'][0]['geometry']),
+                response['routes'][0]['duration'],
+                response['routes'][0]['distance'], response)
 
     def isochrones(self):
         raise NotImplementedError
