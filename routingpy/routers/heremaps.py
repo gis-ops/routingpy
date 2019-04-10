@@ -937,7 +937,7 @@ class HereMaps(Router):
             params[center_type] = coordinates.make_waypoint()
         elif isinstance(coordinates, (list, tuple)):
             params[center_type] = 'geo!' + convert._delimit_list(
-                [convert._format_float(f) for f in coordinates[0]], ',')
+                [convert._format_float(f) for f in coordinates], ',')
 
         if isinstance(profile, str):
             params["mode"] = profile
@@ -1014,6 +1014,7 @@ class HereMaps(Router):
         if response is None:
             return None
 
+        print(response)
         geometries = []
         for idx, isochrones in enumerate(response['response']['isoline']):
             range_polygons = []

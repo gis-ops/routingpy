@@ -707,7 +707,7 @@ ENDPOINTS_QUERIES = {
             10,
         },
         'isochrones': {
-            'coordinates': PARAM_LINE,
+            'coordinates': PARAM_POINT,
             'intervals': [1000, 2000, 3000],
             'interval_type': 'distance',
             'profile': 'car;fastest',
@@ -835,7 +835,7 @@ ENDPOINTS_QUERIES = {
             }
         },
         'isochrones': {
-            'coordinates': PARAM_LINE,
+            'coordinates': PARAM_POINT,
             'profile': 'cycling-regular',
             'interval_type': 'distance',
             'intervals': [PARAM_INT_BIG],

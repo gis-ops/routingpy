@@ -152,7 +152,7 @@ class HereMapsTest(_test.TestCase):
         self.assertURLEqual(
             'https://isoline.route.api.here.com/routing/7.2/calculateisoline.json?app_code=sample_app_code&'
             'app_id=sample_app_id&mode=car%3Bfastest&quality=1&range=1000%2C2000%2C3000&rangeType=distance&'
-            'singleComponent=false&start=geo%218.688641%2C49.420577',
+            'singleComponent=false&start=geo%218.34234%2C48.23424',
             responses.calls[0].request.url)
 
         self.assertIsInstance(isochrones, Isochrones)

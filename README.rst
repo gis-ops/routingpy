@@ -86,7 +86,7 @@ Directions - Graphhopper vs. Google Maps
 
     >>> from routingpy import Graphhopper
     >>> api = Graphhopper(api_key='INSERT_YOUR_KEY_HERE')
-    >>> routes = api.directions( 
+    >>> routes = api.directions(
       coordinates=[[8.688641, 49.420577], [8.680916, 49.415776],[8.780916, 49.445776]],
       elevation=True,
       profile='car',
