@@ -207,7 +207,7 @@ class ORS(Router):
         :rtype: :class:`routingpy.direction.Direction`
         """
 
-        params = {"coordinates": coordinates, "profile": profile}
+        params = {"coordinates": coordinates}
 
         if preference:
             params["preference"] = preference
@@ -258,6 +258,12 @@ class ORS(Router):
             params['suppress_warnings'] = suppress_warnings
 
         if options:
+            if profile == 'driving-hgv' and options.get('profile_params'):
+                if options['profile_params'].get(
+                        'restrictions') and not options.get('vehicle_type'):
+                    raise ValueError(
+                        "ORS: options.vehicle_type must be specified for driving-hgv if restrictions are set."
+                    )
             params['options'] = options
 
         return self._parse_direction_json(

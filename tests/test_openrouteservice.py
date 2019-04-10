@@ -38,7 +38,7 @@ class ORSTest(_test.TestCase):
 
     @responses.activate
     def test_directions_json(self):
-        query = ENDPOINTS_QUERIES[self.name]['directions']
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]['directions'])
 
         responses.add(
             responses.POST,
@@ -49,6 +49,7 @@ class ORSTest(_test.TestCase):
             content_type='application/json')
 
         routes = self.client.directions(**query, format='json')
+        del query['profile']
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(query, json.loads(responses.calls[0].request.body))
@@ -60,7 +61,7 @@ class ORSTest(_test.TestCase):
 
     @responses.activate
     def test_directions_geojson(self):
-        query = ENDPOINTS_QUERIES[self.name]['directions']
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]['directions'])
 
         responses.add(
             responses.POST,
@@ -71,6 +72,8 @@ class ORSTest(_test.TestCase):
             content_type='application/json')
 
         routes = self.client.directions(**query, format='geojson')
+
+        del query['profile']
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(query, json.loads(responses.calls[0].request.body))
