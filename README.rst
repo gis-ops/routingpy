@@ -1,4 +1,4 @@
-routing-py
+git routing-py
 ==========
 
 .. image:: https://travis-ci.com/gis-ops/routing-py.svg?branch=master
@@ -51,8 +51,8 @@ Why routing-py?
 ---------------
 
 You want to get from A to B by car, compute a region of reachability or you require a time distance matrix for a n times m table and don't know which provider to use?
-Stop here. 
-As you probably have already guessed, every provider works on different spatial global datasets and uses a plethora of algorithms on top. 
+Stop here.
+As you probably have already guessed, every provider works on different spatial global datasets and uses a plethora of algorithms on top.
 While Google or HERE build on top of proprietary datasets, providers such as Mapbox or Graphhopper consume OpenStreetMap data for their base network.
 Ultimately this means that results may differ - and our experience tells us: they do.
 This calls for a careful evaluation which service provider to use for which specific use case.
@@ -74,7 +74,7 @@ Or, `download a wheel or source archive from PyPI`_.
 Examples
 --------
 
-Every API has its own specifications and features, however the basic blueprints are the same across all. 
+Every API has its own specifications and features, however the basic blueprints are the same across all.
 To this end, we have decided to keep the basics the of usage the same for all.
 Follow our examples to understand how simple routing-py is to use.
 
@@ -86,7 +86,7 @@ Directions - Graphhopper vs. Google Maps
 
     >>> from routingpy import Graphhopper
     >>> api = Graphhopper(api_key='INSERT_YOUR_KEY_HERE')
-    >>> routes = api.directions( 
+    >>> routes = api.directions(
       coordinates=[[8.688641, 49.420577], [8.680916, 49.415776],[8.780916, 49.445776]],
       elevation=True,
       profile='car',
@@ -154,7 +154,7 @@ Isochrones - HERE Maps vs. openrouteservice
 
 
 
-Matrix - Mapbox-OSRM vs Google Maps
+Matrix - Mapbox vs Here Maps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 XY

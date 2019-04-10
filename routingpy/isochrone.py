@@ -30,9 +30,17 @@ class Isochrones(object):
         self._raw = raw
 
     @property
+    def isochrones(self):
+        """
+        Returns the isochrone objects.
+        :rtype: dict or None
+        """
+        return self._isochrones
+
+    @property
     def raw(self):
         """
-        Returns the route's raw, unparsed response. For details, consult the routing engine's API documentation.
+        Returns the isochrones's raw, unparsed response. For details, consult the routing engine's API documentation.
         :rtype: dict or None
         """
         return self._raw

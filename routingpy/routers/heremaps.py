@@ -742,7 +742,7 @@ class HereMaps(Router):
         if response is None:
             return None
 
-        if alternatives > 1:
+        if alternatives is not None and alternatives > 1:
             routes = []
             for route in response['response']['route']:
                 routes.append(

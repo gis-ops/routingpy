@@ -424,7 +424,7 @@ class Graphhopper(Router):
                 f"Parameter range={range} must be of type list or tuple")
 
         coord_latlng = reversed(
-            [convert._format_float(f) for f in coordinates])
+            [convert._format_float(f) for f in coordinates[0]])
         params.append(("point", ",".join(coord_latlng)))
 
         if self.key is not None:
