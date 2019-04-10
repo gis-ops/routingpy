@@ -19,13 +19,15 @@ Core client functionality, common across all API requests.
 """
 
 from .base import Router, DEFAULT
-from routingpy import convert
+from routingpy import convert, utils
 from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
 
+from pprint import pprint
 
-class MapBoxOSRM(Router):
+
+class MapboxOSRM(Router):
     """Performs requests to the OSRM API services."""
 
     _base_url = 'https://api.mapbox.com'
@@ -68,7 +70,7 @@ class MapBoxOSRM(Router):
 
         self.api_key = api_key
 
-        super(MapBoxOSRM, self).__init__(self._base_url, user_agent, timeout,
+        super(MapboxOSRM, self).__init__(self._base_url, user_agent, timeout,
                                          retry_timeout, requests_kwargs,
                                          retry_over_query_limit)
 
@@ -279,24 +281,39 @@ class MapBoxOSRM(Router):
                         "Content-Type": 'application/x-www-form-urlencoded'
                     }
                 },
-            ), alternatives)
+            ), alternatives, geometries)
 
     @staticmethod
-    def _parse_direction_json(response, alternatives):
+    def _parse_direction_json(response, alternatives, geometry_format):
         if response is None:
             return None
+
+        def _parse_geometry(route_geometry):
+            if geometry_format in (None, 'polyline'):
+                geometry = utils.decode_polyline5(route_geometry, is3d=False)
+            elif geometry_format == 'polyline6':
+                geometry = utils.decode_polyline6(route_geometry, is3d=False)
+            elif geometry_format == 'geojson':
+                geometry = route_geometry['coordinates']
+            else:
+                raise ValueError(
+                    "OSRM: parameter geometries needs one of ['polyline', 'polyline6', 'geojson"
+                )
+            return geometry
 
         if alternatives:
             routes = []
             for route in response['routes']:
                 routes.append(
-                    Direction(route['geometry']['coordinates'],
-                              route['duration'], route['distance'], route))
+                    Direction(
+                        _parse_geometry(route['geometry']), route['duration'],
+                        route['distance'], route))
             return Directions(routes, response)
         else:
-            return Direction(response['routes'][0]['geometry']['coordinates'],
-                             response['routes'][0]['duration'],
-                             response['routes'][0]['distance'], response)
+            return Direction(
+                _parse_geometry(response['routes'][0]['geometry']),
+                response['routes'][0]['duration'],
+                response['routes'][0]['distance'], response)
 
     def isochrones(self,
                    coordinates,

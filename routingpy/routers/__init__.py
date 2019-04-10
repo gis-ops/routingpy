@@ -5,6 +5,6 @@ from .osrm import OSRM
 from .valhalla import Valhalla
 from .graphhopper import Graphhopper
 from .mapbox_valhalla import MapboxValhalla
-from .mapbox_osrm import MapBoxOSRM
+from .mapbox_osrm import MapboxOSRM
 from .google import Google
 from .heremaps import HereMaps

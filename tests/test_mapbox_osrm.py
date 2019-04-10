@@ -16,7 +16,7 @@
 #
 """Tests for the Graphhopper module."""
 
-from routingpy import MapBoxOSRM
+from routingpy import MapboxOSRM
 from routingpy import convert
 from routingpy.direction import Directions, Direction
 from routingpy.isochrone import Isochrones, Isochrone
@@ -32,7 +32,7 @@ class MapboxOSRMTest(_test.TestCase):
     name = 'mapbox_osrm'
 
     def setUp(self):
-        self.client = MapBoxOSRM(api_key='sample_key')
+        self.client = MapboxOSRM(api_key='sample_key')
 
     @responses.activate
     def test_full_directions(self):
