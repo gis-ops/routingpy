@@ -468,7 +468,7 @@ class Valhalla(Router):
         :param units: Distance units for output. One of ['mi', 'km']. Default km.
         :type units: str
 
-        :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
+        :param id: Name your route request. If id is specified, the naming will be sent through to the response.
         :type id: str
 
         :param dry_run: Print URL and parameters without sending the request.

@@ -358,7 +358,7 @@ class ORS(Router):
         """
 
         params = {
-            "locations": coordinates,
+            "locations": [coordinates],
             "profile": profile,
             "range": intervals,
             "range_type": interval_type

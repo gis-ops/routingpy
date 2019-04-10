@@ -805,17 +805,23 @@ class HereMaps(Router):
             https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
         :type profile: str or :class:`HereMaps.RoutingMode`
 
-        :param intervals: Range of isoline. Several comma separated values can be specified. The unit is defined by parameter rangetype.
+        :param intervals: Range of isoline. Several comma separated values can be specified. 
+            The unit is defined by parameter rangetype.
         :type ranges: list of int
 
-        :param interval_type: Specifies type of range. Possible values are distance, time, consumption. For distance the unit is meters. For time the unit is seconds. For consumption it is defined by consumption model
+        :param interval_type: Specifies type of range. Possible values are distance, 
+            time, consumption. For distance the unit is meters. For time the unit is seconds. 
+            For consumption it is defined by consumption model
         :type range_type: str
 
         :param format: Currently only "json" supported. 
         :type format: str
 
-        :param center_type: If 'start' then the isoline will cover all roads which can be reached from this point within given range.
-            It cannot be used in combination with destination parameter. If 'destination' Center of the isoline request. Isoline will cover all roads from which this point can be reached within given range. 
+        :param center_type: If 'start' then the isoline will cover all roads which 
+            can be reached from this point within given range.
+            It cannot be used in combination with destination parameter. 
+            If 'destination' Center of the isoline request. Isoline will cover all 
+            roads from which this point can be reached within given range. 
             It cannot be used in combination with start parameter. 
         :type center_type: str
 
@@ -831,7 +837,8 @@ class HereMaps(Router):
 
         :param arrival: Time when travel is expected to end. Specify either 
             departure or arrival, not both.
-            When the optional timezone offset is not specified, the time is assumed to be the local.
+            When the optional timezone offset is not specified, the time is 
+            assumed to be the local.
             Formatted as iso time, e.g. 2018-07-04T17:00:00+02.
         :type arrival: str        
 
@@ -1014,7 +1021,6 @@ class HereMaps(Router):
         if response is None:
             return None
 
-        print(response)
         geometries = []
         for idx, isochrones in enumerate(response['response']['isoline']):
             range_polygons = []
@@ -1320,7 +1326,6 @@ class HereMaps(Router):
         mtx_objects = response['response']['matrixEntry']
         l = len(mtx_objects)
         for index, obj in enumerate(mtx_objects):
-
             if index < (l - 1):
                 next_ = mtx_objects[index + 1]
 
@@ -1333,10 +1338,12 @@ class HereMaps(Router):
                 index_distances.append(obj['summary']['distance'])
 
             if next_['startIndex'] > obj['startIndex']:
-
                 durations.append(index_durations)
                 distances.append(index_distances)
                 index_durations = []
                 index_distances = []
+
+        durations.append(index_durations)
+        distances.append(index_distances)
 
         return Matrix(durations=durations, distances=distances, raw=response)

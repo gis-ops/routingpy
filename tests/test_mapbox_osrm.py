@@ -112,7 +112,7 @@ class MapboxOSRMTest(_test.TestCase):
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
-            'https://api.mapbox.com/isochrone/v1/mapbox/driving/8.34234,48.23424?access_token=sample_key&'
+            'https://api.mapbox.com/isochrone/v1/mapbox/driving/8.34234,48.23424?costing=mapbox/driving&access_token=sample_key&'
             'contours_colors=ff0000%2C00FF00&contours_minutes=10.0%2C20.0&denoise=0.1&generalize=0.5&polygons=True',
             responses.calls[0].request.url)
         self.assertIsInstance(iso, Isochrones)

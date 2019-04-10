@@ -95,7 +95,7 @@ class ORSTest(_test.TestCase):
         isochrones = self.client.isochrones(**query)
 
         expected = query
-        expected['locations'] = expected['coordinates']
+        expected['locations'] = [expected['coordinates']]
         expected['range'] = expected['intervals']
         expected['range_type'] = expected['interval_type']
         del expected['coordinates']

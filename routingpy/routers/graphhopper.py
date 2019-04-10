@@ -520,8 +520,8 @@ class Graphhopper(Router):
             sources_out = coordinates
             destinations_out = coordinates
             try:
+                sources_out = []
                 for idx in sources:
-                    sources_out = []
                     sources_out.append(coordinates[idx])
             except IndexError:
                 raise IndexError(
@@ -531,8 +531,8 @@ class Graphhopper(Router):
                 # Raised when sources == None
                 pass
             try:
+                destinations_out = []
                 for idx in destinations:
-                    destinations_out = []
                     destinations_out.append(coordinates[idx])
             except IndexError:
                 raise IndexError(
@@ -569,4 +569,5 @@ class Graphhopper(Router):
             return None
         durations = response.get('times')
         distances = response.get('distances')
+
         return Matrix(durations=durations, distances=distances, raw=response)

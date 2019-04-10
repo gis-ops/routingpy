@@ -146,7 +146,8 @@ class GraphhopperTest(_test.TestCase):
     @responses.activate
     def test_few_sources_destinations_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
-        query['sources'] = [1]
+        query['sources'] = [0, 1, 2]
+        query['destinations'] = [0, 1, 2]
 
         responses.add(
             responses.GET,
@@ -157,7 +158,7 @@ class GraphhopperTest(_test.TestCase):
         resp = self.client.distance_matrix(**query)
 
         query['sources'] = None
-        query['destinations'] = [1]
+        query['destinations'] = None
 
         responses.add(
             responses.GET,
@@ -170,15 +171,16 @@ class GraphhopperTest(_test.TestCase):
 
         self.assertEqual(2, len(responses.calls))
         self.assertURLEqual(
-            'https://graphhopper.com/api/1/matrix?from_point=49.415776%2C8.680916&key=sample_key&out_array=distances'
+            'https://graphhopper.com/api/1/matrix?from_point=49.415776%2C8.680916&from_point=49.420577%2C8.688641&'
+            'from_point=49.445776%2C8.780916&key=sample_key&out_array=distances'
             '&out_array=times&out_array=weights&profile=car&to_point=49.415776%2C8.680916&to_point=49.420577%2C8.688641&'
             '&to_point=49.445776%2C8.780916&debug=true',
             responses.calls[0].request.url)
         self.assertURLEqual(
-            'https://graphhopper.com/api/1/matrix?from_point=49.415776%2C8.680916&from_point=49.420577%2C8.688641&'
-            'from_point=49.445776%2C8.780916&key=sample_key&out_array=distances&out_array=times&out_array=weights&'
-            'profile=car&to_point=49.415776%2C8.680916&debug=true',
-            responses.calls[1].request.url)
+            'https://graphhopper.com/api/1/matrix?point=49.415776%2C8.680916&point=49.420577%2C8.688641&'
+            'point=49.445776%2C8.780916&key=sample_key&out_array=distances'
+            '&out_array=times&out_array=weights&profile=car'
+            '&debug=true', responses.calls[1].request.url)
 
     def test_index_sources_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
