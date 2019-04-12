@@ -389,7 +389,7 @@ class MapboxOSRM(Router):
             profile
         }
 
-        locations = convert._delimit_list(locations, ',')
+        locations_string = convert._delimit_list(locations, ',')
 
         if contours_colors:
             params["contours_colors"] = convert._delimit_list(
@@ -406,19 +406,19 @@ class MapboxOSRM(Router):
 
         return self._parse_isochrone_json(
             self._request(
-                "/isochrone/v1/" + profile + '/' + locations,
+                "/isochrone/v1/" + profile + '/' + locations_string,
                 get_params=params,
-                dry_run=dry_run), intervals)
+                dry_run=dry_run), intervals, locations)
 
     @staticmethod
-    def _parse_isochrone_json(response, intervals):
+    def _parse_isochrone_json(response, intervals, locations):
         if response is None:
             return Isochrones()
         return Isochrones([
             Isochrone(
                 geometry=isochrone['geometry']['coordinates'],
                 interval=intervals[idx],
-                center=None)
+                center=locations)
             for idx, isochrone in enumerate(response['features'])
         ], response)
 

@@ -435,10 +435,10 @@ class Valhalla(Router):
                 "/isochrone",
                 get_params=get_params,
                 post_params=params,
-                dry_run=dry_run), intervals)
+                dry_run=dry_run), intervals, locations)
 
     @staticmethod
-    def _parse_isochrone_json(response, intervals):
+    def _parse_isochrone_json(response, intervals, locations):
         if response is None:
             return Isochrones()
 
@@ -446,7 +446,7 @@ class Valhalla(Router):
             Isochrone(
                 geometry=isochrone['geometry']['coordinates'],
                 interval=intervals[idx],
-                center=None)
+                center=locations)
             for idx, isochrone in enumerate(response['features'])
         ], response)
 

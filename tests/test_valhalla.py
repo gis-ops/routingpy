@@ -112,7 +112,7 @@ class ValhallaTest(_test.TestCase):
             self.assertIsInstance(i, Isochrone)
             self.assertIsInstance(i.geometry, list)
             self.assertIsInstance(i.interval, int)
-            self.assertEqual(i.center, None)
+            self.assertIsInstance(i.center, list)
 
     # TODO: test colors having less items than range
     @responses.activate

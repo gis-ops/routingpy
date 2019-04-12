@@ -122,7 +122,7 @@ class MapboxOSRMTest(_test.TestCase):
             self.assertIsInstance(ischrone, Isochrone)
             self.assertIsInstance(ischrone.geometry, list)
             self.assertIsInstance(ischrone.interval, int)
-            self.assertEqual(ischrone.center, None)
+            self.assertIsInstance(ischrone.center, list)
 
     @responses.activate
     def test_full_matrix(self):

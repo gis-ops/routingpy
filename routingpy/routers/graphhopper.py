@@ -440,8 +440,9 @@ class Graphhopper(Router):
             raise TypeError(
                 f"Parameter range={range} must be of type list or tuple")
 
-        coord_latlng = reversed([convert._format_float(f) for f in locations])
-        params.append(("point", ",".join(coord_latlng)))
+        center = [convert._format_float(f) for f in locations]
+        center.reverse()
+        params.append(("point", ",".join(center)))
 
         if self.key is not None:
             params.append(("key", self.key))
@@ -458,21 +459,21 @@ class Graphhopper(Router):
 
         return self._parse_isochrone_json(
             self._request("/isochrone", get_params=params, dry_run=dry_run),
-            intervals[0], buckets)
+            intervals[0], buckets, center)
 
     @staticmethod
-    def _parse_isochrone_json(response, intervals, buckets):
+    def _parse_isochrone_json(response, intervals, buckets, center):
         if response is None:
             return Isochrones()
 
         isochrones = []
-        for bucket in range(buckets):
+
+        for index, polygon in enumerate(response["polygons"]):
             isochrones.append(
                 Isochrone(
-                    geometry=response['polygons'][bucket]['geometry']
-                    ['coordinates'],
-                    interval=int(intervals * (1 - (bucket / buckets))),
-                    center=None,
+                    geometry=polygon['geometry']['coordinates'],
+                    interval=int(intervals * (1 - (index / buckets))),
+                    center=center,
                 ))
 
         return Isochrones(isochrones, response)
