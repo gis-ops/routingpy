@@ -83,7 +83,8 @@ class Isochrone(object):
     def center(self):
         """
         The center coordinate in [lon, lat] of the isochrone. Might deviate from the input coordinate.
-        Not available for all routing engines (e.g. GraphHopper).
+        Not available for all routing engines (e.g. GraphHopper, Mapbox OSRM or Valhalla).
+        In this case, it will use the location from the user input.
 
         :rtype: list of float
         """
