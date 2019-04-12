@@ -89,9 +89,10 @@ class MapboxOSRMTest(_test.TestCase):
             "language=de&roundabout_exits=true&voide_instructions=true&voice_units=metric&"
             "waypoint_names=a%3Bb%3Bc&waypoint_targets=%3B8.688641%2C49.420577%3B8.680916%2C49.415776%3B"
             "8.780916%2C49.445776", responses.calls[0].request.body)
+
         self.assertIsInstance(routes, Directions)
-        self.assertIsInstance(routes[0], Direction)
         self.assertEqual(1, len(routes))
+        self.assertIsInstance(routes[0], Direction)
         self.assertIsInstance(routes[0].geometry, list)
         self.assertIsInstance(routes[0].duration, int)
         self.assertIsInstance(routes[0].distance, int)
@@ -103,7 +104,7 @@ class MapboxOSRMTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            f'https://api.mapbox.com/isochrone/v1/{query["profile"]}/{convert._delimit_list(query["coordinates"])}',
+            f'https://api.mapbox.com/isochrone/v1/{query["profile"]}/{convert._delimit_list(query["locations"])}',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
             content_type='application/json')
@@ -117,18 +118,17 @@ class MapboxOSRMTest(_test.TestCase):
             responses.calls[0].request.url)
         self.assertIsInstance(iso, Isochrones)
         self.assertEqual(2, len(iso))
-        self.assertIsInstance(iso[0], Isochrone)
-        self.assertIsInstance(iso[0].geometry, list)
-        self.assertIsInstance(iso[0].range, int)
-        self.assertEqual(iso[0].center, None)
-        self.assertIsInstance(iso[0].raw, dict)
+        for ischrone in iso:
+            self.assertIsInstance(ischrone, Isochrone)
+            self.assertIsInstance(ischrone.geometry, list)
+            self.assertIsInstance(ischrone.interval, int)
+            self.assertEqual(ischrone.center, None)
 
     @responses.activate
     def test_full_matrix(self):
         query = ENDPOINTS_QUERIES[self.name]['matrix']
         coords = convert._delimit_list(
-            [convert._delimit_list(pair) for pair in query['coordinates']],
-            ';')
+            [convert._delimit_list(pair) for pair in query['locations']], ';')
 
         responses.add(
             responses.GET,
@@ -138,20 +138,23 @@ class MapboxOSRMTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES['mapbox_osrm']['matrix'],
             content_type='application/json')
 
-        matrix = self.client.distance_matrix(**query)
+        matrix = self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://api.mapbox.com/directions-matrix/v1/mapbox/driving/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?'
             'access_token=sample_key&annotations=distance%2Cduration&fallback_speed=50',
             responses.calls[0].request.url)
+        self.assertIsInstance(matrix, Matrix)
+        self.assertIsInstance(matrix.distances, list)
+        self.assertIsInstance(matrix.durations, list)
+        self.assertIsInstance(matrix.raw, dict)
 
     @responses.activate
     def test_few_sources_destinations_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
         coords = convert._delimit_list(
-            [convert._delimit_list(pair) for pair in query['coordinates']],
-            ';')
+            [convert._delimit_list(pair) for pair in query['locations']], ';')
 
         query['sources'] = [1, 2]
         query['destinations'] = [0, 2]
@@ -164,7 +167,7 @@ class MapboxOSRMTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES['mapbox_osrm']['matrix'],
             content_type='application/json')
 
-        resp = self.client.distance_matrix(**query)
+        resp = self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(

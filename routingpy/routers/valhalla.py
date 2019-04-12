@@ -18,7 +18,7 @@
 Core client functionality, common across all API requests.
 """
 
-from .base import Router
+from .base import Router, DEFAULT
 from routingpy import utils
 from routingpy.direction import Direction
 from routingpy.isochrone import Isochrone, Isochrones
@@ -34,10 +34,11 @@ class Valhalla(Router):
                  base_url,
                  api_key=None,
                  user_agent=None,
-                 timeout=None,
+                 timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs=None,
-                 retry_over_query_limit=False):
+                 retry_over_query_limit=False,
+                 skip_api_error=None):
         """
         Initializes a Valhalla client.
 
@@ -48,38 +49,57 @@ class Valhalla(Router):
             server. Should not have a trailing slash.
         :type base_url: str
 
-        :param user_agent: User-Agent to send with the requests to routing API.
-            Overrides ``options.default_user_agent``.
+        :param user_agent: User Agent to be used when requesting.
+            Default :attr:`routingpy.routers.options.default_user_agent`.
         :type user_agent: str
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
-            seconds. Specify "None" for no timeout.
-        :type timeout: int
+            seconds. Specify ``None`` for no timeout. Default :attr:`routingpy.routers.options.default_timeout`.
+        :type timeout: int or None
 
         :param retry_timeout: Timeout across multiple retriable requests, in
-            seconds.
+            seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
         :param requests_kwargs: Extra keyword arguments for the requests
             library, which among other things allow for proxy auth to be
-            implemented. See the official requests docs for more info:
-            http://docs.python-requests.org/en/latest/api/#main-interface
+            implemented. **Note**, that ``proxies`` can be set globally
+            in :attr:`routingpy.routers.options.default_proxies`.
+
+            Example:
+
+            >>> from routingpy.routers import Valhalla
+            >>> router = Valhalla(my_key, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> print(router.proxies)
+            {'https': '129.125.12.0'}
         :type requests_kwargs: dict
 
-        :param retry_over_query_limit: If True, the client will retry when query
-            limit is reached (HTTP 429). Default False.
+        :param retry_over_query_limit: If True, client will not raise an exception
+            on HTTP 429, but instead jitter a sleeping timer to pause between
+            requests until HTTP 200 or retry_timeout is reached.
+            Default :attr:`routingpy.routers.options.default_over_query_limit`.
         :type retry_over_query_limit: bool
+
+        :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
+            encountered (e.g. no route found). If False, processing will discontinue and raise an error.
+            Default :attr:`routingpy.routers.options.default_skip_api_error`.
+        :type skip_api_error: bool
         """
 
         self.api_key = api_key
 
-        super(Valhalla,
-              self).__init__(base_url, user_agent, timeout, retry_timeout,
-                             requests_kwargs, retry_over_query_limit)
+        super(Valhalla, self).__init__(base_url, user_agent, timeout,
+                                       retry_timeout, requests_kwargs,
+                                       retry_over_query_limit, skip_api_error)
 
     class Waypoint(object):
         """
-        Optionally construct a waypoint from this class with additional attributes, such as via.
+        Constructs a waypoint with additional information, such as via or encoded lines.
+
+        Example:
+
+        >>> waypoint = Valhalla.WayPoint(position=[8.15315, 52.53151], type='break', heading=120, heading_tolerance=10, minimum_reachability=10, radius=400)
+        >>> route = Valhalla('http://localhost/v1').directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
 
         def __init__(self,
@@ -91,7 +111,6 @@ class Valhalla(Router):
                      radius=None,
                      rank_candidates=None):
             """
-            Constructs a waypoint with additional information, such as via or encoded lines.
 
             :param type: Type of location. One of ['break', 'through']. A break is a stop, so the first
             and last locations must be of type break. A through location is one that the route path travels
@@ -167,7 +186,7 @@ class Valhalla(Router):
             return waypoint
 
     def directions(self,
-                   coordinates,
+                   locations,
                    profile,
                    options=None,
                    units=None,
@@ -181,10 +200,10 @@ class Valhalla(Router):
 
         For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md.
 
-        :param coordinates: The coordinates tuple the route should be calculated
+        :param locations: The coordinates tuple the route should be calculated
             from in order of visit. Can be a list/tuple of [lon, lat] or :class:`Valhalla.WayPoint` instance or
             a combination of both.
-        :type coordinates: list of list or list of :class:`Valhalla.WayPoint`
+        :type locations: list of list or list of :class:`Valhalla.WayPoint`
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["auto", "auto_shorter", "bicycle", "bus", "hov", "motor_scooter",
@@ -230,7 +249,7 @@ class Valhalla(Router):
 
         params = dict(costing=profile)
 
-        params['locations'] = self._build_locations(coordinates)
+        params['locations'] = self._build_locations(locations)
 
         if options:
             params['costing_options'] = dict()
@@ -268,7 +287,7 @@ class Valhalla(Router):
     @staticmethod
     def _parse_direction_json(response, units):
         if response is None:
-            return None
+            return Direction()
 
         geometry, duration, distance = [], 0, 0
         for leg in response['trip']['legs']:
@@ -288,7 +307,7 @@ class Valhalla(Router):
             raw=response)
 
     def isochrones(self,
-                   coordinates,
+                   locations,
                    profile,
                    intervals,
                    colors=None,
@@ -307,8 +326,8 @@ class Valhalla(Router):
 
         For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/isochrone/api-reference.md.
 
-        :param coordinates: One pair of lng/lat values. Takes the form [Longitude, Latitude].
-        :type coordinates: list of float
+        :param locations: One pair of lng/lat values. Takes the form [Longitude, Latitude].
+        :type locations: list of float
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["auto", "bicycle", "multimodal", "pedestrian".
@@ -367,7 +386,7 @@ class Valhalla(Router):
         :rtype: :class:`routingpy.isochrone.Isochrones`
         """
 
-        locations = self._build_locations(coordinates)
+        locations = self._build_locations(locations)
 
         contours = []
         for idx, r in enumerate(intervals):
@@ -421,27 +440,30 @@ class Valhalla(Router):
     @staticmethod
     def _parse_isochrone_json(response, intervals):
         if response is None:
-            return None
+            return Isochrones()
+
         return Isochrones([
-            Isochrone(isochrone['geometry']['coordinates'], intervals[idx],
-                      None, isochrone)
+            Isochrone(
+                geometry=isochrone['geometry']['coordinates'],
+                interval=intervals[idx],
+                center=None)
             for idx, isochrone in enumerate(response['features'])
         ], response)
 
-    def distance_matrix(self,
-                        coordinates,
-                        profile,
-                        sources=None,
-                        destinations=None,
-                        options=None,
-                        avoid_locations=None,
-                        units=None,
-                        id=None,
-                        dry_run=None):
+    def matrix(self,
+               locations,
+               profile,
+               sources=None,
+               destinations=None,
+               options=None,
+               avoid_locations=None,
+               units=None,
+               id=None,
+               dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
-        :param coordinates: Multiple pairs of lng/lat values.
-        :type coordinates: list of list
+        :param locations: Multiple pairs of lng/lat values.
+        :type locations: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
             matrices. One of ["auto", "bicycle", "multimodal", "pedestrian".
@@ -482,7 +504,7 @@ class Valhalla(Router):
             'costing': profile,
         }
 
-        locations = self._build_locations(coordinates)
+        locations = self._build_locations(locations)
 
         sources_coords = locations
         if sources is not None:
@@ -524,7 +546,7 @@ class Valhalla(Router):
     @staticmethod
     def _parse_matrix_json(response, units):
         if response is None:
-            return None
+            return Matrix()
 
         factor = 0.621371 if units == 'mi' else 1
         durations = [[destination['time'] for destination in origin]

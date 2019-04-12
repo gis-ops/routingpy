@@ -21,7 +21,8 @@
 
 class Directions(object):
     """
-    Contains a list of directions and the complete raw response. Access via properties ``directions`` and ``raw``.
+    Contains a list of :class:`Direction`, when the router returned multiple alternative routes, and the complete raw
+    response, which can be accessed via the property ``raw``.
     """
 
     def __init__(self, directions=None, raw=None):
@@ -60,7 +61,7 @@ class Directions(object):
 
 class Direction(object):
     """
-    Contains a parsed directions response. Access via properties ``geometry``, ``duration``, ``distance`` and ``raw``.
+    Contains a parsed directions response. Access via properties ``geometry``, ``duration`` and ``distance``.
     """
 
     def __init__(self, geometry=None, duration=None, distance=None, raw=None):

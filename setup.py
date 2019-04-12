@@ -17,7 +17,7 @@
 
 import os
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 from routingpy.__version__ import __title__, __version__, __author__, __author_email__, __description__, __url__
 
@@ -26,7 +26,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 # Import the README and use it as the long-description.
 # Note: this will only work if 'README.md' is present in your MANIFEST.in file!
 try:
-    with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
+    with open(os.path.join(here, 'README.rstd'), encoding='utf-8') as f:
         long_description = '\n' + f.read()
 except FileNotFoundError:
     long_description = __description__
@@ -37,15 +37,12 @@ setup(
     version=__version__,
     description=__description__,
     long_description=long_description,
-    #long_description_content_type='text/markdown',
     author=__author__,
     author_email=__author_email__,
     python_requires='>=3.6.0',
     url=__url__,
-    packages=['routingpy'],
-    install_requires=[
-        'requests>=2.21.0',
-    ],
+    packages=find_packages(exclude=["*test*"]),
+    install_requires=['requests>=2.21.0', 'sphinx-rtd-theme'],
     include_package_data=True,
     license='Apache 2.0',
     classifiers=[

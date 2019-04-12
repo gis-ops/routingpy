@@ -34,50 +34,70 @@ class Google(Router):
                  timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs={},
-                 retry_over_query_limit=True):
+                 retry_over_query_limit=True,
+                 skip_api_error=None):
         """
         Initializes a Google client.
 
         :param key: API key.
         :type key: str
 
-        :param user_agent: User Agent to be used when requesting. Eefault 'routingpy.<version string>'.
+        :param user_agent: User Agent to be used when requesting.
+            Default :attr:`routingpy.routers.options.default_user_agent`.
         :type user_agent: str
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
-            seconds. Specify ``None`` for no timeout.
+            seconds. Specify ``None`` for no timeout. Default :attr:`routingpy.routers.options.default_timeout`.
         :type timeout: int or None
 
         :param retry_timeout: Timeout across multiple retriable requests, in
-            seconds.
+            seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
         :param requests_kwargs: Extra keyword arguments for the requests
             library, which among other things allow for proxy auth to be
-            implemented. See the official requests docs for more info:
-            http://docs.python-requests.org/en/latest/api/#main-interface
+            implemented. **Note**, that ``proxies`` can be set globally
+            in :attr:`routingpy.routers.options.default_proxies`.
+
+            Example:
+
+            >>> from routingpy.routers import Google
+            >>> router = Google(my_key, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> print(router.proxies)
+            {'https': '129.125.12.0'}
         :type requests_kwargs: dict
 
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
+            Default :attr:`routingpy.routers.options.default_over_query_limit`.
         :type retry_over_query_limit: bool
+
+        :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
+            encountered (e.g. no route found). If False, processing will discontinue and raise an error.
+            Default :attr:`routingpy.routers.options.default_skip_api_error`.
+        :type skip_api_error: bool
         """
 
         self.key = api_key
 
         super(Google, self).__init__(self._base_url, user_agent, timeout,
                                      retry_timeout, requests_kwargs,
-                                     retry_over_query_limit)
+                                     retry_over_query_limit, skip_api_error)
 
     class WayPoint(object):
         """
+        TODO: make the WayPoint class and its parameters appear in Sphinx. True for Valhalla as well.
+
         Optionally construct a waypoint from this class with additional attributes.
         """
 
         def __init__(self, position, waypoint_type='coords', stopover=True):
             """
             Constructs a waypoint with additional information, such as via or encoded lines.
+
+            >>> waypoint = Google.WayPoint(position=[8.15315, 52.53151], waypoint_type='coords', stopover=False)
+            >>> route = Google(api_key).directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
 
             :param position: Coordinates in [long, lat] order.
             :type position: list/tuple of float
@@ -114,7 +134,7 @@ class Google(Router):
             return waypoint
 
     def directions(self,
-                   coordinates,
+                   locations,
                    profile,
                    alternatives=None,
                    avoid=None,
@@ -132,11 +152,11 @@ class Google(Router):
 
         For more information, visit https://developers.google.com/maps/documentation/directions/intro.
 
-        :param coordinates: The coordinates tuple the route should be calculated
+        :param locations: The coordinates tuple the route should be calculated
             from in order of visit. Can be a list/tuple of [lon, lat], a list/tuple of address strings, Google's
             Place ID's, a :class:`Google.WayPoint` instance or a combination of these. Note, the first and last location have to be specified as [lon, lat].
             Optionally, specify ``optimize=true`` for via waypoint optimization.
-        :type coordinates: list of list or list of :class:`Google.WayPoint`
+        :type locations: list of list or list of :class:`Google.WayPoint`
 
         :param profile: The vehicle for which the route should be calculated.
             Default "driving". One of ['driving', 'walking', 'bicycling', 'transit'].
@@ -194,12 +214,12 @@ class Google(Router):
 
         params = {'profile': profile}
 
-        origin, destination = coordinates[0], coordinates[-1]
+        origin, destination = locations[0], locations[-1]
         if isinstance(origin, (list, tuple)):
             params['origin'] = convert._delimit_list(list(reversed(origin)))
         elif isinstance(origin, self.WayPoint):
             raise TypeError(
-                "The first and last coordinates must be list/tuple of [lon, lat]"
+                "The first and last locations must be list/tuple of [lon, lat]"
             )
 
         if isinstance(destination, (list, tuple)):
@@ -207,13 +227,13 @@ class Google(Router):
                 list(reversed(destination)))
         elif isinstance(origin, self.WayPoint):
             raise TypeError(
-                "The first and last coordinates must be list/tuple of [lon, lat]"
+                "The first and last locations must be list/tuple of [lon, lat]"
             )
 
-        if len(coordinates) > 2:
+        if len(locations) > 2:
             waypoints = []
             s = slice(1, -1)
-            for coord in coordinates[s]:
+            for coord in locations[s]:
                 if isinstance(coord, (list, tuple)):
                     waypoints.append(
                         convert._delimit_list(list(reversed(coord))))
@@ -268,7 +288,10 @@ class Google(Router):
     @staticmethod
     def _parse_direction_json(response, alternatives):
         if response is None:
-            return None
+            if alternatives:
+                return Directions()
+            else:
+                return Direction()
 
         if alternatives:
             routes = []
@@ -287,7 +310,8 @@ class Google(Router):
                     Direction(
                         geometry=geometry,
                         duration=duration,
-                        distance=distance))
+                        distance=distance,
+                        raw=route))
             return Directions(routes, response)
         else:
             geometry = []
@@ -301,30 +325,33 @@ class Google(Router):
                         utils.decode_polyline5(step['polyline']['points'])
                     ])
             return Direction(
-                geometry=geometry, duration=duration, distance=distance)
+                geometry=geometry,
+                duration=duration,
+                distance=distance,
+                raw=response)
 
     def isochrones(self):
         raise NotImplementedError
 
-    def distance_matrix(self,
-                        coordinates,
-                        profile,
-                        sources=None,
-                        destinations=None,
-                        avoid=None,
-                        language=None,
-                        region=None,
-                        units=None,
-                        arrival_time=None,
-                        departure_time=None,
-                        traffic_model=None,
-                        transit_mode=None,
-                        transit_routing_preference=None,
-                        dry_run=None):
+    def matrix(self,
+               locations,
+               profile,
+               sources=None,
+               destinations=None,
+               avoid=None,
+               language=None,
+               region=None,
+               units=None,
+               arrival_time=None,
+               departure_time=None,
+               traffic_model=None,
+               transit_mode=None,
+               transit_routing_preference=None,
+               dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
-        :param coordinates: Two or more pairs of lng/lat values.
-        :type coordinates: list of list
+        :param locations: Two or more pairs of lng/lat values.
+        :type locations: list of list
 
         :param profile: The vehicle for which the route should be calculated.
             Default "driving". One of ['driving', 'walking', 'bicycling', 'transit'].
@@ -384,7 +411,7 @@ class Google(Router):
         params = {'profile': profile}
 
         waypoints = []
-        for coord in coordinates:
+        for coord in locations:
             if isinstance(coord, (list, tuple)):
                 waypoints.append(convert._delimit_list(list(reversed(coord))))
             elif isinstance(coord, self.WayPoint):
@@ -443,7 +470,7 @@ class Google(Router):
     @staticmethod
     def _parse_matrix_json(response):
         if response is None:
-            return None
+            return Matrix()
 
         durations = [[
             destination['duration']['value']

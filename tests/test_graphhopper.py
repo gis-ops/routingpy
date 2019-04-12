@@ -62,6 +62,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertIsInstance(routes.geometry, list)
         self.assertIsInstance(routes.duration, int)
         self.assertIsInstance(routes.distance, int)
+        self.assertIsInstance(routes.raw, dict)
 
     @responses.activate
     def test_full_directions_alternatives(self):
@@ -116,8 +117,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertEqual(3, len(isochrones))
         self.assertIsInstance(isochrones[0], Isochrone)
         self.assertIsInstance(isochrones[0].geometry, list)
-        self.assertIsInstance(isochrones[0].raw, dict)
-        self.assertIsInstance(isochrones[0].range, int)
+        self.assertIsInstance(isochrones[0].interval, int)
         self.assertEqual(isochrones[0].center, None)
 
     @responses.activate
@@ -131,7 +131,7 @@ class GraphhopperTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
             content_type='application/json')
 
-        matrix = self.client.distance_matrix(**query)
+        matrix = self.client.matrix(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://graphhopper.com/api/1/matrix?key=sample_key&out_array=distances&out_array=times&out_array=weights&'
@@ -155,7 +155,7 @@ class GraphhopperTest(_test.TestCase):
             status=200,
             json={},
             content_type='application/json')
-        resp = self.client.distance_matrix(**query)
+        resp = self.client.matrix(**query)
 
         query['sources'] = None
         query['destinations'] = None
@@ -167,7 +167,7 @@ class GraphhopperTest(_test.TestCase):
             json={},
             content_type='application/json')
 
-        resp = self.client.distance_matrix(**query)
+        resp = self.client.matrix(**query)
 
         self.assertEqual(2, len(responses.calls))
         self.assertURLEqual(
@@ -186,12 +186,10 @@ class GraphhopperTest(_test.TestCase):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
         query['sources'] = [100]
 
-        self.assertRaises(
-            IndexError, lambda: self.client.distance_matrix(**query))
+        self.assertRaises(IndexError, lambda: self.client.matrix(**query))
 
     def test_index_destinations_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
         query['destinations'] = [100]
 
-        self.assertRaises(
-            IndexError, lambda: self.client.distance_matrix(**query))
+        self.assertRaises(IndexError, lambda: self.client.matrix(**query))

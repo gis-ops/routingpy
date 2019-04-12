@@ -15,6 +15,10 @@
 # the License.
 #
 
+import logging
+
+logger = logging.getLogger('routingpy')
+
 
 def _trans(value, index):
     """
@@ -92,3 +96,16 @@ def decode_polyline6(polyline, is3d=False):
     """
 
     return _decode(polyline, precision=6, is3d=is3d)
+
+
+def get_ordinal(number):
+    """Produces an ordinal (1st, 2nd, 3rd, 4th) from a number"""
+
+    if number == 1:
+        return 'st'
+    elif number == 2:
+        return 'nd'
+    elif number == 3:
+        return 'rd'
+    else:
+        return 'th'

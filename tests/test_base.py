@@ -22,6 +22,7 @@ import time
 
 import routingpy
 from routingpy.routers import options, base
+from routingpy.direction import Direction
 from .test_helper import *
 import tests as _test
 
@@ -36,7 +37,7 @@ class RouterMock(base.Router):
     def isochrones(self):
         pass
 
-    def distance_matrix(self):
+    def matrix(self):
         pass
 
 
@@ -45,10 +46,19 @@ class BaseTest(_test.TestCase):
         self.router = RouterMock("https://httpbin.org/")
         self.params = {'c': 'd', 'a': 'b', '1': '2'}
 
+    def test_router_by_name(self):
+        for s in routingpy.routers._SERVICE_TO_ROUTER.keys():
+            router = routingpy.routers.get_router_by_name(s)
+
+        with self.assertRaises(routingpy.exceptions.RouterNotFound):
+            router = routingpy.routers.get_router_by_name('orsm')
+
     def test_options(self):
         options.default_user_agent = "my_agent"
         options.default_timeout = 10
         options.default_retry_timeout = 10
+        options.default_retry_over_query_limit = False
+        #options.default_skip_api_error = True
         options.default_proxies = {'https': '192.103.10.102'}
         new_router = RouterMock('https://foo.bar')
         req_kwargs = {
@@ -60,11 +70,67 @@ class BaseTest(_test.TestCase):
             'proxies': options.default_proxies
         }
         self.assertEqual(req_kwargs, new_router.requests_kwargs)
+        #self.assertEqual(new_router.skip_api_error, options.default_skip_api_error)
+        self.assertEqual(new_router.retry_over_query_limit,
+                         options.default_retry_over_query_limit)
 
     def test_urlencode(self):
         encoded_params = self.router._generate_auth_url(
             'directions', self.params)
         self.assertEqual("directions?1=2&a=b&c=d", encoded_params)
+
+    @responses.activate
+    def test_skip_api_error(self):
+        query = self.params
+        responses.add(
+            responses.POST,
+            'https://httpbin.org/post',
+            json=query,
+            status=400,
+            content_type='application/json')
+
+        client = RouterMock(
+            base_url="https://httpbin.org", skip_api_error=False)
+        print(client.skip_api_error)
+        with self.assertRaises(routingpy.exceptions.RouterApiError):
+            client.directions(url='/post', post_params=self.params)
+
+        client = RouterMock(
+            base_url="https://httpbin.org", skip_api_error=True)
+        client.directions(url='/post', post_params=self.params)
+        self.assertEqual(responses.calls[1].response.json(), query)
+
+    @responses.activate
+    def test_retry_timeout(self):
+        query = self.params
+        responses.add(
+            responses.POST,
+            'https://httpbin.org/post',
+            json=query,
+            status=429,
+            content_type='application/json')
+
+        client = RouterMock(
+            base_url="https://httpbin.org",
+            retry_over_query_limit=True,
+            retry_timeout=3)
+        with self.assertRaises(routingpy.exceptions.OverQueryLimit):
+            client.directions(url='/post', post_params=query)
+
+    @responses.activate
+    def test_raise_over_query_limit(self):
+        query = self.params
+        responses.add(
+            responses.POST,
+            'https://httpbin.org/post',
+            json=query,
+            status=429,
+            content_type='application/json')
+
+        with self.assertRaises(routingpy.exceptions.OverQueryLimit):
+            client = RouterMock(
+                base_url="https://httpbin.org", retry_over_query_limit=False)
+            client.directions(url='/post', post_params=query)
 
     @responses.activate
     def test_raise_timeout_retriable_requests(self):
@@ -93,9 +159,9 @@ class BaseTest(_test.TestCase):
         # Test that nothing is requested when dry_run is 'true'
 
         responses.add(
-            responses.GET,
+            responses.POST,
             'https://api.openrouteservice.org/directions',
-            body='{"status":"OK","results":[]}',
+            json=None,
             status=200,
             content_type='application/json')
 

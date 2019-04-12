@@ -57,6 +57,9 @@ class GoogleTest(_test.TestCase):
         self.assertIsInstance(routes, Directions)
         self.assertIsInstance(routes[0], Direction)
         self.assertIsInstance(routes[0].geometry, list)
+        self.assertIsInstance(routes[0].distance, int)
+        self.assertIsInstance(routes[0].duration, int)
+        self.assertIsInstance(routes[0].raw, dict)
 
     @responses.activate
     def test_full_directions_no_alternatives(self):
@@ -83,11 +86,12 @@ class GoogleTest(_test.TestCase):
         self.assertIsInstance(routes.geometry, list)
         self.assertIsInstance(routes.duration, int)
         self.assertIsInstance(routes.distance, int)
+        self.assertIsInstance(routes.raw, dict)
 
     @responses.activate
     def test_waypoint_generator_directions(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['directions'])
-        query['coordinates'] = [
+        query['locations'] = [
             PARAM_LINE_MULTI[1],
             Google.WayPoint('osazgqo@/@', 'enc', False),
             Google.WayPoint(PARAM_LINE_MULTI[1], 'coords', True),
@@ -117,7 +121,7 @@ class GoogleTest(_test.TestCase):
             responses.calls[0].request.url)
 
         # Test if 'bla' triggers a ValueError
-        query['coordinates'].insert(
+        query['locations'].insert(
             1, Google.WayPoint(PARAM_LINE_MULTI[0], 'bla', True))
 
         with self.assertRaises(ValueError):
@@ -143,7 +147,7 @@ class GoogleTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
             content_type='application/json')
 
-        matrix = self.client.distance_matrix(**query)
+        matrix = self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
@@ -170,7 +174,7 @@ class GoogleTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
             content_type='application/json')
 
-        matrix = self.client.distance_matrix(**query)
+        matrix = self.client.matrix(**query)
 
         query['sources'] = None
         query['destinations'] = [1, 2]
@@ -182,7 +186,7 @@ class GoogleTest(_test.TestCase):
             json={},
             content_type='application/json')
 
-        matrix = self.client.distance_matrix(**query)
+        matrix = self.client.matrix(**query)
 
         self.assertEqual(2, len(responses.calls))
         self.assertURLEqual(
@@ -204,7 +208,7 @@ class GoogleTest(_test.TestCase):
     @responses.activate
     def test_waypoint_generator_matrix(self):
         query = ENDPOINTS_QUERIES[self.name]['matrix']
-        query['coordinates'] = [
+        query['locations'] = [
             PARAM_LINE_MULTI[1],
             Google.WayPoint('osazgqo@/@', 'enc', False),
             Google.WayPoint(PARAM_LINE_MULTI[1], 'coords', True),
@@ -221,7 +225,7 @@ class GoogleTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
             content_type='application/json')
 
-        matrix = self.client.distance_matrix(**query)
+        matrix = self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(

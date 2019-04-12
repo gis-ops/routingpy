@@ -1,3 +1,7 @@
+*egg-info/**
+.coverage
+htmlcov/
+**/build
 examples.py
 test.py
 .venv/

@@ -98,6 +98,7 @@ class HereMapsTest(_test.TestCase):
         self.assertIsInstance(routes.geometry, list)
         self.assertIsInstance(routes.duration, int)
         self.assertIsInstance(routes.distance, int)
+        self.assertIsInstance(routes.raw, dict)
 
     @responses.activate
     def test_directions_object_response_alternatives(self):
@@ -128,12 +129,13 @@ class HereMapsTest(_test.TestCase):
             responses.calls[0].request.url)
 
         self.assertIsInstance(routes, Directions)
-        self.assertIsInstance(routes[0], Direction)
-        self.assertIsInstance(routes[1], Direction)
-        self.assertIsInstance(routes[2], Direction)
-        self.assertIsInstance(routes[0].geometry, list)
-        self.assertIsInstance(routes[1].geometry, list)
-        self.assertIsInstance(routes[2].geometry, list)
+        self.assertEqual(3, len(routes))
+        for route in routes:
+            self.assertIsInstance(route, Direction)
+            self.assertIsInstance(route.geometry, list)
+            self.assertIsInstance(route.duration, int)
+            self.assertIsInstance(route.distance, int)
+            self.assertIsInstance(route.raw, dict)
 
     @responses.activate
     def test_full_isochrones_response_object(self):
@@ -156,12 +158,12 @@ class HereMapsTest(_test.TestCase):
             responses.calls[0].request.url)
 
         self.assertIsInstance(isochrones, Isochrones)
-        self.assertIsInstance(isochrones[0], Isochrone)
-        self.assertIsInstance(isochrones[1], Isochrone)
-        self.assertIsInstance(isochrones[2], Isochrone)
-        self.assertIsInstance(isochrones[0].geometry, list)
-        self.assertIsInstance(isochrones[1].geometry, list)
-        self.assertIsInstance(isochrones[2].geometry, list)
+        self.assertEqual(3, len(isochrones))
+        for iso in isochrones:
+            self.assertIsInstance(iso, Isochrone)
+            self.assertIsInstance(iso.geometry, list)
+            self.assertIsInstance(iso.center, list)
+            self.assertIsInstance(iso.interval, int)
 
     @responses.activate
     def test_full_matrix(self):
@@ -174,7 +176,7 @@ class HereMapsTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
             content_type='application/json')
 
-        matrix = self.client.distance_matrix(**query)
+        matrix = self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
@@ -187,31 +189,28 @@ class HereMapsTest(_test.TestCase):
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.durations, list)
         self.assertIsInstance(matrix.distances, list)
+        self.assertIsInstance(matrix.raw, dict)
 
     def test_index_sources_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
         query['sources'] = [100]
 
-        self.assertRaises(
-            IndexError, lambda: self.client.distance_matrix(**query))
+        self.assertRaises(IndexError, lambda: self.client.matrix(**query))
 
     def test_none_sources_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
         query['sources'] = None
 
-        self.assertRaises(
-            TypeError, lambda: self.client.distance_matrix(**query))
+        self.assertRaises(TypeError, lambda: self.client.matrix(**query))
 
     def test_index_destinations_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
         query['destinations'] = [100]
 
-        self.assertRaises(
-            IndexError, lambda: self.client.distance_matrix(**query))
+        self.assertRaises(IndexError, lambda: self.client.matrix(**query))
 
     def test_none_destinations_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
         query['destinations'] = None
 
-        self.assertRaises(
-            TypeError, lambda: self.client.distance_matrix(**query))
+        self.assertRaises(TypeError, lambda: self.client.matrix(**query))

@@ -15,10 +15,11 @@
 # the License.
 #
 """
-Core client functionality, common across all API requests.
+Core client functionality, common across all routers.
 """
 
 from routingpy import exceptions
+from routingpy.utils import logger, get_ordinal
 from ..__version__ import __version__
 
 from abc import ABCMeta, abstractmethod
@@ -26,13 +27,12 @@ from datetime import datetime
 from datetime import timedelta
 import warnings
 import requests
-from requests import PreparedRequest
 from urllib.parse import urlencode
 import json
 import random
 import time
 
-_DEFAULT_USER_AGENT = "routingpy.v{}".format(__version__)
+_DEFAULT_USER_AGENT = "routingpy/v{}".format(__version__)
 _RETRIABLE_STATUSES = set([503])
 
 
@@ -49,24 +49,33 @@ class options(object):
     >>> options.default_proxies = {'https': '129.125.12.0'}
     >>> router = MapboxValhalla(my_key)
     >>> print(router.headers)
-    {'User-Agent': 'routingpy.v0.1', 'Content-Type': 'application/json'}
+    {'User-Agent': 'amazing_routing_app', 'Content-Type': 'application/json'}
     >>> print(router.proxies)
     {'https': '129.125.12.0'}
 
     Attributes:
-        default_timeout: Combined connect and read timeout for HTTP requests, in
+        self.default_timeout: Combined connect and read timeout for HTTP requests, in
             seconds. Specify "None" for no timeout. Integer.
 
-        default_retry_timeout: Timeout across multiple retriable requests, in
+        self.default_retry_timeout: Timeout across multiple retriable requests, in
             seconds. Integer.
 
-        default_user_agent: User-Agent to send with the requests to routing API. String.
+        self.default_retry_over_query_limit: If True, client will not raise an exception
+            on HTTP 429, but instead jitter a sleeping timer to pause between
+            requests until HTTP 200 or retry_timeout is reached. Boolean.
 
-        default_proxies: Proxies passed to the requests library. Dictionary.
+        self.default_skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
+            encountered (e.g. no route found). If False, processing will discontinue and raise an error. Boolean.
+
+        self.default_user_agent: User-Agent to send with the requests to routing API. String.
+
+        self.default_proxies: Proxies passed to the requests library. Dictionary.
     """
 
     default_timeout = 60
     default_retry_timeout = 60
+    default_retry_over_query_limit = True
+    default_skip_api_error = False
     default_user_agent = _DEFAULT_USER_AGENT
     default_proxies = None
 
@@ -76,7 +85,7 @@ DEFAULT = type('object', (object, ), {'__repr__': lambda self: 'DEFAULT'})()
 
 
 class Router(metaclass=ABCMeta):
-    """Performs requests to the API service of choice."""
+    """Abstract base class every router inherits from. Authentication is handled in each subclass."""
 
     def __init__(self,
                  base_url,
@@ -84,11 +93,11 @@ class Router(metaclass=ABCMeta):
                  timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs=None,
-                 retry_over_query_limit=True):
+                 retry_over_query_limit=None,
+                 skip_api_error=None):
         """
-
-        :param base_url: The base URL for the request. Defaults to the ORS API
-            server. Should not have a trailing slash.
+        :param base_url: The base URL for the request. All routers must provide a default.
+            Should not have a trailing slash.
         :type base_url: string
 
         :param user_agent: User-Agent to send with the requests to routing API.
@@ -120,14 +129,20 @@ class Router(metaclass=ABCMeta):
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
         :type retry_over_query_limit: bool
+
+        :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
+            encountered (e.g. no route found). If False, processing will discontinue and raise an error. Default False.
+        :type skip_api_error: bool
         """
 
         self._session = requests.Session()
         self.base_url = base_url
 
-        self.retry_over_query_limit = retry_over_query_limit
+        self.retry_over_query_limit = retry_over_query_limit if retry_over_query_limit is False else options.default_retry_over_query_limit
         self.retry_timeout = timedelta(
             seconds=retry_timeout or options.default_retry_timeout)
+
+        self.skip_api_error = skip_api_error or options.default_skip_api_error
 
         self.requests_kwargs = requests_kwargs or {}
         self.headers = {
@@ -247,11 +262,13 @@ class Router(metaclass=ABCMeta):
         except requests.exceptions.Timeout:
             raise exceptions.Timeout()
 
+        tried = retry_counter + 1
+
         if response.status_code in _RETRIABLE_STATUSES:
             # Retry request.
             warnings.warn(
-                'Server down.\nRetrying for the {}th time.'.format(
-                    retry_counter + 1), UserWarning)
+                f'Server down.\nRetrying for the {tried}{get_ordinal(tried)} time.',
+                UserWarning)
 
             return self._request(url, get_params, post_params,
                                  first_request_time, retry_counter + 1,
@@ -261,14 +278,24 @@ class Router(metaclass=ABCMeta):
             result = self._get_body(response)
 
             return result
+
+        except exceptions.RouterApiError:
+            if self.skip_api_error:
+                warnings.warn(
+                    f"Router {self.__class__.__name__} returned an API error with "
+                    f"the following message:\n{response.text}")
+                return
+
+            raise
+
         except exceptions.RetriableRequest as e:
             if isinstance(e, exceptions.OverQueryLimit
                           ) and not self.retry_over_query_limit:
                 raise
 
             warnings.warn(
-                'Rate limit exceeded.\nRetrying for the {}th time.'.format(
-                    retry_counter + 1), UserWarning)
+                f'Rate limit exceeded.\nRetrying for the {tried}{get_ordinal(tried)} time.',
+                UserWarning)
             # Retry request.
             return self._request(url, get_params, post_params,
                                  first_request_time, retry_counter + 1,
@@ -286,7 +313,8 @@ class Router(metaclass=ABCMeta):
         try:
             body = response.json()
         except json.decoder.JSONDecodeError:
-            raise exceptions.JSONParseError("Can't decode JSON response")
+            raise exceptions.JSONParseError(
+                f"Can't decode JSON response:{response.text}")
 
         if status_code == 429:
             raise exceptions.OverQueryLimit(status_code, body)
@@ -336,7 +364,7 @@ class Router(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def distance_matrix(self):
+    def matrix(self):
         """Implement this method for the router's matrix endpoint or raise NotImplementedError"""
         pass
 

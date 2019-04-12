@@ -35,51 +35,65 @@ class Graphhopper(Router):
                  timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs={},
-                 retry_over_query_limit=False):
+                 retry_over_query_limit=False,
+                 skip_api_error=None):
         """
         Initializes an graphhopper client.
 
         :param api_key: GH API key. Required if https://graphhopper.com/api is used.
         :type api_key: str
 
-        :param base_url: The base URL for the request. Defaults to the GH API
+        :param base_url: The base URL for the request. Defaults to the ORS API
             server. Should not have a trailing slash.
         :type base_url: str
 
-        :param user_agent: User-Agent to send with the requests to routing API.
-            Overrides ``options.default_user_agent``.
-        :type user_agent: string
+        :param user_agent: User Agent to be used when requesting.
+            Default :attr:`routingpy.routers.options.default_user_agent`.
+        :type user_agent: str
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
-            seconds. Specify "None" for no timeout.
-        :type timeout: int
+            seconds. Specify ``None`` for no timeout. Default :attr:`routingpy.routers.options.default_timeout`.
+        :type timeout: int or None
 
         :param retry_timeout: Timeout across multiple retriable requests, in
-            seconds.
+            seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
         :param requests_kwargs: Extra keyword arguments for the requests
             library, which among other things allow for proxy auth to be
-            implemented. See the official requests docs for more info:
-            http://docs.python-requests.org/en/latest/api/#main-interface
+            implemented. **Note**, that ``proxies`` can be set globally
+            in :attr:`routingpy.routers.options.default_proxies`.
+
+            Example:
+
+            >>> from routingpy.routers import Graphhopper
+            >>> router = Graphhopper(my_key, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> print(router.proxies)
+            {'https': '129.125.12.0'}
         :type requests_kwargs: dict
 
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
+            Default :attr:`routingpy.routers.options.default_over_query_limit`.
         :type retry_over_query_limit: bool
+
+        :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
+            encountered (e.g. no route found). If False, processing will discontinue and raise an error.
+            Default :attr:`routingpy.routers.options.default_skip_api_error`.
+        :type skip_api_error: bool
         """
 
         if base_url == self._DEFAULT_BASE_URL and api_key is None:
             raise KeyError("API key must be specified.")
         self.key = api_key
 
-        super(Graphhopper,
-              self).__init__(base_url, user_agent, timeout, retry_timeout,
-                             requests_kwargs, retry_over_query_limit)
+        super(Graphhopper, self).__init__(
+            base_url, user_agent, timeout, retry_timeout, requests_kwargs,
+            retry_over_query_limit, skip_api_error)
 
     def directions(self,
-                   coordinates,
+                   locations,
                    profile,
                    format,
                    optimize=None,
@@ -109,9 +123,9 @@ class Graphhopper(Router):
 
         For more information, visit https://docs.graphhopper.com/#tag/Routing-API/paths/~1route/get.
 
-        :param coordinates: The coordinates tuple the route should be calculated
+        :param locations: The coordinates tuple the route should be calculated
             from in order of visit.
-        :type coordinates: list of list or tuple of tuple
+        :type locations: list of list or tuple of tuple
 
         :param profile: The vehicle for which the route should be calculated. One of ["car" "bike" "foot" "hike" "mtb"
             "racingbike" "scooter" "truck" "small_truck"]. Default "car".
@@ -235,7 +249,7 @@ class Graphhopper(Router):
 
         params = [('profile', profile)]
 
-        for coordinate in coordinates:
+        for coordinate in locations:
             coord_latlng = reversed(
                 [convert._format_float(f) for f in coordinate])
             params.append(("point", ",".join(coord_latlng)))
@@ -332,7 +346,10 @@ class Graphhopper(Router):
     @staticmethod
     def _parse_directions_json(response, algorithm, elevation):
         if response is None:
-            return None
+            if algorithm == 'alternative_route':
+                return Directions()
+            else:
+                return Direction()
 
         if algorithm == 'alternative_route':
             routes = []
@@ -360,7 +377,7 @@ class Graphhopper(Router):
                 raw=response)
 
     def isochrones(self,
-                   coordinates,
+                   locations,
                    profile,
                    intervals,
                    buckets=1,
@@ -372,8 +389,8 @@ class Graphhopper(Router):
 
         For mroe details visit https://docs.graphhopper.com/#tag/Isochrone-API.
 
-        :param coordinates: One coordinate pair denoting the location.
-        :type coordinates: tuple of float or list of float
+        :param locations: One coordinate pair denoting the location.
+        :type locations: tuple of float or list of float
 
         :param profile: Specifies the mode of transport.
             One of bike, car, foot or
@@ -423,8 +440,7 @@ class Graphhopper(Router):
             raise TypeError(
                 f"Parameter range={range} must be of type list or tuple")
 
-        coord_latlng = reversed(
-            [convert._format_float(f) for f in coordinates])
+        coord_latlng = reversed([convert._format_float(f) for f in locations])
         params.append(("point", ",".join(coord_latlng)))
 
         if self.key is not None:
@@ -447,7 +463,7 @@ class Graphhopper(Router):
     @staticmethod
     def _parse_isochrone_json(response, intervals, buckets):
         if response is None:
-            return None
+            return Isochrones()
 
         isochrones = []
         for bucket in range(buckets):
@@ -455,29 +471,30 @@ class Graphhopper(Router):
                 Isochrone(
                     geometry=response['polygons'][bucket]['geometry']
                     ['coordinates'],
-                    range=int(intervals * (1 - (bucket / buckets))),
-                    raw=response['polygons'][bucket]))
+                    interval=int(intervals * (1 - (bucket / buckets))),
+                    center=None,
+                ))
 
         return Isochrones(isochrones, response)
 
-    def distance_matrix(self,
-                        coordinates,
-                        profile,
-                        sources=None,
-                        destinations=None,
-                        out_array=['times', 'distances'],
-                        debug=None,
-                        dry_run=None):
+    def matrix(self,
+               locations,
+               profile,
+               sources=None,
+               destinations=None,
+               out_array=['times', 'distances'],
+               debug=None,
+               dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
         For more details visit https://docs.graphhopper.com/#tag/Matrix-API.
 
-        :param coordinates: Specifiy multiple points for which the weight-, route-, time- or distance-matrix should be calculated.
+        :param locations: Specifiy multiple points for which the weight-, route-, time- or distance-matrix should be calculated.
             In this case the starts are identical to the destinations.
             If there are N points, then NxN entries will be calculated.
             The order of the point parameter is important. Specify at least three points.
             Cannot be used together with from_point or to_point. Is a string with the format latitude,longitude.
-        :type coordinates: list of list or tuple of tuple or list of tuple or tuple of list
+        :type locations: list of list or tuple of tuple or list of tuple or tuple of list
 
         :param profile: Specifies the mode of transport.
             One of bike, car, foot or
@@ -486,10 +503,10 @@ class Graphhopper(Router):
         :type profile: str
 
         :param sources: The starting points for the routes.
-            Specifies an index referring to coordinates.
+            Specifies an index referring to locations.
         :type sources: list of int
 
-        :param destinations: The destination points for the routes. Specifies an index referring to coordinates.
+        :param destinations: The destination points for the routes. Specifies an index referring to locations.
         :type destinations: list of int
 
         :param out_array: Specifies which arrays should be included in the response. Specify one or more of the following
@@ -511,21 +528,20 @@ class Graphhopper(Router):
             params.append(("key", self.key))
 
         if sources is None and destinations is None:
-            coordinates = (reversed([convert._format_float(f) for f in coord])
-                           for coord in coordinates)
-            params.extend(
-                [('point', ",".join(coord)) for coord in coordinates])
+            locations = (reversed([convert._format_float(f) for f in coord])
+                         for coord in locations)
+            params.extend([('point', ",".join(coord)) for coord in locations])
 
         else:
-            sources_out = coordinates
-            destinations_out = coordinates
+            sources_out = locations
+            destinations_out = locations
             try:
                 sources_out = []
                 for idx in sources:
-                    sources_out.append(coordinates[idx])
+                    sources_out.append(locations[idx])
             except IndexError:
                 raise IndexError(
-                    "Parameter sources out of coordinates range at index {}.".
+                    "Parameter sources out of locations range at index {}.".
                     format(idx))
             except TypeError:
                 # Raised when sources == None
@@ -533,10 +549,10 @@ class Graphhopper(Router):
             try:
                 destinations_out = []
                 for idx in destinations:
-                    destinations_out.append(coordinates[idx])
+                    destinations_out.append(locations[idx])
             except IndexError:
                 raise IndexError(
-                    "Parameter destinations out of coordinates range at index {}."
+                    "Parameter destinations out of locations range at index {}."
                     .format(idx))
             except TypeError:
                 # Raised when destinations == None
@@ -566,7 +582,7 @@ class Graphhopper(Router):
     @staticmethod
     def _parse_matrix_json(response):
         if response is None:
-            return None
+            return Matrix()
         durations = response.get('times')
         distances = response.get('distances')
 

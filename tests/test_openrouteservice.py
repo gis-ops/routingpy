@@ -49,6 +49,9 @@ class ORSTest(_test.TestCase):
             content_type='application/json')
 
         routes = self.client.directions(**query, format='json')
+
+        query['coordinates'] = query['locations']
+        del query['locations']
         del query['profile']
 
         self.assertEqual(1, len(responses.calls))
@@ -58,6 +61,7 @@ class ORSTest(_test.TestCase):
         self.assertIsInstance(routes.geometry, list)
         self.assertIsInstance(routes.duration, int)
         self.assertIsInstance(routes.distance, int)
+        self.assertIsInstance(routes.raw, dict)
 
     @responses.activate
     def test_directions_geojson(self):
@@ -73,6 +77,8 @@ class ORSTest(_test.TestCase):
 
         routes = self.client.directions(**query, format='geojson')
 
+        query['coordinates'] = query['locations']
+        del query['locations']
         del query['profile']
 
         self.assertEqual(1, len(responses.calls))
@@ -82,6 +88,7 @@ class ORSTest(_test.TestCase):
         self.assertIsInstance(routes.geometry, list)
         self.assertIsInstance(routes.duration, int)
         self.assertIsInstance(routes.distance, int)
+        self.assertIsInstance(routes.raw, dict)
 
     @responses.activate
     def test_full_isochrones(self):
@@ -98,10 +105,9 @@ class ORSTest(_test.TestCase):
         isochrones = self.client.isochrones(**query)
 
         expected = query
-        expected['locations'] = [expected['coordinates']]
+        expected['locations'] = [expected['locations']]
         expected['range'] = expected['intervals']
         expected['range_type'] = expected['interval_type']
-        del expected['coordinates']
         del expected['intervals']
         del expected['interval_type']
 
@@ -110,11 +116,12 @@ class ORSTest(_test.TestCase):
 
         self.assertIsInstance(isochrones, Isochrones)
         self.assertEqual(4, len(isochrones))
-        self.assertIsInstance(isochrones[0], Isochrone)
-        self.assertIsInstance(isochrones[0].geometry, list)
-        self.assertIsInstance(isochrones[0].center, list)
-        self.assertIsInstance(isochrones[0].range, int)
-        self.assertIsInstance(isochrones[0].raw, dict)
+        self.assertIsInstance(isochrones.raw, dict)
+        for iso in isochrones:
+            self.assertIsInstance(iso, Isochrone)
+            self.assertIsInstance(iso.geometry, list)
+            self.assertIsInstance(iso.center, list)
+            self.assertIsInstance(iso.interval, int)
 
     @responses.activate
     def test_full_matrix(self):
@@ -128,11 +135,9 @@ class ORSTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
             content_type='application/json')
 
-        matrix = self.client.distance_matrix(**query)
+        matrix = self.client.matrix(**query)
 
         expected = query
-        expected['locations'] = expected['coordinates']
-        del expected['coordinates']
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(expected, json.loads(responses.calls[0].request.body))
@@ -140,6 +145,7 @@ class ORSTest(_test.TestCase):
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.durations, list)
         self.assertIsInstance(matrix.distances, list)
+        self.assertIsInstance(matrix.raw, dict)
 
     @responses.activate
     def test_key_in_header(self):

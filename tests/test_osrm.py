@@ -38,8 +38,7 @@ class OSRMTest(_test.TestCase):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['directions'])
         query['alternatives'] = False
         coords = convert._delimit_list(
-            [convert._delimit_list(pair) for pair in query['coordinates']],
-            ';')
+            [convert._delimit_list(pair) for pair in query['locations']], ';')
 
         responses.add(
             responses.GET,
@@ -66,8 +65,7 @@ class OSRMTest(_test.TestCase):
     def test_full_directions_alternatives(self):
         query = ENDPOINTS_QUERIES[self.name]['directions']
         coords = convert._delimit_list(
-            [convert._delimit_list(pair) for pair in query['coordinates']],
-            ';')
+            [convert._delimit_list(pair) for pair in query['locations']], ';')
 
         responses.add(
             responses.GET,
@@ -85,18 +83,19 @@ class OSRMTest(_test.TestCase):
             'geometries=geojson&overview=simplified&radiuses=500%3B500%3B500&steps=true',
             responses.calls[0].request.url)
         self.assertIsInstance(routes, Directions)
-        self.assertIsInstance(routes[0], Direction)
-        self.assertIsInstance(routes[0].duration, int)
-        self.assertIsInstance(routes[0].distance, int)
-        self.assertIsInstance(routes[0].geometry, list)
-        self.assertIsInstance(routes[0].raw, dict)
+        self.assertEqual(1, len(routes))
+        for route in routes:
+            self.assertIsInstance(route, Direction)
+            self.assertIsInstance(route.duration, int)
+            self.assertIsInstance(route.distance, int)
+            self.assertIsInstance(route.geometry, list)
+            self.assertIsInstance(route.raw, dict)
 
     @responses.activate
     def test_full_matrix(self):
         query = ENDPOINTS_QUERIES[self.name]['matrix']
         coords = convert._delimit_list(
-            [convert._delimit_list(pair) for pair in query['coordinates']],
-            ';')
+            [convert._delimit_list(pair) for pair in query['locations']], ';')
 
         responses.add(
             responses.GET,
@@ -106,7 +105,7 @@ class OSRMTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES['osrm']['matrix'],
             content_type='application/json')
 
-        matrix = self.client.distance_matrix(**query)
+        matrix = self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
@@ -114,13 +113,13 @@ class OSRMTest(_test.TestCase):
             responses.calls[0].request.url)
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.durations, list)
+        self.assertIsInstance(matrix.raw, dict)
 
     @responses.activate
     def test_few_sources_destinations_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
         coords = convert._delimit_list(
-            [convert._delimit_list(pair) for pair in query['coordinates']],
-            ';')
+            [convert._delimit_list(pair) for pair in query['locations']], ';')
 
         query['sources'] = [1, 2]
         query['destinations'] = [0, 2]
@@ -133,7 +132,7 @@ class OSRMTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES['osrm']['matrix'],
             content_type='application/json')
 
-        resp = self.client.distance_matrix(**query)
+        resp = self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(

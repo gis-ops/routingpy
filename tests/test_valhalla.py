@@ -70,7 +70,7 @@ class ValhallaTest(_test.TestCase):
             'rank_candidates': True
         }
 
-        query['coordinates'].append(
+        query['locations'].append(
             Valhalla.Waypoint(PARAM_POINT, **extra_params))
         expected['locations'].append({
             'lat': PARAM_POINT[1],
@@ -106,12 +106,13 @@ class ValhallaTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body), expected)
         self.assertIsInstance(iso, Isochrones)
+        self.assertIsInstance(iso.raw, dict)
         self.assertEqual(2, len(iso))
-        self.assertIsInstance(iso[0], Isochrone)
-        self.assertIsInstance(iso[0].geometry, list)
-        self.assertIsInstance(iso[0].range, int)
-        self.assertEqual(iso[0].center, None)
-        self.assertIsInstance(iso[0].raw, dict)
+        for i in iso:
+            self.assertIsInstance(i, Isochrone)
+            self.assertIsInstance(i.geometry, list)
+            self.assertIsInstance(i.interval, int)
+            self.assertEqual(i.center, None)
 
     # TODO: test colors having less items than range
     @responses.activate
@@ -126,7 +127,7 @@ class ValhallaTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
             content_type='application/json')
 
-        matrix = self.client.distance_matrix(**query)
+        matrix = self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body), expected)
@@ -154,7 +155,7 @@ class ValhallaTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
             content_type='application/json')
 
-        routes = self.client.distance_matrix(**query)
+        routes = self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body), expected)

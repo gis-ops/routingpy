@@ -21,8 +21,8 @@
 
 class Isochrones(object):
     """
-    Contains a list of :class:`Isochrone`, which can be iterated over or accessed by index. The property
-     ``raw`` contains the complete raw response of the isochrone request.
+    Contains a list of :class:`Isochrone`, which can be iterated over or accessed by index. The property ¸`raw`` contains
+    the complete raw response of the isochrones request.
     """
 
     def __init__(self, isochrones=None, raw=None):
@@ -33,6 +33,7 @@ class Isochrones(object):
     def isochrones(self):
         """
         Returns the isochrone objects.
+
         :rtype: dict or None
         """
         return self._isochrones
@@ -41,6 +42,7 @@ class Isochrones(object):
     def raw(self):
         """
         Returns the isochrones's raw, unparsed response. For details, consult the routing engine's API documentation.
+
         :rtype: dict or None
         """
         return self._raw
@@ -60,14 +62,13 @@ class Isochrones(object):
 
 class Isochrone(object):
     """
-    Contains a parsed single isochrone response. Access via properties ``geometry``, ``center`` and ``raw``.
+    Contains a parsed single isochrone response. Access via properties ``geometry``, ``interval`` ``center``.
     """
 
-    def __init__(self, geometry=None, range=None, center=None, raw=None):
+    def __init__(self, geometry=None, interval=None, center=None):
         self._geometry = geometry
-        self._range = int(range)
+        self._interval = int(interval)
         self._center = center
-        self._raw = raw
 
     @property
     def geometry(self):
@@ -89,22 +90,13 @@ class Isochrone(object):
         return self._center
 
     @property
-    def range(self):
+    def interval(self):
         """
-        The range of the isochrone in seconds or in meters.
+        The interval of the isochrone in seconds or in meters.
 
         :return: int
         """
-        return self._range
-
-    @property
-    def raw(self):
-        """
-        Returns the isochrone's raw, unparsed response. For details, consult the routing engine's API documentation.
-
-        :rtype: dict
-        """
-        return self._raw
+        return self._interval
 
     def __repr__(self):
         return f'Isochrone({self.geometry}, {self.range})'

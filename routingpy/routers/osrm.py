@@ -15,11 +15,10 @@
 # the License.
 #
 
-from .base import Router
+from .base import Router, DEFAULT
 from routingpy import convert, utils
 from routingpy.direction import Directions, Direction
 from routingpy.matrix import Matrix
-from pprint import pprint
 
 
 class OSRM(Router):
@@ -30,10 +29,11 @@ class OSRM(Router):
     def __init__(self,
                  base_url=_DEFAULT_BASE_URL,
                  user_agent=None,
-                 timeout=None,
+                 timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs=None,
-                 retry_over_query_limit=False):
+                 retry_over_query_limit=False,
+                 skip_api_error=None):
         """
         Initializes an OSRM client.
 
@@ -41,35 +41,49 @@ class OSRM(Router):
             server. Should not have a trailing slash.
         :type base_url: str
 
-        :param user_agent: User-Agent to send with the requests to routing API.
-            Overrides ``options.default_user_agent``.
-        :type user_agent: string
+        :param user_agent: User Agent to be used when requesting.
+            Default :attr:`routingpy.routers.options.default_user_agent`.
+        :type user_agent: str
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
-            seconds. Specify "None" for no timeout.
-        :type timeout: int
+            seconds. Specify ``None`` for no timeout. Default :attr:`routingpy.routers.options.default_timeout`.
+        :type timeout: int or None
 
         :param retry_timeout: Timeout across multiple retriable requests, in
-            seconds.
+            seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
         :param requests_kwargs: Extra keyword arguments for the requests
             library, which among other things allow for proxy auth to be
-            implemented. See the official requests docs for more info:
-            http://docs.python-requests.org/en/latest/api/#main-interface
+            implemented. **Note**, that ``proxies`` can be set globally
+            in :attr:`routingpy.routers.options.default_proxies`.
+
+            Example:
+
+            >>> from routingpy.routers import OSRM
+            >>> router = OSRM(requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> print(router.proxies)
+            {'https': '129.125.12.0'}
         :type requests_kwargs: dict
 
-        :param retry_over_query_limit: If True, the client will retry when query
-            limit is reached (HTTP 429). Default False.
+        :param retry_over_query_limit: If True, client will not raise an exception
+            on HTTP 429, but instead jitter a sleeping timer to pause between
+            requests until HTTP 200 or retry_timeout is reached.
+            Default :attr:`routingpy.routers.options.default_over_query_limit`.
         :type retry_over_query_limit: bool
+
+        :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
+            encountered (e.g. no route found). If False, processing will discontinue and raise an error.
+            Default :attr:`routingpy.routers.options.default_skip_api_error`.
+        :type skip_api_error: bool
         """
 
-        super(OSRM,
-              self).__init__(base_url, user_agent, timeout, retry_timeout,
-                             requests_kwargs, retry_over_query_limit)
+        super(OSRM, self).__init__(base_url, user_agent, timeout,
+                                   retry_timeout, requests_kwargs,
+                                   retry_over_query_limit, skip_api_error)
 
     def directions(self,
-                   coordinates,
+                   locations,
                    profile,
                    radiuses=None,
                    bearings=None,
@@ -84,9 +98,9 @@ class OSRM(Router):
 
         For more information, visit http://project-osrm.org/docs/v5.5.1/api/#route-service.
 
-        :param coordinates: The coordinates tuple the route should be calculated
+        :param locations: The coordinates tuple the route should be calculated
             from in order of visit.
-        :type coordinates: list of list
+        :type locations: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["car", "bike", "foot"].
@@ -140,7 +154,7 @@ class OSRM(Router):
 
         coords = convert._delimit_list([
             convert._delimit_list([convert._format_float(f) for f in pair])
-            for pair in coordinates
+            for pair in locations
         ], ';')
 
         params = dict()
@@ -180,7 +194,10 @@ class OSRM(Router):
     @staticmethod
     def _parse_direction_json(response, alternatives, geometry_format):
         if response is None:
-            return None
+            if alternatives:
+                return Directions()
+            else:
+                return Direction()
 
         def _parse_geometry(route_geometry):
             if geometry_format in (None, 'polyline'):
@@ -200,34 +217,37 @@ class OSRM(Router):
             for route in response['routes']:
                 routes.append(
                     Direction(
-                        _parse_geometry(route['geometry']), route['duration'],
-                        route['distance'], route))
+                        geometry=_parse_geometry(route['geometry']),
+                        duration=route['duration'],
+                        distance=route['distance'],
+                        raw=route))
             return Directions(routes, response)
         else:
             return Direction(
-                _parse_geometry(response['routes'][0]['geometry']),
-                response['routes'][0]['duration'],
-                response['routes'][0]['distance'], response)
+                geometry=_parse_geometry(response['routes'][0]['geometry']),
+                duration=response['routes'][0]['duration'],
+                distance=response['routes'][0]['distance'],
+                raw=response)
 
     def isochrones(self):
         raise NotImplementedError
 
-    def distance_matrix(self,
-                        coordinates,
-                        profile,
-                        radiuses=None,
-                        bearings=None,
-                        sources=None,
-                        destinations=None,
-                        dry_run=None):
+    def matrix(self,
+               locations,
+               profile,
+               radiuses=None,
+               bearings=None,
+               sources=None,
+               destinations=None,
+               dry_run=None):
         """
         Gets travel distance and time for a matrix of origins and destinations.
 
         For more information visit http://project-osrm.org/docs/v5.5.1/api/#table-service.
 
-        :param coordinates: The coordinates tuple the route should be calculated
+        :param locations: The coordinates tuple the route should be calculated
             from.
-        :type coordinates: list of list
+        :type locations: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["car", "bike", "foot"].
@@ -267,7 +287,7 @@ class OSRM(Router):
 
         coords = convert._delimit_list([
             convert._delimit_list([convert._format_float(f) for f in pair])
-            for pair in coordinates
+            for pair in locations
         ], ';')
 
         params = dict()
@@ -287,7 +307,7 @@ class OSRM(Router):
     @staticmethod
     def _parse_matrix_json(response):
         if response is None:
-            return None
+            return Matrix()
 
         return Matrix(
             durations=response['durations'], distances=None, raw=response)

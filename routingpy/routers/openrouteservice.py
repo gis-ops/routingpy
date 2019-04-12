@@ -15,7 +15,7 @@
 # the License.
 #
 
-from .base import Router
+from .base import Router, DEFAULT
 from routingpy import utils
 from routingpy.direction import Direction
 from routingpy.isochrone import Isochrone, Isochrones
@@ -31,10 +31,11 @@ class ORS(Router):
                  api_key=None,
                  base_url=_DEFAULT_BASE_URL,
                  user_agent=None,
-                 timeout=None,
+                 timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs=None,
-                 retry_over_query_limit=False):
+                 retry_over_query_limit=False,
+                 skip_api_error=None):
         """
         Initializes an openrouteservice client.
 
@@ -45,27 +46,41 @@ class ORS(Router):
             server. Should not have a trailing slash.
         :type base_url: str
 
-        :param user_agent: User-Agent to send with the requests to routing API.
-            Overrides ``options.default_user_agent``.
-        :type user_agent: string
+        :param user_agent: User Agent to be used when requesting.
+            Default :attr:`routingpy.routers.options.default_user_agent`.
+        :type user_agent: str
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
-            seconds. Specify "None" for no timeout.
-        :type timeout: int
+            seconds. Specify ``None`` for no timeout. Default :attr:`routingpy.routers.options.default_timeout`.
+        :type timeout: int or None
 
         :param retry_timeout: Timeout across multiple retriable requests, in
-            seconds.
+            seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
         :param requests_kwargs: Extra keyword arguments for the requests
             library, which among other things allow for proxy auth to be
-            implemented. See the official requests docs for more info:
-            http://docs.python-requests.org/en/latest/api/#main-interface
+            implemented. **Note**, that ``proxies`` can be set globally
+            in :attr:`routingpy.routers.options.default_proxies`.
+
+            Example:
+
+            >>> from routingpy.routers import ORS
+            >>> router = ORS(my_key, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> print(router.proxies)
+            {'https': '129.125.12.0'}
         :type requests_kwargs: dict
 
-        :param retry_over_query_limit: If True, the client will retry when query
-            limit is reached (HTTP 429). Default False.
+        :param retry_over_query_limit: If True, client will not raise an exception
+            on HTTP 429, but instead jitter a sleeping timer to pause between
+            requests until HTTP 200 or retry_timeout is reached.
+            Default :attr:`routingpy.routers.options.default_over_query_limit`.
         :type retry_over_query_limit: bool
+
+        :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
+            encountered (e.g. no route found). If False, processing will discontinue and raise an error.
+            Default :attr:`routingpy.routers.options.default_skip_api_error`.
+        :type skip_api_error: bool
         """
 
         if base_url == self._DEFAULT_BASE_URL and api_key is None:
@@ -77,10 +92,11 @@ class ORS(Router):
         requests_kwargs.update({'headers': headers})
 
         super(ORS, self).__init__(base_url, user_agent, timeout, retry_timeout,
-                                  requests_kwargs, retry_over_query_limit)
+                                  requests_kwargs, retry_over_query_limit,
+                                  skip_api_error)
 
     def directions(self,
-                   coordinates,
+                   locations,
                    profile,
                    format='geojson',
                    preference=None,
@@ -103,17 +119,16 @@ class ORS(Router):
                    dry_run=None):
         """Get directions between an origin point and a destination point.
 
-        TODO: change URL I think
-        For more information, visit https://openrouteservice.org/documentation/.
+        For more information, visit https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/post
 
-        :param coordinates: The coordinates tuple the route should be calculated
+        :param locations: The coordinates tuple the route should be calculated
             from in order of visit.
-        :type coordinates: list of list
+        :type locations: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["driving-car", "driving-hgv", "foot-walking",
             "foot-hiking", "cycling-regular", "cycling-road",
-          , "cycling-mountain", "cycling-electric",]. Default "driving-car".
+            "cycling-mountain", "cycling-electric",]. Default "driving-car".
         :type profile: str
 
         :param format: Specifies the response format. One of ['json', 'geojson']. Default "json".
@@ -207,7 +222,7 @@ class ORS(Router):
         :rtype: :class:`routingpy.direction.Direction`
         """
 
-        params = {"coordinates": coordinates}
+        params = {"coordinates": locations}
 
         if preference:
             params["preference"] = preference
@@ -276,7 +291,7 @@ class ORS(Router):
     @staticmethod
     def _parse_direction_json(response, format, units):
         if response is None:
-            return None
+            return Direction()
 
         units_factor = 1
         if units == 'mi':
@@ -306,7 +321,7 @@ class ORS(Router):
             raw=response)
 
     def isochrones(self,
-                   coordinates,
+                   locations,
                    profile,
                    intervals,
                    interval_type,
@@ -318,8 +333,8 @@ class ORS(Router):
                    dry_run=None):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
-        :param coordinates: One pair of lng/lat values.
-        :type coordinates: list of float
+        :param locations: One pair of lng/lat values.
+        :type locations: list of float
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["driving-car", "driving-hgv", "foot-walking",
@@ -364,7 +379,7 @@ class ORS(Router):
         """
 
         params = {
-            "locations": [coordinates],
+            "locations": [locations],
             "profile": profile,
             "range": intervals,
             "range_type": interval_type
@@ -395,32 +410,31 @@ class ORS(Router):
     @staticmethod
     def _parse_isochrone_json(response):
         if response is None:
-            return None
+            return Isochrones()
 
         isochrones = []
         for idx, isochrone in enumerate(response['features']):
             isochrones.append(
                 Isochrone(
                     geometry=isochrone['geometry']['coordinates'][0],
-                    range=isochrone['properties']['value'],
-                    center=isochrone['properties']['center'],
-                    raw=isochrone))
+                    interval=isochrone['properties']['value'],
+                    center=isochrone['properties']['center']))
 
         return Isochrones(isochrones=isochrones, raw=response)
 
-    def distance_matrix(self,
-                        coordinates,
-                        profile,
-                        sources=None,
-                        destinations=None,
-                        metrics=None,
-                        resolve_locations=None,
-                        units=None,
-                        dry_run=None):
+    def matrix(self,
+               locations,
+               profile,
+               sources=None,
+               destinations=None,
+               metrics=None,
+               resolve_locations=None,
+               units=None,
+               dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
-        :param coordinates: Two or more pairs of lng/lat values.
-        :type coordinates: list of list
+        :param locations: Two or more pairs of lng/lat values.
+        :type locations: list of list
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["driving-car", "driving-hgv", "foot-walking",
@@ -457,7 +471,7 @@ class ORS(Router):
         :rtype: :class:`routingpy.matrix.Matrix`
         """
 
-        params = {"locations": coordinates, "profile": profile}
+        params = {"locations": locations, "profile": profile}
 
         if sources:
             params['sources'] = sources
@@ -484,7 +498,7 @@ class ORS(Router):
     @staticmethod
     def _parse_matrix_json(response):
         if response is None:
-            return None
+            return Matrix()
         durations = response.get('durations')
         distances = response.get('distances')
-        return Matrix(durations, distances, response)
+        return Matrix(durations=durations, distances=distances, raw=response)

@@ -49,3 +49,10 @@ class UtilsTest(_test.TestCase):
                                                    1491.39)]
         self.assertEqual(decoded,
                          utils.decode_polyline6(self.coords3d_6prec, True))
+
+    def test_get_ordinal(self):
+
+        self.assertEqual(utils.get_ordinal(0), 'th')
+        self.assertEqual(utils.get_ordinal(1), 'st')
+        self.assertEqual(utils.get_ordinal(2), 'nd')
+        self.assertEqual(utils.get_ordinal(3), 'rd')

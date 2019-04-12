@@ -34,7 +34,8 @@ class HereMaps(Router):
                  timeout=DEFAULT,
                  retry_timeout=None,
                  requests_kwargs=None,
-                 retry_over_query_limit=False):
+                 retry_over_query_limit=False,
+                 skip_api_error=None):
         """
         Initializes a HERE Maps client.
 
@@ -44,27 +45,41 @@ class HereMaps(Router):
         :param app_code: HERE Maps app code.
         :type app_code: str
 
-        :param user_agent: User-Agent to send with the requests to routing API.
-            Overrides ``options.default_user_agent``.
+        :param user_agent: User Agent to be used when requesting.
+            Default :attr:`routingpy.routers.options.default_user_agent`.
         :type user_agent: str
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
-            seconds. Specify "None" for no timeout.
-        :type timeout: int
+            seconds. Specify ``None`` for no timeout. Default :attr:`routingpy.routers.options.default_timeout`.
+        :type timeout: int or None
 
         :param retry_timeout: Timeout across multiple retriable requests, in
-            seconds.
+            seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
         :param requests_kwargs: Extra keyword arguments for the requests
             library, which among other things allow for proxy auth to be
-            implemented. See the official requests docs for more info:
-            http://docs.python-requests.org/en/latest/api/#main-interface
+            implemented. **Note**, that ``proxies`` can be set globally
+            in :attr:`routingpy.routers.options.default_proxies`.
+
+            Example:
+
+            >>> from routingpy.routers import HereMaps
+            >>> router = HereMaps(my_api_id, my_api_code, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> print(router.proxies)
+            {'https': '129.125.12.0'}
         :type requests_kwargs: dict
 
-        :param retry_over_query_limit: If True, the client will retry when query
-            limit is reached (HTTP 429). Default False.
+        :param retry_over_query_limit: If True, client will not raise an exception
+            on HTTP 429, but instead jitter a sleeping timer to pause between
+            requests until HTTP 200 or retry_timeout is reached.
+            Default :attr:`routingpy.routers.options.default_over_query_limit`.
         :type retry_over_query_limit: bool
+
+        :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
+            encountered (e.g. no route found). If False, processing will discontinue and raise an error.
+            Default :attr:`routingpy.routers.options.default_skip_api_error`.
+        :type skip_api_error: bool
         """
 
         if app_id is None and app_code is None:
@@ -75,11 +90,17 @@ class HereMaps(Router):
 
         super(HereMaps, self).__init__(self._DEFAULT_BASE_URL, user_agent,
                                        timeout, retry_timeout, requests_kwargs,
-                                       retry_over_query_limit)
+                                       retry_over_query_limit, skip_api_error)
 
     class WayPoint(object):
         """
-        Optionally construct a waypoint from this class with additional attributes.
+        Constructs a waypoint with additional information.
+        https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
+
+        Example:
+
+        >>> waypoint = HereMaps.WayPoint(position=[8.15315, 52.53151], waypoint_type='passThrough', stopover_duration=120, transit_radius=500)
+        >>> route = HereMaps(api_key).directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
 
         def __init__(self,
@@ -90,14 +111,11 @@ class HereMaps(Router):
                      user_label='',
                      heading=''):
             """
-            Constructs a waypoint with additional information.
-            https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
-
             :param position: Indicates that the parameter contains a geographical position.
             :type position: list
 
-            :param waypoint_type: 180 degree turns are allowed for stopOver but not for passThrough.
-                Waypoints defined through a drag-n-drop action should be marked as pass-through. 
+            :param waypoint_type: 180 degree turns are allowed for ``stopOver`` but not for ``passThrough``.
+                Waypoints defined through a drag-n-drop action should be marked as passThrough.
                 PassThrough waypoints will not appear in the list of maneuvers.
             :type waypoint_type: str
 
@@ -149,7 +167,14 @@ class HereMaps(Router):
 
     class RoutingMode(object):
         """
-        Optionally construct the routing mode from this class with additional attributes.
+        Optionally construct the routing profile from this class with additional attributes.
+        https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
+
+        Example
+
+        >>> profile = HereMaps.RoutingMode(mode_type='shortest', mode_transport_type='truck', mode_traffic=True, features={'motorway': -2})
+        >>> route = HereMaps(api_key).directions(locations=location_list, profile=profile)
+
         """
 
         def __init__(self,
@@ -158,8 +183,6 @@ class HereMaps(Router):
                      mode_traffic=None,
                      features=None):
             """
-            https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
-
             :param mode_type: RoutingType relevant to calculation.
             :type mode_type: str
 
@@ -198,7 +221,7 @@ class HereMaps(Router):
             return convert._delimit_list(routing_mode, ';')
 
     def directions(self,
-                   coordinates,
+                   locations,
                    profile,
                    format='json',
                    request_id=None,
@@ -256,11 +279,11 @@ class HereMaps(Router):
 
         For more information, https://developer.here.com/documentation/routing/topics/resource-calculate-route.html.
 
-        :param coordinates: The coordinates tuple the route should be calculated
+        :param locations: The coordinates tuple the route should be calculated
             from in order of visit. Can be a list/tuple of [lon, lat] or :class:`HereMaps.WayPoint` instance or a
             combination of those. For further explanation, see
             https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
-        :type coordinates: list of list or list of :class:`HereMaps.WayPoint`
+        :type locations: list of list or list of :class:`HereMaps.WayPoint`
 
         :param profile: Specifies the routing mode of transport and further options.
             Can be a str or :class:`HereMaps.RoutingMode`
@@ -551,7 +574,7 @@ class HereMaps(Router):
         params["app_code"] = self.app_code
         params["app_id"] = self.app_id
 
-        for idx, wp in enumerate(coordinates):
+        for idx, wp in enumerate(locations):
             wp_index = "waypoint" + str(idx)
             if isinstance(wp, self.WayPoint):
                 params[wp_index] = wp.make_waypoint()
@@ -740,14 +763,20 @@ class HereMaps(Router):
     @staticmethod
     def _parse_direction_json(response, alternatives):
         if response is None:
-            return None
+            if alternatives:
+                return Directions()
+            else:
+                return Direction()
 
         if alternatives is not None and alternatives > 1:
             routes = []
             for route in response['response']['route']:
                 routes.append(
-                    Direction(route['shape'], route['summary']['baseTime'],
-                              route['summary']['distance']))
+                    Direction(
+                        geometry=route['shape'],
+                        duration=route['summary']['baseTime'],
+                        distance=route['summary']['distance'],
+                        raw=route))
 
             return Directions(directions=routes, raw=response)
 
@@ -765,7 +794,7 @@ class HereMaps(Router):
                 raw=response)
 
     def isochrones(self,
-                   coordinates,
+                   locations,
                    profile,
                    intervals,
                    interval_type,
@@ -797,8 +826,8 @@ class HereMaps(Router):
 
         For more information, https://developer.here.com/documentation/routing/topics/resource-calculate-isoline.html.
 
-        :param coordinates: One pair of lng/lat values.
-        :type coordinates: list of float
+        :param locations: One pair of lng/lat values.
+        :type locations: list of float
 
         :param profile: Specifies the routing mode of transport and further options.
             Can be a str or :class:`HereMaps.RoutingMode`
@@ -940,11 +969,11 @@ class HereMaps(Router):
         params["app_code"] = self.app_code
         params["app_id"] = self.app_id
 
-        if isinstance(coordinates, self.WayPoint):
-            params[center_type] = coordinates.make_waypoint()
-        elif isinstance(coordinates, (list, tuple)):
+        if isinstance(locations, self.WayPoint):
+            params[center_type] = locations.make_waypoint()
+        elif isinstance(locations, (list, tuple)):
             params[center_type] = 'geo!' + convert._delimit_list(
-                [convert._format_float(f) for f in coordinates], ',')
+                [convert._format_float(f) for f in locations], ',')
 
         if isinstance(profile, str):
             params["mode"] = profile
@@ -1019,7 +1048,7 @@ class HereMaps(Router):
     @staticmethod
     def _parse_isochrone_json(response, intervals):
         if response is None:
-            return None
+            return Isochrones()
 
         geometries = []
         for idx, isochrones in enumerate(response['response']['isoline']):
@@ -1036,45 +1065,44 @@ class HereMaps(Router):
             geometries.append(
                 Isochrone(
                     geometry=range_polygons,
-                    range=intervals[idx],
+                    interval=intervals[idx],
                     center=list(response['response']['start']
                                 ['mappedPosition'].values())))
 
         return Isochrones(isochrones=geometries, raw=response)
 
-    def distance_matrix(
-            self,
-            coordinates,
-            profile,
-            format='json',
-            sources=None,
-            destinations=None,
-            search_range=None,
-            avoid_areas=None,
-            avoid_links=None,
-            avoid_turns=None,
-            exclude_countries=None,
-            departure=None,
-            matrix_attributes=None,
-            summary_attributes=['traveltime', 'costfactor', 'distance'],
-            truck_type=None,
-            trailers_count=None,
-            shipped_hazardous_goods=None,
-            limited_weight=None,
-            weight_per_axle=None,
-            height=None,
-            width=None,
-            length=None,
-            tunnel_category=None,
-            speed_profile=None,
-            dry_run=None):
+    def matrix(self,
+               locations,
+               profile,
+               format='json',
+               sources=None,
+               destinations=None,
+               search_range=None,
+               avoid_areas=None,
+               avoid_links=None,
+               avoid_turns=None,
+               exclude_countries=None,
+               departure=None,
+               matrix_attributes=None,
+               summary_attributes=['traveltime', 'costfactor', 'distance'],
+               truck_type=None,
+               trailers_count=None,
+               shipped_hazardous_goods=None,
+               limited_weight=None,
+               weight_per_axle=None,
+               height=None,
+               width=None,
+               length=None,
+               tunnel_category=None,
+               speed_profile=None,
+               dry_run=None):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
-            :param coordinates: The coordinates tuple the route should be calculated
+            :param locations: The coordinates tuple the route should be calculated
                 from in order of visit. Can be a list/tuple of [lon, lat] or :class:`HereMaps.WayPoint` instance or a
                 combination of those. For further explanation, see
                 https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
-            :type coordinates: list of list or list of :class:`HereMaps.WayPoint`
+            :type locations: list of list or list of :class:`HereMaps.WayPoint`
 
             :param profile: Specifies the routing mode of transport and further options.
                 Can be a str or :class:`HereMaps.RoutingMode`
@@ -1200,38 +1228,37 @@ class HereMaps(Router):
         try:
             for i, start_idx in enumerate(sources):
 
-                if isinstance(coordinates[start_idx], self.WayPoint):
+                if isinstance(locations[start_idx], self.WayPoint):
                     params["start" +
-                           str(i)] = coordinates[start_idx].make_waypoint()
-                elif isinstance(coordinates[start_idx], (list, tuple)):
+                           str(i)] = locations[start_idx].make_waypoint()
+                elif isinstance(locations[start_idx], (list, tuple)):
                     params["start" + str(i)] = 'geo!' + convert._delimit_list([
-                        convert._format_float(f)
-                        for f in coordinates[start_idx]
+                        convert._format_float(f) for f in locations[start_idx]
                     ], ',')
 
         except IndexError:
             raise IndexError(
-                "Parameter sources out of coordinates range at index {}.".
-                format(start_idx))
+                "Parameter sources out of locations range at index {}.".format(
+                    start_idx))
         except TypeError:
             raise TypeError("Please add sources indices.")
 
         try:
             for i, dest_idx in enumerate(destinations):
 
-                if isinstance(coordinates[dest_idx], self.WayPoint):
+                if isinstance(locations[dest_idx], self.WayPoint):
                     params["destination" +
-                           str(i)] = coordinates[dest_idx].make_waypoint()
-                elif isinstance(coordinates[dest_idx], (list, tuple)):
+                           str(i)] = locations[dest_idx].make_waypoint()
+                elif isinstance(locations[dest_idx], (list, tuple)):
                     params["destination" +
                            str(i)] = 'geo!' + convert._delimit_list([
                                convert._format_float(f)
-                               for f in coordinates[dest_idx]
+                               for f in locations[dest_idx]
                            ], ',')
 
         except IndexError:
             raise IndexError(
-                "Parameter destinations out of coordinates range at index {}.".
+                "Parameter destinations out of locations range at index {}.".
                 format(dest_idx))
         except TypeError:
             raise TypeError("Please add destinations indices.")
@@ -1315,7 +1342,7 @@ class HereMaps(Router):
     @staticmethod
     def _parse_matrix_json(response):
         if response is None:
-            return None
+            return Matrix()
 
         durations = []
         distances = []

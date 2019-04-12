@@ -172,6 +172,7 @@ ENDPOINTS_RESPONSES = {
             ]
         },
         "matrix": {
+            "distances": [[1, 2, 3], [4, 5, 6]],
             "durations": [[1, 2, 3], [4, 5, 6]]
         }
     },
@@ -521,7 +522,7 @@ ENDPOINTS_RESPONSES = {
 ENDPOINTS_QUERIES = {
     'google': {
         'directions': {
-            'coordinates': PARAM_LINE_MULTI,
+            'locations': PARAM_LINE_MULTI,
             'profile': 'driving',
             'alternatives': True,
             'avoid': ['tolls', 'ferries'],
@@ -535,7 +536,7 @@ ENDPOINTS_QUERIES = {
             'transit_routing_preference': 'less_walking'
         },
         'matrix': {
-            'coordinates': PARAM_LINE_MULTI,
+            'locations': PARAM_LINE_MULTI,
             'profile': 'driving',
             'avoid': ['tolls', 'ferries'],
             'language': 'de',
@@ -549,7 +550,7 @@ ENDPOINTS_QUERIES = {
     },
     'osrm': {
         'directions': {
-            'coordinates': PARAM_LINE_MULTI,
+            'locations': PARAM_LINE_MULTI,
             'profile': 'car',
             'radiuses': [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
             'bearings': [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
@@ -561,7 +562,7 @@ ENDPOINTS_QUERIES = {
             'continue_straight': True
         },
         'matrix': {
-            'coordinates': PARAM_LINE_MULTI,
+            'locations': PARAM_LINE_MULTI,
             'profile': 'car',
             'radiuses': [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
             'bearings': [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
@@ -569,7 +570,7 @@ ENDPOINTS_QUERIES = {
     },
     'mapbox_osrm': {
         'directions': {
-            'coordinates': PARAM_LINE_MULTI,
+            'locations': PARAM_LINE_MULTI,
             'profile': 'driving',
             'radiuses': [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
             'bearings': [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
@@ -590,7 +591,7 @@ ENDPOINTS_QUERIES = {
             'waypoint_targets': PARAM_LINE_MULTI
         },
         'isochrones': {
-            'coordinates': PARAM_POINT,
+            'locations': PARAM_POINT,
             'profile': 'mapbox/driving',
             'intervals': [600, 1200],
             'contours_colors': ['ff0000', '00FF00'],
@@ -599,7 +600,7 @@ ENDPOINTS_QUERIES = {
             'denoise': 0.1,
         },
         'matrix': {
-            'coordinates': PARAM_LINE_MULTI,
+            'locations': PARAM_LINE_MULTI,
             'profile': 'driving',
             'annotations': ['distance', 'duration'],
             'fallback_speed': PARAM_INT_SMALL
@@ -607,7 +608,7 @@ ENDPOINTS_QUERIES = {
     },
     'heremaps': {
         'directions': {
-            'coordinates':
+            'locations':
             PARAM_LINE_MULTI,
             'profile':
             'truck;fastest',
@@ -683,8 +684,8 @@ ENDPOINTS_QUERIES = {
             'fast',
         },
         'matrix': {
-            'coordinates': [[8.688641, 49.420577], [8.680916, 49.415776],
-                            [8.780916, 49.445776]],
+            'locations': [[8.688641, 49.420577], [8.680916, 49.415776],
+                          [8.780916, 49.445776]],
             'sources': [0, 1],
             'destinations': [2],
             'profile':
@@ -707,7 +708,7 @@ ENDPOINTS_QUERIES = {
             10,
         },
         'isochrones': {
-            'coordinates': PARAM_POINT,
+            'locations': PARAM_POINT,
             'intervals': [1000, 2000, 3000],
             'interval_type': 'distance',
             'profile': 'car;fastest',
@@ -719,7 +720,7 @@ ENDPOINTS_QUERIES = {
     },
     'graphhopper': {
         'directions': {
-            'coordinates': PARAM_LINE_MULTI,
+            'locations': PARAM_LINE_MULTI,
             'profile': 'car',
             'elevation': True,
             'points_encoded': True,
@@ -746,13 +747,13 @@ ENDPOINTS_QUERIES = {
             'alternative_route_max_share_factor': 0.7
         },
         'matrix': {
-            'coordinates': PARAM_LINE_MULTI,
+            'locations': PARAM_LINE_MULTI,
             'profile': 'car',
             'out_array': ['weights', 'times', 'distances'],
             'debug': True
         },
         'isochrones': {
-            'coordinates': PARAM_POINT,
+            'locations': PARAM_POINT,
             'profile': 'car',
             'intervals': [1000],
             'interval_type': None,
@@ -763,7 +764,7 @@ ENDPOINTS_QUERIES = {
     },
     'valhalla': {
         'directions': {
-            'coordinates': PARAM_LINE_MULTI,
+            'locations': PARAM_LINE_MULTI,
             'options': {
                 'maneuver_penalty': PARAM_INT_SMALL,
                 'toll_booth_cost': PARAM_INT_SMALL,
@@ -781,7 +782,7 @@ ENDPOINTS_QUERIES = {
             'id': 'wacko'
         },
         'isochrones': {
-            'coordinates': PARAM_POINT,
+            'locations': PARAM_POINT,
             'options': {
                 'maneuver_penalty': PARAM_INT_SMALL,
                 'toll_booth_cost': PARAM_INT_SMALL,
@@ -801,7 +802,7 @@ ENDPOINTS_QUERIES = {
             },
         },
         'matrix': {
-            'coordinates': PARAM_LINE_MULTI,
+            'locations': PARAM_LINE_MULTI,
             'options': {
                 'maneuver_penalty': PARAM_INT_SMALL,
                 'toll_booth_cost': PARAM_INT_SMALL,
@@ -815,7 +816,7 @@ ENDPOINTS_QUERIES = {
     },
     'ors': {
         'directions': {
-            'coordinates': PARAM_LINE,
+            'locations': PARAM_LINE,
             'profile': 'driving-car',
             'preference': 'fastest',
             'units': 'mi',
@@ -835,7 +836,7 @@ ENDPOINTS_QUERIES = {
             }
         },
         'isochrones': {
-            'coordinates': PARAM_POINT,
+            'locations': PARAM_POINT,
             'profile': 'cycling-regular',
             'interval_type': 'distance',
             'intervals': [PARAM_INT_BIG],
@@ -844,7 +845,7 @@ ENDPOINTS_QUERIES = {
             'attributes': ['area', 'reachfactor']
         },
         'matrix': {
-            'coordinates': PARAM_LINE,
+            'locations': PARAM_LINE,
             'sources': [1],
             'destinations': [0],
             'profile': 'driving-car',

@@ -20,7 +20,7 @@ Defines exceptions that are thrown by the ORS client.
 
 
 class RouterError(Exception):
-    """Represents an exception returned by the remote API."""
+    """Represents an exception returned by the remote or local API."""
 
     def __init__(self, status, message=None):
         self.status = status
@@ -39,6 +39,10 @@ class RouterApiError(RouterError):
 
 class RouterServerError(RouterError):
     """Represents an exception returned by a server, i.e. 500 <= HTTP"""
+
+
+class RouterNotFound(Exception):
+    """Represents an exception raised when router can not be found by name."""
 
 
 class HTTPError(Exception):
