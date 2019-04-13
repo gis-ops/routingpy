@@ -1,8 +1,8 @@
 routing-py
 ==========
 
-.. image:: https://travis-ci.com/gis-ops/routing-py.svg?branch=master
-    :target: https://travis-ci.com/gis-ops/routing-py
+.. image:: https://travis-ci.org/gis-ops/routing-py.svg?branch=master
+    :target: https://travis-ci.org/gis-ops/routing-py
     :alt: Build status
 
 .. image:: https://coveralls.io/repos/github/gis-ops/routing-py/badge.svg?branch=master
@@ -66,7 +66,7 @@ for their base network. Also, all providers offer a different amount of options 
 Ultimately this means that **results may differ** - and our experience tells us: they do, and not
 too little. This calls for a careful evaluation which service provider to use for which specific use case.
 
-With **routingpy** we have made an approach to simplify this process for you.
+With **routingpy** we have made an attempt to simplify this process for you.
 
 Installation
 ------------
