@@ -193,7 +193,7 @@ class OSRM(Router):
 
     @staticmethod
     def _parse_direction_json(response, alternatives, geometry_format):
-        if response is None:
+        if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
             else:
@@ -229,7 +229,7 @@ class OSRM(Router):
                 distance=response['routes'][0]['distance'],
                 raw=response)
 
-    def isochrones(self):
+    def isochrones(self):  # pragma: no cover
         raise NotImplementedError
 
     def matrix(self,
@@ -306,7 +306,7 @@ class OSRM(Router):
 
     @staticmethod
     def _parse_matrix_json(response):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Matrix()
 
         return Matrix(

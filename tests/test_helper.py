@@ -109,12 +109,28 @@ ENDPOINTS_RESPONSES = {
         }
     },
     'osrm': {
-        'directions': {
+        'directions_geojson': {
             'routes': [{
                 "geometry": {
                     "coordinates": [[8.681495, 49.41461],
                                     [8.681445, 49.415755]]
                 },
+                "duration": 100,
+                "distance": 100
+            }]
+        },
+        'directions_polyline': {
+            'routes': [{
+                "geometry":
+                'qmbjHspkr@kCmCpE{T~M|@|QcRvC}OjCgD~F~@~I~SjLxqAjT||@lDde@aBhh@uUbuAmJpPod@|c@iWhQoSt_@}Hx]oTfNqNWqQeKilAa]hByx@DiCvDd@dNxJ[zMl[eCfKlBn[rUb]z]pGoGbHtY|j@xw@jKnFfd@~IdhEpyFm@rGpInKyAhDuDuE',
+                "duration": 100,
+                "distance": 100
+            }]
+        },
+        'directions_polyline6': {
+            'routes': [{
+                "geometry":
+                'wpan|A}n|`O{j@yk@v`AuyE~tCfRx|De~Dln@khDhj@as@doAnR~lBhqEtdCxzXvtExjRvu@t|Ju]z{K}aFd|YiqBrnDkvJrpJ_rF|uDalEhfIibB`sHavEjwCgzCyFayDkxBadWykHf`@_aQ|@cj@rx@rJjvCduBgGtsCb{Gsh@lyBla@f|GhaFxkHvsHttAatAhzAliGvvLnwPtzBriAjsJhmBvz}@jhmAoMnuA`iBb|Bi[bt@}w@ebA',
                 "duration": 100,
                 "distance": 100
             }]

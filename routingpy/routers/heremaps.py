@@ -762,7 +762,7 @@ class HereMaps(Router):
 
     @staticmethod
     def _parse_direction_json(response, alternatives):
-        if response is None:
+        if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
             else:
@@ -1047,7 +1047,7 @@ class HereMaps(Router):
 
     @staticmethod
     def _parse_isochrone_json(response, intervals):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Isochrones()
 
         geometries = []
@@ -1341,7 +1341,7 @@ class HereMaps(Router):
 
     @staticmethod
     def _parse_matrix_json(response):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Matrix()
 
         durations = []

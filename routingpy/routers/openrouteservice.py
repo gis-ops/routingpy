@@ -290,7 +290,7 @@ class ORS(Router):
 
     @staticmethod
     def _parse_direction_json(response, format, units):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Direction()
 
         units_factor = 1
@@ -409,7 +409,7 @@ class ORS(Router):
 
     @staticmethod
     def _parse_isochrone_json(response):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Isochrones()
 
         isochrones = []
@@ -497,7 +497,7 @@ class ORS(Router):
 
     @staticmethod
     def _parse_matrix_json(response):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Matrix()
         durations = response.get('durations')
         distances = response.get('distances')

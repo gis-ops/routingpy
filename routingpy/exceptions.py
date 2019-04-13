@@ -19,7 +19,7 @@ Defines exceptions that are thrown by the ORS client.
 """
 
 
-class RouterError(Exception):
+class RouterError(Exception):  # pragma: no cover
     """Represents an exception returned by the remote or local API."""
 
     def __init__(self, status, message=None):
@@ -45,27 +45,17 @@ class RouterNotFound(Exception):
     """Represents an exception raised when router can not be found by name."""
 
 
-class HTTPError(Exception):
-    """An unexpected HTTP error occurred."""
-
-    def __init__(self, status_code):
-        self.status_code = status_code
-
-    def __str__(self):
-        return "HTTP Error: %d" % self.status_code
-
-
-class Timeout(Exception):
+class Timeout(Exception):  # pragma: no cover
     """The request timed out."""
     pass
 
 
-class JSONParseError(Exception):
+class JSONParseError(Exception):  # pragma: no cover
     """The Json response can't be parsed.."""
     pass
 
 
-class RetriableRequest(Exception):
+class RetriableRequest(Exception):  # pragma: no cover
     """Signifies that the request can be retried."""
     pass
 

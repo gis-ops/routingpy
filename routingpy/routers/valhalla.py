@@ -286,7 +286,7 @@ class Valhalla(Router):
 
     @staticmethod
     def _parse_direction_json(response, units):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Direction()
 
         geometry, duration, distance = [], 0, 0
@@ -439,7 +439,7 @@ class Valhalla(Router):
 
     @staticmethod
     def _parse_isochrone_json(response, intervals, locations):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Isochrones()
 
         return Isochrones([
@@ -545,7 +545,7 @@ class Valhalla(Router):
 
     @staticmethod
     def _parse_matrix_json(response, units):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Matrix()
 
         factor = 0.621371 if units == 'mi' else 1

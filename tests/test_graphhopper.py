@@ -115,10 +115,12 @@ class GraphhopperTest(_test.TestCase):
 
         self.assertIsInstance(isochrones, Isochrones)
         self.assertEqual(3, len(isochrones))
-        self.assertIsInstance(isochrones[0], Isochrone)
-        self.assertIsInstance(isochrones[0].geometry, list)
-        self.assertIsInstance(isochrones[0].interval, int)
-        self.assertIsInstance(isochrones[0].center, list)
+        self.assertIsInstance(isochrones.raw, dict)
+        for iso in isochrones:
+            self.assertIsInstance(iso, Isochrone)
+            self.assertIsInstance(iso.geometry, list)
+            self.assertIsInstance(iso.interval, int)
+            self.assertIsInstance(iso.center, list)
 
     @responses.activate
     def test_full_matrix(self):

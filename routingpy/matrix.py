@@ -88,5 +88,5 @@ class Matrix(object):
         """
         return self._raw
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return f'Matrix({self.durations}, {self.distances})'

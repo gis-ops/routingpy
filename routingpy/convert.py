@@ -18,14 +18,6 @@
 """
 
 
-def _pipe_list(arg):
-    """Convert list of values to pipe-delimited string"""
-    if not _is_list(arg):
-        raise TypeError("Expected a list or tuple, "
-                        "but got {}".format(type(arg).__name__))
-    return "|".join(map(str, arg))
-
-
 def _delimit_list(arg, delimiter=','):
     """Convert list to delimiter-separated string"""
     if not _is_list(arg):
@@ -61,42 +53,6 @@ def _format_float(arg):
     :rtype: string
     """
     return ("{}".format(round(float(arg), 6)).rstrip("0").rstrip("."))
-
-
-def _build_coords(arg):
-    """Converts one or many lng/lat pair(s) to a comma-separated, pipe 
-    delimited string. Coordinates will be rounded to 5 digits.
-
-    For example:
-
-    convert.build_coords([(151.2069902,-33.8674869),(2.352315,48.513158)])
-    # '151.20699,-33.86749|2.35232,48.51316'
-
-    :param arg: The lat/lon pair(s).
-    :type arg: list or tuple
-    
-    :rtype: str
-    """
-    if _is_list(arg):
-        return _pipe_list(_concat_coords(arg))
-    else:
-        raise TypeError("Expected a list or tuple of lng/lat tuples or lists, "
-                        "but got {}".format(type(arg).__name__))
-
-
-def _concat_coords(arg):
-    """Turn the passed coordinate tuple(s) in comma separated coordinate tuple(s).
-    
-    :param arg: coordinate pair(s)
-    :type arg: list or tuple
-    
-    :rtype: list of strings
-    """
-    if all(_is_list(tup) for tup in arg):
-        # Check if arg is a list/tuple of lists/tuples
-        return [_delimit_list(map(_format_float, tup)) for tup in arg]
-    else:
-        return [_delimit_list(_format_float(coord) for coord in arg)]
 
 
 def _is_list(arg):

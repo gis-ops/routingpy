@@ -345,7 +345,7 @@ class Graphhopper(Router):
 
     @staticmethod
     def _parse_directions_json(response, algorithm, elevation):
-        if response is None:
+        if response is None:  # pragma: no cover
             if algorithm == 'alternative_route':
                 return Directions()
             else:
@@ -463,7 +463,7 @@ class Graphhopper(Router):
 
     @staticmethod
     def _parse_isochrone_json(response, intervals, buckets, center):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Isochrones()
 
         isochrones = []
@@ -582,7 +582,7 @@ class Graphhopper(Router):
 
     @staticmethod
     def _parse_matrix_json(response):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Matrix()
         durations = response.get('times')
         distances = response.get('distances')

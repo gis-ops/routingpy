@@ -298,7 +298,7 @@ class MapboxOSRM(Router):
 
     @staticmethod
     def _parse_direction_json(response, alternatives, geometry_format):
-        if response is None:
+        if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
             else:
@@ -412,7 +412,7 @@ class MapboxOSRM(Router):
 
     @staticmethod
     def _parse_isochrone_json(response, intervals, locations):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Isochrones()
         return Isochrones([
             Isochrone(
@@ -495,7 +495,7 @@ class MapboxOSRM(Router):
 
     @staticmethod
     def _parse_matrix_json(response):
-        if response is None:
+        if response is None:  # pragma: no cover
             return Matrix()
 
         return Matrix(
