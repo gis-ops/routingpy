@@ -39,7 +39,8 @@ class Isochrones(object):
         return self._raw
 
     def __repr__(self):  # pragma: no cover
-        return f'Isochrones({self._isochrones}, {self.raw})'
+        return 'Isochrones({}, {})'.format(self._isochrones,
+                                           self.raw)
 
     def __getitem__(self, item):
         return self._isochrones[item]
@@ -91,4 +92,5 @@ class Isochrone(object):
         return self._interval
 
     def __repr__(self):  # pragma: no cover
-        return f'Isochrone({self.geometry}, {self.interval})'
+        return 'Isochrone({}, {})'.format(self.geometry,
+                                          self.interval)

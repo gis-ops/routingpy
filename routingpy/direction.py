@@ -47,7 +47,8 @@ class Directions(object):
         return self._raw
 
     def __repr__(self):  # pragma: no cover
-        return f'Directions({self._directions}, {self.raw})'
+        return 'Directions({}, {})'.format(self._directions,
+                                          self.raw)
 
     def __getitem__(self, item):
         return self._directions[item]
@@ -123,4 +124,6 @@ class Direction(object):
         return self._raw
 
     def __repr__(self):  # pragma: no cover
-        return f'Direction({self.geometry}, {self.duration}, {self.distance})'
+        return 'Direction({}, {}, {})'.format(self.geometry,
+                                              self.duration,
+                                              self.distance)
