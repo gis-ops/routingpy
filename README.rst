@@ -13,14 +13,6 @@ routing-py
    :target: http://routing-py.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-.. image:: https://badge.fury.io/py/routing-py.svg
-    :target: https://badge.fury.io/py/routing-py
-    :alt: PyPI version
-
-.. image:: https://anaconda.org/gis-ops/routing-py/badges/installer/conda.svg
-    :target: https://conda.anaconda.org/gis-ops/routing-py
-    :alt: Conda install
-
 |
 *One lib to unite them all* - **routingpy** is a Python 3 client for several
 popular routing webservices.
@@ -282,93 +274,6 @@ All these parameters, and more, can optionally be **globally set** for all route
     options.default_retry_over_query_limit = False
     options.default_skip_api_error = True
 
-
-
-
-
-Directions - Graphhopper vs. Google Maps
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code:: python
-
-    >>> from routingpy import Graphhopper
-    >>> api = Graphhopper(api_key='INSERT_YOUR_KEY_HERE')
-    >>> routes = api.directions(
-      coordinates=[[8.688641, 49.420577], [8.680916, 49.415776],[8.780916, 49.445776]],
-      elevation=True,
-      profile='car',
-      dry_run=False)
-    >>> print(routes.geometry)
-    [[8.68091, 49.41574], [8.68144, 49.41575], ...
-    >>> print(routes.duration)
-    2349
-    >>> print(routes.distance)
-    15239
-
-.. code:: python
-
-    >>> from routingpy import Google
-    >>> api = Google(api_key='INSERT_YOUR_KEY_HERE')
-    >>> routes = api.directions(
-      coordinates=[[8.688641, 49.420577], [8.680916, 49.415776],[8.780916, 49.445776]],
-      profile='driving',
-      dry_run=False)
-    >>> print(routes)
-      Direction([[8.68868, 49.4204], [8.68812, 49.42035], ...], 1865, 12323)
-    >>> print(routes.geometry)
-    [[8.68868, 49.4204], [8.68812, 49.42035], ...
-    >>> print(routes.duration)
-    1865
-    >>> print(routes.distance)
-    12323
-
-Isochrones - HERE Maps vs. openrouteservice
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code:: python
-
-    >>> from routingpy import HereMaps
-    >>> api = HereMaps(app_id='INSERT_APP_ID_HERE', app_code='INSERT_APP_CODE_HERE')
-    >>> isochrones = here_api.isochrones(
-      coordinates=[8.34234, 48.23424],
-      intervals=[3000],
-      interval_type='distance',
-      profile='car;fastest',
-      dry_run=False)
-    >>> print(isochrones[0].geometry)
-    [[8.3724403, 48.2271481], [8.3729553, 48.2272339], [8.3777618, 48.2272339]...
-    >>> print(isochrones[0].center)
-    [8.3658099, 48.2353663]
-    >>> print(isochrones[0].range)
-    3000
-
-.. code:: python
-
-    >>> from routingpy import ORS
-    >>> api = ORS(api_key='INSERT_YOUR_KEY_HERE')
-    >>> isochrones = here_api.isochrones(
-      coordinates=[8.34234, 48.23424],
-      intervals=[3000],
-      interval_type='distance',
-      profile='driving-car',
-      dry_run=False)
-    >>> print(isochrones[0].geometry)
-    [[8.313951, 48.226963], [8.318491, 48.223141], [8.320768, 48.218221]...
-    >>> print(isochrones[0].center)
-    [8.344267867749956, 48.233825673919]
-    >>> print(isochrones[0].range)
-    3000
-
-
-
-Matrix - Mapbox vs Here Maps
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-XY
-
-
-Documentation links
--------------------
 
 .. _Mapbox, either Valhalla or OSRM: https://docs.mapbox.com/api/navigation
 .. _Openrouteservice: https://openrouteservice.org/dev/#/api-docs
