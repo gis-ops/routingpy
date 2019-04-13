@@ -49,10 +49,6 @@ weight.
 © routing-py contributors 2019 under the `Apache 2.0 License`_.
 
 
-.. toctree::
-    :maxdepth: 2
-    :caption: Contents
-
 Why routing-py?
 ---------------
 

@@ -1,0 +1,23 @@
+language: python
+
+python:
+  - "3.5"
+  - "3.6"
+  - "pypy3"
+
+install:
+  - pip install coverage
+  - pip install coveralls
+  - pip install -r requirements_dev.txt
+
+matrix:
+  allow_failures:
+    - python: "3.8-dev"
+      dist: xenial
+      sudo: true
+
+script:
+  - nosetests --with-coverage --cover-erase --cover-package=routingpy -v
+
+after_success:
+  - coveralls
