@@ -296,7 +296,8 @@ class Router(metaclass=ABCMeta):
                 raise
 
             warnings.warn(
-                f'Rate limit exceeded.\nRetrying for the {tried}{get_ordinal(tried)} time.',
+                'Rate limit exceeded.\nRetrying for the {}{} time.'.format(tried,
+                                                                           get_ordinal(tried)),
                 UserWarning)
             # Retry request.
             return self._request(url, get_params, post_params,

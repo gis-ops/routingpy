@@ -104,7 +104,10 @@ class MapboxOSRMTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            f'https://api.mapbox.com/isochrone/v1/{query["profile"]}/{convert._delimit_list(query["locations"])}',
+            'https://api.mapbox.com/isochrone/v1/{}/{}'.format(
+                query["profile"],
+                convert._delimit_list(query["locations"]),
+            ),
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
             content_type='application/json')
