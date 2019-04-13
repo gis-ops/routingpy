@@ -438,7 +438,7 @@ class Graphhopper(Router):
                 params.append(('distance_limit', intervals[0]))
         else:
             raise TypeError(
-                f"Parameter range={range} must be of type list or tuple")
+                "Parameter range={} must be of type list or tuple".format(range))
 
         center = [convert._format_float(f) for f in locations]
         center.reverse()

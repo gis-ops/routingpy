@@ -49,7 +49,7 @@ class ValhallaTest(_test.TestCase):
         routes = self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body), expected)
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
         self.assertIsInstance(routes, Direction)
         self.assertIsInstance(routes.distance, int)
         self.assertIsInstance(routes.duration, int)
@@ -87,7 +87,7 @@ class ValhallaTest(_test.TestCase):
         routes = self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body), expected)
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
 
     @responses.activate
     def test_full_isochrones(self):
@@ -104,7 +104,7 @@ class ValhallaTest(_test.TestCase):
         iso = self.client.isochrones(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body), expected)
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
         self.assertIsInstance(iso, Isochrones)
         self.assertIsInstance(iso.raw, dict)
         self.assertEqual(2, len(iso))
@@ -130,7 +130,7 @@ class ValhallaTest(_test.TestCase):
         matrix = self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body), expected)
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.durations, list)
         self.assertIsInstance(matrix.distances, list)
@@ -158,4 +158,4 @@ class ValhallaTest(_test.TestCase):
         routes = self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body), expected)
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)

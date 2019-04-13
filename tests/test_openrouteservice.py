@@ -55,7 +55,7 @@ class ORSTest(_test.TestCase):
         del query['profile']
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(query, json.loads(responses.calls[0].request.body))
+        self.assertEqual(query, json.loads(responses.calls[0].request.body.decode('utf-8')))
 
         self.assertIsInstance(routes, Direction)
         self.assertIsInstance(routes.geometry, list)
@@ -82,7 +82,7 @@ class ORSTest(_test.TestCase):
         del query['profile']
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(query, json.loads(responses.calls[0].request.body))
+        self.assertEqual(query, json.loads(responses.calls[0].request.body.decode('utf-8')))
 
         self.assertIsInstance(routes, Direction)
         self.assertIsInstance(routes.geometry, list)
@@ -112,7 +112,7 @@ class ORSTest(_test.TestCase):
         del expected['interval_type']
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(expected, json.loads(responses.calls[0].request.body))
+        self.assertEqual(expected, json.loads(responses.calls[0].request.body.decode('utf-8')))
 
         self.assertIsInstance(isochrones, Isochrones)
         self.assertEqual(4, len(isochrones))
@@ -140,7 +140,7 @@ class ORSTest(_test.TestCase):
         expected = query
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(expected, json.loads(responses.calls[0].request.body))
+        self.assertEqual(expected, json.loads(responses.calls[0].request.body.decode('utf-8')))
 
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.durations, list)

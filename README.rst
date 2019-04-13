@@ -9,9 +9,9 @@ routing-py
     :target: https://coveralls.io/github/gis-ops/routing-py?branch=master
     :alt: Coveralls coverage
 
-.. image:: https://readthedocs.org/projects/routing-py/badge/?version=latest
-   :target: http://routing-py.readthedocs.io/en/latest/?badge=latest
-   :alt: Documentation Status
+.. image:: https://readthedocs.org/projects/routingpy/badge/?version=latest
+    :target: https://routingpy.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 |
 *One lib to unite them all* - **routingpy** is a Python 3 client for several
@@ -79,7 +79,7 @@ Or the lastest from source
 
 .. code:: bash
 
-   pip install git+https://github.com/gis-ops/routingpy
+   pip install git+git://github.com/gis-ops/routing-py
 
 
 
@@ -282,8 +282,6 @@ All these parameters, and more, can optionally be **globally set** for all route
 .. _Graphhopper: https://graphhopper.com/api/1/docs
 .. _Local Valhalla: https://github.com/valhalla/valhalla-docs
 .. _Local Mapbox: https://github.com/Project-OSRM/osrm-backend/wiki
-.. _documentation: https://routing-py.readthedocs.io/en/latest/#routers
-.. _routing-py.routers: https://github.com/gis-ops/routing-py/tree/master/routing-py/routers
+.. _documentation: https://routingpy.readthedocs.io/en/latest
+.. _routing-py.routers: https://routingpy.readthedocs.io/en/latest/#module-routingpy.routers
 .. _Apache 2.0 License: https://github.com/gis-ops/routing-py/blob/master/LICENSE
-.. _pip: http://www.pip-installer.org/en/latest/
-.. _download a wheel or source archive from PyPI: https://pypi.python.org/pypi/routing-py

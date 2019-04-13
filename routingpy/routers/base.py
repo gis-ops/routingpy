@@ -267,7 +267,8 @@ class Router(metaclass=ABCMeta):
         if response.status_code in _RETRIABLE_STATUSES:
             # Retry request.
             warnings.warn(
-                f'Server down.\nRetrying for the {tried}{get_ordinal(tried)} time.',
+                'Server down.\nRetrying for the {}{} time.'.format(tried,
+                                                                   get_ordinal(tried)),
                 UserWarning)
 
             return self._request(url, get_params, post_params,
@@ -282,8 +283,9 @@ class Router(metaclass=ABCMeta):
         except exceptions.RouterApiError:
             if self.skip_api_error:
                 warnings.warn(
-                    f"Router {self.__class__.__name__} returned an API error with "
-                    f"the following message:\n{response.text}")
+                    "Router {} returned an API error with "
+                    "the following message:\n{}".format(self.__class__.__name__,
+                                                        response.text))
                 return
 
             raise
@@ -314,7 +316,7 @@ class Router(metaclass=ABCMeta):
             body = response.json()
         except json.decoder.JSONDecodeError:
             raise exceptions.JSONParseError(
-                f"Can't decode JSON response:{response.text}")
+                "Can't decode JSON response:{}".format(response.text))
 
         if status_code == 429:
             raise exceptions.OverQueryLimit(status_code, body)

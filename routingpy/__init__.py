@@ -15,7 +15,7 @@
 # the License.
 #
 """
-routingpy is a Python 3 client for a lot of popular web routing services.
+**routingpy** is a Python 3 client for a lot of popular web routing services.
 
 Using ``routingpy`` you can easily request **directions**, **isochrones** and
 **matrices** from many reliable online providers in a consistent fashion. Base parameters

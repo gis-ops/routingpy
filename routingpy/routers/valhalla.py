@@ -572,7 +572,9 @@ class Valhalla(Router):
                     locations.append(coord._make_waypoint())
                 else:
                     raise TypeError(
-                        f"Location type {type(coord)} at index {idx} is not supported: {coord}"
+                        "Location type {} at index {} is not supported: {}".format(type(coord),
+                                                                                   idx,
+                                                                                   coord)
                     )
         elif isinstance(coordinates[0], float):
             locations.append({'lon': coordinates[0], 'lat': coordinates[1]})
