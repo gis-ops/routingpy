@@ -18,7 +18,7 @@ eventually be able to cover all remote routing API's, but have to rely on commun
 
 ## Issues
 
-- Please only submit actual technical issues and use [Stack Overflow](stackoverflow.com/) for questions using the tag `routingpy`
+- Please only submit actual technical issues and use [Stack Overflow](stackoverflow.com/) for questions using the tag `routingpy`.
 
 - Please make sure you don't submit a duplicate by browsing open and closed issues first and consult the [CHANGELOG](https://github.com/gis-ops/routingpy/blob/master/CHANGELOG.md) for already fixed issues
 
