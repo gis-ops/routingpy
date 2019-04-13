@@ -42,7 +42,7 @@ setup(
     python_requires='>=3.6.0',
     url=__url__,
     packages=find_packages(exclude=["*test*"]),
-    install_requires=['requests>=2.21.0', 'sphinx-rtd-theme'],
+    install_requires=['requests>=2.21.0'],
     include_package_data=True,
     license='Apache 2.0',
     classifiers=[

@@ -324,7 +324,7 @@ class ORS(Router):
                    locations,
                    profile,
                    intervals,
-                   interval_type,
+                   interval_type=None,
                    units=None,
                    location_type=None,
                    smoothing=None,
@@ -382,8 +382,10 @@ class ORS(Router):
             "locations": [locations],
             "profile": profile,
             "range": intervals,
-            "range_type": interval_type
         }
+
+        if interval_type:
+            params["range_type"] = interval_type
 
         if units:
             params["units"] = units

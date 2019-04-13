@@ -24,7 +24,6 @@ from routingpy.matrix import Matrix
 from tests.test_helper import *
 import tests as _test
 
-import json
 import responses
 from copy import deepcopy
 

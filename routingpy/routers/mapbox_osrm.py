@@ -323,15 +323,15 @@ class MapboxOSRM(Router):
                 routes.append(
                     Direction(
                         geometry=_parse_geometry(route['geometry']),
-                        duration=route['duration'],
-                        distance=route['distance'],
+                        duration=int(route['duration']),
+                        distance=int(route['distance']),
                         raw=route))
             return Directions(routes, response)
         else:
             return Direction(
                 geometry=_parse_geometry(response['routes'][0]['geometry']),
-                duration=response['routes'][0]['duration'],
-                distance=response['routes'][0]['distance'],
+                duration=int(response['routes'][0]['duration']),
+                distance=int(response['routes'][0]['distance']),
                 raw=response)
 
     def isochrones(self,
@@ -499,6 +499,6 @@ class MapboxOSRM(Router):
             return Matrix()
 
         return Matrix(
-            durations=response['durations'],
-            distances=response['distances'],
+            durations=response.get('durations'),
+            distances=response.get('distances'),
             raw=response)

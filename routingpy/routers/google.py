@@ -309,16 +309,16 @@ class Google(Router):
                 routes.append(
                     Direction(
                         geometry=geometry,
-                        duration=duration,
-                        distance=distance,
+                        duration=int(duration),
+                        distance=int(distance),
                         raw=route))
             return Directions(routes, response)
         else:
             geometry = []
             duration, distance = 0, 0
             for leg in response['routes'][0]['legs']:
-                duration = leg['duration']['value']
-                distance = leg['distance']['value']
+                duration = int(leg['duration']['value'])
+                distance = int(leg['distance']['value'])
                 for step in leg['steps']:
                     geometry.extend([
                         list(reversed(coords)) for coords in

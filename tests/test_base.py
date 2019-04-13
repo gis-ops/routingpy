@@ -22,8 +22,6 @@ import time
 
 import routingpy
 from routingpy.routers import options, base
-from routingpy.direction import Direction
-from .test_helper import *
 import tests as _test
 
 

@@ -774,8 +774,8 @@ class HereMaps(Router):
                 routes.append(
                     Direction(
                         geometry=route['shape'],
-                        duration=route['summary']['baseTime'],
-                        distance=route['summary']['distance'],
+                        duration=int(route['summary']['baseTime']),
+                        distance=int(route['summary']['distance']),
                         raw=route))
 
             return Directions(directions=routes, raw=response)

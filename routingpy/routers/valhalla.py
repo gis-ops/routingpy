@@ -302,8 +302,8 @@ class Valhalla(Router):
 
         return Direction(
             geometry=geometry,
-            duration=duration,
-            distance=distance,
+            duration=int(duration),
+            distance=int(distance),
             raw=response)
 
     def isochrones(self,

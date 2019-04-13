@@ -95,7 +95,7 @@ class Graphhopper(Router):
     def directions(self,
                    locations,
                    profile,
-                   format,
+                   format=None,
                    optimize=None,
                    instructions=None,
                    locale=None,
@@ -361,8 +361,8 @@ class Graphhopper(Router):
                 routes.append(
                     Direction(
                         geometry=geometry,
-                        duration=route['time'] / 1000,
-                        distance=route['distance'],
+                        duration=int(route['time'] / 1000),
+                        distance=int(route['distance']),
                         raw=route))
             return Directions(routes, response)
         else:
@@ -372,8 +372,8 @@ class Graphhopper(Router):
             ]
             return Direction(
                 geometry=geometry,
-                duration=response['paths'][0]['time'] / 1000,
-                distance=response['paths'][0]['distance'],
+                duration=int(response['paths'][0]['time'] / 1000),
+                distance=int(response['paths'][0]['distance']),
                 raw=response)
 
     def isochrones(self,
@@ -431,7 +431,7 @@ class Graphhopper(Router):
             ('profile', profile),
         ]
 
-        if convert._is_list(range):
+        if convert._is_list(intervals):
             if interval_type in (None, 'time'):
                 params.append(('time_limit', intervals[0]))
             elif interval_type == 'distance':
@@ -471,7 +471,9 @@ class Graphhopper(Router):
         for index, polygon in enumerate(response["polygons"]):
             isochrones.append(
                 Isochrone(
-                    geometry=polygon['geometry']['coordinates'],
+                    geometry=[
+                        l[:2] for l in polygon['geometry']['coordinates'][0]
+                    ],  # takes in elevation for some reason
                     interval=int(intervals * (1 - (index / buckets))),
                     center=center,
                 ))

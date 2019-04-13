@@ -82,8 +82,8 @@ class Direction(object):
         :type raw: dict
         """
         self._geometry = geometry
-        self._duration = int(duration)
-        self._distance = int(distance)
+        self._duration = duration
+        self._distance = distance
         self._raw = raw
 
     @property

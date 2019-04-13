@@ -218,15 +218,15 @@ class OSRM(Router):
                 routes.append(
                     Direction(
                         geometry=_parse_geometry(route['geometry']),
-                        duration=route['duration'],
-                        distance=route['distance'],
+                        duration=int(route['duration']),
+                        distance=int(route['distance']),
                         raw=route))
             return Directions(routes, response)
         else:
             return Direction(
                 geometry=_parse_geometry(response['routes'][0]['geometry']),
-                duration=response['routes'][0]['duration'],
-                distance=response['routes'][0]['distance'],
+                duration=int(response['routes'][0]['duration']),
+                distance=int(response['routes'][0]['distance']),
                 raw=response)
 
     def isochrones(self):  # pragma: no cover
