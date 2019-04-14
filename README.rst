@@ -14,14 +14,14 @@ routing-py
     :alt: Documentation Status
 
 |
-*One lib to unite them all* - **routingpy** is a Python 3 client for several
+*One lib to route them all* - **routingpy** is a Python 3 client for several
 popular routing webservices.
 
 Inspired by `geopy <https://github.com/geopy/geopy>`_ and its great community of contributors, **routingpy** enables
 easy and consistent access to third-party spatial webservices to request **route directions**, **isochrones**
 or **time-distance matrices**.
 
-**routingpy** currently only includes limited support for the following services:
+**routingpy** currently includes support for the following services:
 
 -  `Mapbox, either Valhalla or OSRM`_
 -  `Openrouteservice`_
@@ -31,10 +31,10 @@ or **time-distance matrices**.
 -  `Local Valhalla`_
 -  `Local Mapbox`_
 
-This list is hopefully growing with time and contributions by other developers. An up-to-date list is always avalaiable
+This list is hopefully growing with time and contributions by other developers. An up-to-date list is always availaable
 in our documentation_.
 
-**routing-py** is tested against CPython versions 3.5, 3.6, 3.7 and against PyPy 3.5, 3.6. As other major libraries like ``numpy``
+**routing-py** is tested against CPython versions 3.5, 3.6, 3.7, 3.8-dev and against PyPy 3.5. As other major libraries like ``numpy``
 and ``pandas`` decided to drop Python 2 support, we did not see any reason to burden the project with the compatibility
 weight.
 

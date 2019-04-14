@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+#
+# Copyright 2019 Kenneth Reitz
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -23,15 +24,12 @@ from routingpy.__version__ import __title__, __version__, __author__, __author_e
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-# Import the README and use it as the long-description.
-# Note: this will only work if 'README.md' is present in your MANIFEST.in file!
 try:
-    with open(os.path.join(here, 'README.rstd'), encoding='utf-8') as f:
+    with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
         long_description = '\n' + f.read()
 except FileNotFoundError:
     long_description = __description__
 
-# Where the magic happens:
 setup(
     name=__title__,
     version=__version__,
@@ -41,18 +39,17 @@ setup(
     author_email=__author_email__,
     python_requires='>=3.6.0',
     url=__url__,
-    packages=find_packages(exclude=["*test*"]),
+    packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
     install_requires=['requests>=2.21.0'],
     include_package_data=True,
     license='Apache 2.0',
     classifiers=[
-        # Trove classifiers
-        # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: Implementation :: CPython',
-        # 'Programming Language :: Python :: Implementation :: PyPy'
+        'Programming Language :: Python :: Implementation :: PyPy'
     ])

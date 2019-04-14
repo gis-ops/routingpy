@@ -17,7 +17,7 @@
 
 __title__ = 'routingpy'
 __description__ = 'One lib to route them all.'
-__url__ = 'https://gis-ops.com'
+__url__ = 'https://gis-ops.com/projects/routingpy'
 __version__ = '0.1'
 __author__ = 'Nils Nolde'
 __author_email__ = 'nils@gis-ops.com'

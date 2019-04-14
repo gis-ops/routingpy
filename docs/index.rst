@@ -2,8 +2,8 @@ Welcome to routingpy's documentation!
 =====================================
 
 :Documentation: https://routingpy.readthedocs.io/
-:Source Code: https://github.com/gis-ops/routingpy
-:Issue Tracker: https://github.com/gis-ops/routingpy/issues
+:Source Code: https://github.com/gis-ops/routing-py
+:Issue Tracker: https://github.com/gis-ops/routing-py/issues
 :Stack Overflow: https://stackoverflow.com/questions/tagged/routingpy
 :PyPI: https://pypi.org/project/routingpy
 :Conda: https://conda.org/gis-ops/routingpy
