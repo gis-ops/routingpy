@@ -1,3 +1,4 @@
+conda/
 dist/
 *egg-info/**
 .coverage

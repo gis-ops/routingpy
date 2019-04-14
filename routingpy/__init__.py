@@ -17,14 +17,16 @@
 """
 **routingpy** is a Python 3 client for a lot of popular web routing services.
 
-Using ``routingpy`` you can easily request **directions**, **isochrones** and
+Using **routingpy** you can easily request **directions**, **isochrones** and
 **matrices** from many reliable online providers in a consistent fashion. Base parameters
-are the same for all services, while still preserving each service's special parameters.
+are the same for all services, while still preserving each service's special parameters (for
+more info, please look at our `README`_.
 Take a look at our `Examples`_ to see how simple you can compare routes from different providers.
 
-geopy is tested against 3.5, 3.6, 3.7 and PyPy3.
+**routingpy** is tested against 3.5, 3.6, 3.7 and PyPy3.
 
-.. _`Examples`: https://github.com/gis-ops/routing-py/examples
+.. _`README`: https://github.com/gis-ops/routing-py#api
+.. _`Examples`: https://github.com/gis-ops/routing-py#examples
 """
 
 from routingpy.routers import *

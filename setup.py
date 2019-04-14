@@ -38,10 +38,10 @@ setup(
     long_description_content_type='text/x-rst',
     author=__author__,
     author_email=__author_email__,
-    python_requires='>=3.6.0',
+    python_requires='>=3.5.0',
     url=__url__,
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
-    install_requires=['requests>=2.21.0'],
+    install_requires=['requests>=2.0'],
     include_package_data=True,
     license='Apache 2.0',
     classifiers=[

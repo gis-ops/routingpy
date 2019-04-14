@@ -13,6 +13,14 @@ routing-py
     :target: https://routingpy.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://badge.fury.io/py/routingpy.svg
+    :target: https://badge.fury.io/py/routingpy
+    :alt: PyPI version
+
+.. image:: https://anaconda.org/nilsnolde/routingpy/badges/installer/conda.svg
+    :target: https://conda.anaconda.org/nilsnolde/routingpy
+    :alt: Conda install
+
 
 *One lib to route them all* - **routingpy** is a Python 3 client for several
 popular routing webservices.
@@ -67,13 +75,13 @@ Install using ``pip`` with
 
 .. code:: bash
 
-   pip install routing-py
+   pip install routingpy
 
 Or with conda
 
 .. code:: bash
 
-   conda install -c gis-ops routingpy
+   conda install -c nilsnolde routingpy
 
 Or the lastest from source
 
