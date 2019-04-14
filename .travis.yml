@@ -1,20 +1,22 @@
+dist: xenial   # required for Python >= 3.7
 language: python
 
 python:
   - "3.5"
   - "3.6"
-  - "pypy3"
+  # PyPy versions
+  - "pypy3.5-6.0"
+matrix:
+  include:
+    - python: 3.7
+    - python: 3.8-dev
+      dist: xenial
+      sudo: true
 
 install:
   - pip install coverage
   - pip install coveralls
   - pip install -r requirements_dev.txt
-
-matrix:
-  allow_failures:
-    - python: "3.8-dev"
-      dist: xenial
-      sudo: true
 
 script:
   - nosetests --with-coverage --cover-erase --cover-package=routingpy -v

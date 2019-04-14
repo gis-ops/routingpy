@@ -26,6 +26,8 @@ import tests as _test
 
 import responses
 from copy import deepcopy
+import json
+from collections import Counter
 
 
 class MapboxOSRMTest(_test.TestCase):
@@ -49,16 +51,20 @@ class MapboxOSRMTest(_test.TestCase):
             headers={'Content-Type': 'application/x-www-form-urlencoded'})
 
         routes = self.client.directions(**query)
-
         self.assertEqual(1, len(responses.calls))
-        self.assertURLEqual(
-            "coordinates=8.688641%2C49.420577%3B8.680916%2C49.415776%3B8.780916%2C49.445776&"
-            "radiuses=500%3B500%3B500&bearings=50%2C50%3B50%2C50%3B50%2C50&alternatives=false&steps=true&"
-            "continue_straight=true&annotations=duration%2Cdistance%2Cspeed&geometries=geojson&"
-            "overview=simplified&exclude=motorway&approaches=%3Bcurb%3Bcurb%3Bcurb&banner_instuctions=true&"
-            "language=de&roundabout_exits=true&voide_instructions=true&voice_units=metric&"
-            "waypoint_names=a%3Bb%3Bc&waypoint_targets=%3B8.688641%2C49.420577%3B8.680916%2C49.415776%3B"
-            "8.780916%2C49.445776", responses.calls[0].request.body)
+
+        # python 3.5 dict doesn't guarantee the order when added input to x-www-form-urlencoded
+        expected_url = (
+            'coordinates=8.688641%2C49.420577%3B8.680916%2C49.415776%3B8.780916%2C49.445776&'
+            'radiuses=500%3B500%3B500&bearings=50%2C50%3B50%2C50%3B50%2C50&alternatives=false&steps=true&'
+            'continue_straight=true&annotations=duration%2Cdistance%2Cspeed&geometries=geojson&'
+            'overview=simplified&exclude=motorway&approaches=%3Bcurb%3Bcurb%3Bcurb&banner_instuctions=true&'
+            'language=de&roundabout_exits=true&voide_instructions=true&voice_units=metric&'
+            'waypoint_names=a%3Bb%3Bc&waypoint_targets=%3B8.688641%2C49.420577%3B8.680916%2C49.415776%3B'
+            '8.780916%2C49.445776').split("&")
+        called_url = responses.calls[0].request.body.split("&")
+        self.assertTrue(Counter(expected_url) == Counter(called_url))
+
         self.assertIsInstance(routes, Direction)
         self.assertIsInstance(routes.geometry, list)
         self.assertIsInstance(routes.duration, int)
@@ -81,14 +87,18 @@ class MapboxOSRMTest(_test.TestCase):
         routes = self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertURLEqual(
-            "coordinates=8.688641%2C49.420577%3B8.680916%2C49.415776%3B8.780916%2C49.445776&"
-            "radiuses=500%3B500%3B500&bearings=50%2C50%3B50%2C50%3B50%2C50&alternatives=3&steps=true&"
-            "continue_straight=true&annotations=duration%2Cdistance%2Cspeed&geometries=geojson&"
-            "overview=simplified&exclude=motorway&approaches=%3Bcurb%3Bcurb%3Bcurb&banner_instuctions=true&"
-            "language=de&roundabout_exits=true&voide_instructions=true&voice_units=metric&"
-            "waypoint_names=a%3Bb%3Bc&waypoint_targets=%3B8.688641%2C49.420577%3B8.680916%2C49.415776%3B"
-            "8.780916%2C49.445776", responses.calls[0].request.body)
+
+        # python 3.5 dict doesn't guarantee the order when added input to x-www-form-urlencoded
+        expected_url = (
+            'coordinates=8.688641%2C49.420577%3B8.680916%2C49.415776%3B8.780916%2C49.445776&'
+            'radiuses=500%3B500%3B500&bearings=50%2C50%3B50%2C50%3B50%2C50&alternatives=3&steps=true&'
+            'continue_straight=true&annotations=duration%2Cdistance%2Cspeed&geometries=geojson&'
+            'overview=simplified&exclude=motorway&approaches=%3Bcurb%3Bcurb%3Bcurb&banner_instuctions=true&'
+            'language=de&roundabout_exits=true&voide_instructions=true&voice_units=metric&'
+            'waypoint_names=a%3Bb%3Bc&waypoint_targets=%3B8.688641%2C49.420577%3B8.680916%2C49.415776%3B'
+            '8.780916%2C49.445776').split("&")
+        called_url = responses.calls[0].request.body.split("&")
+        self.assertTrue(Counter(expected_url) == Counter(called_url))
 
         self.assertIsInstance(routes, Directions)
         self.assertEqual(1, len(routes))
