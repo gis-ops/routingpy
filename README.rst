@@ -13,7 +13,7 @@ routing-py
     :target: https://routingpy.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-|
+
 *One lib to route them all* - **routingpy** is a Python 3 client for several
 popular routing webservices.
 
@@ -63,7 +63,7 @@ With **routingpy** we have made an attempt to simplify this process for you.
 Installation
 ------------
 
-Install using `pip`_ with
+Install using ``pip`` with
 
 .. code:: bash
 

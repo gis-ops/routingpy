@@ -35,6 +35,7 @@ setup(
     version=__version__,
     description=__description__,
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     author=__author__,
     author_email=__author_email__,
     python_requires='>=3.6.0',
