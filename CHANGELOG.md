@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 -
 ### Fixed
+- MapboxOSRM directions was parsing geometry to \[lat, lon\]
 - README not valid on PyPI, wasn't rendered
 - add to PyPI and Conda
 ### Changed

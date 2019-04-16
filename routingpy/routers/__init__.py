@@ -1,12 +1,17 @@
 """
-Every routing service below has a separate class in ``routingpy.routers`` which bases
-the same class :class:`routingpy.routers.base.Router` astracting the service's API. Each router
-has at least a ``directions`` method, many offer additionally ``matrix`` and/or ``isochrones`` methods.
+Every routing service below has a separate module in ``routingpy.routers``, which hosts a class which
+bases :class:`routingpy.routers.base.Router` astracting the service's API. Each router
+has at least a ``directions`` method, many offer additionally ``matrix`` and/or ``isochrones`` methods. Other
+available provider endpoints are allowed and generally encouraged. However, please refer
+to our `contribution guidelines`_ for general instructions.
 
 **routingpy**'s dogma is, that all routers expose the same mandatory arguments for common methods in an
 attempt to be consistent for the same method across different routers. Unlike other collective libraries,
 we additionally chose to preserve each router's special arguments, only abstracting the most basic arguments, such as
-locations and profile (car, bike, pedestrian etc.).
+locations and profile (car, bike, pedestrian etc.), among others (full list here_).
+
+.. _`contribution_guidelines`: https://github.com/gis-ops/routing-py/blob/master/CONTRIBUTING.md
+.. _here: https://github.com/gis-ops/routing-py#api
 """
 from .base import options
 from routingpy.exceptions import RouterNotFound
@@ -45,7 +50,7 @@ def get_router_by_name(router_name):
     Given a router's name, try to return the router class.
 
     >>> from routingpy.routers import get_router_by_name
-    >>> router = get_router_by_name("ors")
+    >>> router = get_router_by_name("ors")(api_key='')
     >>> print(router)
     routingpy.routers.openrouteservice.ORS
     >>> route = router.directions(**params)
@@ -62,7 +67,5 @@ def get_router_by_name(router_name):
     try:
         return _SERVICE_TO_ROUTER[router_name.lower()]
     except KeyError:
-        raise RouterNotFound(
-            "Unknown router '{}'; options are: {}".format(router_name,
-                                                          _SERVICE_TO_ROUTER.keys())
-        )
+        raise RouterNotFound("Unknown router '{}'; options are: {}".format(
+            router_name, _SERVICE_TO_ROUTER.keys()))

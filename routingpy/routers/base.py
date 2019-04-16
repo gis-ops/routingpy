@@ -54,22 +54,28 @@ class options(object):
     {'https': '129.125.12.0'}
 
     Attributes:
-        self.default_timeout: Combined connect and read timeout for HTTP requests, in
+        self.default_timeout:
+            Combined connect and read timeout for HTTP requests, in
             seconds. Specify "None" for no timeout. Integer.
 
-        self.default_retry_timeout: Timeout across multiple retriable requests, in
+        self.default_retry_timeout:
+            Timeout across multiple retriable requests, in
             seconds. Integer.
 
-        self.default_retry_over_query_limit: If True, client will not raise an exception
+        self.default_retry_over_query_limit:
+            If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached. Boolean.
 
-        self.default_skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
+        self.default_skip_api_error:
+            Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
             encountered (e.g. no route found). If False, processing will discontinue and raise an error. Boolean.
 
-        self.default_user_agent: User-Agent to send with the requests to routing API. String.
+        self.default_user_agent:
+            User-Agent to send with the requests to routing API. String.
 
-        self.default_proxies: Proxies passed to the requests library. Dictionary.
+        self.default_proxies:
+            Proxies passed to the requests library. Dictionary.
     """
 
     default_timeout = 60
@@ -267,9 +273,8 @@ class Router(metaclass=ABCMeta):
         if response.status_code in _RETRIABLE_STATUSES:
             # Retry request.
             warnings.warn(
-                'Server down.\nRetrying for the {}{} time.'.format(tried,
-                                                                   get_ordinal(tried)),
-                UserWarning)
+                'Server down.\nRetrying for the {}{} time.'.format(
+                    tried, get_ordinal(tried)), UserWarning)
 
             return self._request(url, get_params, post_params,
                                  first_request_time, retry_counter + 1,
@@ -282,10 +287,9 @@ class Router(metaclass=ABCMeta):
 
         except exceptions.RouterApiError:
             if self.skip_api_error:
-                warnings.warn(
-                    "Router {} returned an API error with "
-                    "the following message:\n{}".format(self.__class__.__name__,
-                                                        response.text))
+                warnings.warn("Router {} returned an API error with "
+                              "the following message:\n{}".format(
+                                  self.__class__.__name__, response.text))
                 return
 
             raise
@@ -296,9 +300,8 @@ class Router(metaclass=ABCMeta):
                 raise
 
             warnings.warn(
-                'Rate limit exceeded.\nRetrying for the {}{} time.'.format(tried,
-                                                                           get_ordinal(tried)),
-                UserWarning)
+                'Rate limit exceeded.\nRetrying for the {}{} time.'.format(
+                    tried, get_ordinal(tried)), UserWarning)
             # Retry request.
             return self._request(url, get_params, post_params,
                                  first_request_time, retry_counter + 1,
