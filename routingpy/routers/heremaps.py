@@ -773,7 +773,10 @@ class HereMaps(Router):
             for route in response['response']['route']:
                 routes.append(
                     Direction(
-                        geometry=route['shape'],
+                        geometry=[
+                            map(float, coordinates.split(','))
+                            for coordinates in route['shape']
+                        ],
                         duration=int(route['summary']['baseTime']),
                         distance=int(route['summary']['distance']),
                         raw=route))
@@ -781,7 +784,10 @@ class HereMaps(Router):
             return Directions(directions=routes, raw=response)
 
         else:
-            geometry = response['response']['route'][0].get('shape')
+            geometry = [
+                list(map(float, coordinates.split(','))) for coordinates in
+                response['response']['route'][0].get('shape')
+            ]
             duration = int(
                 response['response']['route'][0]['summary'].get('baseTime'))
             distance = int(

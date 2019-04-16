@@ -433,12 +433,13 @@ class Graphhopper(Router):
 
         if convert._is_list(intervals):
             if interval_type in (None, 'time'):
-                params.append(('time_limit', intervals[0]))
+                params.append(('time_limit', max(intervals)))
             elif interval_type == 'distance':
-                params.append(('distance_limit', intervals[0]))
+                params.append(('distance_limit', max(intervals)))
         else:
             raise TypeError(
-                "Parameter range={} must be of type list or tuple".format(range))
+                "Parameter range={} must be of type list or tuple".format(
+                    range))
 
         center = [convert._format_float(f) for f in locations]
         center.reverse()

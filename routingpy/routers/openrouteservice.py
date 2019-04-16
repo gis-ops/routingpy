@@ -307,7 +307,7 @@ class ORS(Router):
                 response['features'][0]['properties']['summary']['distance'])
         elif format == 'json':
             geometry = [
-                list(reversed(coord)) for coord in utils.decode_polyline6(
+                list(reversed(coord)) for coord in utils.decode_polyline5(
                     response['routes'][0]['geometry'])
             ]
             duration = int(response['routes'][0]['summary']['duration'])
