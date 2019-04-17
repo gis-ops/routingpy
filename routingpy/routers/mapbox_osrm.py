@@ -83,10 +83,9 @@ class MapboxOSRM(Router):
 
         self.api_key = api_key
 
-        super(MapboxOSRM,
-              self).__init__(self._base_url, user_agent, timeout,
-                             retry_timeout, requests_kwargs,
-                             retry_over_query_limit, skip_api_error)
+        super(MapboxOSRM, self).__init__(
+            self._base_url, user_agent, timeout, retry_timeout,
+            requests_kwargs, retry_over_query_limit, skip_api_error)
 
     def directions(self,
                    locations,
@@ -308,15 +307,13 @@ class MapboxOSRM(Router):
         def _parse_geometry(route_geometry):
             if geometry_format in (None, 'polyline'):
                 geometry = [
-                    list(reversed(coord))
-                    for coord in utils.decode_polyline5(route_geometry,
-                                                        is3d=False)
+                    list(reversed(coord)) for coord in utils.decode_polyline5(
+                        route_geometry, is3d=False)
                 ]
             elif geometry_format == 'polyline6':
                 geometry = [
-                    list(reversed(coord))
-                    for coord in utils.decode_polyline6(route_geometry,
-                                                        is3d=False)
+                    list(reversed(coord)) for coord in utils.decode_polyline6(
+                        route_geometry, is3d=False)
                 ]
             elif geometry_format == 'geojson':
                 geometry = route_geometry['coordinates']
@@ -330,17 +327,18 @@ class MapboxOSRM(Router):
             routes = []
             for route in response['routes']:
                 routes.append(
-                    Direction(geometry=_parse_geometry(route['geometry']),
-                              duration=int(route['duration']),
-                              distance=int(route['distance']),
-                              raw=route))
+                    Direction(
+                        geometry=_parse_geometry(route['geometry']),
+                        duration=int(route['duration']),
+                        distance=int(route['distance']),
+                        raw=route))
             return Directions(routes, response)
         else:
-            return Direction(geometry=_parse_geometry(
-                response['routes'][0]['geometry']),
-                             duration=int(response['routes'][0]['duration']),
-                             distance=int(response['routes'][0]['distance']),
-                             raw=response)
+            return Direction(
+                geometry=_parse_geometry(response['routes'][0]['geometry']),
+                duration=int(response['routes'][0]['duration']),
+                distance=int(response['routes'][0]['distance']),
+                raw=response)
 
     def isochrones(self,
                    locations,
@@ -413,19 +411,21 @@ class MapboxOSRM(Router):
             params['generalize'] = generalize
 
         return self._parse_isochrone_json(
-            self._request("/isochrone/v1/" + profile + '/' + locations_string,
-                          get_params=params,
-                          dry_run=dry_run), intervals, locations)
+            self._request(
+                "/isochrone/v1/" + profile + '/' + locations_string,
+                get_params=params,
+                dry_run=dry_run), intervals, locations)
 
     @staticmethod
     def _parse_isochrone_json(response, intervals, locations):
         if response is None:  # pragma: no cover
             return Isochrones()
         return Isochrones([
-            Isochrone(geometry=isochrone['geometry']['coordinates'],
-                      interval=intervals[idx],
-                      center=locations)
-            for idx, isochrone in enumerate(response['features'])
+            Isochrone(
+                geometry=isochrone['geometry']['coordinates'],
+                interval=intervals[idx],
+                center=locations) for idx, isochrone in enumerate(
+                    list(reversed(response['features'])))
         ], response)
 
     def matrix(self,
@@ -494,16 +494,17 @@ class MapboxOSRM(Router):
             params['fallback_speed'] = str(fallback_speed)
 
         return self._parse_matrix_json(
-            self._request("/directions-matrix/v1/mapbox/" + profile + '/' +
-                          coords,
-                          get_params=params,
-                          dry_run=dry_run))
+            self._request(
+                "/directions-matrix/v1/mapbox/" + profile + '/' + coords,
+                get_params=params,
+                dry_run=dry_run))
 
     @staticmethod
     def _parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
 
-        return Matrix(durations=response.get('durations'),
-                      distances=response.get('distances'),
-                      raw=response)
+        return Matrix(
+            durations=response.get('durations'),
+            distances=response.get('distances'),
+            raw=response)

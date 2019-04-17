@@ -433,9 +433,9 @@ class Graphhopper(Router):
 
         if convert._is_list(intervals):
             if interval_type in (None, 'time'):
-                params.append(('time_limit', max(intervals)))
+                params.append(('time_limit', intervals[0]))
             elif interval_type == 'distance':
-                params.append(('distance_limit', max(intervals)))
+                params.append(('distance_limit', intervals[0]))
         else:
             raise TypeError(
                 "Parameter range={} must be of type list or tuple".format(
@@ -463,19 +463,20 @@ class Graphhopper(Router):
             intervals[0], buckets, center)
 
     @staticmethod
-    def _parse_isochrone_json(response, intervals, buckets, center):
+    def _parse_isochrone_json(response, max_range, buckets, center):
         if response is None:  # pragma: no cover
             return Isochrones()
 
         isochrones = []
-
         for index, polygon in enumerate(response["polygons"]):
+            #print(index, buckets, max_range, int(max_range * (index+1 / buckets)))
             isochrones.append(
                 Isochrone(
                     geometry=[
                         l[:2] for l in polygon['geometry']['coordinates'][0]
                     ],  # takes in elevation for some reason
-                    interval=int(intervals * (1 - (index / buckets))),
+                    interval=int(max_range * (
+                        (polygon['properties']['bucket'] + 1) / buckets)),
                     center=center,
                 ))
 

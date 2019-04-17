@@ -373,6 +373,9 @@ ENDPOINTS_RESPONSES = {
             "polygons": [
                 {
                     "type": "Feature",
+                    "properties": {
+                        "bucket": 0
+                    },
                     "geometry": {
                         "type":
                         "Polygon",
@@ -384,6 +387,9 @@ ENDPOINTS_RESPONSES = {
                 },
                 {
                     "type": "Feature",
+                    "properties": {
+                        "bucket": 1
+                    },
                     "geometry": {
                         "type":
                         "Polygon",
@@ -395,6 +401,9 @@ ENDPOINTS_RESPONSES = {
                 },
                 {
                     "type": "Feature",
+                    "properties": {
+                        "bucket": 2
+                    },
                     "geometry": {
                         "type":
                         "Polygon",

@@ -429,16 +429,15 @@ class Valhalla(Router):
             params['id'] = id
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
-
         return self._parse_isochrone_json(
             self._request(
                 "/isochrone",
                 get_params=get_params,
                 post_params=params,
-                dry_run=dry_run), intervals, locations)
+                dry_run=dry_run), intervals, list(locations[0].values()))
 
     @staticmethod
-    def _parse_isochrone_json(response, intervals, locations):
+    def _parse_isochrone_json(response, intervals, center):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -446,8 +445,8 @@ class Valhalla(Router):
             Isochrone(
                 geometry=isochrone['geometry']['coordinates'],
                 interval=intervals[idx],
-                center=locations)
-            for idx, isochrone in enumerate(response['features'])
+                center=center) for idx, isochrone in enumerate(
+                    list(reversed(response['features'])))
         ], response)
 
     def matrix(self,
@@ -572,10 +571,8 @@ class Valhalla(Router):
                     locations.append(coord._make_waypoint())
                 else:
                     raise TypeError(
-                        "Location type {} at index {} is not supported: {}".format(type(coord),
-                                                                                   idx,
-                                                                                   coord)
-                    )
+                        "Location type {} at index {} is not supported: {}".
+                        format(type(coord), idx, coord))
         elif isinstance(coordinates[0], float):
             locations.append({'lon': coordinates[0], 'lat': coordinates[1]})
 
