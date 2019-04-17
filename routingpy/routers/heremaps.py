@@ -157,8 +157,10 @@ class HereMaps(Router):
             elif self.waypoint_type is not None:
                 here_waypoint.append(self.waypoint_type)
 
-            position = convert._delimit_list(
-                [convert._format_float(f) for f in self.position], ',')
+            position = convert._delimit_list([
+                convert._format_float(f)
+                for f in list(reversed(self.position))
+            ], ',')
             position += ';' + self.transit_radius
             position += ';' + self.user_label
             position += ';' + self.heading
@@ -580,7 +582,8 @@ class HereMaps(Router):
                 params[wp_index] = wp.make_waypoint()
             elif isinstance(wp, (list, tuple)):
                 wp = 'geo!' + convert._delimit_list(
-                    [convert._format_float(f) for f in wp], ',')
+                    [convert._format_float(f)
+                     for f in list(reversed(wp))], ',')
                 params[wp_index] = wp
 
         if isinstance(profile, str):
@@ -594,9 +597,9 @@ class HereMaps(Router):
         if avoid_areas is not None:
             params["avoidAreas"] = convert._delimit_list([
                 convert._delimit_list([
-                    convert._delimit_list(
-                        [convert._format_float(f) for f in pair], ',')
-                    for pair in bounding_box
+                    convert._delimit_list([
+                        convert._format_float(f) for f in list(reversed(pair))
+                    ], ',') for pair in bounding_box
                 ], ';') for bounding_box in avoid_areas
             ], '!')
 
@@ -637,8 +640,9 @@ class HereMaps(Router):
 
         if view_bounds is not None:
             params["viewBounds"] = convert._delimit_list([
-                convert._delimit_list([convert._format_float(f)
-                                       for f in pair], ',')
+                convert._delimit_list(
+                    [convert._format_float(f)
+                     for f in list(reversed(pair))], ',')
                 for pair in view_bounds
             ], ';')
 
@@ -774,7 +778,10 @@ class HereMaps(Router):
                 routes.append(
                     Direction(
                         geometry=[
-                            map(float, coordinates.split(','))
+                            list(
+                                reversed(
+                                    list((map(float,
+                                              coordinates.split(','))))))
                             for coordinates in route['shape']
                         ],
                         duration=int(route['summary']['baseTime']),
@@ -785,8 +792,8 @@ class HereMaps(Router):
 
         else:
             geometry = [
-                list(map(float, coordinates.split(','))) for coordinates in
-                response['response']['route'][0].get('shape')
+                list(reversed(list(map(float, coordinates.split(','))))) for
+                coordinates in response['response']['route'][0].get('shape')
             ]
             duration = int(
                 response['response']['route'][0]['summary'].get('baseTime'))
@@ -979,7 +986,8 @@ class HereMaps(Router):
             params[center_type] = locations.make_waypoint()
         elif isinstance(locations, (list, tuple)):
             params[center_type] = 'geo!' + convert._delimit_list(
-                [convert._format_float(f) for f in locations], ',')
+                [convert._format_float(f)
+                 for f in list(reversed(locations))], ',')
 
         if isinstance(profile, str):
             params["mode"] = profile
@@ -1239,7 +1247,8 @@ class HereMaps(Router):
                            str(i)] = locations[start_idx].make_waypoint()
                 elif isinstance(locations[start_idx], (list, tuple)):
                     params["start" + str(i)] = 'geo!' + convert._delimit_list([
-                        convert._format_float(f) for f in locations[start_idx]
+                        convert._format_float(f)
+                        for f in list(reversed(locations[start_idx]))
                     ], ',')
 
         except IndexError:
@@ -1259,7 +1268,7 @@ class HereMaps(Router):
                     params["destination" +
                            str(i)] = 'geo!' + convert._delimit_list([
                                convert._format_float(f)
-                               for f in locations[dest_idx]
+                               for f in list(reversed(locations[dest_idx]))
                            ], ',')
 
         except IndexError:
@@ -1280,9 +1289,9 @@ class HereMaps(Router):
         if avoid_areas is not None:
             params["avoidAreas"] = convert._delimit_list([
                 convert._delimit_list([
-                    convert._delimit_list(
-                        [convert._format_float(f) for f in pair], ',')
-                    for pair in bounding_box
+                    convert._delimit_list([
+                        convert._format_float(f) for f in list(reversed(pair))
+                    ], ',') for pair in bounding_box
                 ], ';') for bounding_box in avoid_areas
             ], '!')
 

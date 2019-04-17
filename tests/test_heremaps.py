@@ -51,7 +51,7 @@ class HereMapsTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://route.api.here.com/routing/7.2/calculateroute.json?alternatives=3&app_code=sample_app_code&'
-            'app_id=sample_app_id&avoidAreas=8.688641%2C49.420577%3B8.680916%2C49.415776%218.780916%2C49.445776%3B8.780916%2C49.445776&'
+            'app_id=sample_app_id&avoidAreas=49.420577%2C8.688641%3B49.415776%2C8.680916%2149.445776%2C8.780916%3B49.445776%2C8.780916&'
             'avoidLinks=-53623477&avoidSeasonalClosures=true&avoidTurns=difficult&combineChange=false&consumptionModel=default&'
             'departure=2019-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
             'excludeZones=510%2C511&generalizationTolerances=0.1%2C0.01&height=20&instructionFormat=text&jsonAttributes=9&'
@@ -60,8 +60,8 @@ class HereMapsTest(_test.TestCase):
             'metricSystem=metric&mode=truck%3Bfastest&requestId=101&resolution=300%3A300&returnElevation=true&'
             'routeAttributes=waypoints%2Csummary%2CsummaryByCountry%2Cshape%2CboundingBox%2Clegs%2Cnotes%2Clines%2CrouteId%2Cgroups%2Ctickets%2Cincidents%2Czones&'
             'shippedHazardousGoods=gas%2Cflammable&speedProfile=fast&trailersCount=3&truckRestrictionPenalty=soft&truckType=truck&vehicleType=diesel%2C5.5&'
-            'viewBounds=8.688641%2C49.420577%3B8.680916%2C49.415776&waypoint0=geo%218.688641%2C49.420577&waypoint1=geo%218.680916%2C49.415776&'
-            'waypoint2=geo%218.780916%2C49.445776&weightPerAxle=100&width=10',
+            'viewBounds=49.420577%2C8.688641%3B49.415776%2C8.680916&waypoint0=geo%2149.420577%2C8.688641&waypoint1=geo%2149.415776%2C8.680916&'
+            'waypoint2=geo%2149.445776%2C8.780916&weightPerAxle=100&width=10',
             responses.calls[0].request.url)
 
     @responses.activate
@@ -80,7 +80,7 @@ class HereMapsTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://route.api.here.com/routing/7.2/calculateroute.json?alternatives=1&app_code=sample_app_code&'
-            'app_id=sample_app_id&avoidAreas=8.688641%2C49.420577%3B8.680916%2C49.415776%218.780916%2C49.445776%3B8.780916%2C49.445776&'
+            'app_id=sample_app_id&avoidAreas=49.420577%2C8.688641%3B49.415776%2C8.680916%2149.445776%2C8.780916%3B49.445776%2C8.780916&'
             'avoidLinks=-53623477&avoidSeasonalClosures=true&avoidTurns=difficult&combineChange=false&consumptionModel=default&'
             'departure=2019-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
             'excludeZones=510%2C511&generalizationTolerances=0.1%2C0.01&height=20&instructionFormat=text&jsonAttributes=9&'
@@ -89,8 +89,8 @@ class HereMapsTest(_test.TestCase):
             'metricSystem=metric&mode=truck%3Bfastest&requestId=101&resolution=300%3A300&returnElevation=true&'
             'routeAttributes=waypoints%2Csummary%2CsummaryByCountry%2Cshape%2CboundingBox%2Clegs%2Cnotes%2Clines%2CrouteId%2Cgroups%2Ctickets%2Cincidents%2Czones&'
             'shippedHazardousGoods=gas%2Cflammable&speedProfile=fast&trailersCount=3&truckRestrictionPenalty=soft&truckType=truck&vehicleType=diesel%2C5.5&'
-            'viewBounds=8.688641%2C49.420577%3B8.680916%2C49.415776&waypoint0=geo%218.688641%2C49.420577&waypoint1=geo%218.680916%2C49.415776&'
-            'waypoint2=geo%218.780916%2C49.445776&weightPerAxle=100&width=10',
+            'viewBounds=49.420577%2C8.688641%3B49.415776%2C8.680916&waypoint0=geo%2149.420577%2C8.688641&waypoint1=geo%2149.415776%2C8.680916&'
+            'waypoint2=geo%2149.445776%2C8.780916&weightPerAxle=100&width=10',
             responses.calls[0].request.url)
 
         self.assertIsInstance(routes, Direction)
@@ -114,7 +114,7 @@ class HereMapsTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://route.api.here.com/routing/7.2/calculateroute.json?alternatives=3&app_code=sample_app_code&'
-            'app_id=sample_app_id&avoidAreas=8.688641%2C49.420577%3B8.680916%2C49.415776%218.780916%2C49.445776%3B8.780916%2C49.445776&'
+            'app_id=sample_app_id&avoidAreas=49.420577%2C8.688641%3B49.415776%2C8.680916%2149.445776%2C8.780916%3B49.445776%2C8.780916&'
             'avoidLinks=-53623477&avoidSeasonalClosures=true&avoidTurns=difficult&combineChange=false&consumptionModel=default&'
             'departure=2019-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
             'excludeZones=510%2C511&generalizationTolerances=0.1%2C0.01&height=20&instructionFormat=text&jsonAttributes=9&'
@@ -123,8 +123,8 @@ class HereMapsTest(_test.TestCase):
             'metricSystem=metric&mode=truck%3Bfastest&requestId=101&resolution=300%3A300&returnElevation=true&'
             'routeAttributes=waypoints%2Csummary%2CsummaryByCountry%2Cshape%2CboundingBox%2Clegs%2Cnotes%2Clines%2CrouteId%2Cgroups%2Ctickets%2Cincidents%2Czones&'
             'shippedHazardousGoods=gas%2Cflammable&speedProfile=fast&trailersCount=3&truckRestrictionPenalty=soft&truckType=truck&vehicleType=diesel%2C5.5&'
-            'viewBounds=8.688641%2C49.420577%3B8.680916%2C49.415776&waypoint0=geo%218.688641%2C49.420577&waypoint1=geo%218.680916%2C49.415776&'
-            'waypoint2=geo%218.780916%2C49.445776&weightPerAxle=100&width=10',
+            'viewBounds=49.420577%2C8.688641%3B49.415776%2C8.680916&waypoint0=geo%2149.420577%2C8.688641&waypoint1=geo%2149.415776%2C8.680916&'
+            'waypoint2=geo%2149.445776%2C8.780916&weightPerAxle=100&width=10',
             responses.calls[0].request.url)
 
         self.assertIsInstance(routes, Directions)
@@ -153,7 +153,7 @@ class HereMapsTest(_test.TestCase):
         self.assertURLEqual(
             'https://isoline.route.api.here.com/routing/7.2/calculateisoline.json?app_code=sample_app_code&'
             'app_id=sample_app_id&mode=car%3Bfastest&quality=1&range=1000%2C2000%2C3000&rangeType=distance&'
-            'singleComponent=false&start=geo%218.34234%2C48.23424',
+            'singleComponent=false&start=geo%2148.23424%2C8.34234',
             responses.calls[0].request.url)
 
         self.assertIsInstance(isochrones, Isochrones)
@@ -180,9 +180,9 @@ class HereMapsTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://matrix.route.api.here.com/routing/7.2/calculatematrix.json?app_code=sample_app_code&'
-            'app_id=sample_app_id&destination0=geo%218.780916%2C49.445776&height=20&length=10&limitedWeight=10&'
-            'mode=car%3Bfastest&shippedHazardousGoods=gas%2Cflammable&start0=geo%218.688641%2C49.420577&'
-            'start1=geo%218.680916%2C49.415776&summaryAttributes=traveltime%2Ccostfactor&trailersCount=3&truckType=truck&'
+            'app_id=sample_app_id&destination0=geo%2149.445776%2C8.780916&height=20&length=10&limitedWeight=10&'
+            'mode=car%3Bfastest&shippedHazardousGoods=gas%2Cflammable&start0=geo%2149.420577%2C8.688641&'
+            'start1=geo%2149.415776%2C8.680916&summaryAttributes=traveltime%2Ccostfactor&trailersCount=3&truckType=truck&'
             'weightPerAxle=100&width=10', responses.calls[0].request.url)
 
         self.assertIsInstance(matrix, Matrix)
