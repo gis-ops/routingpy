@@ -810,7 +810,7 @@ class HereMaps(Router):
                    locations,
                    profile,
                    intervals,
-                   interval_type,
+                   interval_type='time',
                    format='json',
                    center_type='start',
                    request_id=None,
