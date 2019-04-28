@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
--
+- Example notebook to compare providers
 ### Fixed
+- Base class used sorted(params) which messed up the order of parameters for Graphhopper endpoints
 - MapboxOSRM directions was parsing geometry to \[lat, lon\]
 - README not valid on PyPI, wasn't rendered
 - add to PyPI and Conda

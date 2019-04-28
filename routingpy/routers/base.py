@@ -354,7 +354,7 @@ class Router(metaclass=ABCMeta):
         if isinstance(params, dict):
             params = sorted(dict(**params).items())
         elif isinstance(params, (list, tuple)):
-            params = sorted(params)
+            params = params
 
         return path + "?" + requests.utils.unquote_unreserved(
             urlencode(params))
