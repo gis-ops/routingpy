@@ -157,19 +157,6 @@ Exceptions
 .. autoclass:: routingpy.exceptions.OverQueryLimit
     :show-inheritance:
 
-Logging
-~~~~~~~
-
-routingpy will log URLs with a logger name ``routingpy`` at level `DEBUG`,
-and for some routers, these URLs will include authentication information.
-
-HTTP bodies of responses with unsuccessful status codes are logged
-with `INFO` level.
-
-Default logging level is `NOTSET`, which delegates the messages processing to
-the root logger. See docs for :meth:`logging.Logger.setLevel` for more
-information.
-
 Changelog
 ~~~~~~~~~
 

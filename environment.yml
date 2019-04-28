@@ -1,4 +1,5 @@
 # for https://mybinder.org
+# from https://github.com/binder-examples/python-conda_pip/blob/master/environment.yml
 name: routingpy-examples
 channels:
   - conda-forge
