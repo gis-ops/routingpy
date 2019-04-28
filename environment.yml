@@ -1,0 +1,12 @@
+# for https://mybinder.org
+name: routingpy-examples
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - folium
+  - pandas
+  - shapely
+  - colour
+  - pip:
+    - routingpy
