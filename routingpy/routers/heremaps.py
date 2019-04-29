@@ -21,6 +21,8 @@ from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrones, Isochrone
 from routingpy.matrix import Matrix
 
+from operator import itemgetter
+
 
 class HereMaps(Router):
     """Performs requests to the HERE Maps API services."""
@@ -92,14 +94,14 @@ class HereMaps(Router):
                                        timeout, retry_timeout, requests_kwargs,
                                        retry_over_query_limit, skip_api_error)
 
-    class WayPoint(object):
+    class Waypoint(object):
         """
         Constructs a waypoint with additional information.
         https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
 
         Example:
 
-        >>> waypoint = HereMaps.WayPoint(position=[8.15315, 52.53151], waypoint_type='passThrough', stopover_duration=120, transit_radius=500)
+        >>> waypoint = HereMaps.Waypoint(position=[8.15315, 52.53151], waypoint_type='passThrough', stopover_duration=120, transit_radius=500)
         >>> route = HereMaps(api_key).directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
 
@@ -147,7 +149,7 @@ class HereMaps(Router):
             self.user_label = user_label
             self.heading = str(heading)
 
-        def make_waypoint(self):
+        def _make_waypoint(self):
 
             here_waypoint = ['geo']
             if self.waypoint_type is not None and self.stopover_duration is not None:
@@ -282,10 +284,10 @@ class HereMaps(Router):
         For more information, https://developer.here.com/documentation/routing/topics/resource-calculate-route.html.
 
         :param locations: The coordinates tuple the route should be calculated
-            from in order of visit. Can be a list/tuple of [lon, lat] or :class:`HereMaps.WayPoint` instance or a
+            from in order of visit. Can be a list/tuple of [lon, lat] or :class:`HereMaps.Waypoint` instance or a
             combination of those. For further explanation, see
             https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
-        :type locations: list of list or list of :class:`HereMaps.WayPoint`
+        :type locations: list of list or list of :class:`HereMaps.Waypoint`
 
         :param profile: Specifies the routing mode of transport and further options.
             Can be a str or :class:`HereMaps.RoutingMode`
@@ -576,15 +578,11 @@ class HereMaps(Router):
         params["app_code"] = self.app_code
         params["app_id"] = self.app_id
 
+        locations = self._build_locations(locations)
+
         for idx, wp in enumerate(locations):
             wp_index = "waypoint" + str(idx)
-            if isinstance(wp, self.WayPoint):
-                params[wp_index] = wp.make_waypoint()
-            elif isinstance(wp, (list, tuple)):
-                wp = 'geo!' + convert._delimit_list(
-                    [convert._format_float(f)
-                     for f in list(reversed(wp))], ',')
-                params[wp_index] = wp
+            params[wp_index] = wp
 
         if isinstance(profile, str):
             params["mode"] = profile
@@ -982,12 +980,7 @@ class HereMaps(Router):
         params["app_code"] = self.app_code
         params["app_id"] = self.app_id
 
-        if isinstance(locations, self.WayPoint):
-            params[center_type] = locations.make_waypoint()
-        elif isinstance(locations, (list, tuple)):
-            params[center_type] = 'geo!' + convert._delimit_list(
-                [convert._format_float(f)
-                 for f in list(reversed(locations))], ',')
+        params[center_type] = self._build_locations(locations)[0]
 
         if isinstance(profile, str):
             params["mode"] = profile
@@ -1113,10 +1106,10 @@ class HereMaps(Router):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
             :param locations: The coordinates tuple the route should be calculated
-                from in order of visit. Can be a list/tuple of [lon, lat] or :class:`HereMaps.WayPoint` instance or a
+                from in order of visit. Can be a list/tuple of [lon, lat] or :class:`HereMaps.Waypoint` instance or a
                 combination of those. For further explanation, see
                 https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
-            :type locations: list of list or list of :class:`HereMaps.WayPoint`
+            :type locations: list of list or list of :class:`HereMaps.Waypoint`
 
             :param profile: Specifies the routing mode of transport and further options.
                 Can be a str or :class:`HereMaps.RoutingMode`
@@ -1239,44 +1232,23 @@ class HereMaps(Router):
         params["app_code"] = self.app_code
         params["app_id"] = self.app_id
 
-        try:
-            for i, start_idx in enumerate(sources):
+        locations = self._build_locations(locations)
 
-                if isinstance(locations[start_idx], self.WayPoint):
-                    params["start" +
-                           str(i)] = locations[start_idx].make_waypoint()
-                elif isinstance(locations[start_idx], (list, tuple)):
-                    params["start" + str(i)] = 'geo!' + convert._delimit_list([
-                        convert._format_float(f)
-                        for f in list(reversed(locations[start_idx]))
-                    ], ',')
+        sources_coords = locations
+        if sources is not None:
+            sources_coords = itemgetter(*sources)(sources_coords)
+            if isinstance(sources_coords, str):
+                sources_coords = [sources_coords]
+        for i, location in enumerate(sources_coords):
+            params["start" + str(i)] = location
 
-        except IndexError:
-            raise IndexError(
-                "Parameter sources out of locations range at index {}.".format(
-                    start_idx))
-        except TypeError:
-            raise TypeError("Please add sources indices.")
-
-        try:
-            for i, dest_idx in enumerate(destinations):
-
-                if isinstance(locations[dest_idx], self.WayPoint):
-                    params["destination" +
-                           str(i)] = locations[dest_idx].make_waypoint()
-                elif isinstance(locations[dest_idx], (list, tuple)):
-                    params["destination" +
-                           str(i)] = 'geo!' + convert._delimit_list([
-                               convert._format_float(f)
-                               for f in list(reversed(locations[dest_idx]))
-                           ], ',')
-
-        except IndexError:
-            raise IndexError(
-                "Parameter destinations out of locations range at index {}.".
-                format(dest_idx))
-        except TypeError:
-            raise TypeError("Please add destinations indices.")
+        dest_coords = locations
+        if destinations is not None:
+            dest_coords = itemgetter(*destinations)(dest_coords)
+            if isinstance(dest_coords, str):
+                dest_coords = [dest_coords]
+        for i, location in enumerate(dest_coords):
+            params["destination" + str(i)] = location
 
         if isinstance(profile, str):
             params["mode"] = profile
@@ -1389,3 +1361,37 @@ class HereMaps(Router):
         distances.append(index_distances)
 
         return Matrix(durations=durations, distances=distances, raw=response)
+
+    def _build_locations(self, coordinates, matrix=False):
+        """Build the locations object for all methods"""
+
+        locations = []
+
+        # Directions and matrix calls which are lists of list
+        if isinstance(coordinates[0], (list, tuple, self.Waypoint)):
+
+            for idx, coord in enumerate(coordinates):
+                if isinstance(locations, self.Waypoint):
+                    locations.append(locations._make_waypoint())
+                elif isinstance(locations, (list, tuple)):
+                    wp = 'geo!' + convert._delimit_list([
+                        convert._format_float(f)
+                        for f in list(reversed(coord))
+                    ], ',')
+                    locations.append(wp)
+                else:
+                    raise TypeError(
+                        "Location type {} at index {} is not supported: {}".
+                        format(type(coord), idx, coord))
+
+        # Isochrones
+        elif isinstance(coordinates[0], float):
+            center = 'geo!' + convert._delimit_list([
+                convert._format_float(f) for f in list(reversed(coordinates))
+            ], ',')
+            locations.append(center)
+        # Isochrones using waypoint class
+        elif isinstance(coordinates, self.Waypoint):
+            locations.append(coordinates._make_waypoint())
+
+        return locations

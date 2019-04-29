@@ -730,7 +730,7 @@ ENDPOINTS_QUERIES = {
             'width':
             10,
             'length':
-            10,
+            10
         },
         'isochrones': {
             'locations': PARAM_POINT,

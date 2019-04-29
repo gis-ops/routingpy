@@ -196,20 +196,8 @@ class HereMapsTest(_test.TestCase):
 
         self.assertRaises(IndexError, lambda: self.client.matrix(**query))
 
-    def test_none_sources_matrix(self):
-        query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
-        query['sources'] = None
-
-        self.assertRaises(TypeError, lambda: self.client.matrix(**query))
-
     def test_index_destinations_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
         query['destinations'] = [100]
 
         self.assertRaises(IndexError, lambda: self.client.matrix(**query))
-
-    def test_none_destinations_matrix(self):
-        query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
-        query['destinations'] = None
-
-        self.assertRaises(TypeError, lambda: self.client.matrix(**query))
