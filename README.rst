@@ -13,13 +13,9 @@ routing-py
     :target: https://routingpy.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://badge.fury.io/py/routingpy.svg
-    :target: https://badge.fury.io/py/routingpy
-    :alt: PyPI version
-
-.. image:: https://anaconda.org/nilsnolde/routingpy/badges/installer/conda.svg
-    :target: https://conda.anaconda.org/nilsnolde/routingpy
-    :alt: Conda install
+.. image:: https://mybinder.org/badge_logo.svg
+    :target: https://mybinder.org/v2/gh/gis-ops/routing-py/master
+    :alt: MyBinder.org
 
 
 *One lib to route them all* - **routingpy** is a Python 3 client for several
@@ -70,6 +66,14 @@ With **routingpy** we have made an attempt to simplify this process for you.
 
 Installation
 ------------
+
+.. image:: https://badge.fury.io/py/routingpy.svg
+    :target: https://badge.fury.io/py/routingpy
+    :alt: PyPI version
+
+.. image:: https://anaconda.org/nilsnolde/routingpy/badges/installer/conda.svg
+    :target: https://conda.anaconda.org/nilsnolde/routingpy
+    :alt: Conda install
 
 Install using ``pip`` with
 
@@ -148,10 +152,18 @@ The following table gives you an overview which basic arguments are abstracted:
 |                       |                   | | destinations.                                              |
 +-----------------------+-------------------+--------------------------------------------------------------+
 
+Contributing
+------------
+
+We :heart: contributions and realistically think that's the only way to support and maintain most
+routing engines in the long run. To get you started, we created a `Contribution guideline <./CONTRIBUTING.md>`_.
+
 Examples
 --------
 
 Follow our examples to understand how simple **routingpy** is to use.
+
+On top of the examples listed below, find interactive notebook(s) on mybinder.org_.
 
 Basic Usage
 ~~~~~~~~~~~
@@ -293,3 +305,4 @@ All these parameters, and more, can optionally be **globally set** for all route
 .. _documentation: https://routingpy.readthedocs.io/en/latest
 .. _routing-py.routers: https://routingpy.readthedocs.io/en/latest/#module-routingpy.routers
 .. _Apache 2.0 License: https://github.com/gis-ops/routing-py/blob/master/LICENSE
+.. _mybinder.org: https://mybinder.org/v2/gh/gis-ops/routing-py/master

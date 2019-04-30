@@ -38,7 +38,7 @@ When contributing, we expect you to:
 
 ### Setup
 
-1. Create a new virtual environment
+1. Create and activate a new virtual environment
 
 2. Install development dependencies:
 ```bash
@@ -46,7 +46,7 @@ When contributing, we expect you to:
 pip install -r requirements_dev.txt
 ```
 
-3. Run tests:
+3. Run tests to check if all goes well:
 ```bash
 # From the root of your git project
 nosetests -v
@@ -67,8 +67,8 @@ engines, changes on a very regular basis due to OpenStreetMap updates. All queri
 `test/test_helper.py` in `dict`s. This unfortunately also means, that our tests are less API tests and more unit tests and can't catch
 updates on providers' API changes.
 
-Run the `nosetests` with a `coverage` flag, which shouldn't report < 91% coverage overall (the starting point at the
-beginning of the project). A [`coveralls.io`](https://coveralls.io) will check for coverage when you submit a PR.
+Run `nosetests` with a `coverage` flag, which shouldn't report < 90% coverage overall (the starting point at the
+beginning of the project). A [`coveralls.io`](https://coveralls.io) instance will check for coverage when you submit a PR.
 
 ```bash
 # From the root of your git project
@@ -86,8 +86,11 @@ cd docs
 make hmtl
 ```
 
-The documentation will have been added to `routingpy/docs/build/html` and you can `index.html` in your web browser to view
-the changes.
+The documentation will have been added to `routingpy/docs/build/html` and you can open `index.html` in your web browser to view
+the changes. 
+
+We realize that *re-structured text* is not the most user-friendly format, but it is the currently best available
+documentation format for Python projects. You'll find lots of copy/paste material in the existing implementations.
 
 ## Adding router
 
@@ -100,9 +103,9 @@ Also, check if the service hasn't been added before. E.g. if the router
 you want to add is based on `GraphHopper`, you probably want to subclass `routingpy/routers/graphhopper.py:Graphhopper` class.
 Additionally, import the new router class in `routingpy/routers/init.py`.
 
-2. **Implementations** Implement the services the routing engine has to offer. The very minimum is implementing the `directions` method.
+2. **Implementations** Implement the services the routing engine has to offer. The bare minimum is implementing the `directions` method.
 If the routing engine also offers `isochrones` and `matrix`, we'd require you to add those too. If you want to add an
-endpoint that doesn't exist yet in `routingpy/routers/base.py:Router`, please consult us first, as we need to make sure
+endpoint that doesn't exist yet in `routingpy/routers/base.py:Router`, please [consult us first](mailto:enquiry@gis-ops.com?subject=contributing%20to%20routingpy), as we need to make sure
 to be similarly consistent across different routing engines as we are with the existing endpoints.
 
 3. **Tests** Create a new test module testing the functionality, **not** the API.
@@ -111,4 +114,4 @@ To run the new tests and ensure consistency, refer to the [Tests](#tests) sectio
 
 4. **Document** Please use docstring documentation for all user-exposed functionality, similar to other router implementations.
  Also, please register the new module in `docs/indes.rst`'s `Routers` section. To build the docs, refer to the
- [documentation section](#documentation) for details.
+ [documentation section](#documentation) for details. Don't forget to add your name to the list of `AUTHORS.md`.
