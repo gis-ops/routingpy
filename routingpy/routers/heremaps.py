@@ -227,6 +227,7 @@ class HereMaps(Router):
     def directions(self,
                    locations,
                    profile,
+                   mode_type='fastest',
                    format='json',
                    request_id=None,
                    avoid_areas=None,
@@ -290,9 +291,14 @@ class HereMaps(Router):
         :type locations: list of list or list of :class:`HereMaps.Waypoint`
 
         :param profile: Specifies the routing mode of transport and further options.
-            Can be a str or :class:`HereMaps.RoutingMode`
+            Can be a str and one of [car, pedestrian, carHOV, publicTransport, publicTransportTimeTable, truck, bicycle]
+            or :class:`HereMaps.RoutingMode`.
             https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
         :type profile: str or :class:`HereMaps.RoutingMode`
+
+        :param mode_type: RoutingType relevant to calculation. One of [fastest, shortest, balanced]. Default fastest.
+            https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html#ariaid-title2
+        :type mode_type: str
 
         :param format: Currently only "json" supported. 
         :type format: str
@@ -585,7 +591,7 @@ class HereMaps(Router):
             params[wp_index] = wp
 
         if isinstance(profile, str):
-            params["mode"] = profile
+            params["mode"] = mode_type + ';' + profile
         elif isinstance(profile, self.RoutingMode):
             params["mode"] = profile.make_routing_mode()
 
@@ -808,6 +814,7 @@ class HereMaps(Router):
                    locations,
                    profile,
                    intervals,
+                   mode_type='fastest',
                    interval_type='time',
                    format='json',
                    center_type='start',
@@ -848,6 +855,10 @@ class HereMaps(Router):
         :param intervals: Range of isoline. Several comma separated values can be specified. 
             The unit is defined by parameter rangetype.
         :type ranges: list of int
+
+        :param mode_type: RoutingType relevant to calculation. One of [fastest, shortest, balanced]. Default fastest.
+            https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html#ariaid-title2
+        :type mode_type: str
 
         :param interval_type: Specifies type of range. Possible values are distance, 
             time, consumption. For distance the unit is meters. For time the unit is seconds. 
@@ -983,7 +994,7 @@ class HereMaps(Router):
         params[center_type] = self._build_locations(locations)[0]
 
         if isinstance(profile, str):
-            params["mode"] = profile
+            params["mode"] = mode_type + ';' + profile
         elif isinstance(profile, self.RoutingMode):
             params["mode"] = profile.make_routing_mode()
 
@@ -1082,6 +1093,7 @@ class HereMaps(Router):
                locations,
                profile,
                format='json',
+               mode_type='fastest',
                sources=None,
                destinations=None,
                search_range=None,
@@ -1115,6 +1127,10 @@ class HereMaps(Router):
                 Can be a str or :class:`HereMaps.RoutingMode`
                 https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
             :type profile: str or :class:`HereMaps.RoutingMode`
+
+            :param mode_type: RoutingType relevant to calculation. One of [fastest, shortest, balanced]. Default fastest.
+                https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html#ariaid-title2
+            :type mode_type: str
 
             :param sources: The starting points for the matrix. 
                 Specifies an index referring to coordinates.
@@ -1251,7 +1267,7 @@ class HereMaps(Router):
             params["destination" + str(i)] = location
 
         if isinstance(profile, str):
-            params["mode"] = profile
+            params["mode"] = mode_type + ';' + profile
         elif isinstance(profile, self.RoutingMode):
             params["mode"] = profile.make_routing_mode()
 

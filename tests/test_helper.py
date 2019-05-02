@@ -636,7 +636,7 @@ ENDPOINTS_QUERIES = {
             'locations':
             PARAM_LINE_MULTI,
             'profile':
-            'truck;fastest',
+            'truck',
             'request_id':
             101,
             'avoid_areas': [[(8.688641, 49.420577), (8.680916, 49.415776)],
@@ -714,7 +714,7 @@ ENDPOINTS_QUERIES = {
             'sources': [0, 1],
             'destinations': [2],
             'profile':
-            'car;fastest',
+            'car',
             'summary_attributes': ['traveltime', 'costfactor'],
             'truck_type':
             'truck',
@@ -736,7 +736,7 @@ ENDPOINTS_QUERIES = {
             'locations': PARAM_POINT,
             'intervals': [1000, 2000, 3000],
             'interval_type': 'distance',
-            'profile': 'car;fastest',
+            'profile': 'car',
             'center_type': 'start',
             'request_id': 101,
             'single_component': False,
