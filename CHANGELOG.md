@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 -
 ### Changed
--
+- Profile parameter for HERE behaves now like other routers
 ### Deprecated
 -
 

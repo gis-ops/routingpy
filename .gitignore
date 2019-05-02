@@ -1,3 +1,4 @@
+examples/*with_keys*
 **/.ipynb*
 conda/
 dist/
