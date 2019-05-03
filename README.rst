@@ -14,7 +14,7 @@ routing-py
     :alt: Documentation Status
 
 .. image:: https://mybinder.org/badge_logo.svg
-    :target: https://mybinder.org/v2/gh/gis-ops/routing-py/master
+    :target: https://mybinder.org/v2/gh/gis-ops/routing-py/master?filepath=examples
     :alt: MyBinder.org
 
 
@@ -305,4 +305,4 @@ All these parameters, and more, can optionally be **globally set** for all route
 .. _documentation: https://routingpy.readthedocs.io/en/latest
 .. _routing-py.routers: https://routingpy.readthedocs.io/en/latest/#module-routingpy.routers
 .. _Apache 2.0 License: https://github.com/gis-ops/routing-py/blob/master/LICENSE
-.. _mybinder.org: https://mybinder.org/v2/gh/gis-ops/routing-py/master
+.. _mybinder.org: https://mybinder.org/v2/gh/gis-ops/routing-py/master?filepath=examples

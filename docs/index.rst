@@ -7,7 +7,7 @@ Welcome to routingpy's documentation!
 :Stack Overflow: https://stackoverflow.com/questions/tagged/routingpy
 :PyPI: https://pypi.org/project/routingpy
 :Conda: https://conda.org/gis-ops/routingpy
-:MyBinder Interactive Examples: https://mybinder.org/v2/gh/gis-ops/routing-py/master
+:MyBinder Interactive Examples: https://mybinder.org/v2/gh/gis-ops/routing-py/master?filepath=examples
 
 .. automodule:: routingpy
    :members: __doc__
