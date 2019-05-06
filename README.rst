@@ -44,6 +44,9 @@ weight.
 
 © routing-py contributors 2019 under the `Apache 2.0 License`_.
 
+.. image:: https://user-images.githubusercontent.com/10322094/57233605-3fe85a80-701f-11e9-8e12-476d8fd36790.png
+    :alt: routing-py-image
+
 
 Why routing-py?
 ---------------
