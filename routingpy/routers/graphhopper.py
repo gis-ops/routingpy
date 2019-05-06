@@ -247,7 +247,7 @@ class Graphhopper(Router):
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
-        params = [('profile', profile)]
+        params = [('vehicle', profile)]
 
         for coordinate in locations:
             coord_latlng = reversed(
@@ -428,7 +428,7 @@ class Graphhopper(Router):
         """
 
         params = [
-            ('profile', profile),
+            ('vehicle', profile),
         ]
 
         if convert._is_list(intervals):
@@ -527,7 +527,7 @@ class Graphhopper(Router):
         :returns: A matrix from the specified sources and destinations.
         :rtype: :class:`routingpy.matrix.Matrix`
         """
-        params = [('profile', profile)]
+        params = [('vehicle', profile)]
 
         if self.key is not None:
             params.append(("key", self.key))

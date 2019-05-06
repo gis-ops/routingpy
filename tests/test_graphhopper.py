@@ -54,7 +54,7 @@ class GraphhopperTest(_test.TestCase):
             'block_area=48.23424%2C8.34234&calc_points=false&ch.disable=true&debug=true&details=time&details=tolls&'
             'elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&'
             'optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&'
-            'point=49.445776%2C8.780916&point_hint=false&points_encoded=true&profile=car&type=json&weighting=short_fastest',
+            'point=49.445776%2C8.780916&point_hint=false&points_encoded=true&vehicle=car&type=json&weighting=short_fastest',
             responses.calls[0].request.url)
 
         self.assertIsInstance(routes, Direction)
@@ -82,7 +82,7 @@ class GraphhopperTest(_test.TestCase):
             'block_area=48.23424%2C8.34234&calc_points=false&ch.disable=true&debug=true&details=time&details=tolls&'
             'elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&'
             'optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&'
-            'point=49.445776%2C8.780916&point_hint=false&points_encoded=true&profile=car&type=json&weighting=short_fastest',
+            'point=49.445776%2C8.780916&point_hint=false&points_encoded=true&vehicle=car&type=json&weighting=short_fastest',
             responses.calls[0].request.url)
 
         self.assertIsInstance(routes, Directions)
@@ -109,7 +109,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://graphhopper.com/api/1/isochrone?buckets=3&debug=false&key=sample_key&'
-            'point=48.23424%2C8.34234&profile=car&reverse_flow=true&time_limit=1000',
+            'point=48.23424%2C8.34234&vehicle=car&reverse_flow=true&time_limit=1000',
             responses.calls[0].request.url)
 
         self.assertIsInstance(isochrones, Isochrones)
@@ -136,7 +136,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://graphhopper.com/api/1/matrix?key=sample_key&out_array=distances&out_array=times&out_array=weights&'
-            'point=49.415776%2C8.680916&point=49.420577%2C8.688641&point=49.445776%2C8.780916&profile=car&debug=true',
+            'point=49.415776%2C8.680916&point=49.420577%2C8.688641&point=49.445776%2C8.780916&vehicle=car&debug=true',
             responses.calls[0].request.url)
 
         self.assertIsInstance(matrix, Matrix)
@@ -174,13 +174,13 @@ class GraphhopperTest(_test.TestCase):
         self.assertURLEqual(
             'https://graphhopper.com/api/1/matrix?from_point=49.415776%2C8.680916&from_point=49.420577%2C8.688641&'
             'from_point=49.445776%2C8.780916&key=sample_key&out_array=distances'
-            '&out_array=times&out_array=weights&profile=car&to_point=49.415776%2C8.680916&to_point=49.420577%2C8.688641&'
+            '&out_array=times&out_array=weights&vehicle=car&to_point=49.415776%2C8.680916&to_point=49.420577%2C8.688641&'
             '&to_point=49.445776%2C8.780916&debug=true',
             responses.calls[0].request.url)
         self.assertURLEqual(
             'https://graphhopper.com/api/1/matrix?point=49.415776%2C8.680916&point=49.420577%2C8.688641&'
             'point=49.445776%2C8.780916&key=sample_key&out_array=distances'
-            '&out_array=times&out_array=weights&profile=car'
+            '&out_array=times&out_array=weights&vehicle=car'
             '&debug=true', responses.calls[1].request.url)
 
     def test_index_sources_matrix(self):
