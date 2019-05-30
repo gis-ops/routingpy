@@ -4,10 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+**Unreleased** is available in `pip` and `conda`, but not released on Github.
+
 ## Unreleased
 ### Added
 -
 ### Fixed
+- OSRM Mapbox isochrone ranges were using floats (#2)
 - Graphhopper isochrones used wrong vehicle parameter
 ### Changed
 - Profile parameter for HERE behaves now like other routers

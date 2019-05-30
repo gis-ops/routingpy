@@ -388,7 +388,7 @@ class MapboxOSRM(Router):
 
         params = {
             "contours_minutes":
-            convert._delimit_list([x / 60 for x in sorted(intervals)], ','),
+            convert._delimit_list([int(x / 60) for x in sorted(intervals)], ','),
             'access_token':
             self.api_key,
             'costing':

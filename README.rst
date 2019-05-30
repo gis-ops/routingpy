@@ -74,8 +74,8 @@ Installation
     :target: https://badge.fury.io/py/routingpy
     :alt: PyPI version
 
-.. image:: https://anaconda.org/nilsnolde/routingpy/badges/installer/conda.svg
-    :target: https://conda.anaconda.org/nilsnolde/routingpy
+.. image:: https://anaconda.org/nilsnolde/routingpy/badges/version.svg
+    :target: https://anaconda.org/nilsnolde/routingpy
     :alt: Conda install
 
 Install using ``pip`` with
