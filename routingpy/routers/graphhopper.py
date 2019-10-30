@@ -380,6 +380,7 @@ class Graphhopper(Router):
                    locations,
                    profile,
                    intervals,
+                   type='json',
                    buckets=1,
                    interval_type=None,
                    reverse_flow=None,
@@ -429,6 +430,7 @@ class Graphhopper(Router):
 
         params = [
             ('vehicle', profile),
+            ('type', type)
         ]
 
         if convert._is_list(intervals):
@@ -460,16 +462,16 @@ class Graphhopper(Router):
 
         return self._parse_isochrone_json(
             self._request("/isochrone", get_params=params, dry_run=dry_run),
-            intervals[0], buckets, center)
+            type, intervals[0], buckets, center)
 
     @staticmethod
-    def _parse_isochrone_json(response, max_range, buckets, center):
+    def _parse_isochrone_json(response, type, max_range, buckets, center):
         if response is None:  # pragma: no cover
             return Isochrones()
 
         isochrones = []
-        for index, polygon in enumerate(response["polygons"]):
-            #print(index, buckets, max_range, int(max_range * (index+1 / buckets)))
+        accessor = 'polygons' if type == 'json' else 'features'
+        for index, polygon in enumerate(response[accessor]):
             isochrones.append(
                 Isochrone(
                     geometry=[

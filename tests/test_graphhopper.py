@@ -109,7 +109,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://graphhopper.com/api/1/isochrone?buckets=3&debug=false&key=sample_key&'
-            'point=48.23424%2C8.34234&vehicle=car&reverse_flow=true&time_limit=1000',
+            'point=48.23424%2C8.34234&vehicle=car&reverse_flow=true&time_limit=1000&type=json',
             responses.calls[0].request.url)
 
         self.assertIsInstance(isochrones, Isochrones)
