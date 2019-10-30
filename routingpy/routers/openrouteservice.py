@@ -27,15 +27,17 @@ class ORS(Router):
 
     _DEFAULT_BASE_URL = 'https://api.openrouteservice.org'
 
-    def __init__(self,
-                 api_key=None,
-                 base_url=_DEFAULT_BASE_URL,
-                 user_agent=None,
-                 timeout=DEFAULT,
-                 retry_timeout=None,
-                 requests_kwargs=None,
-                 retry_over_query_limit=False,
-                 skip_api_error=None):
+    def __init__(
+            self,
+            api_key=None,
+            base_url=_DEFAULT_BASE_URL,
+            user_agent=None,
+            timeout=DEFAULT,
+            retry_timeout=None,
+            requests_kwargs=None,
+            retry_over_query_limit=False,
+            skip_api_error=None
+    ):
         """
         Initializes an openrouteservice client.
 
@@ -91,32 +93,35 @@ class ORS(Router):
         headers.update({'Authorization': api_key})
         requests_kwargs.update({'headers': headers})
 
-        super(ORS, self).__init__(base_url, user_agent, timeout, retry_timeout,
-                                  requests_kwargs, retry_over_query_limit,
-                                  skip_api_error)
+        super(ORS, self).__init__(
+            base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
+            skip_api_error
+        )
 
-    def directions(self,
-                   locations,
-                   profile,
-                   format='geojson',
-                   preference=None,
-                   units=None,
-                   language=None,
-                   geometry=None,
-                   geometry_simplify=None,
-                   instructions=None,
-                   instructions_format=None,
-                   roundabout_exits=None,
-                   attributes=None,
-                   radiuses=None,
-                   maneuvers=None,
-                   bearings=None,
-                   continue_straight=None,
-                   elevation=None,
-                   extra_info=None,
-                   suppress_warnings=None,
-                   options=None,
-                   dry_run=None):
+    def directions(
+            self,
+            locations,
+            profile,
+            format='geojson',
+            preference=None,
+            units=None,
+            language=None,
+            geometry=None,
+            geometry_simplify=None,
+            instructions=None,
+            instructions_format=None,
+            roundabout_exits=None,
+            attributes=None,
+            radiuses=None,
+            maneuvers=None,
+            bearings=None,
+            continue_straight=None,
+            elevation=None,
+            extra_info=None,
+            suppress_warnings=None,
+            options=None,
+            dry_run=None
+    ):
         """Get directions between an origin point and a destination point.
 
         For more information, visit https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/post
@@ -274,8 +279,7 @@ class ORS(Router):
 
         if options:
             if profile == 'driving-hgv' and options.get('profile_params'):
-                if options['profile_params'].get(
-                        'restrictions') and not options.get('vehicle_type'):
+                if options['profile_params'].get('restrictions') and not options.get('vehicle_type'):
                     raise ValueError(
                         "ORS: options.vehicle_type must be specified for driving-hgv if restrictions are set."
                     )
@@ -286,7 +290,9 @@ class ORS(Router):
                 "/v2/directions/" + profile + '/' + format,
                 get_params={},
                 post_params=params,
-                dry_run=dry_run), format, units)
+                dry_run=dry_run
+            ), format, units
+        )
 
     @staticmethod
     def _parse_direction_json(response, format, units):
@@ -301,36 +307,31 @@ class ORS(Router):
 
         if format == 'geojson':
             geometry = response['features'][0]['geometry']['coordinates']
-            duration = int(
-                response['features'][0]['properties']['summary']['duration'])
-            distance = int(
-                response['features'][0]['properties']['summary']['distance'])
+            duration = int(response['features'][0]['properties']['summary']['duration'])
+            distance = int(response['features'][0]['properties']['summary']['distance'])
         elif format == 'json':
             geometry = [
-                list(reversed(coord)) for coord in utils.decode_polyline5(
-                    response['routes'][0]['geometry'])
+                list(reversed(coord))
+                for coord in utils.decode_polyline5(response['routes'][0]['geometry'])
             ]
             duration = int(response['routes'][0]['summary']['duration'])
-            distance = int(
-                response['routes'][0]['summary']['distance'] * units_factor)
+            distance = int(response['routes'][0]['summary']['distance'] * units_factor)
 
-        return Direction(
-            geometry=geometry,
-            duration=duration,
-            distance=distance,
-            raw=response)
+        return Direction(geometry=geometry, duration=duration, distance=distance, raw=response)
 
-    def isochrones(self,
-                   locations,
-                   profile,
-                   intervals,
-                   interval_type=None,
-                   units=None,
-                   location_type=None,
-                   smoothing=None,
-                   attributes=None,
-                   intersections=None,
-                   dry_run=None):
+    def isochrones(
+            self,
+            locations,
+            profile,
+            intervals,
+            interval_type=None,
+            units=None,
+            location_type=None,
+            smoothing=None,
+            attributes=None,
+            intersections=None,
+            dry_run=None
+    ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
         :param locations: One pair of lng/lat values.
@@ -407,7 +408,9 @@ class ORS(Router):
                 "/v2/isochrones/" + profile + '/geojson',
                 get_params={},
                 post_params=params,
-                dry_run=dry_run))
+                dry_run=dry_run
+            )
+        )
 
     @staticmethod
     def _parse_isochrone_json(response):
@@ -420,19 +423,23 @@ class ORS(Router):
                 Isochrone(
                     geometry=isochrone['geometry']['coordinates'][0],
                     interval=isochrone['properties']['value'],
-                    center=isochrone['properties']['center']))
+                    center=isochrone['properties']['center']
+                )
+            )
 
         return Isochrones(isochrones=isochrones, raw=response)
 
-    def matrix(self,
-               locations,
-               profile,
-               sources=None,
-               destinations=None,
-               metrics=None,
-               resolve_locations=None,
-               units=None,
-               dry_run=None):
+    def matrix(
+            self,
+            locations,
+            profile,
+            sources=None,
+            destinations=None,
+            metrics=None,
+            resolve_locations=None,
+            units=None,
+            dry_run=None
+    ):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
         :param locations: Two or more pairs of lng/lat values.
@@ -492,10 +499,9 @@ class ORS(Router):
 
         return self._parse_matrix_json(
             self._request(
-                "/v2/matrix/" + profile + '/json',
-                get_params={},
-                post_params=params,
-                dry_run=dry_run))
+                "/v2/matrix/" + profile + '/json', get_params={}, post_params=params, dry_run=dry_run
+            )
+        )
 
     @staticmethod
     def _parse_matrix_json(response):

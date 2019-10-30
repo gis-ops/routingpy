@@ -28,15 +28,17 @@ class Graphhopper(Router):
 
     _DEFAULT_BASE_URL = "https://graphhopper.com/api/1"
 
-    def __init__(self,
-                 api_key=None,
-                 base_url=_DEFAULT_BASE_URL,
-                 user_agent=None,
-                 timeout=DEFAULT,
-                 retry_timeout=None,
-                 requests_kwargs={},
-                 retry_over_query_limit=False,
-                 skip_api_error=None):
+    def __init__(
+            self,
+            api_key=None,
+            base_url=_DEFAULT_BASE_URL,
+            user_agent=None,
+            timeout=DEFAULT,
+            retry_timeout=None,
+            requests_kwargs={},
+            retry_over_query_limit=False,
+            skip_api_error=None
+    ):
         """
         Initializes an graphhopper client.
 
@@ -89,36 +91,39 @@ class Graphhopper(Router):
         self.key = api_key
 
         super(Graphhopper, self).__init__(
-            base_url, user_agent, timeout, retry_timeout, requests_kwargs,
-            retry_over_query_limit, skip_api_error)
+            base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
+            skip_api_error
+        )
 
-    def directions(self,
-                   locations,
-                   profile,
-                   format=None,
-                   optimize=None,
-                   instructions=None,
-                   locale=None,
-                   elevation=None,
-                   points_encoded=None,
-                   calc_points=None,
-                   debug=None,
-                   point_hint=None,
-                   details=None,
-                   ch_disable=None,
-                   weighting=None,
-                   heading=None,
-                   heading_penalty=None,
-                   pass_through=None,
-                   block_area=None,
-                   avoid=None,
-                   algorithm=None,
-                   round_trip_distance=None,
-                   round_trip_seed=None,
-                   alternative_route_max_paths=None,
-                   alternative_route_max_weight_factor=None,
-                   alternative_route_max_share_factor=None,
-                   dry_run=None):
+    def directions(
+            self,
+            locations,
+            profile,
+            format=None,
+            optimize=None,
+            instructions=None,
+            locale=None,
+            elevation=None,
+            points_encoded=None,
+            calc_points=None,
+            debug=None,
+            point_hint=None,
+            details=None,
+            ch_disable=None,
+            weighting=None,
+            heading=None,
+            heading_penalty=None,
+            pass_through=None,
+            block_area=None,
+            avoid=None,
+            algorithm=None,
+            round_trip_distance=None,
+            round_trip_seed=None,
+            alternative_route_max_paths=None,
+            alternative_route_max_weight_factor=None,
+            alternative_route_max_share_factor=None,
+            dry_run=None
+    ):
         """Get directions between an origin point and a destination point.
 
         For more information, visit https://docs.graphhopper.com/#tag/Routing-API/paths/~1route/get.
@@ -250,8 +255,7 @@ class Graphhopper(Router):
         params = [('vehicle', profile)]
 
         for coordinate in locations:
-            coord_latlng = reversed(
-                [convert._format_float(f) for f in coordinate])
+            coord_latlng = reversed([convert._format_float(f) for f in coordinate])
             params.append(("point", ",".join(coord_latlng)))
 
         if self.key is not None:
@@ -264,8 +268,7 @@ class Graphhopper(Router):
             params.append(("optimize", convert._convert_bool(optimize)))
 
         if instructions is not None:
-            params.append(("instructions",
-                           convert._convert_bool(instructions)))
+            params.append(("instructions", convert._convert_bool(instructions)))
 
         if locale is not None:
             params.append(("locale", locale))
@@ -274,8 +277,7 @@ class Graphhopper(Router):
             params.append(("elevation", convert._convert_bool(elevation)))
 
         if points_encoded is not None:
-            params.append(("points_encoded",
-                           convert._convert_bool(points_encoded)))
+            params.append(("points_encoded", convert._convert_bool(points_encoded)))
 
         if calc_points is not None:
             params.append(("calc_points", convert._convert_bool(calc_points)))
@@ -304,8 +306,7 @@ class Graphhopper(Router):
             params.append(("heading_penalty", heading_penalty))
 
         if pass_through is not None:
-            params.append(("pass_through",
-                           convert._convert_bool(pass_through)))
+            params.append(("pass_through", convert._convert_bool(pass_through)))
 
         if block_area is not None:
             params.append(("block_area", block_area))
@@ -328,20 +329,21 @@ class Graphhopper(Router):
             if algorithm == 'alternative_route':
 
                 if alternative_route_max_paths is not None:
-                    params.append(("alternative_route.max_paths",
-                                   alternative_route_max_paths))
+                    params.append(("alternative_route.max_paths", alternative_route_max_paths))
 
                 if alternative_route_max_weight_factor is not None:
-                    params.append(("alternative_route.max_weight_factor",
-                                   alternative_route_max_weight_factor))
+                    params.append(
+                        ("alternative_route.max_weight_factor", alternative_route_max_weight_factor)
+                    )
 
                 if alternative_route_max_share_factor:
-                    params.append(("alternative_route_max_share_factor",
-                                   alternative_route_max_share_factor))
+                    params.append(
+                        ("alternative_route_max_share_factor", alternative_route_max_share_factor)
+                    )
 
         return self._parse_directions_json(
-            self._request('/route', get_params=params, dry_run=dry_run),
-            algorithm, elevation)
+            self._request('/route', get_params=params, dry_run=dry_run), algorithm, elevation
+        )
 
     @staticmethod
     def _parse_directions_json(response, algorithm, elevation):
@@ -355,37 +357,42 @@ class Graphhopper(Router):
             routes = []
             for route in response['paths']:
                 geometry = [
-                    list(reversed(coord)) for coord in utils.decode_polyline5(
-                        route['points'], elevation)
+                    list(reversed(coord))
+                    for coord in utils.decode_polyline5(route['points'], elevation)
                 ]
                 routes.append(
                     Direction(
                         geometry=geometry,
                         duration=int(route['time'] / 1000),
                         distance=int(route['distance']),
-                        raw=route))
+                        raw=route
+                    )
+                )
             return Directions(routes, response)
         else:
             geometry = [
-                list(reversed(coord)) for coord in utils.decode_polyline5(
-                    response['paths'][0]['points'], elevation)
+                list(reversed(coord))
+                for coord in utils.decode_polyline5(response['paths'][0]['points'], elevation)
             ]
             return Direction(
                 geometry=geometry,
                 duration=int(response['paths'][0]['time'] / 1000),
                 distance=int(response['paths'][0]['distance']),
-                raw=response)
+                raw=response
+            )
 
-    def isochrones(self,
-                   locations,
-                   profile,
-                   intervals,
-                   type='json',
-                   buckets=1,
-                   interval_type=None,
-                   reverse_flow=None,
-                   debug=None,
-                   dry_run=None):
+    def isochrones(
+            self,
+            locations,
+            profile,
+            intervals,
+            type='json',
+            buckets=1,
+            interval_type=None,
+            reverse_flow=None,
+            debug=None,
+            dry_run=None
+    ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
         For mroe details visit https://docs.graphhopper.com/#tag/Isochrone-API.
@@ -428,10 +435,7 @@ class Graphhopper(Router):
         :rtype: :class:`routingpy.isochrone.Isochrones`
         """
 
-        params = [
-            ('vehicle', profile),
-            ('type', type)
-        ]
+        params = [('vehicle', profile), ('type', type)]
 
         if convert._is_list(intervals):
             if interval_type in (None, 'time'):
@@ -439,9 +443,7 @@ class Graphhopper(Router):
             elif interval_type == 'distance':
                 params.append(('distance_limit', intervals[0]))
         else:
-            raise TypeError(
-                "Parameter range={} must be of type list or tuple".format(
-                    range))
+            raise TypeError("Parameter range={} must be of type list or tuple".format(range))
 
         center = [convert._format_float(f) for f in locations]
         center.reverse()
@@ -454,15 +456,15 @@ class Graphhopper(Router):
             params.append(('buckets', buckets))
 
         if reverse_flow is not None:
-            params.append(('reverse_flow',
-                           convert._convert_bool(reverse_flow)))
+            params.append(('reverse_flow', convert._convert_bool(reverse_flow)))
 
         if debug is not None:
             params.append(('debug', convert._convert_bool(debug)))
 
         return self._parse_isochrone_json(
-            self._request("/isochrone", get_params=params, dry_run=dry_run),
-            type, intervals[0], buckets, center)
+            self._request("/isochrone", get_params=params, dry_run=dry_run), type, intervals[0], buckets,
+            center
+        )
 
     @staticmethod
     def _parse_isochrone_json(response, type, max_range, buckets, center):
@@ -474,24 +476,25 @@ class Graphhopper(Router):
         for index, polygon in enumerate(response[accessor]):
             isochrones.append(
                 Isochrone(
-                    geometry=[
-                        l[:2] for l in polygon['geometry']['coordinates'][0]
-                    ],  # takes in elevation for some reason
-                    interval=int(max_range * (
-                        (polygon['properties']['bucket'] + 1) / buckets)),
+                    geometry=[l[:2] for l in polygon['geometry']['coordinates'][0]
+                              ],  # takes in elevation for some reason
+                    interval=int(max_range * ((polygon['properties']['bucket'] + 1) / buckets)),
                     center=center,
-                ))
+                )
+            )
 
         return Isochrones(isochrones, response)
 
-    def matrix(self,
-               locations,
-               profile,
-               sources=None,
-               destinations=None,
-               out_array=['times', 'distances'],
-               debug=None,
-               dry_run=None):
+    def matrix(
+            self,
+            locations,
+            profile,
+            sources=None,
+            destinations=None,
+            out_array=['times', 'distances'],
+            debug=None,
+            dry_run=None
+    ):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
         For more details visit https://docs.graphhopper.com/#tag/Matrix-API.
@@ -535,8 +538,7 @@ class Graphhopper(Router):
             params.append(("key", self.key))
 
         if sources is None and destinations is None:
-            locations = (reversed([convert._format_float(f) for f in coord])
-                         for coord in locations)
+            locations = (reversed([convert._format_float(f) for f in coord]) for coord in locations)
             params.extend([('point', ",".join(coord)) for coord in locations])
 
         else:
@@ -547,9 +549,7 @@ class Graphhopper(Router):
                 for idx in sources:
                     sources_out.append(locations[idx])
             except IndexError:
-                raise IndexError(
-                    "Parameter sources out of locations range at index {}.".
-                    format(idx))
+                raise IndexError("Parameter sources out of locations range at index {}.".format(idx))
             except TypeError:
                 # Raised when sources == None
                 pass
@@ -559,22 +559,19 @@ class Graphhopper(Router):
                     destinations_out.append(locations[idx])
             except IndexError:
                 raise IndexError(
-                    "Parameter destinations out of locations range at index {}."
-                    .format(idx))
+                    "Parameter destinations out of locations range at index {}.".format(idx)
+                )
             except TypeError:
                 # Raised when destinations == None
                 pass
 
-            sources_out = (reversed([convert._format_float(f) for f in coord])
-                           for coord in sources_out)
-            params.extend(
-                [("from_point", ",".join(coord)) for coord in sources_out])
+            sources_out = (reversed([convert._format_float(f) for f in coord]) for coord in sources_out)
+            params.extend([("from_point", ",".join(coord)) for coord in sources_out])
 
-            destinations_out = (reversed(
-                [convert._format_float(f) for f in coord])
-                                for coord in destinations_out)
-            params.extend(
-                [("to_point", ",".join(coord)) for coord in destinations_out])
+            destinations_out = (
+                reversed([convert._format_float(f) for f in coord]) for coord in destinations_out
+            )
+            params.extend([("to_point", ",".join(coord)) for coord in destinations_out])
 
         if out_array is not None:
             for e in out_array:
@@ -583,8 +580,7 @@ class Graphhopper(Router):
         if debug is not None:
             params.append(('debug', convert._convert_bool(debug)))
 
-        return self._parse_matrix_json(
-            self._request('/matrix', get_params=params, dry_run=dry_run), )
+        return self._parse_matrix_json(self._request('/matrix', get_params=params, dry_run=dry_run), )
 
     @staticmethod
     def _parse_matrix_json(response):

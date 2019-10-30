@@ -24,7 +24,6 @@ class Directions(object):
     Contains a list of :class:`Direction`, when the router returned multiple alternative routes, and the complete raw
     response, which can be accessed via the property ``raw``.
     """
-
     def __init__(self, directions=None, raw=None):
         """
         Initialize a :class:`Directions` instance to hold multiple :class:`Direction` instances in a list-like fashion.
@@ -47,8 +46,7 @@ class Directions(object):
         return self._raw
 
     def __repr__(self):  # pragma: no cover
-        return 'Directions({}, {})'.format(self._directions,
-                                          self.raw)
+        return 'Directions({}, {})'.format(self._directions, self.raw)
 
     def __getitem__(self, item):
         return self._directions[item]
@@ -64,7 +62,6 @@ class Direction(object):
     """
     Contains a parsed directions response. Access via properties ``geometry``, ``duration`` and ``distance``.
     """
-
     def __init__(self, geometry=None, duration=None, distance=None, raw=None):
         """
         Initialize a :class:`Direction` object to hold the properties of a directions request.
@@ -124,6 +121,4 @@ class Direction(object):
         return self._raw
 
     def __repr__(self):  # pragma: no cover
-        return 'Direction({}, {}, {})'.format(self.geometry,
-                                              self.duration,
-                                              self.distance)
+        return 'Direction({}, {}, {})'.format(self.geometry, self.duration, self.distance)

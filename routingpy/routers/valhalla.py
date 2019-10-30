@@ -29,16 +29,17 @@ from operator import itemgetter
 
 class Valhalla(Router):
     """Performs requests to a Valhalla instance."""
-
-    def __init__(self,
-                 base_url,
-                 api_key=None,
-                 user_agent=None,
-                 timeout=DEFAULT,
-                 retry_timeout=None,
-                 requests_kwargs=None,
-                 retry_over_query_limit=False,
-                 skip_api_error=None):
+    def __init__(
+            self,
+            base_url,
+            api_key=None,
+            user_agent=None,
+            timeout=DEFAULT,
+            retry_timeout=None,
+            requests_kwargs=None,
+            retry_over_query_limit=False,
+            skip_api_error=None
+    ):
         """
         Initializes a Valhalla client.
 
@@ -88,9 +89,10 @@ class Valhalla(Router):
 
         self.api_key = api_key
 
-        super(Valhalla, self).__init__(base_url, user_agent, timeout,
-                                       retry_timeout, requests_kwargs,
-                                       retry_over_query_limit, skip_api_error)
+        super(Valhalla, self).__init__(
+            base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
+            skip_api_error
+        )
 
     class Waypoint(object):
         """
@@ -101,15 +103,16 @@ class Valhalla(Router):
         >>> waypoint = Valhalla.WayPoint(position=[8.15315, 52.53151], type='break', heading=120, heading_tolerance=10, minimum_reachability=10, radius=400)
         >>> route = Valhalla('http://localhost/v1').directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
-
-        def __init__(self,
-                     position,
-                     type=None,
-                     heading=None,
-                     heading_tolerance=None,
-                     minimum_reachability=None,
-                     radius=None,
-                     rank_candidates=None):
+        def __init__(
+                self,
+                position,
+                type=None,
+                heading=None,
+                heading_tolerance=None,
+                minimum_reachability=None,
+                radius=None,
+                rank_candidates=None
+        ):
             """
 
             :param type: Type of location. One of ['break', 'through']. A break is a stop, so the first
@@ -185,17 +188,19 @@ class Valhalla(Router):
 
             return waypoint
 
-    def directions(self,
-                   locations,
-                   profile,
-                   options=None,
-                   units=None,
-                   language=None,
-                   directions_type=None,
-                   avoid_locations=None,
-                   date_time=None,
-                   id=None,
-                   dry_run=None):
+    def directions(
+            self,
+            locations,
+            profile,
+            options=None,
+            units=None,
+            language=None,
+            directions_type=None,
+            avoid_locations=None,
+            date_time=None,
+            id=None,
+            dry_run=None
+    ):
         """Get directions between an origin point and a destination point.
 
         For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md.
@@ -263,8 +268,7 @@ class Valhalla(Router):
             if language:
                 params['directions_options']['language'] = language
             if directions_type:
-                params['directions_options'][
-                    'directions_type'] = directions_type
+                params['directions_options']['directions_type'] = directions_type
 
         if avoid_locations:
             params['avoid_locations'] = self._build_locations(avoid_locations)
@@ -278,11 +282,8 @@ class Valhalla(Router):
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
         return self._parse_direction_json(
-            self._request(
-                "/route",
-                get_params=get_params,
-                post_params=params,
-                dry_run=dry_run), units)
+            self._request("/route", get_params=get_params, post_params=params, dry_run=dry_run), units
+        )
 
     @staticmethod
     def _parse_direction_json(response, units):
@@ -291,37 +292,32 @@ class Valhalla(Router):
 
         geometry, duration, distance = [], 0, 0
         for leg in response['trip']['legs']:
-            geometry.extend([
-                list(reversed(coord))
-                for coord in utils.decode_polyline6(leg['shape'])
-            ])
+            geometry.extend([list(reversed(coord)) for coord in utils.decode_polyline6(leg['shape'])])
             duration += leg['summary']['time']
 
             factor = 0.621371 if units == 'mi' else 1
             distance += int(leg['summary']['length'] * 1000 * factor)
 
-        return Direction(
-            geometry=geometry,
-            duration=int(duration),
-            distance=int(distance),
-            raw=response)
+        return Direction(geometry=geometry, duration=int(duration), distance=int(distance), raw=response)
 
-    def isochrones(self,
-                   locations,
-                   profile,
-                   intervals,
-                   colors=None,
-                   polygons=None,
-                   denoise=None,
-                   generalize=None,
-                   options=None,
-                   units=None,
-                   language=None,
-                   directions_type=None,
-                   avoid_locations=None,
-                   date_time=None,
-                   id=None,
-                   dry_run=None):
+    def isochrones(
+            self,
+            locations,
+            profile,
+            intervals,
+            colors=None,
+            polygons=None,
+            denoise=None,
+            generalize=None,
+            options=None,
+            units=None,
+            language=None,
+            directions_type=None,
+            avoid_locations=None,
+            date_time=None,
+            id=None,
+            dry_run=None
+    ):
         """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
 
         For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/isochrone/api-reference.md.
@@ -395,8 +391,7 @@ class Valhalla(Router):
                 try:
                     d.update(color=colors[idx])
                 except IndexError:
-                    raise IndexError(
-                        "Colors object must have same length as Range object.")
+                    raise IndexError("Colors object must have same length as Range object.")
             contours.append(d)
 
         params = {
@@ -430,35 +425,37 @@ class Valhalla(Router):
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
         return self._parse_isochrone_json(
-            self._request(
-                "/isochrone",
-                get_params=get_params,
-                post_params=params,
-                dry_run=dry_run), intervals, list(locations[0].values()))
+            self._request("/isochrone", get_params=get_params, post_params=params, dry_run=dry_run),
+            intervals, list(locations[0].values())
+        )
 
     @staticmethod
     def _parse_isochrone_json(response, intervals, center):
         if response is None:  # pragma: no cover
             return Isochrones()
 
-        return Isochrones([
-            Isochrone(
-                geometry=isochrone['geometry']['coordinates'],
-                interval=intervals[idx],
-                center=center) for idx, isochrone in enumerate(
-                    list(reversed(response['features'])))
-        ], response)
+        return Isochrones(
+            [
+                Isochrone(
+                    geometry=isochrone['geometry']['coordinates'],
+                    interval=intervals[idx],
+                    center=center
+                ) for idx, isochrone in enumerate(list(reversed(response['features'])))
+            ], response
+        )
 
-    def matrix(self,
-               locations,
-               profile,
-               sources=None,
-               destinations=None,
-               options=None,
-               avoid_locations=None,
-               units=None,
-               id=None,
-               dry_run=None):
+    def matrix(
+            self,
+            locations,
+            profile,
+            sources=None,
+            destinations=None,
+            options=None,
+            avoid_locations=None,
+            units=None,
+            id=None,
+            dry_run=None
+    ):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
         :param locations: Multiple pairs of lng/lat values.
@@ -537,10 +534,9 @@ class Valhalla(Router):
 
         return self._parse_matrix_json(
             self._request(
-                '/sources_to_targets',
-                get_params=get_params,
-                post_params=params,
-                dry_run=dry_run), units)
+                '/sources_to_targets', get_params=get_params, post_params=params, dry_run=dry_run
+            ), units
+        )
 
     @staticmethod
     def _parse_matrix_json(response, units):
@@ -548,12 +544,14 @@ class Valhalla(Router):
             return Matrix()
 
         factor = 0.621371 if units == 'mi' else 1
-        durations = [[destination['time'] for destination in origin]
-                     for origin in response['sources_to_targets']]
-        distances = [[
-            int(destination['distance'] * 1000 * factor)
-            for destination in origin
-        ] for origin in response['sources_to_targets']]
+        durations = [
+            [destination['time'] for destination in origin] for origin in response['sources_to_targets']
+        ]
+        distances = [
+            [int(destination['distance'] * 1000 * factor)
+             for destination in origin]
+            for origin in response['sources_to_targets']
+        ]
 
         return Matrix(durations=durations, distances=distances, raw=response)
 
@@ -571,8 +569,10 @@ class Valhalla(Router):
                     locations.append(coord._make_waypoint())
                 else:
                     raise TypeError(
-                        "Location type {} at index {} is not supported: {}".
-                        format(type(coord), idx, coord))
+                        "Location type {} at index {} is not supported: {}".format(
+                            type(coord), idx, coord
+                        )
+                    )
         elif isinstance(coordinates[0], float):
             locations.append({'lon': coordinates[0], 'lat': coordinates[1]})
 

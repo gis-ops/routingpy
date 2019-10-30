@@ -67,5 +67,6 @@ def get_router_by_name(router_name):
     try:
         return _SERVICE_TO_ROUTER[router_name.lower()]
     except KeyError:
-        raise RouterNotFound("Unknown router '{}'; options are: {}".format(
-            router_name, _SERVICE_TO_ROUTER.keys()))
+        raise RouterNotFound(
+            "Unknown router '{}'; options are: {}".format(router_name, _SERVICE_TO_ROUTER.keys())
+        )

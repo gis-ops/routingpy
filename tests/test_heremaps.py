@@ -45,7 +45,8 @@ class HereMapsTest(_test.TestCase):
             'https://route.api.here.com/routing/7.2/calculateroute.json',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
@@ -62,7 +63,8 @@ class HereMapsTest(_test.TestCase):
             'shippedHazardousGoods=gas%2Cflammable&speedProfile=fast&trailersCount=3&truckRestrictionPenalty=soft&truckType=truck&vehicleType=diesel%2C5.5&'
             'viewBounds=49.420577%2C8.688641%3B49.415776%2C8.680916&waypoint0=geo%2149.420577%2C8.688641&waypoint1=geo%2149.415776%2C8.680916&'
             'waypoint2=geo%2149.445776%2C8.780916&weightPerAxle=100&width=10',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )
 
     @responses.activate
     def test_directions_object_response(self):
@@ -74,7 +76,8 @@ class HereMapsTest(_test.TestCase):
             'https://route.api.here.com/routing/7.2/calculateroute.json',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
@@ -91,7 +94,8 @@ class HereMapsTest(_test.TestCase):
             'shippedHazardousGoods=gas%2Cflammable&speedProfile=fast&trailersCount=3&truckRestrictionPenalty=soft&truckType=truck&vehicleType=diesel%2C5.5&'
             'viewBounds=49.420577%2C8.688641%3B49.415776%2C8.680916&waypoint0=geo%2149.420577%2C8.688641&waypoint1=geo%2149.415776%2C8.680916&'
             'waypoint2=geo%2149.445776%2C8.780916&weightPerAxle=100&width=10',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )
 
         self.assertIsInstance(routes, Direction)
         self.assertIsInstance(routes.geometry, list)
@@ -108,7 +112,8 @@ class HereMapsTest(_test.TestCase):
             'https://route.api.here.com/routing/7.2/calculateroute.json',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
@@ -125,7 +130,8 @@ class HereMapsTest(_test.TestCase):
             'shippedHazardousGoods=gas%2Cflammable&speedProfile=fast&trailersCount=3&truckRestrictionPenalty=soft&truckType=truck&vehicleType=diesel%2C5.5&'
             'viewBounds=49.420577%2C8.688641%3B49.415776%2C8.680916&waypoint0=geo%2149.420577%2C8.688641&waypoint1=geo%2149.415776%2C8.680916&'
             'waypoint2=geo%2149.445776%2C8.780916&weightPerAxle=100&width=10',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )
 
         self.assertIsInstance(routes, Directions)
         self.assertEqual(3, len(routes))
@@ -145,7 +151,8 @@ class HereMapsTest(_test.TestCase):
             'https://isoline.route.api.here.com/routing/7.2/calculateisoline.json',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         isochrones = self.client.isochrones(**query)
 
@@ -153,8 +160,8 @@ class HereMapsTest(_test.TestCase):
         self.assertURLEqual(
             'https://isoline.route.api.here.com/routing/7.2/calculateisoline.json?app_code=sample_app_code&'
             'app_id=sample_app_id&mode=fastest%3Bcar&quality=1&range=1000%2C2000%2C3000&rangeType=distance&'
-            'singleComponent=false&start=geo%2148.23424%2C8.34234',
-            responses.calls[0].request.url)
+            'singleComponent=false&start=geo%2148.23424%2C8.34234', responses.calls[0].request.url
+        )
 
         self.assertIsInstance(isochrones, Isochrones)
         self.assertEqual(3, len(isochrones))
@@ -173,7 +180,8 @@ class HereMapsTest(_test.TestCase):
             'https://matrix.route.api.here.com/routing/7.2/calculatematrix.json',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         matrix = self.client.matrix(**query)
 
@@ -183,7 +191,8 @@ class HereMapsTest(_test.TestCase):
             'app_id=sample_app_id&destination0=geo%2149.445776%2C8.780916&height=20&length=10&limitedWeight=10&'
             'mode=fastest%3Bcar&shippedHazardousGoods=gas%2Cflammable&start0=geo%2149.420577%2C8.688641&'
             'start1=geo%2149.415776%2C8.680916&summaryAttributes=traveltime%2Ccostfactor&trailersCount=3&truckType=truck&'
-            'weightPerAxle=100&width=10', responses.calls[0].request.url)
+            'weightPerAxle=100&width=10', responses.calls[0].request.url
+        )
 
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.durations, list)

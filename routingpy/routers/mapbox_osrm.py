@@ -30,14 +30,16 @@ class MapboxOSRM(Router):
 
     _base_url = 'https://api.mapbox.com'
 
-    def __init__(self,
-                 api_key,
-                 user_agent=None,
-                 timeout=DEFAULT,
-                 retry_timeout=None,
-                 requests_kwargs=None,
-                 retry_over_query_limit=False,
-                 skip_api_error=None):
+    def __init__(
+            self,
+            api_key,
+            user_agent=None,
+            timeout=DEFAULT,
+            retry_timeout=None,
+            requests_kwargs=None,
+            retry_over_query_limit=False,
+            skip_api_error=None
+    ):
         """
         Initializes a Mapbox OSRM client.
 
@@ -84,30 +86,33 @@ class MapboxOSRM(Router):
         self.api_key = api_key
 
         super(MapboxOSRM, self).__init__(
-            self._base_url, user_agent, timeout, retry_timeout,
-            requests_kwargs, retry_over_query_limit, skip_api_error)
+            self._base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
+            skip_api_error
+        )
 
-    def directions(self,
-                   locations,
-                   profile,
-                   radiuses=None,
-                   bearings=None,
-                   alternatives=None,
-                   steps=None,
-                   continue_straight=None,
-                   annotations=None,
-                   geometries=None,
-                   overview=None,
-                   exclude=None,
-                   approaches=None,
-                   banner_instructions=None,
-                   language=None,
-                   roundabout_exits=None,
-                   voice_instructions=None,
-                   voice_units=None,
-                   waypoint_names=None,
-                   waypoint_targets=None,
-                   dry_run=None):
+    def directions(
+            self,
+            locations,
+            profile,
+            radiuses=None,
+            bearings=None,
+            alternatives=None,
+            steps=None,
+            continue_straight=None,
+            annotations=None,
+            geometries=None,
+            overview=None,
+            exclude=None,
+            approaches=None,
+            banner_instructions=None,
+            language=None,
+            roundabout_exits=None,
+            voice_instructions=None,
+            voice_units=None,
+            waypoint_names=None,
+            waypoint_targets=None,
+            dry_run=None
+    ):
         """Get directions between an origin point and a destination point.
 
         For more information, visit https://docs.mapbox.com/api/navigation/#directions.
@@ -214,10 +219,9 @@ class MapboxOSRM(Router):
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
-        coords = convert._delimit_list([
-            convert._delimit_list([convert._format_float(f) for f in pair])
-            for pair in locations
-        ], ';')
+        coords = convert._delimit_list(
+            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ';'
+        )
 
         params = {'coordinates': coords}
 
@@ -226,7 +230,8 @@ class MapboxOSRM(Router):
 
         if bearings:
             params["bearings"] = convert._delimit_list(
-                [convert._delimit_list(pair) for pair in bearings], ';')
+                [convert._delimit_list(pair) for pair in bearings], ';'
+            )
 
         if alternatives is not None:
             params["alternatives"] = convert._convert_bool(alternatives)
@@ -235,8 +240,7 @@ class MapboxOSRM(Router):
             params["steps"] = convert._convert_bool(steps)
 
         if continue_straight is not None:
-            params["continue_straight"] = convert._convert_bool(
-                continue_straight)
+            params["continue_straight"] = convert._convert_bool(continue_straight)
 
         if annotations is not None:
             params["annotations"] = convert._delimit_list(annotations)
@@ -254,32 +258,31 @@ class MapboxOSRM(Router):
             params['approaches'] = ';' + convert._delimit_list(approaches, ';')
 
         if banner_instructions:
-            params['banner_instuctions'] = convert._convert_bool(
-                banner_instructions)
+            params['banner_instuctions'] = convert._convert_bool(banner_instructions)
 
         if language:
             params['language'] = language
 
         if roundabout_exits:
-            params['roundabout_exits'] = convert._convert_bool(
-                roundabout_exits)
+            params['roundabout_exits'] = convert._convert_bool(roundabout_exits)
 
         if voice_instructions:
-            params['voide_instructions'] = convert._convert_bool(
-                voice_instructions)
+            params['voide_instructions'] = convert._convert_bool(voice_instructions)
 
         if voice_units:
             params['voice_units'] = voice_units
 
         if waypoint_names:
-            params['waypoint_names'] = convert._delimit_list(
-                waypoint_names, ';')
+            params['waypoint_names'] = convert._delimit_list(waypoint_names, ';')
 
         if waypoint_targets:
-            params['waypoint_targets'] = ';' + convert._delimit_list([
-                convert._delimit_list([convert._format_float(f) for f in pair])
-                for pair in waypoint_targets
-            ], ';')
+            params['waypoint_targets'] = ';' + convert._delimit_list(
+                [
+                    convert._delimit_list([convert._format_float(f)
+                                           for f in pair])
+                    for pair in waypoint_targets
+                ], ';'
+            )
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
@@ -289,12 +292,11 @@ class MapboxOSRM(Router):
                 get_params=get_params,
                 post_params=params,
                 dry_run=dry_run,
-                requests_kwargs={
-                    "headers": {
-                        "Content-Type": 'application/x-www-form-urlencoded'
-                    }
-                },
-            ), alternatives, geometries)
+                requests_kwargs={"headers": {
+                    "Content-Type": 'application/x-www-form-urlencoded'
+                }},
+            ), alternatives, geometries
+        )
 
     @staticmethod
     def _parse_direction_json(response, alternatives, geometry_format):
@@ -307,13 +309,13 @@ class MapboxOSRM(Router):
         def _parse_geometry(route_geometry):
             if geometry_format in (None, 'polyline'):
                 geometry = [
-                    list(reversed(coord)) for coord in utils.decode_polyline5(
-                        route_geometry, is3d=False)
+                    list(reversed(coord))
+                    for coord in utils.decode_polyline5(route_geometry, is3d=False)
                 ]
             elif geometry_format == 'polyline6':
                 geometry = [
-                    list(reversed(coord)) for coord in utils.decode_polyline6(
-                        route_geometry, is3d=False)
+                    list(reversed(coord))
+                    for coord in utils.decode_polyline6(route_geometry, is3d=False)
                 ]
             elif geometry_format == 'geojson':
                 geometry = route_geometry['coordinates']
@@ -331,24 +333,29 @@ class MapboxOSRM(Router):
                         geometry=_parse_geometry(route['geometry']),
                         duration=int(route['duration']),
                         distance=int(route['distance']),
-                        raw=route))
+                        raw=route
+                    )
+                )
             return Directions(routes, response)
         else:
             return Direction(
                 geometry=_parse_geometry(response['routes'][0]['geometry']),
                 duration=int(response['routes'][0]['duration']),
                 distance=int(response['routes'][0]['distance']),
-                raw=response)
+                raw=response
+            )
 
-    def isochrones(self,
-                   locations,
-                   profile,
-                   intervals,
-                   contours_colors=None,
-                   polygons=None,
-                   denoise=None,
-                   generalize=None,
-                   dry_run=None):
+    def isochrones(
+            self,
+            locations,
+            profile,
+            intervals,
+            contours_colors=None,
+            polygons=None,
+            denoise=None,
+            generalize=None,
+            dry_run=None
+    ):
         """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
 
         For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/isochrone/api-reference.md.
@@ -387,19 +394,15 @@ class MapboxOSRM(Router):
         """
 
         params = {
-            "contours_minutes":
-            convert._delimit_list([int(x / 60) for x in sorted(intervals)], ','),
-            'access_token':
-            self.api_key,
-            'costing':
-            profile
+            "contours_minutes": convert._delimit_list([int(x / 60) for x in sorted(intervals)], ','),
+            'access_token': self.api_key,
+            'costing': profile
         }
 
         locations_string = convert._delimit_list(locations, ',')
 
         if contours_colors:
-            params["contours_colors"] = convert._delimit_list(
-                contours_colors, ',')
+            params["contours_colors"] = convert._delimit_list(contours_colors, ',')
 
         if polygons is not None:
             params['polygons'] = polygons
@@ -412,30 +415,34 @@ class MapboxOSRM(Router):
 
         return self._parse_isochrone_json(
             self._request(
-                "/isochrone/v1/" + profile + '/' + locations_string,
-                get_params=params,
-                dry_run=dry_run), intervals, locations)
+                "/isochrone/v1/" + profile + '/' + locations_string, get_params=params, dry_run=dry_run
+            ), intervals, locations
+        )
 
     @staticmethod
     def _parse_isochrone_json(response, intervals, locations):
         if response is None:  # pragma: no cover
             return Isochrones()
-        return Isochrones([
-            Isochrone(
-                geometry=isochrone['geometry']['coordinates'],
-                interval=intervals[idx],
-                center=locations) for idx, isochrone in enumerate(
-                    list(reversed(response['features'])))
-        ], response)
+        return Isochrones(
+            [
+                Isochrone(
+                    geometry=isochrone['geometry']['coordinates'],
+                    interval=intervals[idx],
+                    center=locations
+                ) for idx, isochrone in enumerate(list(reversed(response['features'])))
+            ], response
+        )
 
-    def matrix(self,
-               locations,
-               profile,
-               sources=None,
-               destinations=None,
-               annotations=None,
-               fallback_speed=None,
-               dry_run=None):
+    def matrix(
+            self,
+            locations,
+            profile,
+            sources=None,
+            destinations=None,
+            annotations=None,
+            fallback_speed=None,
+            dry_run=None
+    ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
 
@@ -474,10 +481,9 @@ class MapboxOSRM(Router):
         :rtype: :class:`routingpy.matrix.Matrix`
         """
 
-        coords = convert._delimit_list([
-            convert._delimit_list([convert._format_float(f) for f in pair])
-            for pair in locations
-        ], ';')
+        coords = convert._delimit_list(
+            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ';'
+        )
 
         params = {'access_token': self.api_key}
 
@@ -497,7 +503,9 @@ class MapboxOSRM(Router):
             self._request(
                 "/directions-matrix/v1/mapbox/" + profile + '/' + coords,
                 get_params=params,
-                dry_run=dry_run))
+                dry_run=dry_run
+            )
+        )
 
     @staticmethod
     def _parse_matrix_json(response):
@@ -505,6 +513,5 @@ class MapboxOSRM(Router):
             return Matrix()
 
         return Matrix(
-            durations=response.get('durations'),
-            distances=response.get('distances'),
-            raw=response)
+            durations=response.get('durations'), distances=response.get('distances'), raw=response
+        )

@@ -45,7 +45,8 @@ class GraphhopperTest(_test.TestCase):
             'https://graphhopper.com/api/1/route',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
@@ -55,7 +56,8 @@ class GraphhopperTest(_test.TestCase):
             'elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&'
             'optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&'
             'point=49.445776%2C8.780916&point_hint=false&points_encoded=true&vehicle=car&type=json&weighting=short_fastest',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )
 
         self.assertIsInstance(routes, Direction)
         self.assertIsInstance(routes.geometry, list)
@@ -72,7 +74,8 @@ class GraphhopperTest(_test.TestCase):
             'https://graphhopper.com/api/1/route',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
@@ -83,7 +86,8 @@ class GraphhopperTest(_test.TestCase):
             'elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&'
             'optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&'
             'point=49.445776%2C8.780916&point_hint=false&points_encoded=true&vehicle=car&type=json&weighting=short_fastest',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )
 
         self.assertIsInstance(routes, Directions)
         self.assertEqual(3, len(routes))
@@ -103,14 +107,16 @@ class GraphhopperTest(_test.TestCase):
             'https://graphhopper.com/api/1/isochrone',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         isochrones = self.client.isochrones(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://graphhopper.com/api/1/isochrone?buckets=3&debug=false&key=sample_key&'
             'point=48.23424%2C8.34234&vehicle=car&reverse_flow=true&time_limit=1000&type=json',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )
 
         self.assertIsInstance(isochrones, Isochrones)
         self.assertEqual(3, len(isochrones))
@@ -130,14 +136,16 @@ class GraphhopperTest(_test.TestCase):
             'https://graphhopper.com/api/1/matrix',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         matrix = self.client.matrix(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://graphhopper.com/api/1/matrix?key=sample_key&out_array=distances&out_array=times&out_array=weights&'
             'point=49.415776%2C8.680916&point=49.420577%2C8.688641&point=49.445776%2C8.780916&vehicle=car&debug=true',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )
 
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.durations, list)
@@ -155,7 +163,8 @@ class GraphhopperTest(_test.TestCase):
             'https://graphhopper.com/api/1/matrix',
             status=200,
             json={},
-            content_type='application/json')
+            content_type='application/json'
+        )
         resp = self.client.matrix(**query)
 
         query['sources'] = None
@@ -166,7 +175,8 @@ class GraphhopperTest(_test.TestCase):
             'https://graphhopper.com/api/1/matrix',
             status=200,
             json={},
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         resp = self.client.matrix(**query)
 
@@ -175,13 +185,14 @@ class GraphhopperTest(_test.TestCase):
             'https://graphhopper.com/api/1/matrix?from_point=49.415776%2C8.680916&from_point=49.420577%2C8.688641&'
             'from_point=49.445776%2C8.780916&key=sample_key&out_array=distances'
             '&out_array=times&out_array=weights&vehicle=car&to_point=49.415776%2C8.680916&to_point=49.420577%2C8.688641&'
-            '&to_point=49.445776%2C8.780916&debug=true',
-            responses.calls[0].request.url)
+            '&to_point=49.445776%2C8.780916&debug=true', responses.calls[0].request.url
+        )
         self.assertURLEqual(
             'https://graphhopper.com/api/1/matrix?point=49.415776%2C8.680916&point=49.420577%2C8.688641&'
             'point=49.445776%2C8.780916&key=sample_key&out_array=distances'
             '&out_array=times&out_array=weights&vehicle=car'
-            '&debug=true', responses.calls[1].request.url)
+            '&debug=true', responses.calls[1].request.url
+        )
 
     def test_index_sources_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])

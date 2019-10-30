@@ -21,8 +21,7 @@
 def _delimit_list(arg, delimiter=','):
     """Convert list to delimiter-separated string"""
     if not _is_list(arg):
-        raise TypeError("Expected a list or tuple, "
-                        "but got {}".format(type(arg).__name__))
+        raise TypeError("Expected a list or tuple, " "but got {}".format(type(arg).__name__))
     return delimiter.join(map(str, arg))
 
 
@@ -61,8 +60,10 @@ def _is_list(arg):
         return False
     if isinstance(arg, str):  # Python 3-only, as str has __iter__
         return False
-    return (not _has_method(arg, "strip") and _has_method(arg, "__getitem__")
-            or _has_method(arg, "__iter__"))
+    return (
+        not _has_method(arg, "strip") and _has_method(arg, "__getitem__")
+        or _has_method(arg, "__iter__")
+    )
 
 
 def _has_method(arg, method):

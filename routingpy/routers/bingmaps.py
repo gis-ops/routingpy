@@ -14,22 +14,16 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-"""Tests for convert module."""
 
+from .base import Router, DEFAULT
 from routingpy import convert
-import tests as _test
+from routingpy import utils
+from routingpy.direction import Direction, Directions
+from routingpy.isochrone import Isochrone, Isochrones
+from routingpy.matrix import Matrix
 
 
-class UtilsTest(_test.TestCase):
-    def test_delimit_list(self):
+class BingMaps(Router):
+    """Performs requests to the Bing Maps API services."""
 
-        l = [(8.68864, 49.42058), (8.68092, 49.41578)]
-        s = convert._delimit_list([convert._delimit_list(pair, ',') for pair in l], '|')
-        self.assertEqual(s, "8.68864,49.42058|8.68092,49.41578")
-
-    def test_delimit_list_error(self):
-
-        falses = ['8', 8, {'a': 'b', 3: 'a', 4: 4}]
-        for f in falses:
-            with self.assertRaises(TypeError):
-                convert._delimit_list(f)
+    _DEFAULT_BASE_URL = "https://graphhopper.com/api/1"

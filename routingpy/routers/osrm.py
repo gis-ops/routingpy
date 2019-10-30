@@ -26,14 +26,16 @@ class OSRM(Router):
 
     _DEFAULT_BASE_URL = 'https://router.project-osrm.org'
 
-    def __init__(self,
-                 base_url=_DEFAULT_BASE_URL,
-                 user_agent=None,
-                 timeout=DEFAULT,
-                 retry_timeout=None,
-                 requests_kwargs=None,
-                 retry_over_query_limit=False,
-                 skip_api_error=None):
+    def __init__(
+            self,
+            base_url=_DEFAULT_BASE_URL,
+            user_agent=None,
+            timeout=DEFAULT,
+            retry_timeout=None,
+            requests_kwargs=None,
+            retry_over_query_limit=False,
+            skip_api_error=None
+    ):
         """
         Initializes an OSRM client.
 
@@ -78,22 +80,25 @@ class OSRM(Router):
         :type skip_api_error: bool
         """
 
-        super(OSRM, self).__init__(base_url, user_agent, timeout,
-                                   retry_timeout, requests_kwargs,
-                                   retry_over_query_limit, skip_api_error)
+        super(OSRM, self).__init__(
+            base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
+            skip_api_error
+        )
 
-    def directions(self,
-                   locations,
-                   profile,
-                   radiuses=None,
-                   bearings=None,
-                   alternatives=None,
-                   steps=None,
-                   continue_straight=None,
-                   annotations=None,
-                   geometries=None,
-                   overview=None,
-                   dry_run=None):
+    def directions(
+            self,
+            locations,
+            profile,
+            radiuses=None,
+            bearings=None,
+            alternatives=None,
+            steps=None,
+            continue_straight=None,
+            annotations=None,
+            geometries=None,
+            overview=None,
+            dry_run=None
+    ):
         """Get directions between an origin point and a destination point.
 
         For more information, visit http://project-osrm.org/docs/v5.5.1/api/#route-service.
@@ -152,10 +157,9 @@ class OSRM(Router):
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
-        coords = convert._delimit_list([
-            convert._delimit_list([convert._format_float(f) for f in pair])
-            for pair in locations
-        ], ';')
+        coords = convert._delimit_list(
+            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ';'
+        )
 
         params = dict()
 
@@ -164,7 +168,8 @@ class OSRM(Router):
 
         if bearings:
             params["bearings"] = convert._delimit_list(
-                [convert._delimit_list(pair) for pair in bearings], ';')
+                [convert._delimit_list(pair) for pair in bearings], ';'
+            )
 
         if alternatives is not None:
             params["alternatives"] = convert._convert_bool(alternatives)
@@ -173,8 +178,7 @@ class OSRM(Router):
             params["steps"] = convert._convert_bool(steps)
 
         if continue_straight is not None:
-            params["continue_straight"] = convert._convert_bool(
-                continue_straight)
+            params["continue_straight"] = convert._convert_bool(continue_straight)
 
         if annotations is not None:
             params["annotations"] = convert._convert_bool(annotations)
@@ -186,10 +190,9 @@ class OSRM(Router):
             params["overview"] = convert._convert_bool(overview)
 
         return self._parse_direction_json(
-            self._request(
-                "/route/v1/" + profile + '/' + coords,
-                get_params=params,
-                dry_run=dry_run), alternatives, geometries)
+            self._request("/route/v1/" + profile + '/' + coords, get_params=params, dry_run=dry_run),
+            alternatives, geometries
+        )
 
     @staticmethod
     def _parse_direction_json(response, alternatives, geometry_format):
@@ -220,26 +223,31 @@ class OSRM(Router):
                         geometry=_parse_geometry(route['geometry']),
                         duration=int(route['duration']),
                         distance=int(route['distance']),
-                        raw=route))
+                        raw=route
+                    )
+                )
             return Directions(routes, response)
         else:
             return Direction(
                 geometry=_parse_geometry(response['routes'][0]['geometry']),
                 duration=int(response['routes'][0]['duration']),
                 distance=int(response['routes'][0]['distance']),
-                raw=response)
+                raw=response
+            )
 
     def isochrones(self):  # pragma: no cover
         raise NotImplementedError
 
-    def matrix(self,
-               locations,
-               profile,
-               radiuses=None,
-               bearings=None,
-               sources=None,
-               destinations=None,
-               dry_run=None):
+    def matrix(
+            self,
+            locations,
+            profile,
+            radiuses=None,
+            bearings=None,
+            sources=None,
+            destinations=None,
+            dry_run=None
+    ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
 
@@ -285,10 +293,9 @@ class OSRM(Router):
         :rtype: :class:`routingpy.matrix.Matrix`
         """
 
-        coords = convert._delimit_list([
-            convert._delimit_list([convert._format_float(f) for f in pair])
-            for pair in locations
-        ], ';')
+        coords = convert._delimit_list(
+            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ';'
+        )
 
         params = dict()
 
@@ -299,15 +306,12 @@ class OSRM(Router):
             params['destinations'] = convert._delimit_list(destinations, ';')
 
         return self._parse_matrix_json(
-            self._request(
-                "/table/v1/" + profile + '/' + coords,
-                get_params=params,
-                dry_run=dry_run))
+            self._request("/table/v1/" + profile + '/' + coords, get_params=params, dry_run=dry_run)
+        )
 
     @staticmethod
     def _parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
 
-        return Matrix(
-            durations=response['durations'], distances=None, raw=response)
+        return Matrix(durations=response['durations'], distances=None, raw=response)

@@ -45,7 +45,8 @@ class ValhallaTest(_test.TestCase):
             'https://api.mapbox.com/valhalla/v1/route',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json')
+            content_type='application/json'
+        )
         routes = self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
@@ -70,20 +71,16 @@ class ValhallaTest(_test.TestCase):
             'rank_candidates': True
         }
 
-        query['locations'].append(
-            Valhalla.Waypoint(PARAM_POINT, **extra_params))
-        expected['locations'].append({
-            'lat': PARAM_POINT[1],
-            'lon': PARAM_POINT[0],
-            **extra_params
-        })
+        query['locations'].append(Valhalla.Waypoint(PARAM_POINT, **extra_params))
+        expected['locations'].append({'lat': PARAM_POINT[1], 'lon': PARAM_POINT[0], **extra_params})
 
         responses.add(
             responses.POST,
             'https://api.mapbox.com/valhalla/v1/route',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json')
+            content_type='application/json'
+        )
         routes = self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
@@ -99,7 +96,8 @@ class ValhallaTest(_test.TestCase):
             'https://api.mapbox.com/valhalla/v1/isochrone',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         iso = self.client.isochrones(**query)
 
@@ -125,7 +123,8 @@ class ValhallaTest(_test.TestCase):
             'https://api.mapbox.com/valhalla/v1/sources_to_targets',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         matrix = self.client.matrix(**query)
 
@@ -153,7 +152,8 @@ class ValhallaTest(_test.TestCase):
             'https://api.mapbox.com/valhalla/v1/sources_to_targets',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         routes = self.client.matrix(**query)
 

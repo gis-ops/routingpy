@@ -23,14 +23,16 @@ class MapboxValhalla(Valhalla):
 
     _base_url = 'https://api.mapbox.com/valhalla/v1'
 
-    def __init__(self,
-                 api_key,
-                 user_agent=None,
-                 timeout=DEFAULT,
-                 retry_timeout=None,
-                 requests_kwargs=None,
-                 retry_over_query_limit=False,
-                 skip_api_error=None):
+    def __init__(
+            self,
+            api_key,
+            user_agent=None,
+            timeout=DEFAULT,
+            retry_timeout=None,
+            requests_kwargs=None,
+            retry_over_query_limit=False,
+            skip_api_error=None
+    ):
         """
         Initializes a Valhalla client.
 
@@ -75,5 +77,6 @@ class MapboxValhalla(Valhalla):
         """
 
         super(MapboxValhalla, self).__init__(
-            self._base_url, api_key, user_agent, timeout, retry_timeout,
-            requests_kwargs, retry_over_query_limit, skip_api_error)
+            self._base_url, api_key, user_agent, timeout, retry_timeout, requests_kwargs,
+            retry_over_query_limit, skip_api_error
+        )

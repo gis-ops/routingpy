@@ -19,8 +19,7 @@ import datetime
 
 PARAM_POINT = [8.34234, 48.23424]
 PARAM_LINE = [[8.688641, 49.420577], [8.680916, 49.415776]]
-PARAM_LINE_MULTI = [[8.688641, 49.420577], [8.680916, 49.415776],
-                    [8.780916, 49.445776]]
+PARAM_LINE_MULTI = [[8.688641, 49.420577], [8.680916, 49.415776], [8.780916, 49.445776]]
 PARAM_POLY = [[[8.688641, 49.420577], [8.680916, 49.415776]]]
 
 PARAM_INT_BIG = 500
@@ -36,23 +35,21 @@ ENDPOINTS_RESPONSES = {
     'valhalla': {
         'directions': {
             "trip": {
-                'legs':
-                [{
-                    "shape":
-                    '}wpulAvkxblCtJpGu}@hrCkAvDsAdEm@xBkAvDeK`\\ssAthE{iAjpDyiAlpD',
-                    "summary": {
-                        'length': 100,
-                        "time": 100
+                'legs': [
+                    {
+                        "shape": '}wpulAvkxblCtJpGu}@hrCkAvDsAdEm@xBkAvDeK`\\ssAthE{iAjpDyiAlpD',
+                        "summary": {
+                            'length': 100,
+                            "time": 100
+                        }
+                    }, {
+                        "shape": '}wpulAvkxblCtJpGu}@hrCkAvDsAdEm@xBkAvDeK`\\ssAthE{iAjpD',
+                        "summary": {
+                            'length': 50,
+                            "time": 50
+                        }
                     }
-                },
-                 {
-                     "shape":
-                     '}wpulAvkxblCtJpGu}@hrCkAvDsAdEm@xBkAvDeK`\\ssAthE{iAjpD',
-                     "summary": {
-                         'length': 50,
-                         "time": 50
-                     }
-                 }]
+                ]
             }
         },
         "isochrones": {
@@ -68,9 +65,8 @@ ENDPOINTS_RESPONSES = {
                         "center": [8.684162488752957, 49.4230724075398]
                     },
                     "geometry": {
-                        "coordinates": [[[8.684544, 49.423295],
-                                         [8.684665, 49.423101],
-                                         [8.684706, 49.423036]]],
+                        "coordinates":
+                        [[[8.684544, 49.423295], [8.684665, 49.423101], [8.684706, 49.423036]]],
                         "type":
                         "Polygon"
                     }
@@ -83,9 +79,8 @@ ENDPOINTS_RESPONSES = {
                         "center": [8.684162488752957, 49.4230724075398]
                     },
                     "geometry": {
-                        "coordinates": [[[8.684544, 49.423295],
-                                         [8.684665, 49.423101],
-                                         [8.684706, 49.423036]]],
+                        "coordinates":
+                        [[[8.684544, 49.423295], [8.684665, 49.423101], [8.684706, 49.423036]]],
                         "type":
                         "Polygon"
                     }
@@ -93,47 +88,54 @@ ENDPOINTS_RESPONSES = {
             ]
         },
         "matrix": {
-            'sources_to_targets': [[{
-                "distance": 0,
-                "time": 0
-            }, {
-                "distance": 100,
-                "time": 100
-            }], [{
-                "distance": 100,
-                "time": 100
-            }, {
-                "distance": 0,
-                "time": 0
-            }]]
+            'sources_to_targets': [
+                [{
+                    "distance": 0,
+                    "time": 0
+                }, {
+                    "distance": 100,
+                    "time": 100
+                }], [{
+                    "distance": 100,
+                    "time": 100
+                }, {
+                    "distance": 0,
+                    "time": 0
+                }]
+            ]
         }
     },
     'osrm': {
         'directions_geojson': {
-            'routes': [{
-                "geometry": {
-                    "coordinates": [[8.681495, 49.41461],
-                                    [8.681445, 49.415755]]
-                },
-                "duration": 100,
-                "distance": 100
-            }]
+            'routes': [
+                {
+                    "geometry": {
+                        "coordinates": [[8.681495, 49.41461], [8.681445, 49.415755]]
+                    },
+                    "duration": 100,
+                    "distance": 100
+                }
+            ]
         },
         'directions_polyline': {
-            'routes': [{
-                "geometry":
-                'qmbjHspkr@kCmCpE{T~M|@|QcRvC}OjCgD~F~@~I~SjLxqAjT||@lDde@aBhh@uUbuAmJpPod@|c@iWhQoSt_@}Hx]oTfNqNWqQeKilAa]hByx@DiCvDd@dNxJ[zMl[eCfKlBn[rUb]z]pGoGbHtY|j@xw@jKnFfd@~IdhEpyFm@rGpInKyAhDuDuE',
-                "duration": 100,
-                "distance": 100
-            }]
+            'routes': [
+                {
+                    "geometry":
+                    'qmbjHspkr@kCmCpE{T~M|@|QcRvC}OjCgD~F~@~I~SjLxqAjT||@lDde@aBhh@uUbuAmJpPod@|c@iWhQoSt_@}Hx]oTfNqNWqQeKilAa]hByx@DiCvDd@dNxJ[zMl[eCfKlBn[rUb]z]pGoGbHtY|j@xw@jKnFfd@~IdhEpyFm@rGpInKyAhDuDuE',
+                    "duration": 100,
+                    "distance": 100
+                }
+            ]
         },
         'directions_polyline6': {
-            'routes': [{
-                "geometry":
-                'wpan|A}n|`O{j@yk@v`AuyE~tCfRx|De~Dln@khDhj@as@doAnR~lBhqEtdCxzXvtExjRvu@t|Ju]z{K}aFd|YiqBrnDkvJrpJ_rF|uDalEhfIibB`sHavEjwCgzCyFayDkxBadWykHf`@_aQ|@cj@rx@rJjvCduBgGtsCb{Gsh@lyBla@f|GhaFxkHvsHttAatAhzAliGvvLnwPtzBriAjsJhmBvz}@jhmAoMnuA`iBb|Bi[bt@}w@ebA',
-                "duration": 100,
-                "distance": 100
-            }]
+            'routes': [
+                {
+                    "geometry":
+                    'wpan|A}n|`O{j@yk@v`AuyE~tCfRx|De~Dln@khDhj@as@doAnR~lBhqEtdCxzXvtExjRvu@t|Ju]z{K}aFd|YiqBrnDkvJrpJ_rF|uDalEhfIibB`sHavEjwCgzCyFayDkxBadWykHf`@_aQ|@cj@rx@rJjvCduBgGtsCb{Gsh@lyBla@f|GhaFxkHvsHttAatAhzAliGvvLnwPtzBriAjsJhmBvz}@jhmAoMnuA`iBb|Bi[bt@}w@ebA',
+                    "duration": 100,
+                    "distance": 100
+                }
+            ]
         },
         "matrix": {
             "durations": [[1, 2, 3], [4, 5, 6]]
@@ -141,14 +143,15 @@ ENDPOINTS_RESPONSES = {
     },
     'mapbox_osrm': {
         'directions': {
-            'routes': [{
-                "geometry": {
-                    "coordinates": [[8.681495, 49.41461],
-                                    [8.681445, 49.415755]]
-                },
-                "duration": 100,
-                "distance": 100
-            }]
+            'routes': [
+                {
+                    "geometry": {
+                        "coordinates": [[8.681495, 49.41461], [8.681445, 49.415755]]
+                    },
+                    "duration": 100,
+                    "distance": 100
+                }
+            ]
         },
         "isochrones": {
             "type":
@@ -163,9 +166,8 @@ ENDPOINTS_RESPONSES = {
                         "center": [8.684162488752957, 49.4230724075398]
                     },
                     "geometry": {
-                        "coordinates": [[[8.684544, 49.423295],
-                                         [8.684665, 49.423101],
-                                         [8.684706, 49.423036]]],
+                        "coordinates":
+                        [[[8.684544, 49.423295], [8.684665, 49.423101], [8.684706, 49.423036]]],
                         "type":
                         "Polygon"
                     }
@@ -178,9 +180,8 @@ ENDPOINTS_RESPONSES = {
                         "center": [8.684162488752957, 49.4230724075398]
                     },
                     "geometry": {
-                        "coordinates": [[[8.684544, 49.423295],
-                                         [8.684665, 49.423101],
-                                         [8.684706, 49.423036]]],
+                        "coordinates":
+                        [[[8.684544, 49.423295], [8.684665, 49.423101], [8.684706, 49.423036]]],
                         "type":
                         "Polygon"
                     }
@@ -194,157 +195,156 @@ ENDPOINTS_RESPONSES = {
     },
     'google': {
         "directions": {
-            "routes": [{
-                "legs": [{
-                    "distance": {
-                        "value": 541359
-                    },
-                    "duration": {
-                        "value": 19448
-                    },
-                    "steps": [
+            "routes": [
+                {
+                    "legs": [
                         {
                             "distance": {
-                                "value": 280
+                                "value": 541359
                             },
                             "duration": {
-                                "value": 67
+                                "value": 19448
                             },
-                            "polyline": {
-                                "points":
-                                "ayotGvy_sMV]t@_APk@DOFW@O@OAwADiE?k@Hq@@UHuG@s@@{@DiIDsFDkG@aIAa@?WAUASGe@Im@EYEOCOO_@Kk@Ie@Oe@GWKUMWwAoCmDmGwB}D_AgBoAaCqCaGuA_D}@_BIS]m@KQMUy@}AwAgCk@cAiB_D{AsCcBwCmAsBm@aAoAuBeB{Bm@sAe@mAMa@Qi@Uy@e@eB[eAIUOm@u@iCi@eCaA}DcAyCy@qB{EiIMU"
-                            },
-                        },
-                        {
-                            "distance": {
-                                "value": 2493
-                            },
-                            "duration": {
-                                "value": 511
-                            },
-                            "polyline": {
-                                "points":
-                                "ayotGvy_sMV]t@_APk@DOFW@O@OAwADiE?k@Hq@@UHuG@s@@{@DiIDsFDkG@aIAa@?WAUASGe@Im@EYEOCOO_@Kk@Ie@Oe@GWKUMWwAoCmDmGwB}D_AgBoAaCqCaGuA_D}@_BIS]m@KQMUy@}AwAgCk@cAiB_D{AsCcBwCmAsBm@aAoAuBeB{Bm@sAe@mAMa@Qi@Uy@e@eB[eAIUOm@u@iCi@eCaA}DcAyCy@qB{EiIMU"
-                            },
+                            "steps": [
+                                {
+                                    "distance": {
+                                        "value": 280
+                                    },
+                                    "duration": {
+                                        "value": 67
+                                    },
+                                    "polyline": {
+                                        "points":
+                                        "ayotGvy_sMV]t@_APk@DOFW@O@OAwADiE?k@Hq@@UHuG@s@@{@DiIDsFDkG@aIAa@?WAUASGe@Im@EYEOCOO_@Kk@Ie@Oe@GWKUMWwAoCmDmGwB}D_AgBoAaCqCaGuA_D}@_BIS]m@KQMUy@}AwAgCk@cAiB_D{AsCcBwCmAsBm@aAoAuBeB{Bm@sAe@mAMa@Qi@Uy@e@eB[eAIUOm@u@iCi@eCaA}DcAyCy@qB{EiIMU"
+                                    },
+                                }, {
+                                    "distance": {
+                                        "value": 2493
+                                    },
+                                    "duration": {
+                                        "value": 511
+                                    },
+                                    "polyline": {
+                                        "points":
+                                        "ayotGvy_sMV]t@_APk@DOFW@O@OAwADiE?k@Hq@@UHuG@s@@{@DiIDsFDkG@aIAa@?WAUASGe@Im@EYEOCOO_@Kk@Ie@Oe@GWKUMWwAoCmDmGwB}D_AgBoAaCqCaGuA_D}@_BIS]m@KQMUy@}AwAgCk@cAiB_D{AsCcBwCmAsBm@aAoAuBeB{Bm@sAe@mAMa@Qi@Uy@e@eB[eAIUOm@u@iCi@eCaA}DcAyCy@qB{EiIMU"
+                                    },
+                                }
+                            ]
                         }
                     ]
-                }]
-            }]
+                }
+            ]
         },
         'matrix': {
-            "rows": [{
-                "elements": [{
-                    "distance": {
-                        "text": "225 mi",
-                        "value": 361957
-                    },
-                    "duration": {
-                        "text": "3 hours 50 mins",
-                        "value": 13813
-                    }
-                }]
-            }]
+            "rows": [
+                {
+                    "elements": [
+                        {
+                            "distance": {
+                                "text": "225 mi",
+                                "value": 361957
+                            },
+                            "duration": {
+                                "text": "3 hours 50 mins",
+                                "value": 13813
+                            }
+                        }
+                    ]
+                }
+            ]
         }
     },
     'ors': {
         'directions': {
             "json": {
-                "routes": [{
-                    "summary": {
-                        "distance": 850.5,
-                        "duration": 191.4
-                    },
-                    "geometry":
-                    "ihrlHir~s@cFFcAKeB_@_B]g@IUAQB]PaCr@y@cJeBXe@qJ_@kH??"
-                }]
+                "routes": [
+                    {
+                        "summary": {
+                            "distance": 850.5,
+                            "duration": 191.4
+                        },
+                        "geometry": "ihrlHir~s@cFFcAKeB_@_B]g@IUAQB]PaCr@y@cJeBXe@qJ_@kH??"
+                    }
+                ]
             },
             "geojson": {
                 "type":
                 "FeatureCollection",
-                "features": [{
-                    "type": "Feature",
-                    "geometry": {
-                        "coordinates": [[8.681495, 49.41461],
-                                        [8.681445, 49.415755]],
-                        "type":
-                        "LineString"
-                    },
-                    "properties": {
-                        "summary": {
-                            "distance": 850.5,
-                            "duration": 191.4
-                        }
-                    },
-                }]
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "coordinates": [[8.681495, 49.41461], [8.681445, 49.415755]],
+                            "type": "LineString"
+                        },
+                        "properties": {
+                            "summary": {
+                                "distance": 850.5,
+                                "duration": 191.4
+                            }
+                        },
+                    }
+                ]
             }
         },
         "isochrones": {
             "type":
             "FeatureCollection",
             "bbox": [8.688474, 8.681829, 49.42577, 49.420176],
-            "features": [{
-                "type": "Feature",
-                "properties": {
-                    "group_index": 0,
-                    "value": 100,
-                    "center": [8.684162488752957, 49.4230724075398]
-                },
-                "geometry": {
-                    "coordinates": [[[8.684544, 49.423295],
-                                     [8.684665, 49.423101],
-                                     [8.684706, 49.423036]]],
-                    "type":
-                    "Polygon"
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "group_index": 0,
+                        "value": 100,
+                        "center": [8.684162488752957, 49.4230724075398]
+                    },
+                    "geometry": {
+                        "coordinates":
+                        [[[8.684544, 49.423295], [8.684665, 49.423101], [8.684706, 49.423036]]],
+                        "type":
+                        "Polygon"
+                    }
+                }, {
+                    "type": "Feature",
+                    "properties": {
+                        "group_index": 0,
+                        "value": 200,
+                        "center": [8.684162488752957, 49.4230724075398]
+                    },
+                    "geometry": {
+                        "coordinates":
+                        [[[8.683974, 49.423982], [8.684035, 49.423627], [8.685104, 49.422131]]],
+                        "type":
+                        "Polygon"
+                    }
+                }, {
+                    "type": "Feature",
+                    "properties": {
+                        "group_index": 0,
+                        "value": 300,
+                        "center": [8.684162488752957, 49.4230724075398]
+                    },
+                    "geometry": {
+                        "coordinates":
+                        [[[8.68261, 49.423744], [8.682671, 49.423389], [8.683764, 49.421902]]],
+                        "type": "Polygon"
+                    }
+                }, {
+                    "type": "Feature",
+                    "properties": {
+                        "group_index": 0,
+                        "value": 400,
+                        "center": [8.684162488752957, 49.4230724075398]
+                    },
+                    "geometry": {
+                        "coordinates":
+                        [[[8.681829, 49.424426], [8.682416, 49.421699], [8.686179, 49.420176]]],
+                        "type":
+                        "Polygon"
+                    }
                 }
-            },
-                         {
-                             "type": "Feature",
-                             "properties": {
-                                 "group_index": 0,
-                                 "value": 200,
-                                 "center":
-                                 [8.684162488752957, 49.4230724075398]
-                             },
-                             "geometry": {
-                                 "coordinates": [[[8.683974, 49.423982],
-                                                  [8.684035, 49.423627],
-                                                  [8.685104, 49.422131]]],
-                                 "type":
-                                 "Polygon"
-                             }
-                         },
-                         {
-                             "type": "Feature",
-                             "properties": {
-                                 "group_index": 0,
-                                 "value": 300,
-                                 "center":
-                                 [8.684162488752957, 49.4230724075398]
-                             },
-                             "geometry": {
-                                 "coordinates": [[[8.68261, 49.423744],
-                                                  [8.682671, 49.423389],
-                                                  [8.683764, 49.421902]]],
-                                 "type":
-                                 "Polygon"
-                             }
-                         },
-                         {
-                             "type": "Feature",
-                             "properties": {
-                                 "group_index": 0,
-                                 "value": 400,
-                                 "center":
-                                 [8.684162488752957, 49.4230724075398]
-                             },
-                             "geometry": {
-                                 "coordinates": [[[8.681829, 49.424426],
-                                                  [8.682416, 49.421699],
-                                                  [8.686179, 49.420176]]],
-                                 "type":
-                                 "Polygon"
-                             }
-                         }]
+            ]
         },
         "matrix": {
             "durations": [[7900.34], [0], [136841.92], [483295.5]],
@@ -353,21 +353,21 @@ ENDPOINTS_RESPONSES = {
     },
     'graphhopper': {
         'directions': {
-            "paths": [{
-                "distance": 15239.553,
-                "time": 2349463,
-                "points": "korlHun~s@inUAiBP"
-            },
-                      {
-                          "distance": 15239.553,
-                          "time": 2349463,
-                          "points": "korlHun~s@inUAiBP"
-                      },
-                      {
-                          "distance": 15239.553,
-                          "time": 2349463,
-                          "points": "korlHun~s@inUAiBP"
-                      }]
+            "paths": [
+                {
+                    "distance": 15239.553,
+                    "time": 2349463,
+                    "points": "korlHun~s@inUAiBP"
+                }, {
+                    "distance": 15239.553,
+                    "time": 2349463,
+                    "points": "korlHun~s@inUAiBP"
+                }, {
+                    "distance": 15239.553,
+                    "time": 2349463,
+                    "points": "korlHun~s@inUAiBP"
+                }
+            ]
         },
         'isochrones': {
             "polygons": [
@@ -379,13 +379,15 @@ ENDPOINTS_RESPONSES = {
                     "geometry": {
                         "type":
                         "Polygon",
-                        "coordinates":
-                        [[[8.345841896068496, 48.23514181901086, 1.0],
-                          [8.340545650732793, 48.23651784814562, 1.5],
-                          [8.340935036709944, 48.23593307068795, 1.5]]]
+                        "coordinates": [
+                            [
+                                [8.345841896068496, 48.23514181901086, 1.0],
+                                [8.340545650732793, 48.23651784814562, 1.5],
+                                [8.340935036709944, 48.23593307068795, 1.5]
+                            ]
+                        ]
                     }
-                },
-                {
+                }, {
                     "type": "Feature",
                     "properties": {
                         "bucket": 1
@@ -393,13 +395,15 @@ ENDPOINTS_RESPONSES = {
                     "geometry": {
                         "type":
                         "Polygon",
-                        "coordinates":
-                        [[[8.345999848380682, 48.23155678581201, 2.0],
-                          [8.348431345412836, 48.234402721399135, 2.0],
-                          [8.348099422039823, 48.23458791489723, 2.0]]]
+                        "coordinates": [
+                            [
+                                [8.345999848380682, 48.23155678581201, 2.0],
+                                [8.348431345412836, 48.234402721399135, 2.0],
+                                [8.348099422039823, 48.23458791489723, 2.0]
+                            ]
+                        ]
                     }
-                },
-                {
+                }, {
                     "type": "Feature",
                     "properties": {
                         "bucket": 2
@@ -407,61 +411,53 @@ ENDPOINTS_RESPONSES = {
                     "geometry": {
                         "type":
                         "Polygon",
-                        "coordinates":
-                        [[[8.349068835729408, 48.2354851976518, 2.5],
-                          [8.34836307396443, 48.23601708826144],
-                          [8.342155162442218, 48.23711268388732, 2.5]]]
+                        "coordinates": [
+                            [
+                                [8.349068835729408, 48.2354851976518, 2.5],
+                                [8.34836307396443, 48.23601708826144],
+                                [8.342155162442218, 48.23711268388732, 2.5]
+                            ]
+                        ]
                     }
                 }
             ]
         },
         'matrix': {
-            "distances": [[0, 1181, 13965], [1075, 0, 14059],
-                          [14120, 13766, 0]],
+            "distances": [[0, 1181, 13965], [1075, 0, 14059], [14120, 13766, 0]],
             "times": [[0, 255, 2122], [242, 0, 2094], [2144, 2019, 0]],
-            "weights": [[0.0, 272.99, 2331.526], [258.115, 0.0, 2305.121],
-                        [2356.307, 2225.083, 0.0]]
+            "weights": [[0.0, 272.99, 2331.526], [258.115, 0.0, 2305.121], [2356.307, 2225.083, 0.0]]
         }
     },
     'heremaps': {
         'directions': {
             'response': {
-                'route': [{
-                    'shape': [
-                        '8.6841352,49.4161567,560.0',
-                        '8.683039,49.4174594,560.0'
-                    ],
-                    'summary': {
-                        'distance': 27084,
-                        'trafficTime': 2830,
-                        'baseTime': 2830,
-                        'travelTime': 2830
+                'route': [
+                    {
+                        'shape': ['8.6841352,49.4161567,560.0', '8.683039,49.4174594,560.0'],
+                        'summary': {
+                            'distance': 27084,
+                            'trafficTime': 2830,
+                            'baseTime': 2830,
+                            'travelTime': 2830
+                        }
+                    }, {
+                        'shape': ['8.6841352,49.4161567,560.0', '8.683039,49.4174594,560.0'],
+                        'summary': {
+                            'distance': 27084,
+                            'trafficTime': 2830,
+                            'baseTime': 2830,
+                            'travelTime': 2830
+                        }
+                    }, {
+                        'shape': ['8.6841352,49.4161567,560.0', '8.683039,49.4174594,560.0'],
+                        'summary': {
+                            'distance': 27084,
+                            'trafficTime': 2830,
+                            'baseTime': 2830,
+                            'travelTime': 2830
+                        }
                     }
-                },
-                          {
-                              'shape': [
-                                  '8.6841352,49.4161567,560.0',
-                                  '8.683039,49.4174594,560.0'
-                              ],
-                              'summary': {
-                                  'distance': 27084,
-                                  'trafficTime': 2830,
-                                  'baseTime': 2830,
-                                  'travelTime': 2830
-                              }
-                          },
-                          {
-                              'shape': [
-                                  '8.6841352,49.4161567,560.0',
-                                  '8.683039,49.4174594,560.0'
-                              ],
-                              'summary': {
-                                  'distance': 27084,
-                                  'trafficTime': 2830,
-                                  'baseTime': 2830,
-                                  'travelTime': 2830
-                              }
-                          }]
+                ]
             }
         },
         'isochrones': {
@@ -470,40 +466,30 @@ ENDPOINTS_RESPONSES = {
                     'latitude': 8.3423399,
                     'longitude': 48.23424
                 },
-                'isoline': [{
-                    'range':
-                    1000,
-                    'component': [{
-                        'id':
-                        0,
-                        'shape':
-                        ['8.3724403,48.2271481', '8.3729553,48.2272339']
-                    }]
-                },
-                            {
-                                'range':
-                                2000,
-                                'component': [{
-                                    'id':
-                                    0,
-                                    'shape': [
-                                        '8.3724403,48.2271481',
-                                        '8.3729553,48.2272339'
-                                    ]
-                                }]
-                            },
-                            {
-                                'range':
-                                3000,
-                                'component': [{
-                                    'id':
-                                    0,
-                                    'shape': [
-                                        '8.3724403,48.2271481',
-                                        '8.3729553,48.2272339'
-                                    ]
-                                }]
-                            }],
+                'isoline': [
+                    {
+                        'range': 1000,
+                        'component':
+                        [{
+                            'id': 0,
+                            'shape': ['8.3724403,48.2271481', '8.3729553,48.2272339']
+                        }]
+                    }, {
+                        'range': 2000,
+                        'component':
+                        [{
+                            'id': 0,
+                            'shape': ['8.3724403,48.2271481', '8.3729553,48.2272339']
+                        }]
+                    }, {
+                        'range': 3000,
+                        'component':
+                        [{
+                            'id': 0,
+                            'shape': ['8.3724403,48.2271481', '8.3729553,48.2272339']
+                        }]
+                    }
+                ],
                 'start': {
                     'linkId': '+1141790171',
                     'mappedPosition': {
@@ -639,8 +625,10 @@ ENDPOINTS_QUERIES = {
             'truck',
             'request_id':
             101,
-            'avoid_areas': [[(8.688641, 49.420577), (8.680916, 49.415776)],
-                            [(8.780916, 49.445776), (8.780916, 49.445776)]],
+            'avoid_areas': [
+                [(8.688641, 49.420577), (8.680916, 49.415776)],
+                [(8.780916, 49.445776), (8.780916, 49.445776)]
+            ],
             'avoid_links': [-53623477],
             'avoid_seasonal_closures':
             True,
@@ -667,12 +655,10 @@ ENDPOINTS_QUERIES = {
             'json_attributes':
             9,
             'route_attributes': [
-                'waypoints', 'summary', 'summaryByCountry', 'shape',
-                'boundingBox', 'legs', 'notes', 'lines', 'routeId', 'groups',
-                'tickets', 'incidents', 'zones'
+                'waypoints', 'summary', 'summaryByCountry', 'shape', 'boundingBox', 'legs', 'notes',
+                'lines', 'routeId', 'groups', 'tickets', 'incidents', 'zones'
             ],
-            'leg_attributes':
-            ['maneuvers', 'waypoint', 'length', 'travelTime'],
+            'leg_attributes': ['maneuvers', 'waypoint', 'length', 'travelTime'],
             'maneuver_attributes': ['position', 'length', 'travelTime'],
             'link_attributes': ['shape', 'speedLimit'],
             'generalization_tolerances': [0.1, 0.01],
@@ -709,28 +695,19 @@ ENDPOINTS_QUERIES = {
             'fast',
         },
         'matrix': {
-            'locations': [[8.688641, 49.420577], [8.680916, 49.415776],
-                          [8.780916, 49.445776]],
+            'locations': [[8.688641, 49.420577], [8.680916, 49.415776], [8.780916, 49.445776]],
             'sources': [0, 1],
             'destinations': [2],
-            'profile':
-            'car',
+            'profile': 'car',
             'summary_attributes': ['traveltime', 'costfactor'],
-            'truck_type':
-            'truck',
-            'trailers_count':
-            3,
+            'truck_type': 'truck',
+            'trailers_count': 3,
             'shipped_hazardous_goods': ['gas', 'flammable'],
-            'limited_weight':
-            10,
-            'weight_per_axle':
-            100,
-            'height':
-            20,
-            'width':
-            10,
-            'length':
-            10
+            'limited_weight': 10,
+            'weight_per_axle': 100,
+            'height': 20,
+            'width': 10,
+            'length': 10
         },
         'isochrones': {
             'locations': PARAM_POINT,
@@ -928,8 +905,7 @@ ENDPOINTS_EXPECTED = {
                 'lat': PARAM_POINT[1],
                 'lon': PARAM_POINT[0]
             }],
-            'costing':
-            'auto',
+            'costing': 'auto',
             'costing_options': {
                 'auto': {
                     'maneuver_penalty': 50,
@@ -952,14 +928,10 @@ ENDPOINTS_EXPECTED = {
                 'type': 1,
                 'value': '2019-03-03T08:06'
             },
-            'id':
-            'wacko',
-            'denoise':
-            0.1,
-            'polygons':
-            True,
-            'generalize':
-            0.5,
+            'id': 'wacko',
+            'denoise': 0.1,
+            'polygons': True,
+            'generalize': 0.5,
         },
         'matrix': {
             'sources': [

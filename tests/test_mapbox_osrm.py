@@ -43,12 +43,12 @@ class MapboxOSRMTest(_test.TestCase):
 
         responses.add(
             responses.POST,
-            'https://api.mapbox.com/directions/v5/mapbox/{}'.format(
-                query['profile']),
+            'https://api.mapbox.com/directions/v5/mapbox/{}'.format(query['profile']),
             status=200,
             json=ENDPOINTS_RESPONSES['mapbox_osrm']['directions'],
             content_type='application/x-www-form-urlencoded',
-            headers={'Content-Type': 'application/x-www-form-urlencoded'})
+            headers={'Content-Type': 'application/x-www-form-urlencoded'}
+        )
 
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
@@ -61,7 +61,8 @@ class MapboxOSRMTest(_test.TestCase):
             'overview=simplified&exclude=motorway&approaches=%3Bcurb%3Bcurb%3Bcurb&banner_instuctions=true&'
             'language=de&roundabout_exits=true&voide_instructions=true&voice_units=metric&'
             'waypoint_names=a%3Bb%3Bc&waypoint_targets=%3B8.688641%2C49.420577%3B8.680916%2C49.415776%3B'
-            '8.780916%2C49.445776').split("&")
+            '8.780916%2C49.445776'
+        ).split("&")
         called_url = responses.calls[0].request.body.split("&")
         self.assertTrue(Counter(expected_url) == Counter(called_url))
 
@@ -77,12 +78,12 @@ class MapboxOSRMTest(_test.TestCase):
 
         responses.add(
             responses.POST,
-            'https://api.mapbox.com/directions/v5/mapbox/{}'.format(
-                query['profile']),
+            'https://api.mapbox.com/directions/v5/mapbox/{}'.format(query['profile']),
             status=200,
             json=ENDPOINTS_RESPONSES['mapbox_osrm']['directions'],
             content_type='application/x-www-form-urlencoded',
-            headers={'Content-Type': 'application/x-www-form-urlencoded'})
+            headers={'Content-Type': 'application/x-www-form-urlencoded'}
+        )
 
         routes = self.client.directions(**query)
 
@@ -96,7 +97,8 @@ class MapboxOSRMTest(_test.TestCase):
             'overview=simplified&exclude=motorway&approaches=%3Bcurb%3Bcurb%3Bcurb&banner_instuctions=true&'
             'language=de&roundabout_exits=true&voide_instructions=true&voice_units=metric&'
             'waypoint_names=a%3Bb%3Bc&waypoint_targets=%3B8.688641%2C49.420577%3B8.680916%2C49.415776%3B'
-            '8.780916%2C49.445776').split("&")
+            '8.780916%2C49.445776'
+        ).split("&")
         called_url = responses.calls[0].request.body.split("&")
         self.assertTrue(Counter(expected_url) == Counter(called_url))
 
@@ -120,7 +122,8 @@ class MapboxOSRMTest(_test.TestCase):
             ),
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         iso = self.client.isochrones(**query)
 
@@ -128,7 +131,8 @@ class MapboxOSRMTest(_test.TestCase):
         self.assertURLEqual(
             'https://api.mapbox.com/isochrone/v1/mapbox/driving/8.34234,48.23424?costing=mapbox/driving&access_token=sample_key&'
             'contours_colors=ff0000%2C00FF00&contours_minutes=10%2C20&denoise=0.1&generalize=0.5&polygons=True',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )
         self.assertIsInstance(iso, Isochrones)
         self.assertEqual(2, len(iso))
         for ischrone in iso:
@@ -140,16 +144,15 @@ class MapboxOSRMTest(_test.TestCase):
     @responses.activate
     def test_full_matrix(self):
         query = ENDPOINTS_QUERIES[self.name]['matrix']
-        coords = convert._delimit_list(
-            [convert._delimit_list(pair) for pair in query['locations']], ';')
+        coords = convert._delimit_list([convert._delimit_list(pair) for pair in query['locations']], ';')
 
         responses.add(
             responses.GET,
-            'https://api.mapbox.com/directions-matrix/v1/mapbox/{}/{}'.format(
-                query['profile'], coords),
+            'https://api.mapbox.com/directions-matrix/v1/mapbox/{}/{}'.format(query['profile'], coords),
             status=200,
             json=ENDPOINTS_RESPONSES['mapbox_osrm']['matrix'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         matrix = self.client.matrix(**query)
 
@@ -157,7 +160,8 @@ class MapboxOSRMTest(_test.TestCase):
         self.assertURLEqual(
             'https://api.mapbox.com/directions-matrix/v1/mapbox/driving/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?'
             'access_token=sample_key&annotations=distance%2Cduration&fallback_speed=50',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.distances, list)
         self.assertIsInstance(matrix.durations, list)
@@ -166,19 +170,18 @@ class MapboxOSRMTest(_test.TestCase):
     @responses.activate
     def test_few_sources_destinations_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
-        coords = convert._delimit_list(
-            [convert._delimit_list(pair) for pair in query['locations']], ';')
+        coords = convert._delimit_list([convert._delimit_list(pair) for pair in query['locations']], ';')
 
         query['sources'] = [1, 2]
         query['destinations'] = [0, 2]
 
         responses.add(
             responses.GET,
-            'https://api.mapbox.com/directions-matrix/v1/mapbox/{}/{}'.format(
-                query['profile'], coords),
+            'https://api.mapbox.com/directions-matrix/v1/mapbox/{}/{}'.format(query['profile'], coords),
             status=200,
             json=ENDPOINTS_RESPONSES['mapbox_osrm']['matrix'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         resp = self.client.matrix(**query)
 
@@ -186,4 +189,5 @@ class MapboxOSRMTest(_test.TestCase):
         self.assertURLEqual(
             'https://api.mapbox.com/directions-matrix/v1/mapbox/driving/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?'
             'access_token=sample_key&annotations=distance%2Cduration&destinations=0%3B2&fallback_speed=50&sources=1%3B2',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )

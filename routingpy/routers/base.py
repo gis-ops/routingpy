@@ -92,15 +92,16 @@ DEFAULT = type('object', (object, ), {'__repr__': lambda self: 'DEFAULT'})()
 
 class Router(metaclass=ABCMeta):
     """Abstract base class every router inherits from. Authentication is handled in each subclass."""
-
-    def __init__(self,
-                 base_url,
-                 user_agent=None,
-                 timeout=DEFAULT,
-                 retry_timeout=None,
-                 requests_kwargs=None,
-                 retry_over_query_limit=None,
-                 skip_api_error=None):
+    def __init__(
+            self,
+            base_url,
+            user_agent=None,
+            timeout=DEFAULT,
+            retry_timeout=None,
+            requests_kwargs=None,
+            retry_over_query_limit=None,
+            skip_api_error=None
+    ):
         """
         :param base_url: The base URL for the request. All routers must provide a default.
             Should not have a trailing slash.
@@ -145,8 +146,7 @@ class Router(metaclass=ABCMeta):
         self.base_url = base_url
 
         self.retry_over_query_limit = retry_over_query_limit if retry_over_query_limit is False else options.default_retry_over_query_limit
-        self.retry_timeout = timedelta(
-            seconds=retry_timeout or options.default_retry_timeout)
+        self.retry_timeout = timedelta(seconds=retry_timeout or options.default_retry_timeout)
 
         self.skip_api_error = skip_api_error or options.default_skip_api_error
 
@@ -165,21 +165,22 @@ class Router(metaclass=ABCMeta):
         self.timeout = timeout if timeout != DEFAULT else options.default_timeout
         self.requests_kwargs['timeout'] = self.timeout
 
-        self.proxies = self.requests_kwargs.get(
-            'proxies') or options.default_proxies
+        self.proxies = self.requests_kwargs.get('proxies') or options.default_proxies
         if self.proxies:
             self.requests_kwargs['proxies'] = self.proxies
 
         self._req = None
 
-    def _request(self,
-                 url,
-                 get_params={},
-                 post_params=None,
-                 first_request_time=None,
-                 retry_counter=0,
-                 requests_kwargs=None,
-                 dry_run=None):
+    def _request(
+            self,
+            url,
+            get_params={},
+            post_params=None,
+            first_request_time=None,
+            retry_counter=0,
+            requests_kwargs=None,
+            dry_run=None
+    ):
         """Performs HTTP GET/POST with credentials, returning the body as
         JSON.
 
@@ -246,8 +247,7 @@ class Router(metaclass=ABCMeta):
         requests_method = self._session.get
         if post_params is not None:
             requests_method = self._session.post
-            if final_requests_kwargs['headers'][
-                    'Content-Type'] == 'application/json':
+            if final_requests_kwargs['headers']['Content-Type'] == 'application/json':
                 final_requests_kwargs["json"] = post_params
             else:
                 # Send as x-www-form-urlencoded key-value pair string (e.g. Mapbox API)
@@ -255,14 +255,15 @@ class Router(metaclass=ABCMeta):
 
         # Only print URL and parameters for dry_run
         if dry_run:
-            print("url:\n{}\nParameters:\n{}".format(
-                self.base_url + authed_url,
-                json.dumps(final_requests_kwargs, indent=2)))
+            print(
+                "url:\n{}\nParameters:\n{}".format(
+                    self.base_url + authed_url, json.dumps(final_requests_kwargs, indent=2)
+                )
+            )
             return
 
         try:
-            response = requests_method(self.base_url + authed_url,
-                                       **final_requests_kwargs)
+            response = requests_method(self.base_url + authed_url, **final_requests_kwargs)
             self._req = response.request
 
         except requests.exceptions.Timeout:
@@ -273,12 +274,13 @@ class Router(metaclass=ABCMeta):
         if response.status_code in _RETRIABLE_STATUSES:
             # Retry request.
             warnings.warn(
-                'Server down.\nRetrying for the {}{} time.'.format(
-                    tried, get_ordinal(tried)), UserWarning)
+                'Server down.\nRetrying for the {}{} time.'.format(tried, get_ordinal(tried)),
+                UserWarning
+            )
 
-            return self._request(url, get_params, post_params,
-                                 first_request_time, retry_counter + 1,
-                                 requests_kwargs)
+            return self._request(
+                url, get_params, post_params, first_request_time, retry_counter + 1, requests_kwargs
+            )
 
         try:
             result = self._get_body(response)
@@ -287,25 +289,26 @@ class Router(metaclass=ABCMeta):
 
         except exceptions.RouterApiError:
             if self.skip_api_error:
-                warnings.warn("Router {} returned an API error with "
-                              "the following message:\n{}".format(
-                                  self.__class__.__name__, response.text))
+                warnings.warn(
+                    "Router {} returned an API error with "
+                    "the following message:\n{}".format(self.__class__.__name__, response.text)
+                )
                 return
 
             raise
 
         except exceptions.RetriableRequest as e:
-            if isinstance(e, exceptions.OverQueryLimit
-                          ) and not self.retry_over_query_limit:
+            if isinstance(e, exceptions.OverQueryLimit) and not self.retry_over_query_limit:
                 raise
 
             warnings.warn(
-                'Rate limit exceeded.\nRetrying for the {}{} time.'.format(
-                    tried, get_ordinal(tried)), UserWarning)
+                'Rate limit exceeded.\nRetrying for the {}{} time.'.format(tried, get_ordinal(tried)),
+                UserWarning
+            )
             # Retry request.
-            return self._request(url, get_params, post_params,
-                                 first_request_time, retry_counter + 1,
-                                 requests_kwargs)
+            return self._request(
+                url, get_params, post_params, first_request_time, retry_counter + 1, requests_kwargs
+            )
 
     @property
     def req(self):
@@ -319,8 +322,7 @@ class Router(metaclass=ABCMeta):
         try:
             body = response.json()
         except json.decoder.JSONDecodeError:
-            raise exceptions.JSONParseError(
-                "Can't decode JSON response:{}".format(response.text))
+            raise exceptions.JSONParseError("Can't decode JSON response:{}".format(response.text))
 
         if status_code == 429:
             raise exceptions.OverQueryLimit(status_code, body)
@@ -356,8 +358,7 @@ class Router(metaclass=ABCMeta):
         elif isinstance(params, (list, tuple)):
             params = params
 
-        return path + "?" + requests.utils.unquote_unreserved(
-            urlencode(params))
+        return path + "?" + requests.utils.unquote_unreserved(urlencode(params))
 
     @abstractmethod
     def directions(self):

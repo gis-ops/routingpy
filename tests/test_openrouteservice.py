@@ -42,11 +42,11 @@ class ORSTest(_test.TestCase):
 
         responses.add(
             responses.POST,
-            'https://api.openrouteservice.org/v2/directions/{}/json'.format(
-                query['profile']),
+            'https://api.openrouteservice.org/v2/directions/{}/json'.format(query['profile']),
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['directions']['json'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         routes = self.client.directions(**query, format='json')
 
@@ -69,11 +69,11 @@ class ORSTest(_test.TestCase):
 
         responses.add(
             responses.POST,
-            'https://api.openrouteservice.org/v2/directions/{}/geojson'.format(
-                query['profile']),
+            'https://api.openrouteservice.org/v2/directions/{}/geojson'.format(query['profile']),
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['directions']['geojson'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         routes = self.client.directions(**query, format='geojson')
 
@@ -96,11 +96,11 @@ class ORSTest(_test.TestCase):
 
         responses.add(
             responses.POST,
-            'https://api.openrouteservice.org/v2/isochrones/{}/geojson'.format(
-                query['profile']),
+            'https://api.openrouteservice.org/v2/isochrones/{}/geojson'.format(query['profile']),
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         isochrones = self.client.isochrones(**query)
 
@@ -129,11 +129,11 @@ class ORSTest(_test.TestCase):
 
         responses.add(
             responses.POST,
-            'https://api.openrouteservice.org/v2/matrix/{}/json'.format(
-                query['profile']),
+            'https://api.openrouteservice.org/v2/matrix/{}/json'.format(query['profile']),
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         matrix = self.client.matrix(**query)
 
@@ -154,13 +154,12 @@ class ORSTest(_test.TestCase):
 
         responses.add(
             responses.POST,
-            'https://api.openrouteservice.org/v2/directions/{}/geojson'.format(
-                query['profile']),
+            'https://api.openrouteservice.org/v2/directions/{}/geojson'.format(query['profile']),
             json=ENDPOINTS_RESPONSES[self.name]['directions']['geojson'],
             status=200,
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         resp = self.client.directions(**query)
 
-        self.assertDictContainsSubset({'Authorization': self.key},
-                                      responses.calls[0].request.headers)
+        self.assertDictContainsSubset({'Authorization': self.key}, responses.calls[0].request.headers)

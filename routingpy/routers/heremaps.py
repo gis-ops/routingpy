@@ -29,15 +29,17 @@ class HereMaps(Router):
 
     _DEFAULT_BASE_URL = 'https://route.api.here.com/routing/7.2'
 
-    def __init__(self,
-                 app_id=None,
-                 app_code=None,
-                 user_agent=None,
-                 timeout=DEFAULT,
-                 retry_timeout=None,
-                 requests_kwargs=None,
-                 retry_over_query_limit=False,
-                 skip_api_error=None):
+    def __init__(
+            self,
+            app_id=None,
+            app_code=None,
+            user_agent=None,
+            timeout=DEFAULT,
+            retry_timeout=None,
+            requests_kwargs=None,
+            retry_over_query_limit=False,
+            skip_api_error=None
+    ):
         """
         Initializes a HERE Maps client.
 
@@ -90,9 +92,10 @@ class HereMaps(Router):
         self.app_code = app_code
         self.app_id = app_id
 
-        super(HereMaps, self).__init__(self._DEFAULT_BASE_URL, user_agent,
-                                       timeout, retry_timeout, requests_kwargs,
-                                       retry_over_query_limit, skip_api_error)
+        super(HereMaps, self).__init__(
+            self._DEFAULT_BASE_URL, user_agent, timeout, retry_timeout, requests_kwargs,
+            retry_over_query_limit, skip_api_error
+        )
 
     class Waypoint(object):
         """
@@ -104,14 +107,15 @@ class HereMaps(Router):
         >>> waypoint = HereMaps.Waypoint(position=[8.15315, 52.53151], waypoint_type='passThrough', stopover_duration=120, transit_radius=500)
         >>> route = HereMaps(api_key).directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
-
-        def __init__(self,
-                     position,
-                     waypoint_type=None,
-                     stopover_duration=None,
-                     transit_radius='',
-                     user_label='',
-                     heading=''):
+        def __init__(
+                self,
+                position,
+                waypoint_type=None,
+                stopover_duration=None,
+                transit_radius='',
+                user_label='',
+                heading=''
+        ):
             """
             :param position: Indicates that the parameter contains a geographical position.
             :type position: list
@@ -154,15 +158,14 @@ class HereMaps(Router):
             here_waypoint = ['geo']
             if self.waypoint_type is not None and self.stopover_duration is not None:
                 here_waypoint.append(
-                    convert._delimit_list(
-                        [self.waypoint_type, self.stopover_duration], ','))
+                    convert._delimit_list([self.waypoint_type, self.stopover_duration], ',')
+                )
             elif self.waypoint_type is not None:
                 here_waypoint.append(self.waypoint_type)
 
-            position = convert._delimit_list([
-                convert._format_float(f)
-                for f in list(reversed(self.position))
-            ], ',')
+            position = convert._delimit_list(
+                [convert._format_float(f) for f in list(reversed(self.position))], ','
+            )
             position += ';' + self.transit_radius
             position += ';' + self.user_label
             position += ';' + self.heading
@@ -180,12 +183,9 @@ class HereMaps(Router):
         >>> route = HereMaps(api_key).directions(locations=location_list, profile=profile)
 
         """
-
-        def __init__(self,
-                     mode_type='fastest',
-                     mode_transport_type='car',
-                     mode_traffic=None,
-                     features=None):
+        def __init__(
+                self, mode_type='fastest', mode_transport_type='car', mode_traffic=None, features=None
+        ):
             """
             :param mode_type: RoutingType relevant to calculation.
             :type mode_type: str
@@ -219,67 +219,66 @@ class HereMaps(Router):
             if self.features is not None:
                 get_features = []
                 for f, w in self.features.items():
-                    get_features.append(
-                        convert._delimit_list([f, str(w)], ':'))
+                    get_features.append(convert._delimit_list([f, str(w)], ':'))
                 routing_mode.append(convert._delimit_list(get_features, ','))
             return convert._delimit_list(routing_mode, ';')
 
-    def directions(self,
-                   locations,
-                   profile,
-                   mode_type='fastest',
-                   format='json',
-                   request_id=None,
-                   avoid_areas=None,
-                   avoid_links=None,
-                   avoid_seasonal_closures=None,
-                   avoid_turns=None,
-                   allowed_zones=None,
-                   exclude_zones=None,
-                   exclude_zone_types=None,
-                   exclude_countries=None,
-                   arrival=None,
-                   departure=None,
-                   alternatives=None,
-                   metric_system=None,
-                   view_bounds=None,
-                   resolution=None,
-                   instruction_format=None,
-                   language=None,
-                   json_attributes=None,
-                   json_callback=None,
-                   representation=None,
-                   route_attributes=[
-                       'waypoints', 'summary', 'shape', 'boundingBox', 'legs'
-                   ],
-                   leg_attributes=None,
-                   maneuver_attributes=None,
-                   link_attributes=None,
-                   line_attributes=None,
-                   generalization_tolerances=None,
-                   vehicle_type=None,
-                   license_plate=None,
-                   max_number_of_changes=None,
-                   avoid_transport_types=None,
-                   walk_time_multiplier=None,
-                   walk_speed=None,
-                   walk_radius=None,
-                   combine_change=None,
-                   truck_type=None,
-                   trailers_count=None,
-                   shipped_hazardous_goods=None,
-                   limited_weight=None,
-                   weight_per_axle=None,
-                   height=None,
-                   width=None,
-                   length=None,
-                   tunnel_category=None,
-                   truck_restriction_penalty=None,
-                   return_elevation=None,
-                   consumption_model=None,
-                   custom_consumption_details=None,
-                   speed_profile=None,
-                   dry_run=None):
+    def directions(
+            self,
+            locations,
+            profile,
+            mode_type='fastest',
+            format='json',
+            request_id=None,
+            avoid_areas=None,
+            avoid_links=None,
+            avoid_seasonal_closures=None,
+            avoid_turns=None,
+            allowed_zones=None,
+            exclude_zones=None,
+            exclude_zone_types=None,
+            exclude_countries=None,
+            arrival=None,
+            departure=None,
+            alternatives=None,
+            metric_system=None,
+            view_bounds=None,
+            resolution=None,
+            instruction_format=None,
+            language=None,
+            json_attributes=None,
+            json_callback=None,
+            representation=None,
+            route_attributes=['waypoints', 'summary', 'shape', 'boundingBox', 'legs'],
+            leg_attributes=None,
+            maneuver_attributes=None,
+            link_attributes=None,
+            line_attributes=None,
+            generalization_tolerances=None,
+            vehicle_type=None,
+            license_plate=None,
+            max_number_of_changes=None,
+            avoid_transport_types=None,
+            walk_time_multiplier=None,
+            walk_speed=None,
+            walk_radius=None,
+            combine_change=None,
+            truck_type=None,
+            trailers_count=None,
+            shipped_hazardous_goods=None,
+            limited_weight=None,
+            weight_per_axle=None,
+            height=None,
+            width=None,
+            length=None,
+            tunnel_category=None,
+            truck_restriction_penalty=None,
+            return_elevation=None,
+            consumption_model=None,
+            custom_consumption_details=None,
+            speed_profile=None,
+            dry_run=None
+    ):
         """Get directions between an origin point and a destination point.
 
         For more information, https://developer.here.com/documentation/routing/topics/resource-calculate-route.html.
@@ -599,20 +598,23 @@ class HereMaps(Router):
             params["requestId"] = request_id
 
         if avoid_areas is not None:
-            params["avoidAreas"] = convert._delimit_list([
-                convert._delimit_list([
-                    convert._delimit_list([
-                        convert._format_float(f) for f in list(reversed(pair))
-                    ], ',') for pair in bounding_box
-                ], ';') for bounding_box in avoid_areas
-            ], '!')
+            params["avoidAreas"] = convert._delimit_list(
+                [
+                    convert._delimit_list(
+                        [
+                            convert._delimit_list(
+                                [convert._format_float(f) for f in list(reversed(pair))], ','
+                            ) for pair in bounding_box
+                        ], ';'
+                    ) for bounding_box in avoid_areas
+                ], '!'
+            )
 
         if avoid_links is not None:
             params["avoidLinks"] = convert._delimit_list(avoid_links, ',')
 
         if avoid_seasonal_closures is not None:
-            params["avoidSeasonalClosures"] = convert._convert_bool(
-                avoid_seasonal_closures)
+            params["avoidSeasonalClosures"] = convert._convert_bool(avoid_seasonal_closures)
 
         if avoid_turns is not None:
             params["avoidTurns"] = avoid_turns
@@ -624,12 +626,10 @@ class HereMaps(Router):
             params["excludeZones"] = convert._delimit_list(exclude_zones, ',')
 
         if exclude_zone_types is not None:
-            params["excludeZoneTypes"] = convert._delimit_list(
-                exclude_zone_types, ',')
+            params["excludeZoneTypes"] = convert._delimit_list(exclude_zone_types, ',')
 
         if exclude_countries is not None:
-            params["excludeCountries"] = convert._delimit_list(
-                exclude_countries, ',')
+            params["excludeCountries"] = convert._delimit_list(exclude_countries, ',')
 
         if departure is not None:
             params["departure"] = departure
@@ -643,12 +643,13 @@ class HereMaps(Router):
             params["metricSystem"] = metric_system
 
         if view_bounds is not None:
-            params["viewBounds"] = convert._delimit_list([
-                convert._delimit_list(
-                    [convert._format_float(f)
-                     for f in list(reversed(pair))], ',')
-                for pair in view_bounds
-            ], ';')
+            params["viewBounds"] = convert._delimit_list(
+                [
+                    convert._delimit_list([convert._format_float(f)
+                                           for f in list(reversed(pair))], ',')
+                    for pair in view_bounds
+                ], ';'
+            )
 
         if resolution is not None:
             params["resolution"] = str(resolution['viewresolution'])
@@ -665,32 +666,25 @@ class HereMaps(Router):
             params["jsonCallback"] = json_callback
 
         if representation is not None:
-            params["representation"] = convert._delimit_list(
-                representation, ',')
+            params["representation"] = convert._delimit_list(representation, ',')
 
         if route_attributes is not None:
-            params["routeAttributes"] = convert._delimit_list(
-                route_attributes, ',')
+            params["routeAttributes"] = convert._delimit_list(route_attributes, ',')
 
         if leg_attributes is not None:
-            params["legAttributes"] = convert._delimit_list(
-                leg_attributes, ',')
+            params["legAttributes"] = convert._delimit_list(leg_attributes, ',')
 
         if maneuver_attributes is not None:
-            params["maneuverAttributes"] = convert._delimit_list(
-                maneuver_attributes, ',')
+            params["maneuverAttributes"] = convert._delimit_list(maneuver_attributes, ',')
 
         if link_attributes is not None:
-            params["linkAttributes"] = convert._delimit_list(
-                link_attributes, ',')
+            params["linkAttributes"] = convert._delimit_list(link_attributes, ',')
 
         if line_attributes is not None:
-            params["lineAttributes"] = convert._delimit_list(
-                line_attributes, ',')
+            params["lineAttributes"] = convert._delimit_list(line_attributes, ',')
 
         if generalization_tolerances is not None:
-            params["generalizationTolerances"] = convert._delimit_list(
-                generalization_tolerances, ',')
+            params["generalizationTolerances"] = convert._delimit_list(generalization_tolerances, ',')
 
         if vehicle_type is not None:
             params["vehicleType"] = vehicle_type
@@ -702,8 +696,7 @@ class HereMaps(Router):
             params["maxNumberOfChanges"] = max_number_of_changes
 
         if avoid_transport_types is not None:
-            params["avoidTransportTypes"] = convert._delimit_list(
-                avoid_transport_types, ',')
+            params["avoidTransportTypes"] = convert._delimit_list(avoid_transport_types, ',')
 
         if walk_time_multiplier is not None:
             params["walkTimeMultiplier"] = walk_time_multiplier
@@ -724,8 +717,7 @@ class HereMaps(Router):
             params["trailersCount"] = trailers_count
 
         if shipped_hazardous_goods is not None:
-            params["shippedHazardousGoods"] = convert._delimit_list(
-                shipped_hazardous_goods, ',')
+            params["shippedHazardousGoods"] = convert._delimit_list(shipped_hazardous_goods, ',')
 
         if limited_weight is not None:
             params["limitedWeight"] = limited_weight
@@ -743,8 +735,7 @@ class HereMaps(Router):
             params["length"] = length
 
         if tunnel_category is not None:
-            params["tunnelCategory"] = convert._delimit_list(
-                tunnel_category, ',')
+            params["tunnelCategory"] = convert._delimit_list(tunnel_category, ',')
 
         if truck_restriction_penalty is not None:
             params["truckRestrictionPenalty"] = truck_restriction_penalty
@@ -765,8 +756,10 @@ class HereMaps(Router):
             self._request(
                 convert._delimit_list(["/calculateroute", format], '.'),
                 get_params=params,
-                dry_run=dry_run),
-            alternatives=alternatives)
+                dry_run=dry_run
+            ),
+            alternatives=alternatives
+        )
 
     @staticmethod
     def _parse_direction_json(response, alternatives):
@@ -782,64 +775,59 @@ class HereMaps(Router):
                 routes.append(
                     Direction(
                         geometry=[
-                            list(
-                                reversed(
-                                    list((map(float,
-                                              coordinates.split(','))))))
+                            list(reversed(list((map(float, coordinates.split(','))))))
                             for coordinates in route['shape']
                         ],
                         duration=int(route['summary']['baseTime']),
                         distance=int(route['summary']['distance']),
-                        raw=route))
+                        raw=route
+                    )
+                )
 
             return Directions(directions=routes, raw=response)
 
         else:
             geometry = [
-                list(reversed(list(map(float, coordinates.split(','))))) for
-                coordinates in response['response']['route'][0].get('shape')
+                list(reversed(list(map(float, coordinates.split(',')))))
+                for coordinates in response['response']['route'][0].get('shape')
             ]
-            duration = int(
-                response['response']['route'][0]['summary'].get('baseTime'))
-            distance = int(
-                response['response']['route'][0]['summary'].get('distance'))
+            duration = int(response['response']['route'][0]['summary'].get('baseTime'))
+            distance = int(response['response']['route'][0]['summary'].get('distance'))
 
-            return Direction(
-                geometry=geometry,
-                duration=duration,
-                distance=distance,
-                raw=response)
+            return Direction(geometry=geometry, duration=duration, distance=distance, raw=response)
 
-    def isochrones(self,
-                   locations,
-                   profile,
-                   intervals,
-                   mode_type='fastest',
-                   interval_type='time',
-                   format='json',
-                   center_type='start',
-                   request_id=None,
-                   arrival=None,
-                   departure=None,
-                   single_component=None,
-                   resolution=None,
-                   max_points=None,
-                   quality=None,
-                   json_attributes=None,
-                   json_callback=None,
-                   truck_type=None,
-                   trailers_count=None,
-                   shipped_hazardous_goods=None,
-                   limited_weight=None,
-                   weight_per_axle=None,
-                   height=None,
-                   width=None,
-                   length=None,
-                   tunnel_category=None,
-                   consumption_model=None,
-                   custom_consumption_details=None,
-                   speed_profile=None,
-                   dry_run=None):
+    def isochrones(
+            self,
+            locations,
+            profile,
+            intervals,
+            mode_type='fastest',
+            interval_type='time',
+            format='json',
+            center_type='start',
+            request_id=None,
+            arrival=None,
+            departure=None,
+            single_component=None,
+            resolution=None,
+            max_points=None,
+            quality=None,
+            json_attributes=None,
+            json_callback=None,
+            truck_type=None,
+            trailers_count=None,
+            shipped_hazardous_goods=None,
+            limited_weight=None,
+            weight_per_axle=None,
+            height=None,
+            width=None,
+            length=None,
+            tunnel_category=None,
+            consumption_model=None,
+            custom_consumption_details=None,
+            speed_profile=None,
+            dry_run=None
+    ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
         For more information, https://developer.here.com/documentation/routing/topics/resource-calculate-isoline.html.
@@ -1026,8 +1014,7 @@ class HereMaps(Router):
             params["trailersCount"] = trailers_count
 
         if shipped_hazardous_goods is not None:
-            params["shippedHazardousGoods"] = convert._delimit_list(
-                shipped_hazardous_goods, ',')
+            params["shippedHazardousGoods"] = convert._delimit_list(shipped_hazardous_goods, ',')
 
         if limited_weight is not None:
             params["limitedWeight"] = limited_weight
@@ -1045,8 +1032,7 @@ class HereMaps(Router):
             params["length"] = length
 
         if tunnel_category is not None:
-            params["tunnelCategory"] = convert._delimit_list(
-                tunnel_category, ',')
+            params["tunnelCategory"] = convert._delimit_list(tunnel_category, ',')
 
         if consumption_model is not None:
             params["consumptionModel"] = consumption_model
@@ -1061,7 +1047,9 @@ class HereMaps(Router):
             self._request(
                 convert._delimit_list(["/calculateisoline", format], '.'),
                 get_params=params,
-                dry_run=dry_run), intervals)
+                dry_run=dry_run
+            ), intervals
+        )
 
     @staticmethod
     def _parse_isochrone_json(response, intervals):
@@ -1076,45 +1064,47 @@ class HereMaps(Router):
                     if 'shape' in component:
                         coordinates_list = []
                         for coordinates in component['shape']:
-                            coordinates_list.append(
-                                [float(f) for f in coordinates.split(",")])
+                            coordinates_list.append([float(f) for f in coordinates.split(",")])
                         range_polygons.append(coordinates_list)
 
             geometries.append(
                 Isochrone(
                     geometry=range_polygons,
                     interval=intervals[idx],
-                    center=list(response['response']['start']
-                                ['mappedPosition'].values())))
+                    center=list(response['response']['start']['mappedPosition'].values())
+                )
+            )
 
         return Isochrones(isochrones=geometries, raw=response)
 
-    def matrix(self,
-               locations,
-               profile,
-               format='json',
-               mode_type='fastest',
-               sources=None,
-               destinations=None,
-               search_range=None,
-               avoid_areas=None,
-               avoid_links=None,
-               avoid_turns=None,
-               exclude_countries=None,
-               departure=None,
-               matrix_attributes=None,
-               summary_attributes=['traveltime', 'costfactor', 'distance'],
-               truck_type=None,
-               trailers_count=None,
-               shipped_hazardous_goods=None,
-               limited_weight=None,
-               weight_per_axle=None,
-               height=None,
-               width=None,
-               length=None,
-               tunnel_category=None,
-               speed_profile=None,
-               dry_run=None):
+    def matrix(
+            self,
+            locations,
+            profile,
+            format='json',
+            mode_type='fastest',
+            sources=None,
+            destinations=None,
+            search_range=None,
+            avoid_areas=None,
+            avoid_links=None,
+            avoid_turns=None,
+            exclude_countries=None,
+            departure=None,
+            matrix_attributes=None,
+            summary_attributes=['traveltime', 'costfactor', 'distance'],
+            truck_type=None,
+            trailers_count=None,
+            shipped_hazardous_goods=None,
+            limited_weight=None,
+            weight_per_axle=None,
+            height=None,
+            width=None,
+            length=None,
+            tunnel_category=None,
+            speed_profile=None,
+            dry_run=None
+    ):
         """ Gets travel distance and time for a matrix of origins and destinations.
 
             :param locations: The coordinates tuple the route should be calculated
@@ -1275,13 +1265,17 @@ class HereMaps(Router):
             params["searchRange"] = search_range
 
         if avoid_areas is not None:
-            params["avoidAreas"] = convert._delimit_list([
-                convert._delimit_list([
-                    convert._delimit_list([
-                        convert._format_float(f) for f in list(reversed(pair))
-                    ], ',') for pair in bounding_box
-                ], ';') for bounding_box in avoid_areas
-            ], '!')
+            params["avoidAreas"] = convert._delimit_list(
+                [
+                    convert._delimit_list(
+                        [
+                            convert._delimit_list(
+                                [convert._format_float(f) for f in list(reversed(pair))], ','
+                            ) for pair in bounding_box
+                        ], ';'
+                    ) for bounding_box in avoid_areas
+                ], '!'
+            )
 
         if avoid_links is not None:
             params["avoidLinks"] = convert._delimit_list(avoid_links, ',')
@@ -1290,19 +1284,16 @@ class HereMaps(Router):
             params["avoidTurns"] = avoid_turns
 
         if exclude_countries is not None:
-            params["excludeCountries"] = convert._delimit_list(
-                exclude_countries, ',')
+            params["excludeCountries"] = convert._delimit_list(exclude_countries, ',')
 
         if departure is not None:
             params["departure"] = departure.isoformat()
 
         if matrix_attributes is not None:
-            params["matrixAttributes"] = convert._delimit_list(
-                matrix_attributes, ',')
+            params["matrixAttributes"] = convert._delimit_list(matrix_attributes, ',')
 
         if summary_attributes is not None:
-            params["summaryAttributes"] = convert._delimit_list(
-                summary_attributes, ',')
+            params["summaryAttributes"] = convert._delimit_list(summary_attributes, ',')
 
         if truck_type is not None:
             params["truckType"] = truck_type
@@ -1311,8 +1302,7 @@ class HereMaps(Router):
             params["trailersCount"] = trailers_count
 
         if shipped_hazardous_goods is not None:
-            params["shippedHazardousGoods"] = convert._delimit_list(
-                shipped_hazardous_goods, ',')
+            params["shippedHazardousGoods"] = convert._delimit_list(shipped_hazardous_goods, ',')
 
         if limited_weight is not None:
             params["limitedWeight"] = limited_weight
@@ -1330,8 +1320,7 @@ class HereMaps(Router):
             params["length"] = length
 
         if tunnel_category is not None:
-            params["tunnelCategory"] = convert._delimit_list(
-                tunnel_category, ',')
+            params["tunnelCategory"] = convert._delimit_list(tunnel_category, ',')
 
         if speed_profile is not None:
             params["speedProfile"] = speed_profile
@@ -1340,7 +1329,9 @@ class HereMaps(Router):
             self._request(
                 convert._delimit_list(["/calculatematrix", format], '.'),
                 get_params=params,
-                dry_run=dry_run))
+                dry_run=dry_run
+            )
+        )
 
     @staticmethod
     def _parse_matrix_json(response):
@@ -1390,21 +1381,22 @@ class HereMaps(Router):
                 if isinstance(locations, self.Waypoint):
                     locations.append(locations._make_waypoint())
                 elif isinstance(locations, (list, tuple)):
-                    wp = 'geo!' + convert._delimit_list([
-                        convert._format_float(f)
-                        for f in list(reversed(coord))
-                    ], ',')
+                    wp = 'geo!' + convert._delimit_list(
+                        [convert._format_float(f) for f in list(reversed(coord))], ','
+                    )
                     locations.append(wp)
                 else:
                     raise TypeError(
-                        "Location type {} at index {} is not supported: {}".
-                        format(type(coord), idx, coord))
+                        "Location type {} at index {} is not supported: {}".format(
+                            type(coord), idx, coord
+                        )
+                    )
 
         # Isochrones
         elif isinstance(coordinates[0], float):
-            center = 'geo!' + convert._delimit_list([
-                convert._format_float(f) for f in list(reversed(coordinates))
-            ], ',')
+            center = 'geo!' + convert._delimit_list(
+                [convert._format_float(f) for f in list(reversed(coordinates))], ','
+            )
             locations.append(center)
         # Isochrones using waypoint class
         elif isinstance(coordinates, self.Waypoint):

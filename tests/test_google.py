@@ -43,7 +43,8 @@ class GoogleTest(_test.TestCase):
             'https://maps.googleapis.com/maps/api/directions/json',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
@@ -51,8 +52,8 @@ class GoogleTest(_test.TestCase):
             'https://maps.googleapis.com/maps/api/directions/json?alternatives=true&arrival_time=1567512000&'
             'avoid=tolls%7Cferries&destination=49.445776%2C8.780916&key=sample_key&language=de&origin=49.420577%2C8.688641&'
             'profile=driving&region=de&traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&'
-            'units=metrics&waypoints=49.415776%2C8.680916',
-            responses.calls[0].request.url)
+            'units=metrics&waypoints=49.415776%2C8.680916', responses.calls[0].request.url
+        )
 
         self.assertIsInstance(routes, Directions)
         self.assertIsInstance(routes[0], Direction)
@@ -71,7 +72,8 @@ class GoogleTest(_test.TestCase):
             'https://maps.googleapis.com/maps/api/directions/json',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
@@ -79,8 +81,8 @@ class GoogleTest(_test.TestCase):
             'https://maps.googleapis.com/maps/api/directions/json?alternatives=false&arrival_time=1567512000&'
             'avoid=tolls%7Cferries&destination=49.445776%2C8.780916&key=sample_key&language=de&origin=49.420577%2C8.688641&'
             'profile=driving&region=de&traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&'
-            'units=metrics&waypoints=49.415776%2C8.680916',
-            responses.calls[0].request.url)
+            'units=metrics&waypoints=49.415776%2C8.680916', responses.calls[0].request.url
+        )
 
         self.assertIsInstance(routes, Direction)
         self.assertIsInstance(routes.geometry, list)
@@ -97,7 +99,8 @@ class GoogleTest(_test.TestCase):
             Google.WayPoint(PARAM_LINE_MULTI[1], 'coords', True),
             Google.WayPoint(
                 'EiNNYXJrdHBsLiwgNjkxMTcgSGVpZGVsYmVyZywgR2VybWFueSIuKiwKFAoSCdubgq0HwZdHEdclR2bm32EmEhQKEgmTG6mCBsGXRxF38ZZ8m5j3VQ',
-                'place_id', False),
+                'place_id', False
+            ),
             PARAM_LINE_MULTI[0],
         ]
         query['optimize'] = True
@@ -107,7 +110,8 @@ class GoogleTest(_test.TestCase):
             'https://maps.googleapis.com/maps/api/directions/json',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         directions = self.client.directions(**query)
 
@@ -118,11 +122,11 @@ class GoogleTest(_test.TestCase):
             'origin=49.415776%2C8.680916&profile=driving&region=de&traffic_model=optimistic&transit_mode=bus%7Crail&t'
             'ransit_routing_preference=less_walking&units=metrics&waypoints=optimize%3Atrue%7Cvia%3Aenc%3Aosazgqo%40%2F%40%3A%7C49.415776%2C8.680916%7C'
             'via%3Aplace_id%3AEiNNYXJrdHBsLiwgNjkxMTcgSGVpZGVsYmVyZywgR2VybWFueSIuKiwKFAoSCdubgq0HwZdHEdclR2bm32EmEhQKEgmTG6mCBsGXRxF38ZZ8m5j3VQ',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )
 
         # Test if 'bla' triggers a ValueError
-        query['locations'].insert(
-            1, Google.WayPoint(PARAM_LINE_MULTI[0], 'bla', True))
+        query['locations'].insert(1, Google.WayPoint(PARAM_LINE_MULTI[0], 'bla', True))
 
         with self.assertRaises(ValueError):
             matrix = self.client.directions(**query)
@@ -145,7 +149,8 @@ class GoogleTest(_test.TestCase):
             'https://maps.googleapis.com/maps/api/distancematrix/json',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         matrix = self.client.matrix(**query)
 
@@ -155,7 +160,8 @@ class GoogleTest(_test.TestCase):
             'destinations=49.420577%2C8.688641%7C49.415776%2C8.680916%7C49.445776%2C8.780916&key=sample_key&language=de&'
             'origins=49.420577%2C8.688641%7C49.415776%2C8.680916%7C49.445776%2C8.780916&profile=driving&region=de&'
             'traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&units=metrics',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )
 
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.durations, list)
@@ -172,7 +178,8 @@ class GoogleTest(_test.TestCase):
             'https://maps.googleapis.com/maps/api/distancematrix/json',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         matrix = self.client.matrix(**query)
 
@@ -184,7 +191,8 @@ class GoogleTest(_test.TestCase):
             'https://maps.googleapis.com/maps/api/distancematrix/json',
             status=200,
             json={},
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         matrix = self.client.matrix(**query)
 
@@ -193,13 +201,15 @@ class GoogleTest(_test.TestCase):
             'https://maps.googleapis.com/maps/api/distancematrix/json?arrival_time=1567512000&avoid=tolls%7Cferries&'
             'destinations=49.420577%2C8.688641&key=sample_key&language=de&origins=49.415776%2C8.680916&profile=driving&'
             'region=de&traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&'
-            'units=metrics', responses.calls[0].request.url)
+            'units=metrics', responses.calls[0].request.url
+        )
         self.assertURLEqual(
             'https://maps.googleapis.com/maps/api/distancematrix/json?arrival_time=1567512000&avoid=tolls%7Cferries&'
             'destinations=49.415776%2C8.680916%7C49.445776%2C8.780916&key=sample_key&language=de&'
             'origins=49.420577%2C8.688641%7C49.415776%2C8.680916%7C49.445776%2C8.780916&profile=driving&region=de&'
             'traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&units=metrics',
-            responses.calls[1].request.url)
+            responses.calls[1].request.url
+        )
 
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.durations, list)
@@ -214,7 +224,8 @@ class GoogleTest(_test.TestCase):
             Google.WayPoint(PARAM_LINE_MULTI[1], 'coords', True),
             Google.WayPoint(
                 'EiNNYXJrdHBsLiwgNjkxMTcgSGVpZGVsYmVyZywgR2VybWFueSIuKiwKFAoSCdubgq0HwZdHEdclR2bm32EmEhQKEgmTG6mCBsGXRxF38ZZ8m5j3VQ',
-                'place_id', False),
+                'place_id', False
+            ),
             PARAM_LINE_MULTI[0],
         ]
 
@@ -223,7 +234,8 @@ class GoogleTest(_test.TestCase):
             'https://maps.googleapis.com/maps/api/distancematrix/json',
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]['matrix'],
-            content_type='application/json')
+            content_type='application/json'
+        )
 
         matrix = self.client.matrix(**query)
 
@@ -234,4 +246,5 @@ class GoogleTest(_test.TestCase):
             'EiNNYXJrdHBsLiwgNjkxMTcgSGVpZGVsYmVyZywgR2VybWFueSIuKiwKFAoSCdubgq0HwZdHEdclR2bm32EmEhQKEgmTG6mCBsGXRxF38ZZ8m5j3VQ%7C49.420577%2C8.688641&'
             'key=sample_key&language=de&origins=49.415776%2C8.680916%7Cvia%3Aenc%3Aosazgqo%40%2F%40%3A%7C49.415776%2C8.680916%7Cvia%3Aplace_id%3AEiNNYXJrdHBsLiwgNjkxMTcgSGVpZGVsYmVyZywgR2VybWFueSIuKiwKFAoSCdubgq0HwZdHEdclR2bm32EmEhQKEgmTG6mCBsGXRxF38ZZ8m5j3VQ%7C49.420577%2C8.688641&'
             'profile=driving&region=de&traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&units=metrics',
-            responses.calls[0].request.url)
+            responses.calls[0].request.url
+        )
