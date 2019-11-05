@@ -78,6 +78,12 @@ Installation
     :target: https://anaconda.org/nilsnolde/routingpy
     :alt: Conda install
 
+**Recommended**: Install via poetry_:
+
+.. code:: bash
+
+    poetry install [--no-dev]
+
 Install using ``pip`` with
 
 .. code:: bash
@@ -309,3 +315,4 @@ All these parameters, and more, can optionally be **globally set** for all route
 .. _routing-py.routers: https://routingpy.readthedocs.io/en/latest/#module-routingpy.routers
 .. _Apache 2.0 License: https://github.com/gis-ops/routing-py/blob/master/LICENSE
 .. _mybinder.org: https://mybinder.org/v2/gh/gis-ops/routing-py/master?filepath=examples
+.. _poetry: https://github.com/sdispater/poetry

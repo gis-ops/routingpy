@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "routing-py"
+name = "routingpy"
 version = "0.2.4"
 description = "One lib to route them all."
 authors = ["Nils Nolde <nils@gis-ops.com>", "Tim Ellersiek <tim@gis-ops.com>"]
