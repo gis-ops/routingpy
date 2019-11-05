@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 ### Added
--
+- GeoJSON support for Graphhopper's isochrones
+- [MyBinder](https://mybinder.org/v2/gh/gis-ops/routing-py/master?filepath=examples) notebook collection
 ### Fixed
 - OSRM Mapbox isochrone ranges were using floats (#2)
 - Graphhopper isochrones used wrong vehicle parameter
