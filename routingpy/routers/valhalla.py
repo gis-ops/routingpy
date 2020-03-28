@@ -29,6 +29,7 @@ from operator import itemgetter
 
 class Valhalla(Router):
     """Performs requests to a Valhalla instance."""
+
     def __init__(
             self,
             base_url,
@@ -103,6 +104,7 @@ class Valhalla(Router):
         >>> waypoint = Valhalla.WayPoint(position=[8.15315, 52.53151], type='break', heading=120, heading_tolerance=10, minimum_reachability=10, radius=400)
         >>> route = Valhalla('http://localhost/v1').directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
+
         def __init__(
                 self,
                 position,

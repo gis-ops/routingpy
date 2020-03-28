@@ -21,6 +21,7 @@ Defines exceptions that are thrown by the ORS client.
 
 class RouterError(Exception):  # pragma: no cover
     """Represents an exception returned by the remote or local API."""
+
     def __init__(self, status, message=None):
         self.status = status
         self.message = message

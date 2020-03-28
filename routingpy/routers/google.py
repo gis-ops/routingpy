@@ -99,6 +99,7 @@ class Google(Router):
         >>> waypoint = Google.WayPoint(position=[8.15315, 52.53151], waypoint_type='coords', stopover=False)
         >>> route = Google(api_key).directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
+
         def __init__(self, position, waypoint_type='coords', stopover=True):
             """
             Constructs a waypoint with additional information, such as via or encoded lines.

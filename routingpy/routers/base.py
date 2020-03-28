@@ -92,6 +92,7 @@ DEFAULT = type('object', (object, ), {'__repr__': lambda self: 'DEFAULT'})()
 
 class Router(metaclass=ABCMeta):
     """Abstract base class every router inherits from. Authentication is handled in each subclass."""
+
     def __init__(
             self,
             base_url,
