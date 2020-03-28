@@ -17,7 +17,7 @@
 
 from .base import Router, DEFAULT
 from routingpy import utils
-from routingpy.direction import Direction
+from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
 
@@ -104,6 +104,7 @@ class ORS(Router):
             profile,
             format='geojson',
             preference=None,
+            alternative_routes=None,
             units=None,
             language=None,
             geometry=None,
@@ -143,6 +144,11 @@ class ORS(Router):
         :param preference: Specifies the routing preference. One of ["fastest, "shortest",
             "recommended"]. Default fastest.
         :type preference: str
+
+        :param alternative_routes: Specifies whether alternative routes are computed, and parameters
+            for the algorithm determining suitable alternatives. Must contain "share_factor", "target_count"
+            and "weight_factor".
+        :type alternative_routes: dict
 
         :param units: Specifies the distance unit. One of ["m", "km", "mi"]. Default "m".
         :type units: str
@@ -216,7 +222,7 @@ class ORS(Router):
         :param suppress_warnings: Tells the system to not return any warning messages in extra_info.
         :type suppress_warnings: bool
 
-        :param options: Refer to https://openrouteservice.org/documentation for
+        :param options: Refer to https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/geojson/post for
             detailed documentation. Construct your own dict() options object and paste it to your code.
         :type options: dict
 
@@ -231,6 +237,13 @@ class ORS(Router):
 
         if preference:
             params["preference"] = preference
+
+        if alternative_routes:
+            if not isinstance(alternative_routes, dict):
+                raise TypeError("alternative_routes must be a dict.")
+            if not all([key in alternative_routes.keys() for key in ['share_factor', 'target_count', 'weight_factor']]):
+                raise ValueError("alternative_routes needs 'share_factor', 'target_count', 'weight_factor' keys")
+            params['alternative_routes'] = alternative_routes
 
         if units:
             params["units"] = units
@@ -291,11 +304,11 @@ class ORS(Router):
                 get_params={},
                 post_params=params,
                 dry_run=dry_run
-            ), format, units
+            ), format, units, alternative_routes
         )
 
     @staticmethod
-    def _parse_direction_json(response, format, units):
+    def _parse_direction_json(response, format, units, alternative_routes):
         if response is None:  # pragma: no cover
             return Direction()
 
@@ -305,19 +318,51 @@ class ORS(Router):
         elif units == 'km':
             units_factor = 1000
 
-        if format == 'geojson':
-            geometry = response['features'][0]['geometry']['coordinates']
-            duration = int(response['features'][0]['properties']['summary']['duration'])
-            distance = int(response['features'][0]['properties']['summary']['distance'])
-        elif format == 'json':
-            geometry = [
-                list(reversed(coord))
-                for coord in utils.decode_polyline5(response['routes'][0]['geometry'])
-            ]
-            duration = int(response['routes'][0]['summary']['duration'])
-            distance = int(response['routes'][0]['summary']['distance'] * units_factor)
 
-        return Direction(geometry=geometry, duration=duration, distance=distance, raw=response)
+        if format == 'geojson':
+            if alternative_routes:
+                routes = []
+                for route in response['features']:
+                    routes.append(
+                        Direction(
+                            geometry=route['geometry']['coordinates'],
+                            distance=int(route['properties']['summary']['distance']),
+                            duration=int(route['properties']['summary']['duration']),
+                            raw=route
+                        )
+                    )
+                return Directions(routes, response)
+            else:
+                geometry = response['features'][0]['geometry']['coordinates']
+                duration = int(response['features'][0]['properties']['summary']['duration'])
+                distance = int(response['features'][0]['properties']['summary']['distance'])
+                return Direction(geometry=geometry, duration=duration, distance=distance, raw=response)
+        elif format == 'json':
+            if alternative_routes:
+                routes = []
+                for route in response['routes']:
+                    geometry = [
+                        list(reversed(coord))
+                        for coord in utils.decode_polyline5(route['geometry'])
+                    ]
+                    routes.append(
+                        Direction(
+                            geometry=geometry,
+                            distance=int(route['summary']['distance']),
+                            duration=int(route['summary']['duration'] * units_factor),
+                            raw=route
+                        )
+                    )
+                return Directions(routes, response)
+            else:
+                geometry = [
+                    list(reversed(coord))
+                    for coord in utils.decode_polyline5(response['routes'][0]['geometry'])
+                ]
+                duration = int(response['routes'][0]['summary']['duration'])
+                distance = int(response['routes'][0]['summary']['distance'] * units_factor)
+
+                return Direction(geometry=geometry, duration=duration, distance=distance, raw=response)
 
     def isochrones(
             self,

@@ -163,3 +163,25 @@ class ORSTest(_test.TestCase):
         resp = self.client.directions(**query)
 
         self.assertDictContainsSubset({'Authorization': self.key}, responses.calls[0].request.headers)
+
+    @responses.activate
+    def test_alternative_routes_error(self):
+        # Test that alternative route works and also throws right errors
+        query = deepcopy(ENDPOINTS_QUERIES['ors']['directions'])
+        query['alternative_routes'] = {"target_count": 0, "a": 0, "weight_factor": 0}
+
+        responses.add(
+            responses.POST,
+            'https://api.openrouteservice.org/v2/directions/{}/geojson'.format(query['profile']),
+            json=ENDPOINTS_RESPONSES[self.name]['directions']['geojson'],
+            status=200,
+            content_type='application/json'
+        )
+
+        with self.assertRaises(ValueError):
+            self.client.directions(**query)
+
+        query['alternative_routes'] = [0,1,2,3]
+
+        with self.assertRaises(TypeError):
+            self.client.directions(**query)
