@@ -1,3 +1,4 @@
+.tox/
 examples/*with_keys*
 **/.ipynb*
 conda/
