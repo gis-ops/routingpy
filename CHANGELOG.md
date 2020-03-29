@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Graphhopper isochrones used wrong vehicle parameter
 ### Changed
 - Profile parameter for HERE behaves now like other routers
+- ORS alternative_routes parameter (#4)
 ### Deprecated
 -
 
