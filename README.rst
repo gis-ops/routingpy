@@ -90,7 +90,7 @@ Install using ``pip`` with
 
    pip install routingpy
 
-Or with conda
+Or with conda (**deprecated**)
 
 .. code:: bash
 
