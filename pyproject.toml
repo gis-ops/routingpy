@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "routingpy"
-version = "0.2.6"
+version = "0.2.7"
 description = "One lib to route them all."
 authors = ["Nils Nolde <nils@gis-ops.com>", "Tim Ellersiek <tim@gis-ops.com>"]
 license = "Apache2"
+readme = 'README.rst'
 
 [tool.poetry.dependencies]
 python = "^3.5"
