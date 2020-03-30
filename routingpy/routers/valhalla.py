@@ -317,6 +317,7 @@ class Valhalla(Router):
             directions_type=None,
             avoid_locations=None,
             date_time=None,
+            show_locations=None,
             id=None,
             dry_run=None
     ):
@@ -384,7 +385,7 @@ class Valhalla(Router):
         :rtype: :class:`routingpy.isochrone.Isochrones`
         """
 
-        locations = self._build_locations(locations)
+        location_objects = self._build_locations(locations)
 
         contours = []
         for idx, r in enumerate(intervals):
@@ -397,7 +398,7 @@ class Valhalla(Router):
             contours.append(d)
 
         params = {
-            "locations": locations,
+            "locations": location_objects,
             "costing": profile,
             "contours": contours,
         }
@@ -422,29 +423,33 @@ class Valhalla(Router):
         if date_time:
             params['date_time'] = date_time
 
+        if show_locations is not None:
+            params['show_locations'] = show_locations
+
         if id:
             params['id'] = id
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
         return self._parse_isochrone_json(
             self._request("/isochrone", get_params=get_params, post_params=params, dry_run=dry_run),
-            intervals, list(locations[0].values())
+            intervals, locations
         )
 
     @staticmethod
-    def _parse_isochrone_json(response, intervals, center):
+    def _parse_isochrone_json(response, intervals, locations):
         if response is None:  # pragma: no cover
             return Isochrones()
 
-        return Isochrones(
-            [
-                Isochrone(
-                    geometry=isochrone['geometry']['coordinates'],
+        isochrones = []
+        for idx, feature in enumerate(reversed(response['features'])):
+            if feature['geometry']['type'] in ('LineString', 'Polygon'):
+                isochrones.append(Isochrone(
+                    geometry=feature['geometry']['coordinates'],
                     interval=intervals[idx],
-                    center=center
-                ) for idx, isochrone in enumerate(list(reversed(response['features'])))
-            ], response
-        )
+                    center=locations
+                ))
+
+        return Isochrones(isochrones, response)
 
     def matrix(
             self,
