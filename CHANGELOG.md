@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Profile parameter for HERE behaves now like other routers
 - ORS alternative_routes parameter (#4)
 - Brought Graphhopper support to its v1.x release
+- Minimum Python version > 3.6.1 (for Pandas 1.x)
 ### Deprecated
 -
 
