@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-**Unreleased** is available in `pip` and `conda`, but not released on Github.
+**Unreleased** is available in Github's `master` branch, but not on PyPI.
 
 ## Unreleased
 ### Added
@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Profile parameter for HERE behaves now like other routers
 - ORS alternative_routes parameter (#4)
+- Brought Graphhopper support to its v1.x release
 ### Deprecated
 -
 
