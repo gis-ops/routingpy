@@ -138,7 +138,8 @@ ENDPOINTS_RESPONSES = {
             ]
         },
         "matrix": {
-            "durations": [[1, 2, 3], [4, 5, 6]]
+            "durations": [[1, 2, 3], [4, 5, 6]],
+            "distances": [[1, 2, 3], [4, 5, 6]]
         }
     },
     'mapbox_osrm': {
@@ -577,6 +578,7 @@ ENDPOINTS_QUERIES = {
             'profile': 'car',
             'radiuses': [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
             'bearings': [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
+            'annotations': ['distance', 'duration']
         }
     },
     'mapbox_osrm': {

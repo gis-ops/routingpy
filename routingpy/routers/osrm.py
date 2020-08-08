@@ -15,6 +15,8 @@
 # the License.
 #
 
+from typing import List
+
 from .base import Router, DEFAULT
 from routingpy import convert, utils
 from routingpy.direction import Directions, Direction
@@ -246,7 +248,8 @@ class OSRM(Router):
             bearings=None,
             sources=None,
             destinations=None,
-            dry_run=None
+            dry_run=None,
+            annotations=['duration', 'distance']
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
@@ -289,6 +292,11 @@ class OSRM(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
+        .. versionadded:: 0.3.0
+        :param annotations: Return the requested table or tables in response.
+            One or more of ["duration", "distance"].
+        :type annotations: List[str]
+
         :returns: A matrix from the specified sources and destinations.
         :rtype: :class:`routingpy.matrix.Matrix`
         """
@@ -305,6 +313,9 @@ class OSRM(Router):
         if destinations:
             params['destinations'] = convert._delimit_list(destinations, ';')
 
+        if annotations:
+            params['annotations'] = convert._delimit_list(annotations)
+
         return self._parse_matrix_json(
             self._request("/table/v1/" + profile + '/' + coords, get_params=params, dry_run=dry_run)
         )
@@ -314,4 +325,8 @@ class OSRM(Router):
         if response is None:  # pragma: no cover
             return Matrix()
 
-        return Matrix(durations=response['durations'], distances=None, raw=response)
+        return Matrix(
+            durations=response.get('durations'),
+            distances=response.get('distances'),
+            raw=response
+        )
