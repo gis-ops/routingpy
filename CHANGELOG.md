@@ -13,11 +13,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Add departure and arrival parameter for HERE isochrones API
 - OSRM Mapbox isochrone ranges were using floats (#2)
+- OSRM matrix ouputs distances array now (#6)
 - Graphhopper isochrones used wrong vehicle parameter
 ### Changed
 - Profile parameter for HERE behaves now like other routers
 - ORS alternative_routes parameter (#4)
 - Brought Graphhopper support to its v1.x release
+- Minimum Python version > 3.6.1 (for Pandas 1.x)
 ### Deprecated
 -
 
