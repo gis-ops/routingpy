@@ -59,7 +59,9 @@ class MapboxValhalla(Valhalla):
             Example:
 
             >>> from routingpy.routers import MapboxValhalla
-            >>> router = MapboxValhalla(my_key, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> router = MapboxValhalla(my_key, requests_kwargs={
+            >>>     'proxies': {'https': '129.125.12.0'}
+            >>> })
             >>> print(router.proxies)
             {'https': '129.125.12.0'}
         :type requests_kwargs: dict

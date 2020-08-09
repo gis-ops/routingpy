@@ -68,7 +68,9 @@ class ORS(Router):
             Example:
 
             >>> from routingpy.routers import ORS
-            >>> router = ORS(my_key, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> router = ORS(my_key, requests_kwargs={
+            >>>     'proxies': {'https': '129.125.12.0'}
+            >>> })
             >>> print(router.proxies)
             {'https': '129.125.12.0'}
         :type requests_kwargs: dict
@@ -182,7 +184,7 @@ class ORS(Router):
         :type attributes: list of str
 
         :param maneuvers: Specifies whether the maneuver object is included into the step object or not. Default: False.
-        :type maneuvers bool
+        :type maneuvers: bool
 
         :param radiuses: A list of maximum distances (measured in
             meters) that limit the search of nearby road segments to every given waypoint.
@@ -227,10 +229,11 @@ class ORS(Router):
         :type options: dict
 
         :param dry_run: Print URL and parameters without sending the request.
-        :param dry_run: bool
+        :type dry_run: bool
 
         :returns: A route from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction`
+
         """
 
         params = {"coordinates": locations}

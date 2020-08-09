@@ -66,7 +66,9 @@ class MapboxOSRM(Router):
             Example:
 
             >>> from routingpy.routers import MapboxOSRM
-            >>> router = MapboxOSRM(my_key, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> router = MapboxOSRM(my_key, requests_kwargs={
+            >>>     'proxies': {'https': '129.125.12.0'}
+            >>> })
             >>> print(router.proxies)
             {'https': '129.125.12.0'}
         :type requests_kwargs: dict

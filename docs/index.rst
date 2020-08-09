@@ -149,9 +149,6 @@ Exceptions
 .. autoclass:: routingpy.exceptions.Timeout
     :show-inheritance:
 
-.. autoclass:: routingpy.exceptions.HTTPError
-    :show-inheritance:
-
 .. autoclass:: routingpy.exceptions.RetriableRequest
     :show-inheritance:
 

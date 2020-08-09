@@ -42,7 +42,7 @@ setup(
     python_requires='>=3.5.0',
     url=about['__url__'],
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
-    install_requires=['requests>=2.0'],
+    install_requires=['requests>=2.20.0'],
     include_package_data=True,
     license='Apache 2.0',
     classifiers=[

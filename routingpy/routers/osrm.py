@@ -65,7 +65,9 @@ class OSRM(Router):
             Example:
 
             >>> from routingpy.routers import OSRM
-            >>> router = OSRM(requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> router = OSRM(my_key, requests_kwargs={
+            >>>     'proxies': {'https': '129.125.12.0'}
+            >>> })
             >>> print(router.proxies)
             {'https': '129.125.12.0'}
         :type requests_kwargs: dict
@@ -290,15 +292,17 @@ class OSRM(Router):
         :type destinations: list of int
 
         :param dry_run: Print URL and parameters without sending the request.
-        :param dry_run: bool
+        :type dry_run: bool
 
-        .. versionadded:: 0.3.0
         :param annotations: Return the requested table or tables in response.
             One or more of ["duration", "distance"].
         :type annotations: List[str]
 
         :returns: A matrix from the specified sources and destinations.
         :rtype: :class:`routingpy.matrix.Matrix`
+
+        .. versionchanged:: 0.3.0
+           Add annotations parameter to get both distance and duration
         """
 
         coords = convert._delimit_list(

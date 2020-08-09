@@ -71,7 +71,9 @@ class Graphhopper(Router):
             Example:
 
             >>> from routingpy.routers import Graphhopper
-            >>> router = Graphhopper(my_key, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> router = Graphhopper(my_key, requests_kwargs={
+            >>>     'proxies': {'https': '129.125.12.0'}
+            >>> })
             >>> print(router.proxies)
             {'https': '129.125.12.0'}
         :type requests_kwargs: dict
@@ -181,8 +183,6 @@ class Graphhopper(Router):
             Default False.
         :type debug: bool
 
-        .. versionchanged:: 0.3.0
-           Used to be bool, which was not the right usage.
         :param point_hint: The point_hint is typically a road name to which the associated point parameter should be
             snapped to. Specify no point_hint parameter or the same number as you have locations. Optional.
         :type point_hint: list of str
@@ -250,26 +250,29 @@ class Graphhopper(Router):
         :type alternative_route_max_share_factor: float
 
         :param dry_run: Print URL and parameters without sending the request.
-        :param dry_run: bool
+        :type dry_run: bool
 
-        .. versionadded:: 0.3.0
         :param snap_prevention: Optional parameter to avoid snapping to a certain road class or road environment.
             Currently supported values are motorway, trunk, ferry, tunnel, bridge and ford. Optional.
         :type snap_prevention: list of str
 
-        .. versionadded:: 0.3.0
         :param curb_side: One of "any", "right", "left". It specifies on which side a point should be relative to the driver
             when she leaves/arrives at a start/target/via point. You need to specify this parameter for either none
             or all points. Only supported for motor vehicles and OpenStreetMap.
         :type curb_side: list of str
 
-        .. versionadded:: 0.3.0
         :param turn_costs: Specifies if turn restrictions should be considered. Enabling this option increases the
             route computation time. Only supported for motor vehicles and OpenStreetMap.
         :type turn_costs: bool
 
         :returns: One or multiple route(s) from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
+
+        .. versionchanged:: 0.3.0
+           `point_hint` used to be bool, which was not the right usage.
+
+        .. versionadded:: 0.3.0
+           ``snap_prevention``, ``curb_side``, ``turn_costs`` parameters
         """
 
         params = [('vehicle', profile)]
