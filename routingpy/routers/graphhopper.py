@@ -15,6 +15,8 @@
 # the License.
 #
 
+from typing import List, Tuple
+
 from .base import Router, DEFAULT
 from routingpy import convert
 from routingpy import utils
@@ -122,7 +124,10 @@ class Graphhopper(Router):
             alternative_route_max_paths=None,
             alternative_route_max_weight_factor=None,
             alternative_route_max_share_factor=None,
-            dry_run=None
+            dry_run=None,
+            snap_prevention=None,
+            curb_side=None,
+            turn_costs=None
     ):
         """Get directions between an origin point and a destination point.
 
@@ -176,16 +181,15 @@ class Graphhopper(Router):
             Default False.
         :type debug: bool
 
-        :param point_hint: Optional parameter. Specifies a hint for each point parameter to prefer a certain street for the
-            closest location lookup. E.g. if there is an address or house with two or more neighboring streets you can control
-            for which street the closest location is looked up.
-        :type point_hint: bool
+        .. versionchanged:: 0.3.0
+           Used to be bool, which was not the right usage.
+        :param point_hint: The point_hint is typically a road name to which the associated point parameter should be
+            snapped to. Specify no point_hint parameter or the same number as you have locations. Optional.
+        :type point_hint: list of str
 
-        :param details: Optional parameter. Optional parameter to retrieve path details. You can request additional details for the
-            route: street_name and time. For all motor vehicles we additionally support max_speed, toll (no, all, hgv),
-            road_class (motorway, primary, ...), road_environment, and surface. The returned format for one details
-            is [fromRef, toRef, value]. The ref references the points of the response. Multiple details are possible
-            via multiple key value pairs details=time&details=toll
+        :param details: Optional parameter to retrieve path details. You can request additional details for the route:
+            street_name, time, distance, max_speed, toll, road_class, road_class_link, road_access, road_environment,
+            lanes, and surface.
         :type details: list of str
 
         :param ch_disable: Always use ch_disable=true in combination with one or more parameters of this table.
@@ -248,6 +252,22 @@ class Graphhopper(Router):
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
 
+        .. versionadded:: 0.3.0
+        :param snap_prevention: Optional parameter to avoid snapping to a certain road class or road environment.
+            Currently supported values are motorway, trunk, ferry, tunnel, bridge and ford. Optional.
+        :type snap_prevention: list of str
+
+        .. versionadded:: 0.3.0
+        :param curb_side: One of "any", "right", "left". It specifies on which side a point should be relative to the driver
+            when she leaves/arrives at a start/target/via point. You need to specify this parameter for either none
+            or all points. Only supported for motor vehicles and OpenStreetMap.
+        :type curb_side: list of str
+
+        .. versionadded:: 0.3.0
+        :param turn_costs: Specifies if turn restrictions should be considered. Enabling this option increases the
+            route computation time. Only supported for motor vehicles and OpenStreetMap.
+        :type turn_costs: bool
+
         :returns: One or multiple route(s) from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
@@ -286,7 +306,17 @@ class Graphhopper(Router):
             params.append(("debug", convert._convert_bool(debug)))
 
         if point_hint is not None:
-            params.append(("point_hint", convert._convert_bool(point_hint)))
+            for hint in point_hint:
+                params.append(("point_hint", hint))
+
+        if snap_prevention:
+            params.append(('snap_prevention', convert._delimit_list(snap_prevention)))
+
+        if turn_costs:
+            params.append(('turn_costs', convert._convert_bool(turn_costs)))
+
+        if curb_side:
+            params.append(('curb_side', convert._delimit_list(curb_side)))
 
         ### all below params will only work if ch is disabled
 
@@ -401,14 +431,12 @@ class Graphhopper(Router):
         :type locations: tuple of float or list of float
 
         :param profile: Specifies the mode of transport.
-            One of bike, car, foot or
-            https://graphhopper.com/api/1/docs/supported-vehicle-profiles/Default.
-            Default "car".
+            One of "car" "bike" "foot" "hike" "mtb" "racingbike" "scooter" "truck" "small_truck". Default "car".
         :type profile: str
 
         :param intervals: Maximum range to calculate distances/durations for. You can also specify
             the ``buckets`` variable to break the single value into more isochrones. For compatibility reasons,
-            this parameter is expressed as list. In meters or seconds.
+            this parameter is expressed as list. In meters or seconds depending on `interval_type`.
         :type intervals: list of int or tuple of int
 
         :param interval_type: Set ``time`` for isochrones or ``distance`` for equidistants.
@@ -503,8 +531,8 @@ class Graphhopper(Router):
             In this case the starts are identical to the destinations.
             If there are N points, then NxN entries will be calculated.
             The order of the point parameter is important. Specify at least three points.
-            Cannot be used together with from_point or to_point. Is a string with the format latitude,longitude.
-        :type locations: list of list or tuple of tuple or list of tuple or tuple of list
+            Is a string with the format latitude,longitude.
+        :type locations: List[List[float]|Tuple[float]]|Tuple[List[float]|Tuple[float]]
 
         :param profile: Specifies the mode of transport.
             One of bike, car, foot or
@@ -514,17 +542,17 @@ class Graphhopper(Router):
 
         :param sources: The starting points for the routes.
             Specifies an index referring to locations.
-        :type sources: list of int
+        :type sources: List[int]
 
         :param destinations: The destination points for the routes. Specifies an index referring to locations.
-        :type destinations: list of int
+        :type destinations: List[int]
 
         :param out_array: Specifies which arrays should be included in the response. Specify one or more of the following
             options 'weights', 'times', 'distances'.
             The units of the entries of distances are meters, of times are seconds and of weights is arbitrary and it can differ
             for different vehicles or versions of this API.
             Default ["times", "distance"].
-        :type out_array: list of str
+        :type out_array: List[str]
 
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool

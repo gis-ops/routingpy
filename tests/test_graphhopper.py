@@ -55,7 +55,8 @@ class GraphhopperTest(_test.TestCase):
             'block_area=48.23424%2C8.34234&calc_points=false&ch.disable=true&debug=true&details=time&details=tolls&'
             'elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&'
             'optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&'
-            'point=49.445776%2C8.780916&point_hint=false&points_encoded=true&vehicle=car&type=json&weighting=short_fastest',
+            'point=49.445776%2C8.780916&point_hint=Graphhopper%20Lane&point_hint=OSM%20Street&point_hint=Routing%20Broadway&'
+            '&points_encoded=true&vehicle=car&type=json&weighting=short_fastest&snap_prevention=trunk%2Cferry&curb_side=any%2Cright&turn_costs=true',
             responses.calls[0].request.url
         )
 
@@ -85,7 +86,8 @@ class GraphhopperTest(_test.TestCase):
             'block_area=48.23424%2C8.34234&calc_points=false&ch.disable=true&debug=true&details=time&details=tolls&'
             'elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&'
             'optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&'
-            'point=49.445776%2C8.780916&point_hint=false&points_encoded=true&vehicle=car&type=json&weighting=short_fastest',
+            'point=49.445776%2C8.780916&point_hint=Graphhopper%20Lane&point_hint=OSM%20Street&point_hint=Routing%20Broadway'
+            '&points_encoded=true&vehicle=car&type=json&weighting=short_fastest&snap_prevention=trunk%2Cferry&curb_side=any%2Cright&turn_costs=true',
             responses.calls[0].request.url
         )
 
