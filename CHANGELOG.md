@@ -6,7 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 **Unreleased** is available in Github's `master` branch, but not on PyPI.
 
-## Unreleased
+## [Unreleased]
+### Added
+-
+### Fixed
+-
+### Changed
+-
+### Deprecated
+-
+
+## [0.3.0] 2020-08-09
 ### Added
 - GeoJSON support for Graphhopper's isochrones
 - [MyBinder](https://mybinder.org/v2/gh/gis-ops/routing-py/master?filepath=examples) notebook collection

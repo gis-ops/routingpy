@@ -31,7 +31,7 @@ We use Google's [`yapf`](https://github.com/google/yapf) to make sure the format
 When contributing, we expect you to:
 
 - close an existing issue. If there is none yet for your fix, please [create one](https://github.com/gis-ops/routingpy/issues/new).
-- write unit tests and/or mock API tests, depending on the introduced or fixed functionality
+- write/adapt unit tests and/or mock API tests, depending on the introduced or fixed functionality
 - limit the number of commits to a minimum, i.e. responsible use of [`git commit --amend [--no-edit]`](https://www.atlassian.com/git/tutorials/rewriting-history#git-commit--amend)
 - use meaningful commit messages, e.g. `commit -m "[bugfix] heremaps used [lat, long] as locations input parameter"`
 - you can branch off `master` and put a PR against `master` as well

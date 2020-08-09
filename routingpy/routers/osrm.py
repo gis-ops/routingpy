@@ -290,7 +290,7 @@ class OSRM(Router):
         :type destinations: list of int
 
         :param dry_run: Print URL and parameters without sending the request.
-        :param dry_run: bool
+        :type dry_run: bool
 
         .. versionadded:: 0.3.0
         :param annotations: Return the requested table or tables in response.
