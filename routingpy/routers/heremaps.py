@@ -69,7 +69,9 @@ class HereMaps(Router):
             Example:
 
             >>> from routingpy.routers import HereMaps
-            >>> router = HereMaps(my_api_id, my_api_code, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> router = HereMaps(my_key, requests_kwargs={
+            >>>     'proxies': {'https': '129.125.12.0'}
+            >>> })
             >>> print(router.proxies)
             {'https': '129.125.12.0'}
         :type requests_kwargs: dict

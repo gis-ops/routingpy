@@ -71,7 +71,9 @@ class Valhalla(Router):
             Example:
 
             >>> from routingpy.routers import Valhalla
-            >>> router = Valhalla(my_key, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> router = Valhalla(my_key, requests_kwargs={
+            >>>     'proxies': {'https': '129.125.12.0'}
+            >>> })
             >>> print(router.proxies)
             {'https': '129.125.12.0'}
         :type requests_kwargs: dict
