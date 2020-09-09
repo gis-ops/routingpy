@@ -28,6 +28,7 @@ class HereMaps(Router):
     """Performs requests to the HERE Maps API services."""
 
     _DEFAULT_BASE_URL = 'https://route.api.here.com/routing/7.2'
+    _APIKEY_BASE_URL = 'https://route.ls.hereapi.com/routing/7.2'
 
     def __init__(
             self,
@@ -38,7 +39,8 @@ class HereMaps(Router):
             retry_timeout=None,
             requests_kwargs=None,
             retry_over_query_limit=False,
-            skip_api_error=None
+            skip_api_error=None,
+            api_key=None
     ):
         """
         Initializes a HERE Maps client.
@@ -88,14 +90,19 @@ class HereMaps(Router):
         :type skip_api_error: bool
         """
 
-        if app_id is None and app_code is None:
-            raise KeyError("HERE Maps app_id and app_code must be specified.")
+        if app_id is None and app_code is None and api_key is None:
+            raise KeyError("HERE Maps app_id and app_code, or api_key must be specified.")
+        if (app_id is not None or app_code is not None) and api_key is not None:
+            raise KeyError("Either HERE Maps app_id and app_code, or api_key can be specified, not both.")
+
 
         self.app_code = app_code
         self.app_id = app_id
+        self.api_key = api_key
 
         super(HereMaps, self).__init__(
-            self._DEFAULT_BASE_URL, user_agent, timeout, retry_timeout, requests_kwargs,
+            self._DEFAULT_BASE_URL if self.api_key is None else self._APIKEY_BASE_URL, 
+            user_agent, timeout, retry_timeout, requests_kwargs,
             retry_over_query_limit, skip_api_error
         )
 
@@ -208,8 +215,7 @@ class HereMaps(Router):
             self.mode_type = mode_type
             self.mode_transport_type = mode_transport_type
             self.mode_traffic = mode_traffic
-            if features is not None:
-                self.features = features
+            self.features = features
 
         def make_routing_mode(self):
 
@@ -581,11 +587,15 @@ class HereMaps(Router):
 
         """
 
-        self.base_url = 'https://route.api.here.com/routing/7.2'
+        self.base_url = 'https://route.api.here.com/routing/7.2' if self.api_key is None else 'https://route.ls.hereapi.com/routing/7.2'
         params = {}
 
-        params["app_code"] = self.app_code
-        params["app_id"] = self.app_id
+        if self.api_key is not None:
+            params["apikey"] = self.api_key
+        else:
+            params["app_code"] = self.app_code
+            params["app_id"] = self.app_id
+        
 
         locations = self._build_locations(locations)
 
@@ -977,11 +987,14 @@ class HereMaps(Router):
         :rtype: dict
         """
 
-        self.base_url = 'https://isoline.route.api.here.com/routing/7.2'
+        self.base_url = 'https://isoline.route.api.here.com/routing/7.2' if self.api_key is None else 'https://isoline.route.ls.hereapi.com/routing/7.2'
         params = {}
 
-        params["app_code"] = self.app_code
-        params["app_id"] = self.app_id
+        if self.api_key is not None:
+            params["apikey"] = self.api_key
+        else:
+            params["app_code"] = self.app_code
+            params["app_id"] = self.app_id
 
         params[center_type] = self._build_locations(locations)[0]
 
@@ -1241,11 +1254,14 @@ class HereMaps(Router):
             :returns: raw JSON response
             :rtype: dict
             """
-        self.base_url = 'https://matrix.route.api.here.com/routing/7.2'
+        self.base_url = 'https://matrix.route.api.here.com/routing/7.2' if self.api_key is None else 'https://matrix.route.ls.hereapi.com/routing/7.2'
         params = {}
 
-        params["app_code"] = self.app_code
-        params["app_id"] = self.app_id
+        if self.api_key is not None:
+            params["apikey"] = self.api_key
+        else:
+            params["app_code"] = self.app_code
+            params["app_id"] = self.app_id
 
         locations = self._build_locations(locations)
 
