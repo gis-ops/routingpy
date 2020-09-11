@@ -100,9 +100,15 @@ class HereMaps(Router):
         self.app_id = app_id
         self.api_key = api_key
 
+        if self.api_key:
+            self.base_url = self._APIKEY_BASE_URL
+            self.auth = {"apikey": self.api_key}
+        else:
+            self.base_url = self._DEFAULT_BASE_URL
+            self.auth = {"app_id": self.app_id, "app_code": self.app_code}
+
         super(HereMaps, self).__init__(
-            self._DEFAULT_BASE_URL if self.api_key is None else self._APIKEY_BASE_URL, 
-            user_agent, timeout, retry_timeout, requests_kwargs,
+            self.base_url, user_agent, timeout, retry_timeout, requests_kwargs,
             retry_over_query_limit, skip_api_error
         )
 
@@ -588,14 +594,7 @@ class HereMaps(Router):
         """
 
         self.base_url = 'https://route.api.here.com/routing/7.2' if self.api_key is None else 'https://route.ls.hereapi.com/routing/7.2'
-        params = {}
-
-        if self.api_key is not None:
-            params["apikey"] = self.api_key
-        else:
-            params["app_code"] = self.app_code
-            params["app_id"] = self.app_id
-        
+        params = self.auth.copy()
 
         locations = self._build_locations(locations)
 
@@ -988,13 +987,7 @@ class HereMaps(Router):
         """
 
         self.base_url = 'https://isoline.route.api.here.com/routing/7.2' if self.api_key is None else 'https://isoline.route.ls.hereapi.com/routing/7.2'
-        params = {}
-
-        if self.api_key is not None:
-            params["apikey"] = self.api_key
-        else:
-            params["app_code"] = self.app_code
-            params["app_id"] = self.app_id
+        params = self.auth.copy()
 
         params[center_type] = self._build_locations(locations)[0]
 
@@ -1255,13 +1248,7 @@ class HereMaps(Router):
             :rtype: dict
             """
         self.base_url = 'https://matrix.route.api.here.com/routing/7.2' if self.api_key is None else 'https://matrix.route.ls.hereapi.com/routing/7.2'
-        params = {}
-
-        if self.api_key is not None:
-            params["apikey"] = self.api_key
-        else:
-            params["app_code"] = self.app_code
-            params["app_id"] = self.app_id
+        params = self.auth.copy()
 
         locations = self._build_locations(locations)
 
