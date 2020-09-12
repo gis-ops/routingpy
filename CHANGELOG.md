@@ -8,11 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
--
+- 
 ### Fixed
--
+- HERE routers can now also be used with api key
 ### Changed
--
+- 
 ### Deprecated
 -
 
