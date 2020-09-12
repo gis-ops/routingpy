@@ -92,16 +92,15 @@ DEFAULT = type('object', (object, ), {'__repr__': lambda self: 'DEFAULT'})()
 
 class Router(metaclass=ABCMeta):
     """Abstract base class every router inherits from. Authentication is handled in each subclass."""
-
     def __init__(
-            self,
-            base_url,
-            user_agent=None,
-            timeout=DEFAULT,
-            retry_timeout=None,
-            requests_kwargs=None,
-            retry_over_query_limit=None,
-            skip_api_error=None
+        self,
+        base_url,
+        user_agent=None,
+        timeout=DEFAULT,
+        retry_timeout=None,
+        requests_kwargs=None,
+        retry_over_query_limit=None,
+        skip_api_error=None
     ):
         """
         :param base_url: The base URL for the request. All routers must provide a default.
@@ -173,14 +172,14 @@ class Router(metaclass=ABCMeta):
         self._req = None
 
     def _request(
-            self,
-            url,
-            get_params={},
-            post_params=None,
-            first_request_time=None,
-            retry_counter=0,
-            requests_kwargs=None,
-            dry_run=None
+        self,
+        url,
+        get_params={},
+        post_params=None,
+        first_request_time=None,
+        retry_counter=0,
+        requests_kwargs=None,
+        dry_run=None
     ):
         """Performs HTTP GET/POST with credentials, returning the body as
         JSON.

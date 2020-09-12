@@ -31,15 +31,15 @@ class Graphhopper(Router):
     _DEFAULT_BASE_URL = "https://graphhopper.com/api/1"
 
     def __init__(
-            self,
-            api_key=None,
-            base_url=_DEFAULT_BASE_URL,
-            user_agent=None,
-            timeout=DEFAULT,
-            retry_timeout=None,
-            requests_kwargs={},
-            retry_over_query_limit=False,
-            skip_api_error=None
+        self,
+        api_key=None,
+        base_url=_DEFAULT_BASE_URL,
+        user_agent=None,
+        timeout=DEFAULT,
+        retry_timeout=None,
+        requests_kwargs={},
+        retry_over_query_limit=False,
+        skip_api_error=None
     ):
         """
         Initializes an graphhopper client.
@@ -100,36 +100,36 @@ class Graphhopper(Router):
         )
 
     def directions(
-            self,
-            locations,
-            profile,
-            format=None,
-            optimize=None,
-            instructions=None,
-            locale=None,
-            elevation=None,
-            points_encoded=None,
-            calc_points=None,
-            debug=None,
-            point_hint=None,
-            details=None,
-            ch_disable=None,
-            weighting=None,
-            heading=None,
-            heading_penalty=None,
-            pass_through=None,
-            block_area=None,
-            avoid=None,
-            algorithm=None,
-            round_trip_distance=None,
-            round_trip_seed=None,
-            alternative_route_max_paths=None,
-            alternative_route_max_weight_factor=None,
-            alternative_route_max_share_factor=None,
-            dry_run=None,
-            snap_prevention=None,
-            curb_side=None,
-            turn_costs=None
+        self,
+        locations,
+        profile,
+        format=None,
+        optimize=None,
+        instructions=None,
+        locale=None,
+        elevation=None,
+        points_encoded=None,
+        calc_points=None,
+        debug=None,
+        point_hint=None,
+        details=None,
+        ch_disable=None,
+        weighting=None,
+        heading=None,
+        heading_penalty=None,
+        pass_through=None,
+        block_area=None,
+        avoid=None,
+        algorithm=None,
+        round_trip_distance=None,
+        round_trip_seed=None,
+        alternative_route_max_paths=None,
+        alternative_route_max_weight_factor=None,
+        alternative_route_max_share_factor=None,
+        dry_run=None,
+        snap_prevention=None,
+        curb_side=None,
+        turn_costs=None
     ):
         """Get directions between an origin point and a destination point.
 
@@ -415,16 +415,16 @@ class Graphhopper(Router):
             )
 
     def isochrones(
-            self,
-            locations,
-            profile,
-            intervals,
-            type='json',
-            buckets=1,
-            interval_type=None,
-            reverse_flow=None,
-            debug=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        intervals,
+        type='json',
+        buckets=1,
+        interval_type=None,
+        reverse_flow=None,
+        debug=None,
+        dry_run=None
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
@@ -517,14 +517,14 @@ class Graphhopper(Router):
         return Isochrones(isochrones, response)
 
     def matrix(
-            self,
-            locations,
-            profile,
-            sources=None,
-            destinations=None,
-            out_array=['times', 'distances'],
-            debug=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        sources=None,
+        destinations=None,
+        out_array=['times', 'distances'],
+        debug=None,
+        dry_run=None
     ):
         """ Gets travel distance and time for a matrix of origins and destinations.
 

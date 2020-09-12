@@ -29,17 +29,16 @@ from operator import itemgetter
 
 class Valhalla(Router):
     """Performs requests to a Valhalla instance."""
-
     def __init__(
-            self,
-            base_url,
-            api_key=None,
-            user_agent=None,
-            timeout=DEFAULT,
-            retry_timeout=None,
-            requests_kwargs=None,
-            retry_over_query_limit=False,
-            skip_api_error=None
+        self,
+        base_url,
+        api_key=None,
+        user_agent=None,
+        timeout=DEFAULT,
+        retry_timeout=None,
+        requests_kwargs=None,
+        retry_over_query_limit=False,
+        skip_api_error=None
     ):
         """
         Initializes a Valhalla client.
@@ -106,16 +105,15 @@ class Valhalla(Router):
         >>> waypoint = Valhalla.WayPoint(position=[8.15315, 52.53151], type='break', heading=120, heading_tolerance=10, minimum_reachability=10, radius=400)
         >>> route = Valhalla('http://localhost/v1').directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
-
         def __init__(
-                self,
-                position,
-                type=None,
-                heading=None,
-                heading_tolerance=None,
-                minimum_reachability=None,
-                radius=None,
-                rank_candidates=None
+            self,
+            position,
+            type=None,
+            heading=None,
+            heading_tolerance=None,
+            minimum_reachability=None,
+            radius=None,
+            rank_candidates=None
         ):
             """
 
@@ -193,17 +191,17 @@ class Valhalla(Router):
             return waypoint
 
     def directions(
-            self,
-            locations,
-            profile,
-            options=None,
-            units=None,
-            language=None,
-            directions_type=None,
-            avoid_locations=None,
-            date_time=None,
-            id=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        options=None,
+        units=None,
+        language=None,
+        directions_type=None,
+        avoid_locations=None,
+        date_time=None,
+        id=None,
+        dry_run=None
     ):
         """Get directions between an origin point and a destination point.
 
@@ -305,23 +303,23 @@ class Valhalla(Router):
         return Direction(geometry=geometry, duration=int(duration), distance=int(distance), raw=response)
 
     def isochrones(
-            self,
-            locations,
-            profile,
-            intervals,
-            colors=None,
-            polygons=None,
-            denoise=None,
-            generalize=None,
-            options=None,
-            units=None,
-            language=None,
-            directions_type=None,
-            avoid_locations=None,
-            date_time=None,
-            show_locations=None,
-            id=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        intervals,
+        colors=None,
+        polygons=None,
+        denoise=None,
+        generalize=None,
+        options=None,
+        units=None,
+        language=None,
+        directions_type=None,
+        avoid_locations=None,
+        date_time=None,
+        show_locations=None,
+        id=None,
+        dry_run=None
     ):
         """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
 
@@ -445,25 +443,27 @@ class Valhalla(Router):
         isochrones = []
         for idx, feature in enumerate(reversed(response['features'])):
             if feature['geometry']['type'] in ('LineString', 'Polygon'):
-                isochrones.append(Isochrone(
-                    geometry=feature['geometry']['coordinates'],
-                    interval=intervals[idx],
-                    center=locations
-                ))
+                isochrones.append(
+                    Isochrone(
+                        geometry=feature['geometry']['coordinates'],
+                        interval=intervals[idx],
+                        center=locations
+                    )
+                )
 
         return Isochrones(isochrones, response)
 
     def matrix(
-            self,
-            locations,
-            profile,
-            sources=None,
-            destinations=None,
-            options=None,
-            avoid_locations=None,
-            units=None,
-            id=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        sources=None,
+        destinations=None,
+        options=None,
+        avoid_locations=None,
+        units=None,
+        id=None,
+        dry_run=None
     ):
         """ Gets travel distance and time for a matrix of origins and destinations.
 

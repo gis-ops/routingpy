@@ -24,7 +24,6 @@ class Isochrones(object):
     Contains a list of :class:`Isochrone`, which can be iterated over or accessed by index. The property ¸`raw`` contains
     the complete raw response of the isochrones request.
     """
-
     def __init__(self, isochrones=None, raw=None):
         self._isochrones = isochrones
         self._raw = raw
@@ -55,7 +54,6 @@ class Isochrone(object):
     """
     Contains a parsed single isochrone response. Access via properties ``geometry``, ``interval`` ``center``.
     """
-
     def __init__(self, geometry=None, interval=None, center=None):
         self._geometry = geometry
         self._interval = int(interval)

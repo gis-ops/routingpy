@@ -31,16 +31,16 @@ class HereMaps(Router):
     _APIKEY_BASE_URL = 'https://route.ls.hereapi.com/routing/7.2'
 
     def __init__(
-            self,
-            app_id=None,
-            app_code=None,
-            user_agent=None,
-            timeout=DEFAULT,
-            retry_timeout=None,
-            requests_kwargs=None,
-            retry_over_query_limit=False,
-            skip_api_error=None,
-            api_key=None
+        self,
+        app_id=None,
+        app_code=None,
+        user_agent=None,
+        timeout=DEFAULT,
+        retry_timeout=None,
+        requests_kwargs=None,
+        retry_over_query_limit=False,
+        skip_api_error=None,
+        api_key=None
     ):
         """
         Initializes a HERE Maps client.
@@ -93,8 +93,9 @@ class HereMaps(Router):
         if app_id is None and app_code is None and api_key is None:
             raise KeyError("HERE Maps app_id and app_code, or api_key must be specified.")
         if (app_id is not None or app_code is not None) and api_key is not None:
-            raise KeyError("Either HERE Maps app_id and app_code, or api_key can be specified, not both.")
-
+            raise KeyError(
+                "Either HERE Maps app_id and app_code, or api_key can be specified, not both."
+            )
 
         self.app_code = app_code
         self.app_id = app_id
@@ -108,8 +109,8 @@ class HereMaps(Router):
             self.auth = {"app_id": self.app_id, "app_code": self.app_code}
 
         super(HereMaps, self).__init__(
-            self.base_url, user_agent, timeout, retry_timeout, requests_kwargs,
-            retry_over_query_limit, skip_api_error
+            self.base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
+            skip_api_error
         )
 
     class Waypoint(object):
@@ -122,15 +123,14 @@ class HereMaps(Router):
         >>> waypoint = HereMaps.Waypoint(position=[8.15315, 52.53151], waypoint_type='passThrough', stopover_duration=120, transit_radius=500)
         >>> route = HereMaps(api_key).directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
-
         def __init__(
-                self,
-                position,
-                waypoint_type=None,
-                stopover_duration=None,
-                transit_radius='',
-                user_label='',
-                heading=''
+            self,
+            position,
+            waypoint_type=None,
+            stopover_duration=None,
+            transit_radius='',
+            user_label='',
+            heading=''
         ):
             """
             :param position: Indicates that the parameter contains a geographical position.
@@ -199,9 +199,8 @@ class HereMaps(Router):
         >>> route = HereMaps(api_key).directions(locations=location_list, profile=profile)
 
         """
-
         def __init__(
-                self, mode_type='fastest', mode_transport_type='car', mode_traffic=None, features=None
+            self, mode_type='fastest', mode_transport_type='car', mode_traffic=None, features=None
         ):
             """
             :param mode_type: RoutingType relevant to calculation.
@@ -240,60 +239,60 @@ class HereMaps(Router):
             return convert._delimit_list(routing_mode, ';')
 
     def directions(
-            self,
-            locations,
-            profile,
-            mode_type='fastest',
-            format='json',
-            request_id=None,
-            avoid_areas=None,
-            avoid_links=None,
-            avoid_seasonal_closures=None,
-            avoid_turns=None,
-            allowed_zones=None,
-            exclude_zones=None,
-            exclude_zone_types=None,
-            exclude_countries=None,
-            arrival=None,
-            departure=None,
-            alternatives=None,
-            metric_system=None,
-            view_bounds=None,
-            resolution=None,
-            instruction_format=None,
-            language=None,
-            json_attributes=None,
-            json_callback=None,
-            representation=None,
-            route_attributes=['waypoints', 'summary', 'shape', 'boundingBox', 'legs'],
-            leg_attributes=None,
-            maneuver_attributes=None,
-            link_attributes=None,
-            line_attributes=None,
-            generalization_tolerances=None,
-            vehicle_type=None,
-            license_plate=None,
-            max_number_of_changes=None,
-            avoid_transport_types=None,
-            walk_time_multiplier=None,
-            walk_speed=None,
-            walk_radius=None,
-            combine_change=None,
-            truck_type=None,
-            trailers_count=None,
-            shipped_hazardous_goods=None,
-            limited_weight=None,
-            weight_per_axle=None,
-            height=None,
-            width=None,
-            length=None,
-            tunnel_category=None,
-            truck_restriction_penalty=None,
-            return_elevation=None,
-            consumption_model=None,
-            custom_consumption_details=None,
-            speed_profile=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        mode_type='fastest',
+        format='json',
+        request_id=None,
+        avoid_areas=None,
+        avoid_links=None,
+        avoid_seasonal_closures=None,
+        avoid_turns=None,
+        allowed_zones=None,
+        exclude_zones=None,
+        exclude_zone_types=None,
+        exclude_countries=None,
+        arrival=None,
+        departure=None,
+        alternatives=None,
+        metric_system=None,
+        view_bounds=None,
+        resolution=None,
+        instruction_format=None,
+        language=None,
+        json_attributes=None,
+        json_callback=None,
+        representation=None,
+        route_attributes=['waypoints', 'summary', 'shape', 'boundingBox', 'legs'],
+        leg_attributes=None,
+        maneuver_attributes=None,
+        link_attributes=None,
+        line_attributes=None,
+        generalization_tolerances=None,
+        vehicle_type=None,
+        license_plate=None,
+        max_number_of_changes=None,
+        avoid_transport_types=None,
+        walk_time_multiplier=None,
+        walk_speed=None,
+        walk_radius=None,
+        combine_change=None,
+        truck_type=None,
+        trailers_count=None,
+        shipped_hazardous_goods=None,
+        limited_weight=None,
+        weight_per_axle=None,
+        height=None,
+        width=None,
+        length=None,
+        tunnel_category=None,
+        truck_restriction_penalty=None,
+        return_elevation=None,
+        consumption_model=None,
+        custom_consumption_details=None,
+        speed_profile=None,
+        dry_run=None
     ):
         """Get directions between an origin point and a destination point.
 
@@ -810,36 +809,36 @@ class HereMaps(Router):
             return Direction(geometry=geometry, duration=duration, distance=distance, raw=response)
 
     def isochrones(
-            self,
-            locations,
-            profile,
-            intervals,
-            mode_type='fastest',
-            interval_type='time',
-            format='json',
-            center_type='start',
-            request_id=None,
-            arrival=None,
-            departure=None,
-            single_component=None,
-            resolution=None,
-            max_points=None,
-            quality=None,
-            json_attributes=None,
-            json_callback=None,
-            truck_type=None,
-            trailers_count=None,
-            shipped_hazardous_goods=None,
-            limited_weight=None,
-            weight_per_axle=None,
-            height=None,
-            width=None,
-            length=None,
-            tunnel_category=None,
-            consumption_model=None,
-            custom_consumption_details=None,
-            speed_profile=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        intervals,
+        mode_type='fastest',
+        interval_type='time',
+        format='json',
+        center_type='start',
+        request_id=None,
+        arrival=None,
+        departure=None,
+        single_component=None,
+        resolution=None,
+        max_points=None,
+        quality=None,
+        json_attributes=None,
+        json_callback=None,
+        truck_type=None,
+        trailers_count=None,
+        shipped_hazardous_goods=None,
+        limited_weight=None,
+        weight_per_axle=None,
+        height=None,
+        width=None,
+        length=None,
+        tunnel_category=None,
+        consumption_model=None,
+        custom_consumption_details=None,
+        speed_profile=None,
+        dry_run=None
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
@@ -1093,32 +1092,32 @@ class HereMaps(Router):
         return Isochrones(isochrones=geometries, raw=response)
 
     def matrix(
-            self,
-            locations,
-            profile,
-            format='json',
-            mode_type='fastest',
-            sources=None,
-            destinations=None,
-            search_range=None,
-            avoid_areas=None,
-            avoid_links=None,
-            avoid_turns=None,
-            exclude_countries=None,
-            departure=None,
-            matrix_attributes=None,
-            summary_attributes=['traveltime', 'costfactor', 'distance'],
-            truck_type=None,
-            trailers_count=None,
-            shipped_hazardous_goods=None,
-            limited_weight=None,
-            weight_per_axle=None,
-            height=None,
-            width=None,
-            length=None,
-            tunnel_category=None,
-            speed_profile=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        format='json',
+        mode_type='fastest',
+        sources=None,
+        destinations=None,
+        search_range=None,
+        avoid_areas=None,
+        avoid_links=None,
+        avoid_turns=None,
+        exclude_countries=None,
+        departure=None,
+        matrix_attributes=None,
+        summary_attributes=['traveltime', 'costfactor', 'distance'],
+        truck_type=None,
+        trailers_count=None,
+        shipped_hazardous_goods=None,
+        limited_weight=None,
+        weight_per_axle=None,
+        height=None,
+        width=None,
+        length=None,
+        tunnel_category=None,
+        speed_profile=None,
+        dry_run=None
     ):
         """ Gets travel distance and time for a matrix of origins and destinations.
 

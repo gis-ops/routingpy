@@ -28,15 +28,15 @@ class ORS(Router):
     _DEFAULT_BASE_URL = 'https://api.openrouteservice.org'
 
     def __init__(
-            self,
-            api_key=None,
-            base_url=_DEFAULT_BASE_URL,
-            user_agent=None,
-            timeout=DEFAULT,
-            retry_timeout=None,
-            requests_kwargs=None,
-            retry_over_query_limit=False,
-            skip_api_error=None
+        self,
+        api_key=None,
+        base_url=_DEFAULT_BASE_URL,
+        user_agent=None,
+        timeout=DEFAULT,
+        retry_timeout=None,
+        requests_kwargs=None,
+        retry_over_query_limit=False,
+        skip_api_error=None
     ):
         """
         Initializes an openrouteservice client.
@@ -101,29 +101,29 @@ class ORS(Router):
         )
 
     def directions(
-            self,
-            locations,
-            profile,
-            format='geojson',
-            preference=None,
-            alternative_routes=None,
-            units=None,
-            language=None,
-            geometry=None,
-            geometry_simplify=None,
-            instructions=None,
-            instructions_format=None,
-            roundabout_exits=None,
-            attributes=None,
-            radiuses=None,
-            maneuvers=None,
-            bearings=None,
-            continue_straight=None,
-            elevation=None,
-            extra_info=None,
-            suppress_warnings=None,
-            options=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        format='geojson',
+        preference=None,
+        alternative_routes=None,
+        units=None,
+        language=None,
+        geometry=None,
+        geometry_simplify=None,
+        instructions=None,
+        instructions_format=None,
+        roundabout_exits=None,
+        attributes=None,
+        radiuses=None,
+        maneuvers=None,
+        bearings=None,
+        continue_straight=None,
+        elevation=None,
+        extra_info=None,
+        suppress_warnings=None,
+        options=None,
+        dry_run=None
     ):
         """Get directions between an origin point and a destination point.
 
@@ -244,8 +244,11 @@ class ORS(Router):
         if alternative_routes:
             if not isinstance(alternative_routes, dict):
                 raise TypeError("alternative_routes must be a dict.")
-            if not all([key in alternative_routes.keys() for key in ['share_factor', 'target_count', 'weight_factor']]):
-                raise ValueError("alternative_routes needs 'share_factor', 'target_count', 'weight_factor' keys")
+            if not all([key in alternative_routes.keys()
+                        for key in ['share_factor', 'target_count', 'weight_factor']]):
+                raise ValueError(
+                    "alternative_routes needs 'share_factor', 'target_count', 'weight_factor' keys"
+                )
             params['alternative_routes'] = alternative_routes
 
         if units:
@@ -321,7 +324,6 @@ class ORS(Router):
         elif units == 'km':
             units_factor = 1000
 
-
         if format == 'geojson':
             if alternative_routes:
                 routes = []
@@ -345,8 +347,7 @@ class ORS(Router):
                 routes = []
                 for route in response['routes']:
                     geometry = [
-                        list(reversed(coord))
-                        for coord in utils.decode_polyline5(route['geometry'])
+                        list(reversed(coord)) for coord in utils.decode_polyline5(route['geometry'])
                     ]
                     routes.append(
                         Direction(
@@ -368,17 +369,17 @@ class ORS(Router):
                 return Direction(geometry=geometry, duration=duration, distance=distance, raw=response)
 
     def isochrones(
-            self,
-            locations,
-            profile,
-            intervals,
-            interval_type=None,
-            units=None,
-            location_type=None,
-            smoothing=None,
-            attributes=None,
-            intersections=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        intervals,
+        interval_type=None,
+        units=None,
+        location_type=None,
+        smoothing=None,
+        attributes=None,
+        intersections=None,
+        dry_run=None
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
@@ -478,15 +479,15 @@ class ORS(Router):
         return Isochrones(isochrones=isochrones, raw=response)
 
     def matrix(
-            self,
-            locations,
-            profile,
-            sources=None,
-            destinations=None,
-            metrics=None,
-            resolve_locations=None,
-            units=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        sources=None,
+        destinations=None,
+        metrics=None,
+        resolve_locations=None,
+        units=None,
+        dry_run=None
     ):
         """ Gets travel distance and time for a matrix of origins and destinations.
 

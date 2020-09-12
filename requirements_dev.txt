@@ -8,3 +8,4 @@ yapf>=0.30.0
 responses>=0.10.0
 tox>=3.14.6
 coverage>=5.0.4
+pre-commit>=2.7.1

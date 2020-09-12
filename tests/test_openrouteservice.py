@@ -181,7 +181,7 @@ class ORSTest(_test.TestCase):
         with self.assertRaises(ValueError):
             self.client.directions(**query)
 
-        query['alternative_routes'] = [0,1,2,3]
+        query['alternative_routes'] = [0, 1, 2, 3]
 
         with self.assertRaises(TypeError):
             self.client.directions(**query)

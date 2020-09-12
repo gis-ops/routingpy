@@ -177,8 +177,7 @@ class OSRMTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://router.project-osrm.org/table/v1/car/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776'
-            '?annotations=distance%2Cduration',
-            responses.calls[0].request.url
+            '?annotations=distance%2Cduration', responses.calls[0].request.url
         )
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.durations, list)
@@ -206,5 +205,6 @@ class OSRMTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://router.project-osrm.org/table/v1/car/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?'
-            'destinations=0%3B2&sources=1%3B2&annotations=distance%2Cduration', responses.calls[0].request.url
+            'destinations=0%3B2&sources=1%3B2&annotations=distance%2Cduration',
+            responses.calls[0].request.url
         )

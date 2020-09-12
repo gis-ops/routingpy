@@ -23,7 +23,6 @@ class Matrix(object):
     """
     Contains a parsed matrix response. Access via properties ``geometry`` and ``raw``.
     """
-
     def __init__(self, durations=None, distances=None, raw=None):
         self._durations = durations
         self._distances = distances

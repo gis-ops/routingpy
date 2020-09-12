@@ -29,14 +29,14 @@ class OSRM(Router):
     _DEFAULT_BASE_URL = 'https://router.project-osrm.org'
 
     def __init__(
-            self,
-            base_url=_DEFAULT_BASE_URL,
-            user_agent=None,
-            timeout=DEFAULT,
-            retry_timeout=None,
-            requests_kwargs=None,
-            retry_over_query_limit=False,
-            skip_api_error=None
+        self,
+        base_url=_DEFAULT_BASE_URL,
+        user_agent=None,
+        timeout=DEFAULT,
+        retry_timeout=None,
+        requests_kwargs=None,
+        retry_over_query_limit=False,
+        skip_api_error=None
     ):
         """
         Initializes an OSRM client.
@@ -90,18 +90,18 @@ class OSRM(Router):
         )
 
     def directions(
-            self,
-            locations,
-            profile,
-            radiuses=None,
-            bearings=None,
-            alternatives=None,
-            steps=None,
-            continue_straight=None,
-            annotations=None,
-            geometries=None,
-            overview=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        radiuses=None,
+        bearings=None,
+        alternatives=None,
+        steps=None,
+        continue_straight=None,
+        annotations=None,
+        geometries=None,
+        overview=None,
+        dry_run=None
     ):
         """Get directions between an origin point and a destination point.
 
@@ -243,15 +243,15 @@ class OSRM(Router):
         raise NotImplementedError
 
     def matrix(
-            self,
-            locations,
-            profile,
-            radiuses=None,
-            bearings=None,
-            sources=None,
-            destinations=None,
-            dry_run=None,
-            annotations=['duration', 'distance']
+        self,
+        locations,
+        profile,
+        radiuses=None,
+        bearings=None,
+        sources=None,
+        destinations=None,
+        dry_run=None,
+        annotations=['duration', 'distance']
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
@@ -330,7 +330,5 @@ class OSRM(Router):
             return Matrix()
 
         return Matrix(
-            durations=response.get('durations'),
-            distances=response.get('distances'),
-            raw=response
+            durations=response.get('durations'), distances=response.get('distances'), raw=response
         )

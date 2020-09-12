@@ -29,14 +29,14 @@ class Google(Router):
     _base_url = "https://maps.googleapis.com/maps/api"
 
     def __init__(
-            self,
-            api_key,
-            user_agent=None,
-            timeout=DEFAULT,
-            retry_timeout=None,
-            requests_kwargs={},
-            retry_over_query_limit=True,
-            skip_api_error=None
+        self,
+        api_key,
+        user_agent=None,
+        timeout=DEFAULT,
+        retry_timeout=None,
+        requests_kwargs={},
+        retry_over_query_limit=True,
+        skip_api_error=None
     ):
         """
         Initializes a Google client.
@@ -101,7 +101,6 @@ class Google(Router):
         >>> waypoint = Google.WayPoint(position=[8.15315, 52.53151], waypoint_type='coords', stopover=False)
         >>> route = Google(api_key).directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
-
         def __init__(self, position, waypoint_type='coords', stopover=True):
             """
             Constructs a waypoint with additional information, such as via or encoded lines.
@@ -139,21 +138,21 @@ class Google(Router):
             return waypoint
 
     def directions(
-            self,
-            locations,
-            profile,
-            alternatives=None,
-            avoid=None,
-            optimize=None,
-            language=None,
-            region=None,
-            units=None,
-            arrival_time=None,
-            departure_time=None,
-            traffic_model=None,
-            transit_mode=None,
-            transit_routing_preference=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        alternatives=None,
+        avoid=None,
+        optimize=None,
+        language=None,
+        region=None,
+        units=None,
+        arrival_time=None,
+        departure_time=None,
+        traffic_model=None,
+        transit_mode=None,
+        transit_routing_preference=None,
+        dry_run=None
     ):
         """Get directions between an origin point and a destination point.
 
@@ -333,21 +332,21 @@ class Google(Router):
         raise NotImplementedError
 
     def matrix(
-            self,
-            locations,
-            profile,
-            sources=None,
-            destinations=None,
-            avoid=None,
-            language=None,
-            region=None,
-            units=None,
-            arrival_time=None,
-            departure_time=None,
-            traffic_model=None,
-            transit_mode=None,
-            transit_routing_preference=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        sources=None,
+        destinations=None,
+        avoid=None,
+        language=None,
+        region=None,
+        units=None,
+        arrival_time=None,
+        departure_time=None,
+        traffic_model=None,
+        transit_mode=None,
+        transit_routing_preference=None,
+        dry_run=None
     ):
         """ Gets travel distance and time for a matrix of origins and destinations.
 

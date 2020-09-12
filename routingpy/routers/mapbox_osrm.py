@@ -31,14 +31,14 @@ class MapboxOSRM(Router):
     _base_url = 'https://api.mapbox.com'
 
     def __init__(
-            self,
-            api_key,
-            user_agent=None,
-            timeout=DEFAULT,
-            retry_timeout=None,
-            requests_kwargs=None,
-            retry_over_query_limit=False,
-            skip_api_error=None
+        self,
+        api_key,
+        user_agent=None,
+        timeout=DEFAULT,
+        retry_timeout=None,
+        requests_kwargs=None,
+        retry_over_query_limit=False,
+        skip_api_error=None
     ):
         """
         Initializes a Mapbox OSRM client.
@@ -93,27 +93,27 @@ class MapboxOSRM(Router):
         )
 
     def directions(
-            self,
-            locations,
-            profile,
-            radiuses=None,
-            bearings=None,
-            alternatives=None,
-            steps=None,
-            continue_straight=None,
-            annotations=None,
-            geometries=None,
-            overview=None,
-            exclude=None,
-            approaches=None,
-            banner_instructions=None,
-            language=None,
-            roundabout_exits=None,
-            voice_instructions=None,
-            voice_units=None,
-            waypoint_names=None,
-            waypoint_targets=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        radiuses=None,
+        bearings=None,
+        alternatives=None,
+        steps=None,
+        continue_straight=None,
+        annotations=None,
+        geometries=None,
+        overview=None,
+        exclude=None,
+        approaches=None,
+        banner_instructions=None,
+        language=None,
+        roundabout_exits=None,
+        voice_instructions=None,
+        voice_units=None,
+        waypoint_names=None,
+        waypoint_targets=None,
+        dry_run=None
     ):
         """Get directions between an origin point and a destination point.
 
@@ -348,15 +348,15 @@ class MapboxOSRM(Router):
             )
 
     def isochrones(
-            self,
-            locations,
-            profile,
-            intervals,
-            contours_colors=None,
-            polygons=None,
-            denoise=None,
-            generalize=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        intervals,
+        contours_colors=None,
+        polygons=None,
+        denoise=None,
+        generalize=None,
+        dry_run=None
     ):
         """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
 
@@ -436,14 +436,14 @@ class MapboxOSRM(Router):
         )
 
     def matrix(
-            self,
-            locations,
-            profile,
-            sources=None,
-            destinations=None,
-            annotations=None,
-            fallback_speed=None,
-            dry_run=None
+        self,
+        locations,
+        profile,
+        sources=None,
+        destinations=None,
+        annotations=None,
+        fallback_speed=None,
+        dry_run=None
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
