@@ -218,7 +218,7 @@ class Google(Router):
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
-        params = {'profile': profile}
+        params = {'mode': profile}
 
         origin, destination = locations[0], locations[-1]
         if isinstance(origin, (list, tuple)):
@@ -408,7 +408,7 @@ class Google(Router):
         :returns: A matrix from the specified sources and destinations.
         :rtype: :class:`routingpy.matrix.Matrix`
         """
-        params = {'profile': profile}
+        params = {'mode': profile}
 
         waypoints = []
         for coord in locations:

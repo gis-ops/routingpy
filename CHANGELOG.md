@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - 
 ### Fixed
 - HERE routers can now also be used with api key
+- Set Google router's profile queryparam correctly (was set to "profile" now is "mode")
 ### Changed
 - 
 ### Deprecated
