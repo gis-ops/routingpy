@@ -42,7 +42,7 @@ jobs:
     - name: nosetests
       run: |
         source .venv/bin/activate
-        tox -e py${{ steps.full-python-version.outputs.versionshort }}
+        nosetests -v --with-coverage --cover-package=routingpy
     - name: coveralls
       run: |
         source .venv/bin/activate
