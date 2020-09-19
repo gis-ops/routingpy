@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Deprecated
 -
 
+## [0.3.2](https://github.com/gis-ops/routing-py/releases/tag/0.3.1)
+### Added
+- 
+### Fixed
+- HERE isochrones had lat, lon instead of lon, lat ([#14](https://github.com/gis-ops/routing-py/issues/14))
+### Changed
+- 
+### Deprecated
+-
+
 ## [0.3.1](https://github.com/gis-ops/routing-py/releases/tag/0.3.1)
 ### Added
 - 
