@@ -1,9 +1,9 @@
 routing-py
 ==========
 
-.. image:: https://travis-ci.org/gis-ops/routing-py.svg?branch=master
-    :target: https://travis-ci.org/gis-ops/routing-py
-    :alt: Build status
+.. image:: https://github.com/gis-ops/routing-py/workflows/tests/badge.svg
+    :target: https://github.com/gis-ops/routing-py/workflows
+    :alt: tests
 
 .. image:: https://coveralls.io/repos/github/gis-ops/routing-py/badge.svg?branch=master
     :target: https://coveralls.io/github/gis-ops/routing-py?branch=master
@@ -38,7 +38,7 @@ or **time-distance matrices**.
 This list is hopefully growing with time and contributions by other developers. An up-to-date list is always availaable
 in our documentation_.
 
-**routing-py** is tested against CPython versions 3.6, 3.7, 3.8-dev and against PyPy 3.6.x. As other major libraries like ``numpy``
+**routing-py** is tested against CPython versions 3.7, 3.8, 3.9-rcx and against PyPy3. As other major libraries like ``numpy``
 and ``pandas`` decided to drop Python 2 support, we did not see any reason to burden the project with the compatibility
 weight.
 
