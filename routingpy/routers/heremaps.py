@@ -1078,7 +1078,8 @@ class HereMaps(Router):
                     if 'shape' in component:
                         coordinates_list = []
                         for coordinates in component['shape']:
-                            coordinates_list.append([float(f) for f in coordinates.split(",")])
+                            coords = [float(f) for f in coordinates.split(",")]
+                            coordinates_list.append(reversed(coords))
                         range_polygons.append(coordinates_list)
 
             geometries.append(

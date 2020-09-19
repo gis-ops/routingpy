@@ -10,13 +10,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - 
 ### Fixed
-- HERE routers can now also be used with api key
+-
 ### Changed
 - 
 ### Deprecated
 -
 
-## [0.3.0] 2020-08-09
+## [0.3.1](https://github.com/gis-ops/routing-py/releases/tag/0.3.1)
+### Added
+- 
+### Fixed
+- HERE routers can now also be used with api key
+- HERE isochrones had lat, lon instead of lon, lat ([#14](https://github.com/gis-ops/routing-py/issues/14))
+### Changed
+- 
+### Deprecated
+-
+
+## [0.3.0](https://github.com/gis-ops/routing-py/releases/tag/0.3.0) 2020-08-09
 ### Added
 - GeoJSON support for Graphhopper's isochrones
 - [MyBinder](https://mybinder.org/v2/gh/gis-ops/routing-py/master?filepath=examples) notebook collection
@@ -33,7 +44,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Deprecated
 -
 
-## [0.2] 2019-04-30
+## [0.2](https://github.com/gis-ops/routing-py/releases/tag/v0.2) 2019-04-30
 ### Added
 - Example notebook to compare providers
 ### Fixed
@@ -47,4 +58,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Deprecated
 -
 
-## [0.1 - First Release] 2019-04-14
+## [0.1 - First Release](https://github.com/gis-ops/routing-py/releases/tag/v0.1) 2019-04-14
