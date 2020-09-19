@@ -44,6 +44,8 @@ When contributing, we expect you to:
 ```bash
 # From the root of your git project
 pip install -r requirements_dev.txt
+# or
+poetry install
 ```
 
 3. Run tests to check if all goes well:

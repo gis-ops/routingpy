@@ -82,7 +82,7 @@ Installation
 
 .. code:: bash
 
-    poetry install [--no-dev]
+    poetry add routingpy
 
 Install using ``pip`` with
 
