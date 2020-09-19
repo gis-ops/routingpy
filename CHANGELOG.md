@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - HERE routers can now also be used with api key
 - HERE isochrones had lat, lon instead of lon, lat ([#14](https://github.com/gis-ops/routing-py/issues/14))
+- Set Google router's profile queryparam correctly (was set to "profile" now is "mode")
 ### Changed
 - 
 ### Deprecated
