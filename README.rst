@@ -33,12 +33,12 @@ or **time-distance matrices**.
 -  `Google Maps`_
 -  `Graphhopper`_
 -  `Local Valhalla`_
--  `Local Mapbox`_
+-  `Local OSRM`_
 
 This list is hopefully growing with time and contributions by other developers. An up-to-date list is always availaable
 in our documentation_.
 
-**routing-py** is tested against CPython versions 3.7, 3.8, 3.9-rcx and against PyPy3. As other major libraries like ``numpy``
+**routing-py** is tested against CPython versions 3.7, 3.8, 3.9 and against PyPy3. As other major libraries like ``numpy``
 and ``pandas`` decided to drop Python 2 support, we did not see any reason to burden the project with the compatibility
 weight.
 
@@ -310,7 +310,7 @@ All these parameters, and more, can optionally be **globally set** for all route
 .. _Google Maps: https://developers.google.com/maps/documentation
 .. _Graphhopper: https://graphhopper.com/api/1/docs
 .. _Local Valhalla: https://github.com/valhalla/valhalla-docs
-.. _Local Mapbox: https://github.com/Project-OSRM/osrm-backend/wiki
+.. _Local OSRM: https://github.com/Project-OSRM/osrm-backend/wiki
 .. _documentation: https://routingpy.readthedocs.io/en/latest
 .. _routing-py.routers: https://routingpy.readthedocs.io/en/latest/#module-routingpy.routers
 .. _Apache 2.0 License: https://github.com/gis-ops/routing-py/blob/master/LICENSE

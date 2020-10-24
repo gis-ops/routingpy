@@ -10,21 +10,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - 
 ### Fixed
--
+- README local OSRM description
 ### Changed
 - 
 ### Deprecated
 -
 
 ## [0.3.2](https://github.com/gis-ops/routing-py/releases/tag/0.3.1)
-### Added
-- 
 ### Fixed
 - HERE isochrones had lat, lon instead of lon, lat ([#14](https://github.com/gis-ops/routing-py/issues/14))
-### Changed
-- 
-### Deprecated
--
 
 ## [0.3.1](https://github.com/gis-ops/routing-py/releases/tag/0.3.1)
 ### Added
@@ -33,10 +27,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - HERE routers can now also be used with api key
 - HERE isochrones had lat, lon instead of lon, lat ([#14](https://github.com/gis-ops/routing-py/issues/14))
 - Set Google router's profile queryparam correctly (was set to "profile" now is "mode")
-### Changed
-- 
-### Deprecated
--
 
 ## [0.3.0](https://github.com/gis-ops/routing-py/releases/tag/0.3.0) 2020-08-09
 ### Added
