@@ -5,6 +5,13 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    # Service containers to run with `runner-job`
+    services:
+      # Run httpbin container for QgsNetwork* tests
+      httpbin:
+        image: kennethreitz/httpbin:latest
+        ports:
+          - 8082:80
     strategy:
       matrix:
         os: [ubuntu-20.04]
@@ -12,11 +19,13 @@ jobs:
             3.7,
             3.8,
             3.9,
-            #3.10.0-alpha.1,
             pypy3
         ]
     steps:
     - uses: actions/checkout@v2
+    - name: test httbin service
+      run: |
+        curl "localhost:8082/get?a=b"
     - name: Set up Python ${{ matrix.python_version }}
       uses: actions/setup-python@v2
       with:
