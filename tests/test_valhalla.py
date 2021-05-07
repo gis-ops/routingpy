@@ -136,6 +136,8 @@ class ValhallaTest(_test.TestCase):
             content_type='application/json'
         )
 
+        self.client.isochrones(**query)
+
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
 
