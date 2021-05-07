@@ -1,6 +1,27 @@
 name: tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+    paths:
+      paths:
+        - "routingpy/**"
+        - "tests/**"
+        - ".github/workflows/ci-tests.yml"
+        - "setup.py"
+        - "pyproject.toml"
+        - ".coveragerc"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "routingpy/**"
+      - "tests/**"
+      - ".github/workflows/ci-tests.yml"
+      - "setup.py"
+      - "pyproject.toml"
+      - ".coveragerc"
 
 jobs:
   build:
@@ -12,6 +33,7 @@ jobs:
             3.7,
             3.8,
             3.9,
+            3.10.0-beta.1,
             pypy3
         ]
     steps:
@@ -40,10 +62,11 @@ jobs:
       run: |
         source $HOME/.poetry/env
         poetry install
-    - name: yapf linting
+    - name: linting
       run: |
         source .venv/bin/activate
         yapf -r -vv --diff -p routingpy tests
+        flake8 .
     - name: nosetests
       run: |
         source .venv/bin/activate

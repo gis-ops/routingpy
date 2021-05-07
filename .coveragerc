@@ -3,4 +3,3 @@ omit =
     */.venv/*
     */docs/*
     */test.py
-    */.tox/*
