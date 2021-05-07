@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -425,7 +425,7 @@ ENDPOINTS_RESPONSES = {
         },
         'matrix': {
             "distances": [[0, 1181, 13965], [1075, 0, 14059], [14120, 13766, 0]],
-            "times": [[0, 255, 2122], [242, 0, 2094], [2144, 2019, 0]],
+            "times": [[0, 255, 2122], [242, 0, 2094], [2144, 2021, 0]],
             "weights": [[0.0, 272.99, 2331.526], [258.115, 0.0, 2305.121], [2356.307, 2225.083, 0.0]]
         }
     },
@@ -640,7 +640,7 @@ ENDPOINTS_QUERIES = {
             'exclude_zone_types': ['vignette', 'congestionPricing'],
             'exclude_countries': ['AUT', 'CHE'],
             'departure':
-            datetime.datetime(2019, 3, 29, 3, 0).isoformat(),
+            datetime.datetime(2021, 3, 29, 3, 0).isoformat(),
             'alternatives':
             3,
             'metric_system':
@@ -778,15 +778,18 @@ ENDPOINTS_QUERIES = {
                 'country_crossing_penalty': PARAM_INT_SMALL
             },
             'profile': 'auto',
+            'preference': 'shortest',
             'units': 'mi',
             'directions_type': 'none',
             'avoid_locations': PARAM_POINT,
+            'avoid_polygons': PARAM_POLY,
             'date_time': {
                 'type': 1,
-                'value': '2019-03-03T08:06'
+                'value': '2021-03-03T08:06'
             },
             'language': 'pirate',
-            'id': 'wacko'
+            'id': 'wacko',
+            'somerandom': 'option'
         },
         'isochrones': {
             'locations': PARAM_POINT,
@@ -797,6 +800,7 @@ ENDPOINTS_QUERIES = {
             },
             'profile': 'auto',
             'id': 'wacko',
+            'preference': 'fastest',
             'intervals': [600, 1200],
             'colors': ['ff0000', '00FF00'],
             'polygons': True,
@@ -805,7 +809,7 @@ ENDPOINTS_QUERIES = {
             'denoise': 0.1,
             'date_time': {
                 'type': 1,
-                'value': '2019-03-03T08:06'
+                'value': '2021-03-03T08:06'
             },
         },
         'matrix': {
@@ -886,7 +890,8 @@ ENDPOINTS_EXPECTED = {
                 'auto': {
                     'maneuver_penalty': 50,
                     'toll_booth_cost': 50,
-                    'country_crossing_penalty': 50
+                    'country_crossing_penalty': 50,
+                    'shortest': True
                 }
             },
             'directions_options': {
@@ -898,9 +903,11 @@ ENDPOINTS_EXPECTED = {
                 'lon': 8.34234,
                 'lat': 48.23424
             }],
+            'avoid_polygons':
+            PARAM_POLY,
             'date_time': {
                 'type': 1,
-                'value': '2019-03-03T08:06'
+                'value': '2021-03-03T08:06'
             },
             'id':
             'wacko'
@@ -931,7 +938,7 @@ ENDPOINTS_EXPECTED = {
             }],
             'date_time': {
                 'type': 1,
-                'value': '2019-03-03T08:06'
+                'value': '2021-03-03T08:06'
             },
             'id': 'wacko',
             'denoise': 0.1,

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -111,6 +111,33 @@ class ValhallaTest(_test.TestCase):
             self.assertIsInstance(i.geometry, list)
             self.assertIsInstance(i.interval, int)
             self.assertIsInstance(i.center, list)
+
+    @responses.activate
+    def test_isodistances(self):
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]['isochrones'])
+        expected = deepcopy(ENDPOINTS_EXPECTED[self.name]['isochrones'])
+
+        query['interval_type'] = 'distance'
+        expected['contours'] = [
+            {
+                'distance': 0.6,
+                'color': 'ff0000'
+            }, {
+                'distance': 1.2,
+                'color': '00FF00'
+            }
+        ]
+
+        responses.add(
+            responses.POST,
+            'https://api.mapbox.com/valhalla/v1/isochrone',
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
+            content_type='application/json'
+        )
+
+        self.assertEqual(1, len(responses.calls))
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
 
     # TODO: test colors having less items than range
     @responses.activate

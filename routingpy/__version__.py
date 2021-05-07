@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -18,8 +18,8 @@
 __title__ = 'routingpy'
 __description__ = 'One lib to route them all.'
 __url__ = 'https://gis-ops.com/projects/routingpy'
-__version__ = '0.3.2'
+__version__ = '0.3.3'
 __author__ = 'Nils Nolde'
 __author_email__ = 'nils@gis-ops.com'
 __license__ = 'Apache 2.0'
-__copyright__ = 'Copyright 2019 GIS OPS UG'
+__copyright__ = 'Copyright 2021 GIS OPS UG'

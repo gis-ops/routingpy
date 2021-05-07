@@ -51,7 +51,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'RoutingPy'
-copyright = '2019, RoutingPy Contributors'
+copyright = '2021, RoutingPy Contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

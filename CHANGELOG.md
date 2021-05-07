@@ -6,9 +6,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 **Unreleased** is available in Github's `master` branch, but not on PyPI.
 
-## [Unreleased]
+## **Unreleased**
 ### Added
+-
+### Fixed
+-
+### Changed
 - 
+### Deprecated
+-
+
+## [0.3.3](https://github.com/gis-ops/routing-py/releases/tag/0.3.3)
+### Added
+- 2020/2021 Valhalla HTTP API improvements
 ### Fixed
 - README local OSRM description
 ### Changed
@@ -16,11 +26,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Deprecated
 -
 
-## [0.3.2](https://github.com/gis-ops/routing-py/releases/tag/0.3.1)
+## [0.3.2](https://github.com/gis-ops/routing-py/releases/tag/0.3.2)
 ### Fixed
 - HERE isochrones had lat, lon instead of lon, lat ([#14](https://github.com/gis-ops/routing-py/issues/14))
 
-## [0.3.1](https://github.com/gis-ops/routing-py/releases/tag/0.3.1)
+## [0.3.1](https://github.com/gis-ops/routing-py/releases/tag/0.3.2)
 ### Added
 - 
 ### Fixed

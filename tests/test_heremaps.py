@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -54,7 +54,7 @@ class HereMapsTest(_test.TestCase):
             'https://route.api.here.com/routing/7.2/calculateroute.json?alternatives=3&app_code=sample_app_code&'
             'app_id=sample_app_id&avoidAreas=49.420577%2C8.688641%3B49.415776%2C8.680916%2149.445776%2C8.780916%3B49.445776%2C8.780916&'
             'avoidLinks=-53623477&avoidSeasonalClosures=true&avoidTurns=difficult&combineChange=false&consumptionModel=default&'
-            'departure=2019-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
+            'departure=2021-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
             'excludeZones=510%2C511&generalizationTolerances=0.1%2C0.01&height=20&instructionFormat=text&jsonAttributes=9&'
             'legAttributes=maneuvers%2Cwaypoint%2Clength%2CtravelTime&length=10&licensePlate=lastcharacter%3A5&limitedWeight=10&'
             'linkAttributes=shape%2CspeedLimit&maneuverAttributes=position%2Clength%2CtravelTime&maxNumberOfChanges=5&'
@@ -85,7 +85,7 @@ class HereMapsTest(_test.TestCase):
             'https://route.api.here.com/routing/7.2/calculateroute.json?alternatives=1&app_code=sample_app_code&'
             'app_id=sample_app_id&avoidAreas=49.420577%2C8.688641%3B49.415776%2C8.680916%2149.445776%2C8.780916%3B49.445776%2C8.780916&'
             'avoidLinks=-53623477&avoidSeasonalClosures=true&avoidTurns=difficult&combineChange=false&consumptionModel=default&'
-            'departure=2019-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
+            'departure=2021-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
             'excludeZones=510%2C511&generalizationTolerances=0.1%2C0.01&height=20&instructionFormat=text&jsonAttributes=9&'
             'legAttributes=maneuvers%2Cwaypoint%2Clength%2CtravelTime&length=10&licensePlate=lastcharacter%3A5&limitedWeight=10&'
             'linkAttributes=shape%2CspeedLimit&maneuverAttributes=position%2Clength%2CtravelTime&maxNumberOfChanges=5&'
@@ -121,7 +121,7 @@ class HereMapsTest(_test.TestCase):
             'https://route.api.here.com/routing/7.2/calculateroute.json?alternatives=3&app_code=sample_app_code&'
             'app_id=sample_app_id&avoidAreas=49.420577%2C8.688641%3B49.415776%2C8.680916%2149.445776%2C8.780916%3B49.445776%2C8.780916&'
             'avoidLinks=-53623477&avoidSeasonalClosures=true&avoidTurns=difficult&combineChange=false&consumptionModel=default&'
-            'departure=2019-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
+            'departure=2021-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
             'excludeZones=510%2C511&generalizationTolerances=0.1%2C0.01&height=20&instructionFormat=text&jsonAttributes=9&'
             'legAttributes=maneuvers%2Cwaypoint%2Clength%2CtravelTime&length=10&licensePlate=lastcharacter%3A5&limitedWeight=10&'
             'linkAttributes=shape%2CspeedLimit&maneuverAttributes=position%2Clength%2CtravelTime&maxNumberOfChanges=5&'
@@ -237,7 +237,7 @@ class HereMapsKeyTest(_test.TestCase):
             'https://route.ls.hereapi.com/routing/7.2/calculateroute.json?alternatives=3&apikey=sample_api_key&'
             'avoidAreas=49.420577%2C8.688641%3B49.415776%2C8.680916%2149.445776%2C8.780916%3B49.445776%2C8.780916&'
             'avoidLinks=-53623477&avoidSeasonalClosures=true&avoidTurns=difficult&combineChange=false&consumptionModel=default&'
-            'departure=2019-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
+            'departure=2021-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
             'excludeZones=510%2C511&generalizationTolerances=0.1%2C0.01&height=20&instructionFormat=text&jsonAttributes=9&'
             'legAttributes=maneuvers%2Cwaypoint%2Clength%2CtravelTime&length=10&licensePlate=lastcharacter%3A5&limitedWeight=10&'
             'linkAttributes=shape%2CspeedLimit&maneuverAttributes=position%2Clength%2CtravelTime&maxNumberOfChanges=5&'
@@ -268,7 +268,7 @@ class HereMapsKeyTest(_test.TestCase):
             'https://route.ls.hereapi.com/routing/7.2/calculateroute.json?alternatives=1&apikey=sample_api_key&'
             'avoidAreas=49.420577%2C8.688641%3B49.415776%2C8.680916%2149.445776%2C8.780916%3B49.445776%2C8.780916&'
             'avoidLinks=-53623477&avoidSeasonalClosures=true&avoidTurns=difficult&combineChange=false&consumptionModel=default&'
-            'departure=2019-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
+            'departure=2021-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
             'excludeZones=510%2C511&generalizationTolerances=0.1%2C0.01&height=20&instructionFormat=text&jsonAttributes=9&'
             'legAttributes=maneuvers%2Cwaypoint%2Clength%2CtravelTime&length=10&licensePlate=lastcharacter%3A5&limitedWeight=10&'
             'linkAttributes=shape%2CspeedLimit&maneuverAttributes=position%2Clength%2CtravelTime&maxNumberOfChanges=5&'
@@ -304,7 +304,7 @@ class HereMapsKeyTest(_test.TestCase):
             'https://route.ls.hereapi.com/routing/7.2/calculateroute.json?alternatives=3&apikey=sample_api_key&'
             'avoidAreas=49.420577%2C8.688641%3B49.415776%2C8.680916%2149.445776%2C8.780916%3B49.445776%2C8.780916&'
             'avoidLinks=-53623477&avoidSeasonalClosures=true&avoidTurns=difficult&combineChange=false&consumptionModel=default&'
-            'departure=2019-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
+            'departure=2021-03-29T03%3A00%3A00&excludeCountries=AUT%2CCHE&excludeZoneTypes=vignette%2CcongestionPricing&'
             'excludeZones=510%2C511&generalizationTolerances=0.1%2C0.01&height=20&instructionFormat=text&jsonAttributes=9&'
             'legAttributes=maneuvers%2Cwaypoint%2Clength%2CtravelTime&length=10&licensePlate=lastcharacter%3A5&limitedWeight=10&'
             'linkAttributes=shape%2CspeedLimit&maneuverAttributes=position%2Clength%2CtravelTime&maxNumberOfChanges=5&'
