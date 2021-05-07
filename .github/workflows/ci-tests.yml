@@ -2,16 +2,13 @@ name: tests
 
 on:
   push:
-    branches:
-      - master
     paths:
-      paths:
-        - "routingpy/**"
-        - "tests/**"
-        - ".github/workflows/ci-tests.yml"
-        - "setup.py"
-        - "pyproject.toml"
-        - ".coveragerc"
+      - "routingpy/**"
+      - "tests/**"
+      - ".github/workflows/ci-tests.yml"
+      - "setup.py"
+      - "pyproject.toml"
+      - ".coveragerc"
   pull_request:
     branches:
       - master
