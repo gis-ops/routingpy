@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -19,7 +19,7 @@ Core client functionality, common across all routers.
 """
 
 from routingpy import exceptions
-from routingpy.utils import logger, get_ordinal
+from routingpy.utils import get_ordinal
 from ..__version__ import __version__
 
 from abc import ABCMeta, abstractmethod

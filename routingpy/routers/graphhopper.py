@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -15,7 +15,7 @@
 # the License.
 #
 
-from typing import List, Tuple
+from typing import List, Tuple  # noqa: F401
 
 from .base import Router, DEFAULT
 from routingpy import convert
@@ -99,7 +99,7 @@ class Graphhopper(Router):
             skip_api_error
         )
 
-    def directions(
+    def directions(  # noqa: C901
         self,
         locations,
         profile,
@@ -507,8 +507,9 @@ class Graphhopper(Router):
         for index, polygon in enumerate(response[accessor]):
             isochrones.append(
                 Isochrone(
-                    geometry=[l[:2] for l in polygon['geometry']['coordinates'][0]
-                              ],  # takes in elevation for some reason
+                    geometry=[
+                        l[:2] for l in polygon['geometry']['coordinates'][0]  # noqa: E741
+                    ],  # takes in elevation for some reason
                     interval=int(max_range * ((polygon['properties']['bucket'] + 1) / buckets)),
                     center=center,
                 )

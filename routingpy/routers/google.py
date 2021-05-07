@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -137,7 +137,7 @@ class Google(Router):
 
             return waypoint
 
-    def directions(
+    def directions(  # noqa: C901
         self,
         locations,
         profile,
@@ -331,7 +331,7 @@ class Google(Router):
     def isochrones(self):  # pragma: no cover
         raise NotImplementedError
 
-    def matrix(
+    def matrix(  # noqa: C901
         self,
         locations,
         profile,

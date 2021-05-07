@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -113,7 +113,7 @@ class GoogleTest(_test.TestCase):
             content_type='application/json'
         )
 
-        directions = self.client.directions(**query)
+        self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
@@ -129,7 +129,7 @@ class GoogleTest(_test.TestCase):
         query['locations'].insert(1, Google.WayPoint(PARAM_LINE_MULTI[0], 'bla', True))
 
         with self.assertRaises(ValueError):
-            matrix = self.client.directions(**query)
+            self.client.directions(**query)
 
         # Test if origin=WayPoint triggers a TypeError
         query['coordinates'] = [
@@ -237,7 +237,7 @@ class GoogleTest(_test.TestCase):
             content_type='application/json'
         )
 
-        matrix = self.client.matrix(**query)
+        self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(

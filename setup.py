@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2019 Kenneth Reitz
+# Copyright 2021 Kenneth Reitz
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -41,18 +41,15 @@ setup(
     author_email=about['__author_email__'],
     python_requires='>=3.5.0',
     url=about['__url__'],
-    packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
+    packages=find_packages(exclude=["*tests*"]),
     install_requires=['requests>=2.20.0'],
-    include_package_data=True,
     license='Apache 2.0',
     classifiers=[
-        'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
+        'License :: OSI Approved :: Apache Software License', 'Programming Language :: Python',
+        'Programming Language :: Python :: 3', 'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7', 'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
-    ])
+    ]
+)

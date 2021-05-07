@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -100,7 +100,7 @@ class ORS(Router):
             skip_api_error
         )
 
-    def directions(
+    def directions(  # noqa: C901
         self,
         locations,
         profile,

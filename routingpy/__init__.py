@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -29,7 +29,7 @@ Take a look at our `Examples`_ to see how simple you can compare routes from dif
 .. _`Examples`: https://github.com/gis-ops/routing-py#examples
 """
 
-from routingpy.routers import *
+from routingpy.routers import *  # noqa: F401
 
 # Delete so options is only available over routingpy.routers.options
-del options
+del options  # noqa: F821

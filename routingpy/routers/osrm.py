@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -15,7 +15,7 @@
 # the License.
 #
 
-from typing import List
+from typing import List  # noqa: F401
 
 from .base import Router, DEFAULT
 from routingpy import convert, utils

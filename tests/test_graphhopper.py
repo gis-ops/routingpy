@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -167,7 +167,7 @@ class GraphhopperTest(_test.TestCase):
             json={},
             content_type='application/json'
         )
-        resp = self.client.matrix(**query)
+        self.client.matrix(**query)
 
         query['sources'] = None
         query['destinations'] = None
@@ -180,7 +180,7 @@ class GraphhopperTest(_test.TestCase):
             content_type='application/json'
         )
 
-        resp = self.client.matrix(**query)
+        self.client.matrix(**query)
 
         self.assertEqual(2, len(responses.calls))
         self.assertURLEqual(

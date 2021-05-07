@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 GIS OPS UG
+# Copyright (C) 2021 GIS OPS UG
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -17,6 +17,8 @@
 """
 Core client functionality, common across all API requests.
 """
+
+from typing import List, Union  # noqa: F401
 
 from .base import Router, DEFAULT
 from routingpy import utils
@@ -98,95 +100,26 @@ class Valhalla(Router):
 
     class Waypoint(object):
         """
-        Constructs a waypoint with additional information, such as via or encoded lines.
+        Constructs a waypoint with additional information or constraints.
+
+        Refer to Valhalla's documentation for details: https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#locations
+
+        Use ``kwargs`` to spedify options, make sure the value is proper for each option.
 
         Example:
 
-        >>> waypoint = Valhalla.WayPoint(position=[8.15315, 52.53151], type='break', heading=120, heading_tolerance=10, minimum_reachability=10, radius=400)
-        >>> route = Valhalla('http://localhost/v1').directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
+        >>> waypoint = Valhalla.WayPoint(position=[8.15315, 52.53151], type='through', heading=120, heading_tolerance=10, minimum_reachability=10, radius=400)
+        >>> route = Valhalla('http://localhost').directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
-        def __init__(
-            self,
-            position,
-            type=None,
-            heading=None,
-            heading_tolerance=None,
-            minimum_reachability=None,
-            radius=None,
-            rank_candidates=None
-        ):
-            """
-
-            :param type: Type of location. One of ['break', 'through']. A break is a stop, so the first
-            and last locations must be of type break. A through location is one that the route path travels
-            through, and is useful to force a route to go through location. The path is not allowed to
-            reverse direction at the through locations. If no type is provided, the type is assumed to be a break.
-            The order has to correspond to ``coordinates`` and be of the same length.
-            More info at: https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#locations
-            :type type: list of str
-
-            :param heading: Preferred direction of travel for the start from the location. The heading is indicated
-                in degrees from north in a clockwise direction, where north is 0°, east is 90°,
-                south is 180°, and west is 270°.
-            :type heading: list of int
-
-            :param heading_tolerance: How close in degrees a given street's angle must be in order for it
-                to be considered as in the same direction of the heading parameter. The default value is 60 degrees.
-            :type heading_tolerance: list of int
-
-            :param minimum_reachability: Minimum number of nodes (intersections) reachable for a given edge (road between
-                intersections) to consider that edge as belonging to a connected region. When correlating this
-                location to the route network, try to find candidates who are reachable from this many or more
-                nodes (intersections). If a given candidate edge reaches less than this number of nodes its considered
-                to be a disconnected island and we'll search for more candidates until we find at least one that
-                isn't considered a disconnected island. If this value is larger than the configured service limit
-                it will be clamped to that limit. The default is a minimum of 50 reachable nodes.
-            :type minimum_reachability: list of int
-
-            :param radius: The number of meters about this input location within which edges (roads between intersections)
-                will be considered as candidates for said location. When correlating this location to the route network,
-                try to only return results within this distance (meters) from this location. If there are no candidates
-                within this distance it will return the closest candidate within reason. If this value is larger than
-                the configured service limit it will be clamped to that limit. The default is 0 meters.
-            :type radius: list of int
-
-            :param rank_candidates: Whether or not to rank the edge candidates for this location. The ranking is used
-                as a penalty within the routing algorithm so that some edges will be penalized more heavily than others.
-                If true candidates will be ranked according to their distance from the input and various other attributes.
-                If false the candidates will all be treated as equal which should lead to routes that are just the most
-                optimal path with emphasis about which edges were selected.
-            :type rank_candidates: list of bool
-            """
-
+        def __init__(self, position, **kwargs):
             self._position = position
-            self._type = type
-            self._heading = heading
-            self._heading_tolerance = heading_tolerance
-            self._minimum_reachability = minimum_reachability
-            self._radius = radius
-            self._rank_candidates = rank_candidates
+            self._kwargs = kwargs
 
         def _make_waypoint(self):
 
             waypoint = {'lon': self._position[0], 'lat': self._position[1]}
-
-            if self._type:
-                waypoint['type'] = self._type
-
-            if self._heading:
-                waypoint['heading'] = self._heading
-
-            if self._heading_tolerance:
-                waypoint['heading_tolerance'] = self._heading_tolerance
-
-            if self._minimum_reachability:
-                waypoint['minimum_reachability'] = self._minimum_reachability
-
-            if self._radius:
-                waypoint['radius'] = self._radius
-
-            if self._rank_candidates is not None:
-                waypoint['rank_candidates'] = self._rank_candidates
+            for k, v in self._kwargs.items():
+                waypoint[k] = v
 
             return waypoint
 
@@ -194,61 +127,66 @@ class Valhalla(Router):
         self,
         locations,
         profile,
+        preference=None,
         options=None,
         units=None,
         language=None,
         directions_type=None,
         avoid_locations=None,
+        avoid_polygons=None,
         date_time=None,
         id=None,
-        dry_run=None
+        dry_run=None,
+        **kwargs
     ):
         """Get directions between an origin point and a destination point.
 
         For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md.
 
-        :param locations: The coordinates tuple the route should be calculated
+        Use ``kwargs`` for any missing ``directions`` request options.
+
+        :param Union[List[List[float]]|List[Valhalla.Waypoint]] locations: The coordinates tuple the route should be calculated
             from in order of visit. Can be a list/tuple of [lon, lat] or :class:`Valhalla.WayPoint` instance or
             a combination of both.
-        :type locations: list of list or list of :class:`Valhalla.WayPoint`
 
-        :param profile: Specifies the mode of transport to use when calculating
-            directions. One of ["auto", "auto_shorter", "bicycle", "bus", "hov", "motor_scooter",
+        :param str profile: Specifies the mode of transport to use when calculating
+            directions. One of ["auto", "auto_shorter" (deprecated), "bicycle", "bus", "hov", "motor_scooter",
             "motorcycle", "multimodal", "pedestrian".
-        :type profile: str
 
-        :param options: Profiles can have several options that can be adjusted to develop the route path,
+        :param str preference: Convenience argument to set the cost metric, one of ['shortest', 'fastest']. Note,
+            that shortest is not guaranteed to be absolute shortest for motor vehicle profiles. It's called ``preference``
+            to be inline with the already existing parameter in the ORS adapter.
+
+        :param dict options: Profiles can have several options that can be adjusted to develop the route path,
             as well as for estimating time along the path. Only specify the actual options dict, the profile
             will be filled automatically. For more information, visit:
             https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#costing-options
-        :type options: dict
 
-        :param units: Distance units for output. One of ['mi', 'km']. Default km.
-        :type units: str
+        :param str units: Distance units for output. One of ['mi', 'km']. Default km.
 
-        :param language: The language of the narration instructions based on the IETF BCP 47 language tag string.
+        :param str language: The language of the narration instructions based on the IETF BCP 47 language tag string.
             One of ['ca', 'cs', 'de', 'en', 'pirate', 'es', 'fr', 'hi', 'it', 'pt', 'ru', 'sl', 'sv']. Default 'en'.
-        :type language: str
 
-        :param directions_type: 'none': no instructions are returned. 'maneuvers': only maneuvers are returned.
+        :param str directions_type: 'none': no instructions are returned. 'maneuvers': only maneuvers are returned.
             'instructions': maneuvers with instructions are returned. Default 'instructions'.
-        :type directions_type: str
 
-        :param avoid_locations: A set of locations to exclude or avoid within a route.
+        :param Union[List[List[float]]|List[Valhalla.Waypoint]] avoid_locations: A set of locations to exclude or avoid within a route.
             Specified as a list of coordinates, similar to coordinates object.
-        :type avoid_locations: list of list or list of :class:`Valhalla.WayPoint`
 
-        :param date_time: This is the local date and time at the location. Field ``type``: 0: Current departure time,
+        :param List[List[List[float]]] avoid_polygons: One or multiple exterior rings of polygons in the form of nested
+            JSON arrays, e.g. [[[lon1, lat1], [lon2,lat2]],[[lon1,lat1],[lon2,lat2]]]. Roads intersecting these rings
+            will be avoided during path finding. If you only need to avoid a few specific roads, it's much more
+            efficient to use avoid_locations. Valhalla will close open rings (i.e. copy the first coordingate to the
+            last position).
+
+        :param dict date_time: This is the local date and time at the location. Field ``type``: 0: Current departure time,
             1: Specified departure time. Field ``value```: the date and time is specified
             in ISO 8601 format (YYYY-MM-DDThh:mm), local time.
-            E.g. date_time = {type: 0, value: 2019-03-03T08:06:23}
-        :type date_time: dict
+            E.g. date_time = {type: 0, value: 2021-03-03T08:06:23}
 
-        :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
-        :type id: str
+        :param Union[str|int|float] id: Name your route request. If id is specified, the naming will be sent thru to the response.
 
-        :param dry_run: Print URL and parameters without sending the request.
-        :param dry_run: bool
+        :param bool dry_run: Print URL and parameters without sending the request.
 
         :returns: A route from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction`
@@ -258,10 +196,14 @@ class Valhalla(Router):
 
         params['locations'] = self._build_locations(locations)
 
-        if options:
+        if options or preference:
             params['costing_options'] = dict()
-            profile = profile if profile != 'multimodal' else 'transit'
-            params['costing_options'][profile] = options
+            profile = profile if profile not in ('multimodal', 'transit') else 'transit'
+            params['costing_options'][profile] = dict()
+            if options:
+                params['costing_options'][profile] = options
+            if preference == 'shortest':
+                params['costing_options'][profile]['shortest'] = True
 
         if any((units, language, directions_type)):
             params['directions_options'] = dict()
@@ -274,6 +216,9 @@ class Valhalla(Router):
 
         if avoid_locations:
             params['avoid_locations'] = self._build_locations(avoid_locations)
+
+        if avoid_polygons:
+            params['avoid_polygons'] = avoid_polygons
 
         if date_time:
             params['date_time'] = date_time
@@ -302,20 +247,23 @@ class Valhalla(Router):
 
         return Direction(geometry=geometry, duration=int(duration), distance=int(distance), raw=response)
 
-    def isochrones(
+    def isochrones(  # noqa: C901
         self,
         locations,
         profile,
         intervals,
+        interval_type=None,
         colors=None,
         polygons=None,
         denoise=None,
         generalize=None,
+        preference=None,
         options=None,
         units=None,
         language=None,
         directions_type=None,
         avoid_locations=None,
+        avoid_polygons=None,
         date_time=None,
         show_locations=None,
         id=None,
@@ -325,6 +273,8 @@ class Valhalla(Router):
 
         For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/isochrone/api-reference.md.
 
+        Use ``kwargs`` for any missing ``isochrones`` request options.
+
         :param locations: One pair of lng/lat values. Takes the form [Longitude, Latitude].
         :type locations: list of float
 
@@ -332,8 +282,12 @@ class Valhalla(Router):
             directions. One of ["auto", "bicycle", "multimodal", "pedestrian".
         :type profile: str
 
-        :param intervals: Time ranges to calculate isochrones for. Up to 4 ranges are possible. In seconds.
+        :param intervals: Time ranges to calculate isochrones for. In seconds or meters, depending on `interval_type`.
         :type intervals: list of int
+
+        :param interval_type: Set 'time' for isochrones or 'distance' for equidistants.
+            Default 'time'.
+        :type interval_type: str
 
         :param colors: The color for the output of the contour. Specify it as a Hex value, but without the #, such as
             "color":"ff0000" for red. If no color is specified, the isochrone service will assign a default color to the output.
@@ -350,6 +304,10 @@ class Valhalla(Router):
         :param generalize: A floating point value in meters used as the tolerance for Douglas-Peucker generalization.
             Note: Generalization of contours can lead to self-intersections, as well as intersections of adjacent contours.
         :type generalize: float
+
+        :param str preference: Convenience argument to set the cost metric, one of ['shortest', 'fastest']. Note,
+            that shortest is not guaranteed to be absolute shortest for motor vehicle profiles. It's called ``preference``
+            to be inline with the already existing parameter in the ORS adapter.
 
         :param options: Profiles can have several options that can be adjusted to develop the route path,
             as well as for estimating time along the path. Only specify the actual options dict, the profile
@@ -368,11 +326,17 @@ class Valhalla(Router):
             Specified as a list of coordinates, similar to coordinates object.
         :type avoid_locations: list of list
 
+        :param List[List[List[float]]] avoid_polygons: One or multiple exterior rings of polygons in the form of nested
+            JSON arrays, e.g. [[[lon1, lat1], [lon2,lat2]],[[lon1,lat1],[lon2,lat2]]]. Roads intersecting these rings
+            will be avoided during path finding. If you only need to avoid a few specific roads, it's much more
+            efficient to use avoid_locations. Valhalla will close open rings (i.e. copy the first coordingate to the
+            last position).
+
         :param date_time: This is the local date and time at the location. Field ``type``: 0: Current departure time,
             1: Specified departure time. Field ``value```: the date and time is specified
             in format YYYY-MM-DDThh:mm, local time.
 
-            E.g. date_time = {type: 0, value: 2019-03-03T08:06}
+            E.g. date_time = {type: 0, value: 2021-03-03T08:06}
         :type date_time: dict
 
         :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
@@ -389,7 +353,13 @@ class Valhalla(Router):
 
         contours = []
         for idx, r in enumerate(intervals):
-            d = {'time': int(r / 60)}
+            key = 'time'
+            value = r / 60
+            if interval_type == 'distance':
+                key = 'distance'
+                value = r / 1000
+
+            d = {key: value}
             if colors:
                 try:
                     d.update(color=colors[idx])
@@ -406,7 +376,11 @@ class Valhalla(Router):
         if options:
             params['costing_options'] = dict()
             profile = profile if profile != 'multimodal' else 'transit'
-            params['costing_options'][profile] = options
+            params['costing_options'][profile] = dict()
+            if options:
+                params['costing_options'][profile] = options
+            if preference == 'shortest':
+                params['costing_options'][profile]['shortest'] = True
 
         if polygons is not None:
             params['polygons'] = polygons
@@ -419,6 +393,9 @@ class Valhalla(Router):
 
         if avoid_locations:
             params['avoid_locations'] = self._build_locations(avoid_locations)
+
+        if avoid_polygons:
+            params['avoid_polygons'] = avoid_polygons
 
         if date_time:
             params['date_time'] = date_time
@@ -459,13 +436,20 @@ class Valhalla(Router):
         profile,
         sources=None,
         destinations=None,
+        preference=None,
         options=None,
         avoid_locations=None,
+        avoid_polygons=None,
         units=None,
         id=None,
         dry_run=None
     ):
-        """ Gets travel distance and time for a matrix of origins and destinations.
+        """
+        Gets travel distance and time for a matrix of origins and destinations.
+
+        For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/matrix/api-reference.md.
+
+        Use ``kwargs`` for any missing ``matrix`` request options.
 
         :param locations: Multiple pairs of lng/lat values.
         :type locations: list of list
@@ -482,6 +466,10 @@ class Valhalla(Router):
             (starting with 0). If not passed, all indices are considered.
         :type destinations: list of int
 
+        :param str preference: Convenience argument to set the cost metric, one of ['shortest', 'fastest']. Note,
+            that shortest is not guaranteed to be absolute shortest for motor vehicle profiles. It's called ``preference``
+            to be inline with the already existing parameter in the ORS adapter.
+
         :param options: Profiles can have several options that can be adjusted to develop the route path,
             as well as for estimating time along the path. Only specify the actual options dict, the profile
             will be filled automatically. For more information, visit:
@@ -491,6 +479,12 @@ class Valhalla(Router):
         :param avoid_locations: A set of locations to exclude or avoid within a route.
             Specified as a list of coordinates, similar to coordinates object.
         :type avoid_locations: list of list
+
+        :param List[List[List[float]]] avoid_polygons: One or multiple exterior rings of polygons in the form of nested
+            JSON arrays, e.g. [[[lon1, lat1], [lon2,lat2]],[[lon1,lat1],[lon2,lat2]]]. Roads intersecting these rings
+            will be avoided during path finding. If you only need to avoid a few specific roads, it's much more
+            efficient to use avoid_locations. Valhalla will close open rings (i.e. copy the first coordingate to the
+            last position).
 
         :param units: Distance units for output. One of ['mi', 'km']. Default km.
         :type units: str
@@ -528,10 +522,17 @@ class Valhalla(Router):
         if options:
             params['costing_options'] = dict()
             profile = profile if profile != 'multimodal' else 'transit'
-            params['costing_options'][profile] = options
+            params['costing_options'][profile] = dict()
+            if options:
+                params['costing_options'][profile] = options
+            if preference == 'shortest':
+                params['costing_options'][profile]['shortest'] = True
 
         if avoid_locations:
             params['avoid_locations'] = self._build_locations(avoid_locations)
+
+        if avoid_polygons:
+            params['avoid_polygons'] = avoid_polygons
 
         if units:
             params["units"] = units
