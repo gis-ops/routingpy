@@ -35,14 +35,14 @@ or **time-distance matrices**.
 -  `Local Valhalla`_
 -  `Local OSRM`_
 
-This list is hopefully growing with time and contributions by other developers. An up-to-date list is always availaable
+This list is hopefully growing with time and contributions by other developers. An up-to-date list is always available
 in our documentation_.
 
 **routing-py** is tested against CPython versions 3.7, 3.8, 3.9 and against PyPy3. As other major libraries like ``numpy``
 and ``pandas`` decided to drop Python 2 support, we did not see any reason to burden the project with the compatibility
 weight.
 
-© routing-py contributors 2020 under the `Apache 2.0 License`_.
+© routing-py contributors 2021 under the `Apache 2.0 License`_.
 
 .. image:: https://user-images.githubusercontent.com/10322094/57357720-e180c080-7173-11e9-97a4-cecb4670065d.jpg
     :alt: routing-py-image
