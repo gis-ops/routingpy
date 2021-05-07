@@ -200,7 +200,7 @@ class OSRMTest(_test.TestCase):
             content_type='application/json'
         )
 
-        resp = self.client.matrix(**query)
+        self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(

@@ -92,7 +92,7 @@ class MapboxOSRM(Router):
             skip_api_error
         )
 
-    def directions(
+    def directions(  # noqa: C901
         self,
         locations,
         profile,

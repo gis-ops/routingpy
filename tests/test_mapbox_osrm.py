@@ -26,7 +26,6 @@ import tests as _test
 
 import responses
 from copy import deepcopy
-import json
 from collections import Counter
 
 
@@ -183,7 +182,7 @@ class MapboxOSRMTest(_test.TestCase):
             content_type='application/json'
         )
 
-        resp = self.client.matrix(**query)
+        self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(

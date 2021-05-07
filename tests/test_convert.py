@@ -20,10 +20,10 @@ from routingpy import convert
 import tests as _test
 
 
-class UtilsTest(_test.TestCase):
+class UtilsTest(_test.TestCase):  # noqa: E741
     def test_delimit_list(self):
 
-        l = [(8.68864, 49.42058), (8.68092, 49.41578)]
+        l = [(8.68864, 49.42058), (8.68092, 49.41578)]  # noqa: E741
         s = convert._delimit_list([convert._delimit_list(pair, ',') for pair in l], '|')
         self.assertEqual(s, "8.68864,49.42058|8.68092,49.41578")
 

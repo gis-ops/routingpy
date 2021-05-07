@@ -18,7 +18,7 @@
 Core client functionality, common across all API requests.
 """
 
-from typing import List, Union
+from typing import List, Union  # noqa: F401
 
 from .base import Router, DEFAULT
 from routingpy import utils
@@ -247,7 +247,7 @@ class Valhalla(Router):
 
         return Direction(geometry=geometry, duration=int(duration), distance=int(distance), raw=response)
 
-    def isochrones(
+    def isochrones(  # noqa: C901
         self,
         locations,
         profile,

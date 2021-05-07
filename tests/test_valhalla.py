@@ -81,7 +81,7 @@ class ValhallaTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES[self.name]['directions'],
             content_type='application/json'
         )
-        routes = self.client.directions(**query)
+        self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
@@ -182,7 +182,7 @@ class ValhallaTest(_test.TestCase):
             content_type='application/json'
         )
 
-        routes = self.client.matrix(**query)
+        self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)

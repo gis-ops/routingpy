@@ -167,7 +167,7 @@ class GraphhopperTest(_test.TestCase):
             json={},
             content_type='application/json'
         )
-        resp = self.client.matrix(**query)
+        self.client.matrix(**query)
 
         query['sources'] = None
         query['destinations'] = None
@@ -180,7 +180,7 @@ class GraphhopperTest(_test.TestCase):
             content_type='application/json'
         )
 
-        resp = self.client.matrix(**query)
+        self.client.matrix(**query)
 
         self.assertEqual(2, len(responses.calls))
         self.assertURLEqual(

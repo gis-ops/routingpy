@@ -15,7 +15,7 @@
 # the License.
 #
 
-from typing import List
+from typing import List  # noqa: F401
 
 from .base import Router, DEFAULT
 from routingpy import convert, utils

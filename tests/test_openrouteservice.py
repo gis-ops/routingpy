@@ -160,7 +160,7 @@ class ORSTest(_test.TestCase):
             content_type='application/json'
         )
 
-        resp = self.client.directions(**query)
+        self.client.directions(**query)
 
         self.assertDictContainsSubset({'Authorization': self.key}, responses.calls[0].request.headers)
 

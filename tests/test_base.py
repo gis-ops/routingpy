@@ -46,17 +46,16 @@ class BaseTest(_test.TestCase):
 
     def test_router_by_name(self):
         for s in routingpy.routers._SERVICE_TO_ROUTER.keys():
-            router = routingpy.routers.get_router_by_name(s)
+            routingpy.routers.get_router_by_name(s)
 
         with self.assertRaises(routingpy.exceptions.RouterNotFound):
-            router = routingpy.routers.get_router_by_name('orsm')
+            routingpy.routers.get_router_by_name('orsm')
 
     def test_options(self):
         options.default_user_agent = "my_agent"
         options.default_timeout = 10
         options.default_retry_timeout = 10
         options.default_retry_over_query_limit = False
-        #options.default_skip_api_error = True
         options.default_proxies = {'https': '192.103.10.102'}
         new_router = RouterMock('https://foo.bar')
         req_kwargs = {
@@ -68,7 +67,6 @@ class BaseTest(_test.TestCase):
             'proxies': options.default_proxies
         }
         self.assertEqual(req_kwargs, new_router.requests_kwargs)
-        #self.assertEqual(new_router.skip_api_error, options.default_skip_api_error)
         self.assertEqual(new_router.retry_over_query_limit, options.default_retry_over_query_limit)
 
     def test_urlencode(self):
@@ -159,9 +157,7 @@ class BaseTest(_test.TestCase):
             content_type='application/json'
         )
 
-        req = self.router.directions(
-            get_params={'format_out': 'geojson'}, url='directions/', dry_run='true'
-        )
+        self.router.directions(get_params={'format_out': 'geojson'}, url='directions/', dry_run='true')
 
         self.assertEqual(0, len(responses.calls))
 
@@ -188,7 +184,7 @@ class BaseTest(_test.TestCase):
             content_type='application/json'
         )
 
-        req = self.router.directions(url='routes', get_params={'a': 'b'})
+        self.router.directions(url='routes', get_params={'a': 'b'})
 
         assert isinstance(self.router.req, requests.PreparedRequest)
         self.assertEqual('https://httpbin.org/routes?a=b', self.router.req.url)

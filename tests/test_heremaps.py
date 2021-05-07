@@ -48,7 +48,7 @@ class HereMapsTest(_test.TestCase):
             content_type='application/json'
         )
 
-        routes = self.client.directions(**query)
+        self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://route.api.here.com/routing/7.2/calculateroute.json?alternatives=3&app_code=sample_app_code&'
@@ -231,7 +231,7 @@ class HereMapsKeyTest(_test.TestCase):
             content_type='application/json'
         )
 
-        routes = self.client.directions(**query)
+        self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             'https://route.ls.hereapi.com/routing/7.2/calculateroute.json?alternatives=3&apikey=sample_api_key&'

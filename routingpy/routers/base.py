@@ -19,7 +19,7 @@ Core client functionality, common across all routers.
 """
 
 from routingpy import exceptions
-from routingpy.utils import logger, get_ordinal
+from routingpy.utils import get_ordinal
 from ..__version__ import __version__
 
 from abc import ABCMeta, abstractmethod

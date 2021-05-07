@@ -137,7 +137,7 @@ class Google(Router):
 
             return waypoint
 
-    def directions(
+    def directions(  # noqa: C901
         self,
         locations,
         profile,
@@ -331,7 +331,7 @@ class Google(Router):
     def isochrones(self):  # pragma: no cover
         raise NotImplementedError
 
-    def matrix(
+    def matrix(  # noqa: C901
         self,
         locations,
         profile,
