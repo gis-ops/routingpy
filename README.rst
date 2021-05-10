@@ -2,7 +2,7 @@ routing-py
 ==========
 
 .. image:: https://github.com/gis-ops/routing-py/workflows/tests/badge.svg
-    :target: https://github.com/gis-ops/routing-py/workflows
+    :target: https://github.com/gis-ops/routing-py/actions/workflows/ci-tests.yml
     :alt: tests
 
 .. image:: https://coveralls.io/repos/github/gis-ops/routing-py/badge.svg?branch=master

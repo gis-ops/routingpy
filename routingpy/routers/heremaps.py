@@ -81,7 +81,7 @@ class HereMaps(Router):
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
-            Default :attr:`routingpy.routers.options.default_over_query_limit`.
+            Default :attr:`routingpy.routers.options.default_retry_over_query_limit`.
         :type retry_over_query_limit: bool
 
         :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is

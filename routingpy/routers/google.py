@@ -41,8 +41,8 @@ class Google(Router):
         """
         Initializes a Google client.
 
-        :param key: API key.
-        :type key: str
+        :param api_key: API key.
+        :type api_key: str
 
         :param user_agent: User Agent to be used when requesting.
             Default :attr:`routingpy.routers.options.default_user_agent`.
@@ -174,7 +174,7 @@ class Google(Router):
 
         :param avoid: Indicates that the calculated route(s) should avoid the indicated features. One or more of
             ['tolls', 'highways', 'ferries', 'indoor']. Default None.
-        :param avoid: list of str
+        :type avoid: list of str
 
         :param optimize: Optimize the given order of via waypoints (i.e. between first and last location). Default False.
         :type optimize: bool
