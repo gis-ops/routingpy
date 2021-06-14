@@ -323,7 +323,7 @@ class MapboxOSRM(Router):
                 geometry = route_geometry['coordinates']
             else:
                 raise ValueError(
-                    "OSRM: parameter geometries needs one of ['polyline', 'polyline6', 'geojson"
+                    "OSRM: parameter geometries needs one of ['polyline', 'polyline6', 'geojson']"
                 )
             return geometry
 
