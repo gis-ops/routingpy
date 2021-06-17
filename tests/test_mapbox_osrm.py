@@ -115,7 +115,7 @@ class MapboxOSRMTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            'https://api.mapbox.com/isochrone/v1/{}/{}'.format(
+            'https://api.mapbox.com/isochrone/v1/mapbox/{}/{}'.format(
                 query["profile"],
                 convert._delimit_list(query["locations"]),
             ),

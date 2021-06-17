@@ -288,6 +288,8 @@ class MapboxOSRM(Router):
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
+        profile = profile.replace('mapbox/','')
+
         return self._parse_direction_json(
             self._request(
                 "/directions/v5/mapbox/" + profile,
@@ -366,7 +368,7 @@ class MapboxOSRM(Router):
         :type locations: list of float
 
         :param profile: Specifies the mode of transport to use when calculating
-            directions. One of ["mapbox/driving", "mapbox/walking", "mapbox/cycling".
+            directions. One of ["driving", "walking", "cycling".
         :type profile: str
 
         :param intervals: Time ranges to calculate isochrones for. Up to 4 ranges are possible. In seconds.
@@ -414,9 +416,11 @@ class MapboxOSRM(Router):
         if generalize:
             params['generalize'] = generalize
 
+        profile = profile.replace('mapbox/','')
+
         return self._parse_isochrone_json(
             self._request(
-                "/isochrone/v1/" + profile + '/' + locations_string, get_params=params, dry_run=dry_run
+                "/isochrone/v1/mapbox/" + profile + '/' + locations_string, get_params=params, dry_run=dry_run
             ), intervals, locations
         )
 
@@ -499,6 +503,8 @@ class MapboxOSRM(Router):
 
         if fallback_speed:
             params['fallback_speed'] = str(fallback_speed)
+
+        profile = profile.replace('mapbox/','')
 
         return self._parse_matrix_json(
             self._request(

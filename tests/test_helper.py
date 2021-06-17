@@ -605,7 +605,7 @@ ENDPOINTS_QUERIES = {
         },
         'isochrones': {
             'locations': PARAM_POINT,
-            'profile': 'mapbox/driving',
+            'profile': 'driving',
             'intervals': [600, 1200],
             'contours_colors': ['ff0000', '00FF00'],
             'polygons': True,
