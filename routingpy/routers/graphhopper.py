@@ -377,7 +377,7 @@ class Graphhopper:
                     )
 
         return self._parse_directions_json(
-            self._request('/route', get_params=params, dry_run=dry_run), algorithm, elevation
+            self.client._request('/route', get_params=params, dry_run=dry_run), algorithm, elevation
         )
 
     @staticmethod
