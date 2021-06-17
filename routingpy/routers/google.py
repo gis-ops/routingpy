@@ -15,7 +15,8 @@
 # the License.
 #
 
-from .base import Router, DEFAULT
+from routingpy.base import DEFAULT
+from routingpy.client_default import Client
 from routingpy import convert, utils
 from routingpy.direction import Directions, Direction
 from routingpy.matrix import Matrix
@@ -23,7 +24,7 @@ from routingpy.matrix import Matrix
 from operator import itemgetter
 
 
-class Google(Router):
+class Google:
     """Performs requests to the Google API services."""
 
     _base_url = "https://maps.googleapis.com/maps/api"
@@ -36,7 +37,8 @@ class Google(Router):
         retry_timeout=None,
         requests_kwargs={},
         retry_over_query_limit=True,
-        skip_api_error=None
+        skip_api_error=None,
+        client=Client
     ):
         """
         Initializes a Google client.
@@ -85,7 +87,7 @@ class Google(Router):
 
         self.key = api_key
 
-        super(Google, self).__init__(
+        self.client = client(
             self._base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
             skip_api_error
         )
@@ -281,7 +283,7 @@ class Google(Router):
             params['transit_routing_preference'] = transit_routing_preference
 
         return self._parse_direction_json(
-            self._request('/directions/json', get_params=params, dry_run=dry_run), alternatives
+            self.client._request('/directions/json', get_params=params, dry_run=dry_run), alternatives
         )
 
     @staticmethod
@@ -462,7 +464,7 @@ class Google(Router):
             params['transit_routing_preference'] = transit_routing_preference
 
         return self._parse_matrix_json(
-            self._request('/distancematrix/json', get_params=params, dry_run=dry_run)
+            self.client._request('/distancematrix/json', get_params=params, dry_run=dry_run)
         )
 
     @staticmethod

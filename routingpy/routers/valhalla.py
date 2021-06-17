@@ -20,7 +20,8 @@ Core client functionality, common across all API requests.
 
 from typing import List, Union  # noqa: F401
 
-from .base import Router, DEFAULT
+from routingpy.base import DEFAULT
+from routingpy.client_default import Client
 from routingpy import utils
 from routingpy.direction import Direction
 from routingpy.isochrone import Isochrone, Isochrones
@@ -29,7 +30,7 @@ from routingpy.matrix import Matrix
 from operator import itemgetter
 
 
-class Valhalla(Router):
+class Valhalla:
     """Performs requests to a Valhalla instance."""
     def __init__(
         self,
@@ -40,7 +41,8 @@ class Valhalla(Router):
         retry_timeout=None,
         requests_kwargs=None,
         retry_over_query_limit=False,
-        skip_api_error=None
+        skip_api_error=None,
+        client=Client
     ):
         """
         Initializes a Valhalla client.
@@ -93,7 +95,7 @@ class Valhalla(Router):
 
         self.api_key = api_key
 
-        super(Valhalla, self).__init__(
+        self.client = client(
             base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
             skip_api_error
         )
@@ -229,7 +231,7 @@ class Valhalla(Router):
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
         return self._parse_direction_json(
-            self._request("/route", get_params=get_params, post_params=params, dry_run=dry_run), units
+            self.client._request("/route", get_params=get_params, post_params=params, dry_run=dry_run), units
         )
 
     @staticmethod
@@ -408,7 +410,7 @@ class Valhalla(Router):
 
         get_params = {'access_token': self.api_key} if self.api_key else {}
         return self._parse_isochrone_json(
-            self._request("/isochrone", get_params=get_params, post_params=params, dry_run=dry_run),
+            self.client._request("/isochrone", get_params=get_params, post_params=params, dry_run=dry_run),
             intervals, locations
         )
 
@@ -543,7 +545,7 @@ class Valhalla(Router):
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
         return self._parse_matrix_json(
-            self._request(
+            self.client._request(
                 '/sources_to_targets', get_params=get_params, post_params=params, dry_run=dry_run
             ), units
         )

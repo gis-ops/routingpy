@@ -17,13 +17,14 @@
 
 from typing import List  # noqa: F401
 
-from .base import Router, DEFAULT
+from routingpy.base import DEFAULT
+from routingpy.client_default import Client
 from routingpy import convert, utils
 from routingpy.direction import Directions, Direction
 from routingpy.matrix import Matrix
 
 
-class OSRM(Router):
+class OSRM:
     """Performs requests to the OSRM API services."""
 
     _DEFAULT_BASE_URL = 'https://router.project-osrm.org'
@@ -36,7 +37,8 @@ class OSRM(Router):
         retry_timeout=None,
         requests_kwargs=None,
         retry_over_query_limit=False,
-        skip_api_error=None
+        skip_api_error=None,
+        client=Client
     ):
         """
         Initializes an OSRM client.
@@ -84,7 +86,7 @@ class OSRM(Router):
         :type skip_api_error: bool
         """
 
-        super(OSRM, self).__init__(
+        self.client = client(
             base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
             skip_api_error
         )
@@ -194,7 +196,7 @@ class OSRM(Router):
             params["overview"] = convert._convert_bool(overview)
 
         return self._parse_direction_json(
-            self._request("/route/v1/" + profile + '/' + coords, get_params=params, dry_run=dry_run),
+            self.client._request("/route/v1/" + profile + '/' + coords, get_params=params, dry_run=dry_run),
             alternatives, geometries
         )
 
@@ -321,7 +323,7 @@ class OSRM(Router):
             params['annotations'] = convert._delimit_list(annotations)
 
         return self._parse_matrix_json(
-            self._request("/table/v1/" + profile + '/' + coords, get_params=params, dry_run=dry_run)
+            self.client._request("/table/v1/" + profile + '/' + coords, get_params=params, dry_run=dry_run)
         )
 
     @staticmethod

@@ -17,7 +17,8 @@
 
 from typing import List, Tuple  # noqa: F401
 
-from .base import Router, DEFAULT
+from routingpy.base import DEFAULT
+from routingpy.client_default import Client
 from routingpy import convert
 from routingpy import utils
 from routingpy.direction import Direction, Directions
@@ -25,7 +26,7 @@ from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
 
 
-class Graphhopper(Router):
+class Graphhopper:
     """Performs requests to the Graphhopper API services."""
 
     _DEFAULT_BASE_URL = "https://graphhopper.com/api/1"
@@ -39,7 +40,8 @@ class Graphhopper(Router):
         retry_timeout=None,
         requests_kwargs={},
         retry_over_query_limit=False,
-        skip_api_error=None
+        skip_api_error=None,
+        client=Client
     ):
         """
         Initializes an graphhopper client.
@@ -94,7 +96,7 @@ class Graphhopper(Router):
             raise KeyError("API key must be specified.")
         self.key = api_key
 
-        super(Graphhopper, self).__init__(
+        self.client = client(
             base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
             skip_api_error
         )
@@ -493,7 +495,7 @@ class Graphhopper(Router):
             params.append(('debug', convert._convert_bool(debug)))
 
         return self._parse_isochrone_json(
-            self._request("/isochrone", get_params=params, dry_run=dry_run), type, intervals[0], buckets,
+            self.client._request("/isochrone", get_params=params, dry_run=dry_run), type, intervals[0], buckets,
             center
         )
 
@@ -612,7 +614,7 @@ class Graphhopper(Router):
         if debug is not None:
             params.append(('debug', convert._convert_bool(debug)))
 
-        return self._parse_matrix_json(self._request('/matrix', get_params=params, dry_run=dry_run), )
+        return self._parse_matrix_json(self.client._request('/matrix', get_params=params, dry_run=dry_run), )
 
     @staticmethod
     def _parse_matrix_json(response):

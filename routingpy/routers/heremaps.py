@@ -15,7 +15,8 @@
 # the License.
 #
 
-from .base import Router, DEFAULT
+from routingpy.base import DEFAULT
+from routingpy.client_default import Client
 from routingpy import convert
 from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrones, Isochrone
@@ -24,7 +25,7 @@ from routingpy.matrix import Matrix
 from operator import itemgetter
 
 
-class HereMaps(Router):
+class HereMaps:
     """Performs requests to the HERE Maps API services."""
 
     _DEFAULT_BASE_URL = 'https://route.api.here.com/routing/7.2'
@@ -40,7 +41,8 @@ class HereMaps(Router):
         requests_kwargs=None,
         retry_over_query_limit=False,
         skip_api_error=None,
-        api_key=None
+        api_key=None,
+        client=Client
     ):
         """
         Initializes a HERE Maps client.
@@ -108,7 +110,7 @@ class HereMaps(Router):
             self.base_url = self._DEFAULT_BASE_URL
             self.auth = {"app_id": self.app_id, "app_code": self.app_code}
 
-        super(HereMaps, self).__init__(
+        self.client = client(
             self.base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
             skip_api_error
         )
@@ -764,7 +766,7 @@ class HereMaps(Router):
             params["speedProfile"] = speed_profile
 
         return self._parse_direction_json(
-            self._request(
+            self.client._request(
                 convert._delimit_list(["/calculateroute", format], '.'),
                 get_params=params,
                 dry_run=dry_run
@@ -1057,7 +1059,7 @@ class HereMaps(Router):
             params["speedProfile"] = speed_profile
 
         return self._parse_isochrone_json(
-            self._request(
+            self.client._request(
                 convert._delimit_list(["/calculateisoline", format], '.'),
                 get_params=params,
                 dry_run=dry_run
@@ -1337,7 +1339,7 @@ class HereMaps(Router):
             params["speedProfile"] = speed_profile
 
         return self._parse_matrix_json(
-            self._request(
+            self.client._request(
                 convert._delimit_list(["/calculatematrix", format], '.'),
                 get_params=params,
                 dry_run=dry_run

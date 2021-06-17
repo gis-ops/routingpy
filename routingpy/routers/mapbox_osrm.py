@@ -18,14 +18,15 @@
 Core client functionality, common across all API requests.
 """
 
-from .base import Router, DEFAULT
+from routingpy.base import DEFAULT
+from routingpy.client_default import Client
 from routingpy import convert, utils
 from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
 
 
-class MapboxOSRM(Router):
+class MapboxOSRM:
     """Performs requests to the OSRM API services."""
 
     _base_url = 'https://api.mapbox.com'
@@ -38,7 +39,8 @@ class MapboxOSRM(Router):
         retry_timeout=None,
         requests_kwargs=None,
         retry_over_query_limit=False,
-        skip_api_error=None
+        skip_api_error=None,
+        client=Client
     ):
         """
         Initializes a Mapbox OSRM client.
@@ -87,7 +89,7 @@ class MapboxOSRM(Router):
 
         self.api_key = api_key
 
-        super(MapboxOSRM, self).__init__(
+        self.client = client(
             self._base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
             skip_api_error
         )
@@ -289,7 +291,7 @@ class MapboxOSRM(Router):
         get_params = {'access_token': self.api_key} if self.api_key else {}
 
         return self._parse_direction_json(
-            self._request(
+            self.client._request(
                 "/directions/v5/mapbox/" + profile,
                 get_params=get_params,
                 post_params=params,
@@ -416,7 +418,7 @@ class MapboxOSRM(Router):
             params['generalize'] = generalize
 
         return self._parse_isochrone_json(
-            self._request(
+            self.client._request(
                 "/isochrone/v1/" + profile + '/' + locations_string, get_params=params, dry_run=dry_run
             ), intervals, locations
         )
@@ -502,7 +504,7 @@ class MapboxOSRM(Router):
             params['fallback_speed'] = str(fallback_speed)
 
         return self._parse_matrix_json(
-            self._request(
+            self.client._request(
                 "/directions-matrix/v1/mapbox/" + profile + '/' + coords,
                 get_params=params,
                 dry_run=dry_run

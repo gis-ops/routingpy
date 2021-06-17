@@ -15,7 +15,8 @@
 # the License.
 
 from .valhalla import Valhalla
-from .base import DEFAULT
+from routingpy.base import DEFAULT
+from routingpy.client_default import Client
 
 
 class MapboxValhalla(Valhalla):
@@ -31,7 +32,8 @@ class MapboxValhalla(Valhalla):
         retry_timeout=None,
         requests_kwargs=None,
         retry_over_query_limit=False,
-        skip_api_error=None
+        skip_api_error=None,
+        client=Client
     ):
         """
         Initializes a Valhalla client.
@@ -80,5 +82,5 @@ class MapboxValhalla(Valhalla):
 
         super(MapboxValhalla, self).__init__(
             self._base_url, api_key, user_agent, timeout, retry_timeout, requests_kwargs,
-            retry_over_query_limit, skip_api_error
+            retry_over_query_limit, skip_api_error, client=client
         )

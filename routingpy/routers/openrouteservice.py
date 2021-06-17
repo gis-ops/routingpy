@@ -15,14 +15,15 @@
 # the License.
 #
 
-from .base import Router, DEFAULT
+from routingpy.base import DEFAULT
+from routingpy.client_default import Client
 from routingpy import utils
 from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
 
 
-class ORS(Router):
+class ORS:
     """Performs requests to the ORS API services."""
 
     _DEFAULT_BASE_URL = 'https://api.openrouteservice.org'
@@ -36,7 +37,8 @@ class ORS(Router):
         retry_timeout=None,
         requests_kwargs=None,
         retry_over_query_limit=False,
-        skip_api_error=None
+        skip_api_error=None,
+        client=Client
     ):
         """
         Initializes an openrouteservice client.
@@ -95,7 +97,7 @@ class ORS(Router):
         headers.update({'Authorization': api_key})
         requests_kwargs.update({'headers': headers})
 
-        super(ORS, self).__init__(
+        self.client = client(
             base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
             skip_api_error
         )
@@ -305,7 +307,7 @@ class ORS(Router):
             params['options'] = options
 
         return self._parse_direction_json(
-            self._request(
+            self.client._request(
                 "/v2/directions/" + profile + '/' + format,
                 get_params={},
                 post_params=params,
@@ -453,7 +455,7 @@ class ORS(Router):
             params["intersections"] = intersections
 
         return self._parse_isochrone_json(
-            self._request(
+            self.client._request(
                 "/v2/isochrones/" + profile + '/geojson',
                 get_params={},
                 post_params=params,
@@ -547,7 +549,7 @@ class ORS(Router):
             params["units"] = units
 
         return self._parse_matrix_json(
-            self._request(
+            self.client._request(
                 "/v2/matrix/" + profile + '/json', get_params={}, post_params=params, dry_run=dry_run
             )
         )
