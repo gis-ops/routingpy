@@ -28,7 +28,7 @@ import warnings
 
 
 class Client(BaseClient):
-
+    """Default client class for requests handling. Uses the requests package."""
     def __init__(
         self,
         base_url,
@@ -40,7 +40,43 @@ class Client(BaseClient):
         skip_api_error=None
     ):
         """
-        Initializes the default client
+        :param base_url: The base URL for the request. All routers must provide a default.
+            Should not have a trailing slash.
+        :type base_url: string
+
+        :param user_agent: User-Agent to send with the requests to routing API.
+            Overrides ``options.default_user_agent``.
+        :type user_agent: string
+
+        :param timeout: Combined connect and read timeout for HTTP requests, in
+            seconds. Specify "None" for no timeout.
+        :type timeout: int
+
+        :param retry_timeout: Timeout across multiple retriable requests, in
+            seconds.
+        :type retry_timeout: int
+
+        :param requests_kwargs: Extra keyword arguments for the requests
+            library, which among other things allow for proxy auth to be
+            implemented.
+
+            Example:
+
+            >>> from routingpy.routers import ORS
+            >>> router = ORS(my_key, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
+            >>> print(router.client.proxies)
+            {'https': '129.125.12.0'}
+
+        :type requests_kwargs: dict
+
+        :param retry_over_query_limit: If True, client will not raise an exception
+            on HTTP 429, but instead jitter a sleeping timer to pause between
+            requests until HTTP 200 or retry_timeout is reached.
+        :type retry_over_query_limit: bool
+
+        :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
+            encountered (e.g. no route found). If False, processing will discontinue and raise an error. Default False.
+        :type skip_api_error: bool
         """
 
         self._session = requests.Session()

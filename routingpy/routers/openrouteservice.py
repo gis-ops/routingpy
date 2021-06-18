@@ -73,7 +73,7 @@ class ORS:
             >>> router = ORS(my_key, requests_kwargs={
             >>>     'proxies': {'https': '129.125.12.0'}
             >>> })
-            >>> print(router.proxies)
+            >>> print(router.client.proxies)
             {'https': '129.125.12.0'}
         :type requests_kwargs: dict
 
@@ -87,6 +87,9 @@ class ORS:
             encountered (e.g. no route found). If False, processing will discontinue and raise an error.
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
+
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :type client: abc.ABCMeta
         """
 
         if base_url == self._DEFAULT_BASE_URL and api_key is None:
