@@ -17,7 +17,7 @@
 
 from typing import List, Tuple  # noqa: F401
 
-from routingpy.base import DEFAULT
+from routingpy.client_base import DEFAULT
 from routingpy.client_default import Client
 from routingpy import convert
 from routingpy import utils
@@ -38,10 +38,10 @@ class Graphhopper:
         user_agent=None,
         timeout=DEFAULT,
         retry_timeout=None,
-        requests_kwargs={},
         retry_over_query_limit=False,
         skip_api_error=None,
-        client=Client
+        client=Client,
+        **client_kwargs
     ):
         """
         Initializes an graphhopper client.
@@ -100,8 +100,13 @@ class Graphhopper:
         self.key = api_key
 
         self.client = client(
-            base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
-            skip_api_error
+            base_url,
+            user_agent,
+            timeout,
+            retry_timeout,
+            retry_over_query_limit,
+            skip_api_error,
+            **client_kwargs
         )
 
     def directions(  # noqa: C901
@@ -134,7 +139,7 @@ class Graphhopper:
         dry_run=None,
         snap_prevention=None,
         curb_side=None,
-        turn_costs=None
+        turn_costs=None,
     ):
         """Get directions between an origin point and a destination point.
 
@@ -280,7 +285,7 @@ class Graphhopper:
            ``snap_prevention``, ``curb_side``, ``turn_costs`` parameters
         """
 
-        params = [('vehicle', profile)]
+        params = [("vehicle", profile)]
 
         for coordinate in locations:
             coord_latlng = reversed([convert._format_float(f) for f in coordinate])
@@ -318,13 +323,13 @@ class Graphhopper:
                 params.append(("point_hint", hint))
 
         if snap_prevention:
-            params.append(('snap_prevention', convert._delimit_list(snap_prevention)))
+            params.append(("snap_prevention", convert._delimit_list(snap_prevention)))
 
         if turn_costs:
-            params.append(('turn_costs', convert._convert_bool(turn_costs)))
+            params.append(("turn_costs", convert._convert_bool(turn_costs)))
 
         if curb_side:
-            params.append(('curb_side', convert._delimit_list(curb_side)))
+            params.append(("curb_side", convert._delimit_list(curb_side)))
 
         ### all below params will only work if ch is disabled
 
@@ -350,13 +355,13 @@ class Graphhopper:
             params.append(("block_area", block_area))
 
         if avoid is not None:
-            params.append(("avoid", convert._delimit_list(avoid, ';')))
+            params.append(("avoid", convert._delimit_list(avoid, ";")))
 
         if algorithm is not None:
 
-            params.append(('algorithm', algorithm))
+            params.append(("algorithm", algorithm))
 
-            if algorithm == 'round_trip':
+            if algorithm == "round_trip":
 
                 if round_trip_distance is not None:
                     params.append(("round_trip.distance", round_trip_distance))
@@ -364,7 +369,7 @@ class Graphhopper:
                 if round_trip_seed is not None:
                     params.append(("round_trip.seed", round_trip_seed))
 
-            if algorithm == 'alternative_route':
+            if algorithm == "alternative_route":
 
                 if alternative_route_max_paths is not None:
                     params.append(("alternative_route.max_paths", alternative_route_max_paths))
@@ -380,43 +385,42 @@ class Graphhopper:
                     )
 
         return self._parse_directions_json(
-            self.client._request('/route', get_params=params, dry_run=dry_run), algorithm, elevation
+            self.client._request("/route", get_params=params, dry_run=dry_run), algorithm, elevation
         )
 
     @staticmethod
     def _parse_directions_json(response, algorithm, elevation):
         if response is None:  # pragma: no cover
-            if algorithm == 'alternative_route':
+            if algorithm == "alternative_route":
                 return Directions()
             else:
                 return Direction()
 
-        if algorithm == 'alternative_route':
+        if algorithm == "alternative_route":
             routes = []
-            for route in response['paths']:
+            for route in response["paths"]:
                 geometry = [
-                    list(reversed(coord))
-                    for coord in utils.decode_polyline5(route['points'], elevation)
+                    list(reversed(coord)) for coord in utils.decode_polyline5(route["points"], elevation)
                 ]
                 routes.append(
                     Direction(
                         geometry=geometry,
-                        duration=int(route['time'] / 1000),
-                        distance=int(route['distance']),
-                        raw=route
+                        duration=int(route["time"] / 1000),
+                        distance=int(route["distance"]),
+                        raw=route,
                     )
                 )
             return Directions(routes, response)
         else:
             geometry = [
                 list(reversed(coord))
-                for coord in utils.decode_polyline5(response['paths'][0]['points'], elevation)
+                for coord in utils.decode_polyline5(response["paths"][0]["points"], elevation)
             ]
             return Direction(
                 geometry=geometry,
-                duration=int(response['paths'][0]['time'] / 1000),
-                distance=int(response['paths'][0]['distance']),
-                raw=response
+                duration=int(response["paths"][0]["time"] / 1000),
+                distance=int(response["paths"][0]["distance"]),
+                raw=response,
             )
 
     def isochrones(
@@ -424,12 +428,12 @@ class Graphhopper:
         locations,
         profile,
         intervals,
-        type='json',
+        type="json",
         buckets=1,
         interval_type=None,
         reverse_flow=None,
         debug=None,
-        dry_run=None
+        dry_run=None,
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
@@ -471,13 +475,13 @@ class Graphhopper:
         :rtype: :class:`routingpy.isochrone.Isochrones`
         """
 
-        params = [('vehicle', profile), ('type', type)]
+        params = [("vehicle", profile), ("type", type)]
 
         if convert._is_list(intervals):
-            if interval_type in (None, 'time'):
-                params.append(('time_limit', intervals[0]))
-            elif interval_type == 'distance':
-                params.append(('distance_limit', intervals[0]))
+            if interval_type in (None, "time"):
+                params.append(("time_limit", intervals[0]))
+            elif interval_type == "distance":
+                params.append(("distance_limit", intervals[0]))
         else:
             raise TypeError("Parameter range={} must be of type list or tuple".format(range))
 
@@ -489,17 +493,20 @@ class Graphhopper:
             params.append(("key", self.key))
 
         if buckets is not None:
-            params.append(('buckets', buckets))
+            params.append(("buckets", buckets))
 
         if reverse_flow is not None:
-            params.append(('reverse_flow', convert._convert_bool(reverse_flow)))
+            params.append(("reverse_flow", convert._convert_bool(reverse_flow)))
 
         if debug is not None:
-            params.append(('debug', convert._convert_bool(debug)))
+            params.append(("debug", convert._convert_bool(debug)))
 
         return self._parse_isochrone_json(
-            self.client._request("/isochrone", get_params=params, dry_run=dry_run), type, intervals[0], buckets,
-            center
+            self.client._request("/isochrone", get_params=params, dry_run=dry_run),
+            type,
+            intervals[0],
+            buckets,
+            center,
         )
 
     @staticmethod
@@ -508,14 +515,14 @@ class Graphhopper:
             return Isochrones()
 
         isochrones = []
-        accessor = 'polygons' if type == 'json' else 'features'
+        accessor = "polygons" if type == "json" else "features"
         for index, polygon in enumerate(response[accessor]):
             isochrones.append(
                 Isochrone(
                     geometry=[
-                        l[:2] for l in polygon['geometry']['coordinates'][0]  # noqa: E741
+                        l[:2] for l in polygon["geometry"]["coordinates"][0]  # noqa: E741
                     ],  # takes in elevation for some reason
-                    interval=int(max_range * ((polygon['properties']['bucket'] + 1) / buckets)),
+                    interval=int(max_range * ((polygon["properties"]["bucket"] + 1) / buckets)),
                     center=center,
                 )
             )
@@ -528,11 +535,11 @@ class Graphhopper:
         profile,
         sources=None,
         destinations=None,
-        out_array=['times', 'distances'],
+        out_array=["times", "distances"],
         debug=None,
-        dry_run=None
+        dry_run=None,
     ):
-        """ Gets travel distance and time for a matrix of origins and destinations.
+        """Gets travel distance and time for a matrix of origins and destinations.
 
         For more details visit https://docs.graphhopper.com/#tag/Matrix-API.
 
@@ -569,14 +576,14 @@ class Graphhopper:
         :returns: A matrix from the specified sources and destinations.
         :rtype: :class:`routingpy.matrix.Matrix`
         """
-        params = [('vehicle', profile)]
+        params = [("vehicle", profile)]
 
         if self.key is not None:
             params.append(("key", self.key))
 
         if sources is None and destinations is None:
             locations = (reversed([convert._format_float(f) for f in coord]) for coord in locations)
-            params.extend([('point', ",".join(coord)) for coord in locations])
+            params.extend([("point", ",".join(coord)) for coord in locations])
 
         else:
             sources_out = locations
@@ -615,15 +622,17 @@ class Graphhopper:
                 params.append(("out_array", e))
 
         if debug is not None:
-            params.append(('debug', convert._convert_bool(debug)))
+            params.append(("debug", convert._convert_bool(debug)))
 
-        return self._parse_matrix_json(self.client._request('/matrix', get_params=params, dry_run=dry_run), )
+        return self._parse_matrix_json(
+            self.client._request("/matrix", get_params=params, dry_run=dry_run),
+        )
 
     @staticmethod
     def _parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
-        durations = response.get('times')
-        distances = response.get('distances')
+        durations = response.get("times")
+        distances = response.get("distances")
 
         return Matrix(durations=durations, distances=distances, raw=response)

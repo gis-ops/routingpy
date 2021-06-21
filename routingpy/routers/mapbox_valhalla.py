@@ -15,14 +15,14 @@
 # the License.
 
 from .valhalla import Valhalla
-from routingpy.base import DEFAULT
+from routingpy.client_base import DEFAULT
 from routingpy.client_default import Client
 
 
 class MapboxValhalla(Valhalla):
     """Performs requests to Mapbox's Valhalla instance."""
 
-    _base_url = 'https://api.mapbox.com/valhalla/v1'
+    _base_url = "https://api.mapbox.com/valhalla/v1"
 
     def __init__(
         self,
@@ -30,10 +30,10 @@ class MapboxValhalla(Valhalla):
         user_agent=None,
         timeout=DEFAULT,
         retry_timeout=None,
-        requests_kwargs=None,
         retry_over_query_limit=False,
         skip_api_error=None,
-        client=Client
+        client=Client,
+        **client_kwargs
     ):
         """
         Initializes a Valhalla client.
@@ -84,6 +84,13 @@ class MapboxValhalla(Valhalla):
         """
 
         super(MapboxValhalla, self).__init__(
-            self._base_url, api_key, user_agent, timeout, retry_timeout, requests_kwargs,
-            retry_over_query_limit, skip_api_error, client=client
+            self._base_url,
+            api_key,
+            user_agent,
+            timeout,
+            retry_timeout,
+            retry_over_query_limit,
+            skip_api_error,
+            client=client,
+            **client_kwargs
         )

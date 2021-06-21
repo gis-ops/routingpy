@@ -18,7 +18,7 @@
 Core client functionality, common across all API requests.
 """
 
-from routingpy.base import DEFAULT
+from routingpy.client_base import DEFAULT
 from routingpy.client_default import Client
 from routingpy import convert, utils
 from routingpy.direction import Direction, Directions
@@ -29,7 +29,7 @@ from routingpy.matrix import Matrix
 class MapboxOSRM:
     """Performs requests to the OSRM API services."""
 
-    _base_url = 'https://api.mapbox.com'
+    _base_url = "https://api.mapbox.com"
 
     def __init__(
         self,
@@ -37,10 +37,10 @@ class MapboxOSRM:
         user_agent=None,
         timeout=DEFAULT,
         retry_timeout=None,
-        requests_kwargs=None,
         retry_over_query_limit=False,
         skip_api_error=None,
-        client=Client
+        client=Client,
+        **client_kwargs
     ):
         """
         Initializes a Mapbox OSRM client.
@@ -93,8 +93,13 @@ class MapboxOSRM:
         self.api_key = api_key
 
         self.client = client(
-            self._base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
-            skip_api_error
+            self._base_url,
+            user_agent,
+            timeout,
+            retry_timeout,
+            retry_over_query_limit,
+            skip_api_error,
+            **client_kwargs
         )
 
     def directions(  # noqa: C901
@@ -118,7 +123,7 @@ class MapboxOSRM:
         voice_units=None,
         waypoint_names=None,
         waypoint_targets=None,
-        dry_run=None
+        dry_run=None,
     ):
         """Get directions between an origin point and a destination point.
 
@@ -227,17 +232,17 @@ class MapboxOSRM:
         """
 
         coords = convert._delimit_list(
-            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ';'
+            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ";"
         )
 
-        params = {'coordinates': coords}
+        params = {"coordinates": coords}
 
         if radiuses:
-            params["radiuses"] = convert._delimit_list(radiuses, ';')
+            params["radiuses"] = convert._delimit_list(radiuses, ";")
 
         if bearings:
             params["bearings"] = convert._delimit_list(
-                [convert._delimit_list(pair) for pair in bearings], ';'
+                [convert._delimit_list(pair) for pair in bearings], ";"
             )
 
         if alternatives is not None:
@@ -259,39 +264,39 @@ class MapboxOSRM:
             params["overview"] = convert._convert_bool(overview)
 
         if exclude is not None:
-            params['exclude'] = exclude
+            params["exclude"] = exclude
 
         if approaches:
-            params['approaches'] = ';' + convert._delimit_list(approaches, ';')
+            params["approaches"] = ";" + convert._delimit_list(approaches, ";")
 
         if banner_instructions:
-            params['banner_instuctions'] = convert._convert_bool(banner_instructions)
+            params["banner_instuctions"] = convert._convert_bool(banner_instructions)
 
         if language:
-            params['language'] = language
+            params["language"] = language
 
         if roundabout_exits:
-            params['roundabout_exits'] = convert._convert_bool(roundabout_exits)
+            params["roundabout_exits"] = convert._convert_bool(roundabout_exits)
 
         if voice_instructions:
-            params['voide_instructions'] = convert._convert_bool(voice_instructions)
+            params["voide_instructions"] = convert._convert_bool(voice_instructions)
 
         if voice_units:
-            params['voice_units'] = voice_units
+            params["voice_units"] = voice_units
 
         if waypoint_names:
-            params['waypoint_names'] = convert._delimit_list(waypoint_names, ';')
+            params["waypoint_names"] = convert._delimit_list(waypoint_names, ";")
 
         if waypoint_targets:
-            params['waypoint_targets'] = ';' + convert._delimit_list(
+            params["waypoint_targets"] = ";" + convert._delimit_list(
                 [
-                    convert._delimit_list([convert._format_float(f)
-                                           for f in pair])
+                    convert._delimit_list([convert._format_float(f) for f in pair])
                     for pair in waypoint_targets
-                ], ';'
+                ],
+                ";",
             )
 
-        get_params = {'access_token': self.api_key} if self.api_key else {}
+        get_params = {"access_token": self.api_key} if self.api_key else {}
 
         return self._parse_direction_json(
             self.client._request(
@@ -299,10 +304,10 @@ class MapboxOSRM:
                 get_params=get_params,
                 post_params=params,
                 dry_run=dry_run,
-                requests_kwargs={"headers": {
-                    "Content-Type": 'application/x-www-form-urlencoded'
-                }},
-            ), alternatives, geometries
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            ),
+            alternatives,
+            geometries,
         )
 
     @staticmethod
@@ -314,18 +319,16 @@ class MapboxOSRM:
                 return Direction()
 
         def _parse_geometry(route_geometry):
-            if geometry_format in (None, 'polyline'):
+            if geometry_format in (None, "polyline"):
                 geometry = [
-                    list(reversed(coord))
-                    for coord in utils.decode_polyline5(route_geometry, is3d=False)
+                    list(reversed(coord)) for coord in utils.decode_polyline5(route_geometry, is3d=False)
                 ]
-            elif geometry_format == 'polyline6':
+            elif geometry_format == "polyline6":
                 geometry = [
-                    list(reversed(coord))
-                    for coord in utils.decode_polyline6(route_geometry, is3d=False)
+                    list(reversed(coord)) for coord in utils.decode_polyline6(route_geometry, is3d=False)
                 ]
-            elif geometry_format == 'geojson':
-                geometry = route_geometry['coordinates']
+            elif geometry_format == "geojson":
+                geometry = route_geometry["coordinates"]
             else:
                 raise ValueError(
                     "OSRM: parameter geometries needs one of ['polyline', 'polyline6', 'geojson"
@@ -334,22 +337,22 @@ class MapboxOSRM:
 
         if alternatives:
             routes = []
-            for route in response['routes']:
+            for route in response["routes"]:
                 routes.append(
                     Direction(
-                        geometry=_parse_geometry(route['geometry']),
-                        duration=int(route['duration']),
-                        distance=int(route['distance']),
-                        raw=route
+                        geometry=_parse_geometry(route["geometry"]),
+                        duration=int(route["duration"]),
+                        distance=int(route["distance"]),
+                        raw=route,
                     )
                 )
             return Directions(routes, response)
         else:
             return Direction(
-                geometry=_parse_geometry(response['routes'][0]['geometry']),
-                duration=int(response['routes'][0]['duration']),
-                distance=int(response['routes'][0]['distance']),
-                raw=response
+                geometry=_parse_geometry(response["routes"][0]["geometry"]),
+                duration=int(response["routes"][0]["duration"]),
+                distance=int(response["routes"][0]["distance"]),
+                raw=response,
             )
 
     def isochrones(
@@ -361,7 +364,7 @@ class MapboxOSRM:
         polygons=None,
         denoise=None,
         generalize=None,
-        dry_run=None
+        dry_run=None,
     ):
         """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
 
@@ -401,29 +404,31 @@ class MapboxOSRM:
         """
 
         params = {
-            "contours_minutes": convert._delimit_list([int(x / 60) for x in sorted(intervals)], ','),
-            'access_token': self.api_key,
-            'costing': profile
+            "contours_minutes": convert._delimit_list([int(x / 60) for x in sorted(intervals)], ","),
+            "access_token": self.api_key,
+            "costing": profile,
         }
 
-        locations_string = convert._delimit_list(locations, ',')
+        locations_string = convert._delimit_list(locations, ",")
 
         if contours_colors:
-            params["contours_colors"] = convert._delimit_list(contours_colors, ',')
+            params["contours_colors"] = convert._delimit_list(contours_colors, ",")
 
         if polygons is not None:
-            params['polygons'] = polygons
+            params["polygons"] = polygons
 
         if denoise:
-            params['denoise'] = denoise
+            params["denoise"] = denoise
 
         if generalize:
-            params['generalize'] = generalize
+            params["generalize"] = generalize
 
         return self._parse_isochrone_json(
             self.client._request(
-                "/isochrone/v1/" + profile + '/' + locations_string, get_params=params, dry_run=dry_run
-            ), intervals, locations
+                "/isochrone/v1/" + profile + "/" + locations_string, get_params=params, dry_run=dry_run
+            ),
+            intervals,
+            locations,
         )
 
     @staticmethod
@@ -433,11 +438,13 @@ class MapboxOSRM:
         return Isochrones(
             [
                 Isochrone(
-                    geometry=isochrone['geometry']['coordinates'],
+                    geometry=isochrone["geometry"]["coordinates"],
                     interval=intervals[idx],
-                    center=locations
-                ) for idx, isochrone in enumerate(list(reversed(response['features'])))
-            ], response
+                    center=locations,
+                )
+                for idx, isochrone in enumerate(list(reversed(response["features"])))
+            ],
+            response,
         )
 
     def matrix(
@@ -448,7 +455,7 @@ class MapboxOSRM:
         destinations=None,
         annotations=None,
         fallback_speed=None,
-        dry_run=None
+        dry_run=None,
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
@@ -489,28 +496,28 @@ class MapboxOSRM:
         """
 
         coords = convert._delimit_list(
-            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ';'
+            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ";"
         )
 
-        params = {'access_token': self.api_key}
+        params = {"access_token": self.api_key}
 
         if sources:
-            params['sources'] = convert._delimit_list(sources, ';')
+            params["sources"] = convert._delimit_list(sources, ";")
 
         if destinations:
-            params['destinations'] = convert._delimit_list(destinations, ';')
+            params["destinations"] = convert._delimit_list(destinations, ";")
 
         if annotations:
-            params['annotations'] = convert._delimit_list(annotations)
+            params["annotations"] = convert._delimit_list(annotations)
 
         if fallback_speed:
-            params['fallback_speed'] = str(fallback_speed)
+            params["fallback_speed"] = str(fallback_speed)
 
         return self._parse_matrix_json(
             self.client._request(
-                "/directions-matrix/v1/mapbox/" + profile + '/' + coords,
+                "/directions-matrix/v1/mapbox/" + profile + "/" + coords,
                 get_params=params,
-                dry_run=dry_run
+                dry_run=dry_run,
             )
         )
 
@@ -520,5 +527,5 @@ class MapboxOSRM:
             return Matrix()
 
         return Matrix(
-            durations=response.get('durations'), distances=response.get('distances'), raw=response
+            durations=response.get("durations"), distances=response.get("distances"), raw=response
         )

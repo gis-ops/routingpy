@@ -18,14 +18,14 @@
 Core client functionality, common across all routers.
 """
 
-from routingpy import exceptions
+
 from routingpy.__version__ import __version__
 
 from abc import ABCMeta, abstractmethod
 from datetime import timedelta
 import requests
 from urllib.parse import urlencode
-import json
+
 
 _DEFAULT_USER_AGENT = "routingpy/v{}".format(__version__)
 _RETRIABLE_STATUSES = set([503])
@@ -82,20 +82,21 @@ class options(object):
 
 
 # To avoid trouble when respecting timeout for individual routers (i.e. can't be None, since that's no timeout)
-DEFAULT = type('object', (object,), {'__repr__': lambda self: 'DEFAULT'})()
+DEFAULT = type("object", (object,), {"__repr__": lambda self: "DEFAULT"})()
 
 
 class BaseClient(metaclass=ABCMeta):
     """Abstract base class every client inherits from. Authentication is handled in each subclass."""
 
     def __init__(
-            self,
-            base_url,
-            user_agent=None,
-            timeout=DEFAULT,
-            retry_timeout=None,
-            retry_over_query_limit=None,
-            skip_api_error=None
+        self,
+        base_url,
+        user_agent=None,
+        timeout=DEFAULT,
+        retry_timeout=None,
+        retry_over_query_limit=None,
+        skip_api_error=None,
+        **kwargs
     ):
         """
         :param base_url: The base URL for the request. All routers must provide a default.
@@ -136,17 +137,23 @@ class BaseClient(metaclass=ABCMeta):
         """
         self.base_url = base_url
 
-        self.retry_over_query_limit = retry_over_query_limit if retry_over_query_limit is False else options.default_retry_over_query_limit
+        self.retry_over_query_limit = (
+            retry_over_query_limit
+            if retry_over_query_limit is False
+            else options.default_retry_over_query_limit
+        )
         self.retry_timeout = timedelta(seconds=retry_timeout or options.default_retry_timeout)
 
         self.skip_api_error = skip_api_error or options.default_skip_api_error
 
         self.headers = {
             "User-Agent": user_agent or options.default_user_agent,
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
         }
 
         self.timeout = timeout if timeout != DEFAULT else options.default_timeout
+
+        self.kwargs = kwargs
 
         self._req = None
 
@@ -154,34 +161,6 @@ class BaseClient(metaclass=ABCMeta):
     def _request(self):
         """Must be implemented for inheriting client classes."""
         pass
-
-    @property
-    def req(self):
-        """Holds the :class:`requests.PreparedRequest` property for the last request."""
-        return self._req
-
-    @staticmethod
-    def _get_body(response):
-        status_code = response.status_code
-
-        try:
-            body = response.json()
-        except json.decoder.JSONDecodeError:
-            raise exceptions.JSONParseError("Can't decode JSON response:{}".format(response.text))
-
-        if status_code == 429:
-            raise exceptions.OverQueryLimit(status_code, body)
-
-        if 400 <= status_code < 500:
-            raise exceptions.RouterApiError(status_code, body)
-
-        if 500 <= status_code:
-            raise exceptions.RouterServerError(status_code, body)
-
-        if status_code != 200:
-            raise exceptions.RouterError(status_code, body)
-
-        return body
 
     @staticmethod
     def _generate_auth_url(path, params):

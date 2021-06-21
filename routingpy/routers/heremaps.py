@@ -15,7 +15,7 @@
 # the License.
 #
 
-from routingpy.base import DEFAULT
+from routingpy.client_base import DEFAULT
 from routingpy.client_default import Client
 from routingpy import convert
 from routingpy.direction import Direction, Directions
@@ -28,8 +28,8 @@ from operator import itemgetter
 class HereMaps:
     """Performs requests to the HERE Maps API services."""
 
-    _DEFAULT_BASE_URL = 'https://route.api.here.com/routing/7.2'
-    _APIKEY_BASE_URL = 'https://route.ls.hereapi.com/routing/7.2'
+    _DEFAULT_BASE_URL = "https://route.api.here.com/routing/7.2"
+    _APIKEY_BASE_URL = "https://route.ls.hereapi.com/routing/7.2"
 
     def __init__(
         self,
@@ -38,11 +38,11 @@ class HereMaps:
         user_agent=None,
         timeout=DEFAULT,
         retry_timeout=None,
-        requests_kwargs=None,
         retry_over_query_limit=False,
         skip_api_error=None,
         api_key=None,
-        client=Client
+        client=Client,
+        **client_kwargs
     ):
         """
         Initializes a HERE Maps client.
@@ -114,8 +114,13 @@ class HereMaps:
             self.auth = {"app_id": self.app_id, "app_code": self.app_code}
 
         self.client = client(
-            self.base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
-            skip_api_error
+            self.base_url,
+            user_agent,
+            timeout,
+            retry_timeout,
+            retry_over_query_limit,
+            skip_api_error,
+            **client_kwargs
         )
 
     class Waypoint(object):
@@ -128,14 +133,15 @@ class HereMaps:
         >>> waypoint = HereMaps.Waypoint(position=[8.15315, 52.53151], waypoint_type='passThrough', stopover_duration=120, transit_radius=500)
         >>> route = HereMaps(api_key).directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
+
         def __init__(
             self,
             position,
             waypoint_type=None,
             stopover_duration=None,
-            transit_radius='',
-            user_label='',
-            heading=''
+            transit_radius="",
+            user_label="",
+            heading="",
         ):
             """
             :param position: Indicates that the parameter contains a geographical position.
@@ -176,22 +182,22 @@ class HereMaps:
 
         def _make_waypoint(self):
 
-            here_waypoint = ['geo']
+            here_waypoint = ["geo"]
             if self.waypoint_type is not None and self.stopover_duration is not None:
                 here_waypoint.append(
-                    convert._delimit_list([self.waypoint_type, self.stopover_duration], ',')
+                    convert._delimit_list([self.waypoint_type, self.stopover_duration], ",")
                 )
             elif self.waypoint_type is not None:
                 here_waypoint.append(self.waypoint_type)
 
             position = convert._delimit_list(
-                [convert._format_float(f) for f in list(reversed(self.position))], ','
+                [convert._format_float(f) for f in list(reversed(self.position))], ","
             )
-            position += ';' + self.transit_radius
-            position += ';' + self.user_label
-            position += ';' + self.heading
+            position += ";" + self.transit_radius
+            position += ";" + self.user_label
+            position += ";" + self.heading
             here_waypoint.append(position)
-            return convert._delimit_list(here_waypoint, '!')
+            return convert._delimit_list(here_waypoint, "!")
 
     class RoutingMode(object):
         """
@@ -204,8 +210,9 @@ class HereMaps:
         >>> route = HereMaps(api_key).directions(locations=location_list, profile=profile)
 
         """
+
         def __init__(
-            self, mode_type='fastest', mode_transport_type='car', mode_traffic=None, features=None
+            self, mode_type="fastest", mode_transport_type="car", mode_traffic=None, features=None
         ):
             """
             :param mode_type: RoutingType relevant to calculation.
@@ -234,21 +241,21 @@ class HereMaps:
             routing_mode.append(self.mode_transport_type)
 
             if self.mode_traffic is not None:
-                routing_mode.append('traffic:' + self.mode_traffic)
+                routing_mode.append("traffic:" + self.mode_traffic)
 
             if self.features is not None:
                 get_features = []
                 for f, w in self.features.items():
-                    get_features.append(convert._delimit_list([f, str(w)], ':'))
-                routing_mode.append(convert._delimit_list(get_features, ','))
-            return convert._delimit_list(routing_mode, ';')
+                    get_features.append(convert._delimit_list([f, str(w)], ":"))
+                routing_mode.append(convert._delimit_list(get_features, ","))
+            return convert._delimit_list(routing_mode, ";")
 
     def directions(  # noqa: C901
         self,
         locations,
         profile,
-        mode_type='fastest',
-        format='json',
+        mode_type="fastest",
+        format="json",
         request_id=None,
         avoid_areas=None,
         avoid_links=None,
@@ -269,7 +276,7 @@ class HereMaps:
         json_attributes=None,
         json_callback=None,
         representation=None,
-        route_attributes=['waypoints', 'summary', 'shape', 'boundingBox', 'legs'],
+        route_attributes=["waypoints", "summary", "shape", "boundingBox", "legs"],
         leg_attributes=None,
         maneuver_attributes=None,
         link_attributes=None,
@@ -297,7 +304,7 @@ class HereMaps:
         consumption_model=None,
         custom_consumption_details=None,
         speed_profile=None,
-        dry_run=None
+        dry_run=None,
     ):
         """Get directions between an origin point and a destination point.
 
@@ -596,7 +603,11 @@ class HereMaps:
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
-        self.base_url = 'https://route.api.here.com/routing/7.2' if self.api_key is None else 'https://route.ls.hereapi.com/routing/7.2'
+        self.base_url = (
+            "https://route.api.here.com/routing/7.2"
+            if self.api_key is None
+            else "https://route.ls.hereapi.com/routing/7.2"
+        )
         params = self.auth.copy()
 
         locations = self._build_locations(locations)
@@ -606,7 +617,7 @@ class HereMaps:
             params[wp_index] = wp
 
         if isinstance(profile, str):
-            params["mode"] = mode_type + ';' + profile
+            params["mode"] = mode_type + ";" + profile
         elif isinstance(profile, self.RoutingMode):
             params["mode"] = profile.make_routing_mode()
 
@@ -619,15 +630,19 @@ class HereMaps:
                     convert._delimit_list(
                         [
                             convert._delimit_list(
-                                [convert._format_float(f) for f in list(reversed(pair))], ','
-                            ) for pair in bounding_box
-                        ], ';'
-                    ) for bounding_box in avoid_areas
-                ], '!'
+                                [convert._format_float(f) for f in list(reversed(pair))], ","
+                            )
+                            for pair in bounding_box
+                        ],
+                        ";",
+                    )
+                    for bounding_box in avoid_areas
+                ],
+                "!",
             )
 
         if avoid_links is not None:
-            params["avoidLinks"] = convert._delimit_list(avoid_links, ',')
+            params["avoidLinks"] = convert._delimit_list(avoid_links, ",")
 
         if avoid_seasonal_closures is not None:
             params["avoidSeasonalClosures"] = convert._convert_bool(avoid_seasonal_closures)
@@ -636,16 +651,16 @@ class HereMaps:
             params["avoidTurns"] = avoid_turns
 
         if allowed_zones is not None:
-            params["allowedZones"] = convert._delimit_list(allowed_zones, ',')
+            params["allowedZones"] = convert._delimit_list(allowed_zones, ",")
 
         if exclude_zones is not None:
-            params["excludeZones"] = convert._delimit_list(exclude_zones, ',')
+            params["excludeZones"] = convert._delimit_list(exclude_zones, ",")
 
         if exclude_zone_types is not None:
-            params["excludeZoneTypes"] = convert._delimit_list(exclude_zone_types, ',')
+            params["excludeZoneTypes"] = convert._delimit_list(exclude_zone_types, ",")
 
         if exclude_countries is not None:
-            params["excludeCountries"] = convert._delimit_list(exclude_countries, ',')
+            params["excludeCountries"] = convert._delimit_list(exclude_countries, ",")
 
         if departure is not None:
             params["departure"] = departure
@@ -661,16 +676,16 @@ class HereMaps:
         if view_bounds is not None:
             params["viewBounds"] = convert._delimit_list(
                 [
-                    convert._delimit_list([convert._format_float(f)
-                                           for f in list(reversed(pair))], ',')
+                    convert._delimit_list([convert._format_float(f) for f in list(reversed(pair))], ",")
                     for pair in view_bounds
-                ], ';'
+                ],
+                ";",
             )
 
         if resolution is not None:
-            params["resolution"] = str(resolution['viewresolution'])
-            if 'snapresolution' in resolution:
-                params["resolution"] += ':' + str(resolution['snapresolution'])
+            params["resolution"] = str(resolution["viewresolution"])
+            if "snapresolution" in resolution:
+                params["resolution"] += ":" + str(resolution["snapresolution"])
 
         if instruction_format is not None:
             params["instructionFormat"] = instruction_format
@@ -682,25 +697,25 @@ class HereMaps:
             params["jsonCallback"] = json_callback
 
         if representation is not None:
-            params["representation"] = convert._delimit_list(representation, ',')
+            params["representation"] = convert._delimit_list(representation, ",")
 
         if route_attributes is not None:
-            params["routeAttributes"] = convert._delimit_list(route_attributes, ',')
+            params["routeAttributes"] = convert._delimit_list(route_attributes, ",")
 
         if leg_attributes is not None:
-            params["legAttributes"] = convert._delimit_list(leg_attributes, ',')
+            params["legAttributes"] = convert._delimit_list(leg_attributes, ",")
 
         if maneuver_attributes is not None:
-            params["maneuverAttributes"] = convert._delimit_list(maneuver_attributes, ',')
+            params["maneuverAttributes"] = convert._delimit_list(maneuver_attributes, ",")
 
         if link_attributes is not None:
-            params["linkAttributes"] = convert._delimit_list(link_attributes, ',')
+            params["linkAttributes"] = convert._delimit_list(link_attributes, ",")
 
         if line_attributes is not None:
-            params["lineAttributes"] = convert._delimit_list(line_attributes, ',')
+            params["lineAttributes"] = convert._delimit_list(line_attributes, ",")
 
         if generalization_tolerances is not None:
-            params["generalizationTolerances"] = convert._delimit_list(generalization_tolerances, ',')
+            params["generalizationTolerances"] = convert._delimit_list(generalization_tolerances, ",")
 
         if vehicle_type is not None:
             params["vehicleType"] = vehicle_type
@@ -712,7 +727,7 @@ class HereMaps:
             params["maxNumberOfChanges"] = max_number_of_changes
 
         if avoid_transport_types is not None:
-            params["avoidTransportTypes"] = convert._delimit_list(avoid_transport_types, ',')
+            params["avoidTransportTypes"] = convert._delimit_list(avoid_transport_types, ",")
 
         if walk_time_multiplier is not None:
             params["walkTimeMultiplier"] = walk_time_multiplier
@@ -733,7 +748,7 @@ class HereMaps:
             params["trailersCount"] = trailers_count
 
         if shipped_hazardous_goods is not None:
-            params["shippedHazardousGoods"] = convert._delimit_list(shipped_hazardous_goods, ',')
+            params["shippedHazardousGoods"] = convert._delimit_list(shipped_hazardous_goods, ",")
 
         if limited_weight is not None:
             params["limitedWeight"] = limited_weight
@@ -751,7 +766,7 @@ class HereMaps:
             params["length"] = length
 
         if tunnel_category is not None:
-            params["tunnelCategory"] = convert._delimit_list(tunnel_category, ',')
+            params["tunnelCategory"] = convert._delimit_list(tunnel_category, ",")
 
         if truck_restriction_penalty is not None:
             params["truckRestrictionPenalty"] = truck_restriction_penalty
@@ -770,11 +785,11 @@ class HereMaps:
 
         return self._parse_direction_json(
             self.client._request(
-                convert._delimit_list(["/calculateroute", format], '.'),
+                convert._delimit_list(["/calculateroute", format], "."),
                 get_params=params,
-                dry_run=dry_run
+                dry_run=dry_run,
             ),
-            alternatives=alternatives
+            alternatives=alternatives,
         )
 
     @staticmethod
@@ -787,16 +802,16 @@ class HereMaps:
 
         if alternatives is not None and alternatives > 1:
             routes = []
-            for route in response['response']['route']:
+            for route in response["response"]["route"]:
                 routes.append(
                     Direction(
                         geometry=[
-                            list(reversed(list((map(float, coordinates.split(','))))))
-                            for coordinates in route['shape']
+                            list(reversed(list((map(float, coordinates.split(","))))))
+                            for coordinates in route["shape"]
                         ],
-                        duration=int(route['summary']['baseTime']),
-                        distance=int(route['summary']['distance']),
-                        raw=route
+                        duration=int(route["summary"]["baseTime"]),
+                        distance=int(route["summary"]["distance"]),
+                        raw=route,
                     )
                 )
 
@@ -804,11 +819,11 @@ class HereMaps:
 
         else:
             geometry = [
-                list(reversed(list(map(float, coordinates.split(',')))))
-                for coordinates in response['response']['route'][0].get('shape')
+                list(reversed(list(map(float, coordinates.split(",")))))
+                for coordinates in response["response"]["route"][0].get("shape")
             ]
-            duration = int(response['response']['route'][0]['summary'].get('baseTime'))
-            distance = int(response['response']['route'][0]['summary'].get('distance'))
+            duration = int(response["response"]["route"][0]["summary"].get("baseTime"))
+            distance = int(response["response"]["route"][0]["summary"].get("distance"))
 
             return Direction(geometry=geometry, duration=duration, distance=distance, raw=response)
 
@@ -817,10 +832,10 @@ class HereMaps:
         locations,
         profile,
         intervals,
-        mode_type='fastest',
-        interval_type='time',
-        format='json',
-        center_type='start',
+        mode_type="fastest",
+        interval_type="time",
+        format="json",
+        center_type="start",
         request_id=None,
         arrival=None,
         departure=None,
@@ -842,7 +857,7 @@ class HereMaps:
         consumption_model=None,
         custom_consumption_details=None,
         speed_profile=None,
-        dry_run=None
+        dry_run=None,
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
@@ -989,18 +1004,22 @@ class HereMaps:
         :rtype: dict
         """
 
-        self.base_url = 'https://isoline.route.api.here.com/routing/7.2' if self.api_key is None else 'https://isoline.route.ls.hereapi.com/routing/7.2'
+        self.base_url = (
+            "https://isoline.route.api.here.com/routing/7.2"
+            if self.api_key is None
+            else "https://isoline.route.ls.hereapi.com/routing/7.2"
+        )
         params = self.auth.copy()
 
         params[center_type] = self._build_locations(locations)[0]
 
         if isinstance(profile, str):
-            params["mode"] = mode_type + ';' + profile
+            params["mode"] = mode_type + ";" + profile
         elif isinstance(profile, self.RoutingMode):
             params["mode"] = profile.make_routing_mode()
 
         if intervals is not None:
-            params["range"] = convert._delimit_list(intervals, ',')
+            params["range"] = convert._delimit_list(intervals, ",")
 
         if interval_type is not None:
             params["rangeType"] = interval_type
@@ -1032,7 +1051,7 @@ class HereMaps:
             params["trailersCount"] = trailers_count
 
         if shipped_hazardous_goods is not None:
-            params["shippedHazardousGoods"] = convert._delimit_list(shipped_hazardous_goods, ',')
+            params["shippedHazardousGoods"] = convert._delimit_list(shipped_hazardous_goods, ",")
 
         if limited_weight is not None:
             params["limitedWeight"] = limited_weight
@@ -1050,7 +1069,7 @@ class HereMaps:
             params["length"] = length
 
         if tunnel_category is not None:
-            params["tunnelCategory"] = convert._delimit_list(tunnel_category, ',')
+            params["tunnelCategory"] = convert._delimit_list(tunnel_category, ",")
 
         if consumption_model is not None:
             params["consumptionModel"] = consumption_model
@@ -1063,10 +1082,11 @@ class HereMaps:
 
         return self._parse_isochrone_json(
             self.client._request(
-                convert._delimit_list(["/calculateisoline", format], '.'),
+                convert._delimit_list(["/calculateisoline", format], "."),
                 get_params=params,
-                dry_run=dry_run
-            ), intervals
+                dry_run=dry_run,
+            ),
+            intervals,
         )
 
     @staticmethod
@@ -1075,13 +1095,13 @@ class HereMaps:
             return Isochrones()
 
         geometries = []
-        for idx, isochrones in enumerate(response['response']['isoline']):
+        for idx, isochrones in enumerate(response["response"]["isoline"]):
             range_polygons = []
-            if 'component' in isochrones:
-                for component in isochrones['component']:
-                    if 'shape' in component:
+            if "component" in isochrones:
+                for component in isochrones["component"]:
+                    if "shape" in component:
                         coordinates_list = []
-                        for coordinates in component['shape']:
+                        for coordinates in component["shape"]:
                             coords = [float(f) for f in coordinates.split(",")]
                             coordinates_list.append(reversed(coords))
                         range_polygons.append(coordinates_list)
@@ -1090,7 +1110,7 @@ class HereMaps:
                 Isochrone(
                     geometry=range_polygons,
                     interval=intervals[idx],
-                    center=list(response['response']['start']['mappedPosition'].values())
+                    center=list(response["response"]["start"]["mappedPosition"].values()),
                 )
             )
 
@@ -1100,8 +1120,8 @@ class HereMaps:
         self,
         locations,
         profile,
-        format='json',
-        mode_type='fastest',
+        format="json",
+        mode_type="fastest",
         sources=None,
         destinations=None,
         search_range=None,
@@ -1111,7 +1131,7 @@ class HereMaps:
         exclude_countries=None,
         departure=None,
         matrix_attributes=None,
-        summary_attributes=['traveltime', 'costfactor', 'distance'],
+        summary_attributes=["traveltime", "costfactor", "distance"],
         truck_type=None,
         trailers_count=None,
         shipped_hazardous_goods=None,
@@ -1122,136 +1142,140 @@ class HereMaps:
         length=None,
         tunnel_category=None,
         speed_profile=None,
-        dry_run=None
+        dry_run=None,
     ):
-        """ Gets travel distance and time for a matrix of origins and destinations.
+        """Gets travel distance and time for a matrix of origins and destinations.
 
-            :param locations: The coordinates tuple the route should be calculated
-                from in order of visit. Can be a list/tuple of [lon, lat] or :class:`HereMaps.Waypoint` instance or a
-                combination of those. For further explanation, see
-                https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
-            :type locations: list of list or list of :class:`HereMaps.Waypoint`
+        :param locations: The coordinates tuple the route should be calculated
+            from in order of visit. Can be a list/tuple of [lon, lat] or :class:`HereMaps.Waypoint` instance or a
+            combination of those. For further explanation, see
+            https://developer.here.com/documentation/routing/topics/resource-param-type-waypoint.html
+        :type locations: list of list or list of :class:`HereMaps.Waypoint`
 
-            :param profile: Specifies the routing mode of transport and further options.
-                Can be a str or :class:`HereMaps.RoutingMode`
-                https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
-            :type profile: str or :class:`HereMaps.RoutingMode`
+        :param profile: Specifies the routing mode of transport and further options.
+            Can be a str or :class:`HereMaps.RoutingMode`
+            https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html
+        :type profile: str or :class:`HereMaps.RoutingMode`
 
-            :param mode_type: RoutingType relevant to calculation. One of [fastest, shortest, balanced]. Default fastest.
-                https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html#ariaid-title2
-            :type mode_type: str
+        :param mode_type: RoutingType relevant to calculation. One of [fastest, shortest, balanced]. Default fastest.
+            https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html#ariaid-title2
+        :type mode_type: str
 
-            :param sources: The starting points for the matrix.
-                Specifies an index referring to coordinates.
-            :type sources: list of int
+        :param sources: The starting points for the matrix.
+            Specifies an index referring to coordinates.
+        :type sources: list of int
 
-            :param destinations: The destination points for the routes.
-                Specifies an index referring to coordinates.
-            :type destinations: list of int
+        :param destinations: The destination points for the routes.
+            Specifies an index referring to coordinates.
+        :type destinations: list of int
 
-            :param search_range: Defines the maximum search range for destination
-                waypoints, in meters. This parameter is especially useful for optimizing
-                matrix calculation where the maximum desired effective distance is known
-                in advance. Destination waypoints with a longer effective distance than
-                specified by searchRange will be skipped. The parameter is optional.
-                In pedestrian mode the default search range is 20 km.
-                If parameter is omitted in other modes, no range limit will apply.
-            :type search_range: int
+        :param search_range: Defines the maximum search range for destination
+            waypoints, in meters. This parameter is especially useful for optimizing
+            matrix calculation where the maximum desired effective distance is known
+            in advance. Destination waypoints with a longer effective distance than
+            specified by searchRange will be skipped. The parameter is optional.
+            In pedestrian mode the default search range is 20 km.
+            If parameter is omitted in other modes, no range limit will apply.
+        :type search_range: int
 
-            :param avoid_areas: Areas which the route must not cross.
-                Array of BoundingBox. Example with 2 bounding boxes
-                https://developer.here.com/documentation/routing/topics/resource-param-type-bounding-box.html
-            :type avoid_areas: list of list of list
+        :param avoid_areas: Areas which the route must not cross.
+            Array of BoundingBox. Example with 2 bounding boxes
+            https://developer.here.com/documentation/routing/topics/resource-param-type-bounding-box.html
+        :type avoid_areas: list of list of list
 
-            :param avoid_links: Links which the route must not cross.
-              The list of LinkIdTypes.
-            :type avoid_areas: list of string
+        :param avoid_links: Links which the route must not cross.
+          The list of LinkIdTypes.
+        :type avoid_areas: list of string
 
-            :param avoid_turns: List of turn types that the route should avoid. Defaults to empty list.
-              https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html
-            :type avoid_turns: str
+        :param avoid_turns: List of turn types that the route should avoid. Defaults to empty list.
+          https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html
+        :type avoid_turns: str
 
-            :param exclude_countries: Countries that must be excluded from route calculation.
-            :type exclude_countries: list of str
+        :param exclude_countries: Countries that must be excluded from route calculation.
+        :type exclude_countries: list of str
 
-            :param departure: Time when travel is expected to start. Traffic speed and
-                incidents are taken into account
-                when calculating the route (note that in case of a past
-                departure time the historical traffic is limited to one year).
-                You can use now to specify the current time. Specify either departure
-                or arrival, not both. When the optional timezone offset is not
-                specified, the time is assumed to be the local.
-                Formatted as iso time, e.g. 2018-07-04T17:00:00+02.
-            :type departure: str
+        :param departure: Time when travel is expected to start. Traffic speed and
+            incidents are taken into account
+            when calculating the route (note that in case of a past
+            departure time the historical traffic is limited to one year).
+            You can use now to specify the current time. Specify either departure
+            or arrival, not both. When the optional timezone offset is not
+            specified, the time is assumed to be the local.
+            Formatted as iso time, e.g. 2018-07-04T17:00:00+02.
+        :type departure: str
 
-            :param matrix_attributes: Defines which attributes are included in the
-              response as part of the data representation of the route matrix entries.
-              Defaults to indices and summary.
-              https://developer.here.com/documentation/routing/topics/resource-calculate-matrix.html#resource-calculate-matrix__matrix-route-attribute-type
-            :type matrix_attributes: list of str
+        :param matrix_attributes: Defines which attributes are included in the
+          response as part of the data representation of the route matrix entries.
+          Defaults to indices and summary.
+          https://developer.here.com/documentation/routing/topics/resource-calculate-matrix.html#resource-calculate-matrix__matrix-route-attribute-type
+        :type matrix_attributes: list of str
 
-            :param summary_attributes: Defines which attributes are included in
-                the response as part of the data representation of the matrix
-                entries summaries. Defaults to costfactor.
-                https://developer.here.com/documentation/routing/topics/resource-calculate-matrix.html#resource-calculate-matrix__matrix-route-summary-attribute-type
-            :type matrix_attributes: list of str
+        :param summary_attributes: Defines which attributes are included in
+            the response as part of the data representation of the matrix
+            entries summaries. Defaults to costfactor.
+            https://developer.here.com/documentation/routing/topics/resource-calculate-matrix.html#resource-calculate-matrix__matrix-route-summary-attribute-type
+        :type matrix_attributes: list of str
 
-            :param truck_type: Truck routing only, specifies the vehicle type.
-                Defaults to truck.
-            :type truck_type: str
+        :param truck_type: Truck routing only, specifies the vehicle type.
+            Defaults to truck.
+        :type truck_type: str
 
-            :param trailers_count: Truck routing only, specifies number of
-                trailers pulled by a vehicle. The provided value must be between 0 and 4.
-                Defaults to 0.
-            :type trailers_count: int
+        :param trailers_count: Truck routing only, specifies number of
+            trailers pulled by a vehicle. The provided value must be between 0 and 4.
+            Defaults to 0.
+        :type trailers_count: int
 
-            :param shipped_hazardous_goods: Truck routing only, list of hazardous
-                materials in the vehicle. Please refer to the enumeration type
-                HazardousGoodTypeType for available values. Note the value
-                allhazardousGoods does not apply to the request parameter.
-                https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html#resource-type-enumerations__enum-hazardous-good-type-type
-            :type shipped_hazardous_goods: list of str
+        :param shipped_hazardous_goods: Truck routing only, list of hazardous
+            materials in the vehicle. Please refer to the enumeration type
+            HazardousGoodTypeType for available values. Note the value
+            allhazardousGoods does not apply to the request parameter.
+            https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html#resource-type-enumerations__enum-hazardous-good-type-type
+        :type shipped_hazardous_goods: list of str
 
-            :param limited_weight: Truck routing only, vehicle weight including
-                trailers and shipped goods, in tons. The provided value must be
-                between 0 and 1000.
-            :type limited_weight: int
+        :param limited_weight: Truck routing only, vehicle weight including
+            trailers and shipped goods, in tons. The provided value must be
+            between 0 and 1000.
+        :type limited_weight: int
 
-            :param weight_per_axle: Truck routing only, vehicle weight per axle
-                in tons. The provided value must be between 0 and 1000.
-            :type limited_weight: int
+        :param weight_per_axle: Truck routing only, vehicle weight per axle
+            in tons. The provided value must be between 0 and 1000.
+        :type limited_weight: int
 
-            :param height: Truck routing only, vehicle height in meters. The
-                provided value must be between 0 and 50.
-            :type height: int
+        :param height: Truck routing only, vehicle height in meters. The
+            provided value must be between 0 and 50.
+        :type height: int
 
-            :param width: Truck routing only, vehicle width in meters.
-                The provided value must be between 0 and 50.
-            :type width: int
+        :param width: Truck routing only, vehicle width in meters.
+            The provided value must be between 0 and 50.
+        :type width: int
 
-            :param length: Truck routing only, vehicle length in meters.
-                The provided value must be between 0 and 300.
-            :type length: int
+        :param length: Truck routing only, vehicle length in meters.
+            The provided value must be between 0 and 300.
+        :type length: int
 
-            :param tunnel_category: Truck routing only, specifies the tunnel
-                category to restrict certain route links. The route will pass
-                only through tunnels of a less strict category.
-            :type tunnel_category: list of str
+        :param tunnel_category: Truck routing only, specifies the tunnel
+            category to restrict certain route links. The route will pass
+            only through tunnels of a less strict category.
+        :type tunnel_category: list of str
 
-            :param speed_profile: Specifies the speed profile variant for a given
-                routing mode. The speed profile affects travel time estimation as
-                well as roads evaluation when computing the fastest route.
-                Note that computed routes might differ depending on a used profile.
-                https://developer.here.com/documentation/routing/topics/resource-param-type-speed-profile-type.html
-            :type speed_profile: str
+        :param speed_profile: Specifies the speed profile variant for a given
+            routing mode. The speed profile affects travel time estimation as
+            well as roads evaluation when computing the fastest route.
+            Note that computed routes might differ depending on a used profile.
+            https://developer.here.com/documentation/routing/topics/resource-param-type-speed-profile-type.html
+        :type speed_profile: str
 
-            :param dry_run: Print URL and parameters without sending the request.
-            :param dry_run: bool
+        :param dry_run: Print URL and parameters without sending the request.
+        :param dry_run: bool
 
-            :returns: raw JSON response
-            :rtype: dict
-            """
-        self.base_url = 'https://matrix.route.api.here.com/routing/7.2' if self.api_key is None else 'https://matrix.route.ls.hereapi.com/routing/7.2'
+        :returns: raw JSON response
+        :rtype: dict
+        """
+        self.base_url = (
+            "https://matrix.route.api.here.com/routing/7.2"
+            if self.api_key is None
+            else "https://matrix.route.ls.hereapi.com/routing/7.2"
+        )
         params = self.auth.copy()
 
         locations = self._build_locations(locations)
@@ -1273,7 +1297,7 @@ class HereMaps:
             params["destination" + str(i)] = location
 
         if isinstance(profile, str):
-            params["mode"] = mode_type + ';' + profile
+            params["mode"] = mode_type + ";" + profile
         elif isinstance(profile, self.RoutingMode):
             params["mode"] = profile.make_routing_mode()
 
@@ -1286,30 +1310,34 @@ class HereMaps:
                     convert._delimit_list(
                         [
                             convert._delimit_list(
-                                [convert._format_float(f) for f in list(reversed(pair))], ','
-                            ) for pair in bounding_box
-                        ], ';'
-                    ) for bounding_box in avoid_areas
-                ], '!'
+                                [convert._format_float(f) for f in list(reversed(pair))], ","
+                            )
+                            for pair in bounding_box
+                        ],
+                        ";",
+                    )
+                    for bounding_box in avoid_areas
+                ],
+                "!",
             )
 
         if avoid_links is not None:
-            params["avoidLinks"] = convert._delimit_list(avoid_links, ',')
+            params["avoidLinks"] = convert._delimit_list(avoid_links, ",")
 
         if avoid_turns is not None:
             params["avoidTurns"] = avoid_turns
 
         if exclude_countries is not None:
-            params["excludeCountries"] = convert._delimit_list(exclude_countries, ',')
+            params["excludeCountries"] = convert._delimit_list(exclude_countries, ",")
 
         if departure is not None:
             params["departure"] = departure.isoformat()
 
         if matrix_attributes is not None:
-            params["matrixAttributes"] = convert._delimit_list(matrix_attributes, ',')
+            params["matrixAttributes"] = convert._delimit_list(matrix_attributes, ",")
 
         if summary_attributes is not None:
-            params["summaryAttributes"] = convert._delimit_list(summary_attributes, ',')
+            params["summaryAttributes"] = convert._delimit_list(summary_attributes, ",")
 
         if truck_type is not None:
             params["truckType"] = truck_type
@@ -1318,7 +1346,7 @@ class HereMaps:
             params["trailersCount"] = trailers_count
 
         if shipped_hazardous_goods is not None:
-            params["shippedHazardousGoods"] = convert._delimit_list(shipped_hazardous_goods, ',')
+            params["shippedHazardousGoods"] = convert._delimit_list(shipped_hazardous_goods, ",")
 
         if limited_weight is not None:
             params["limitedWeight"] = limited_weight
@@ -1336,16 +1364,16 @@ class HereMaps:
             params["length"] = length
 
         if tunnel_category is not None:
-            params["tunnelCategory"] = convert._delimit_list(tunnel_category, ',')
+            params["tunnelCategory"] = convert._delimit_list(tunnel_category, ",")
 
         if speed_profile is not None:
             params["speedProfile"] = speed_profile
 
         return self._parse_matrix_json(
             self.client._request(
-                convert._delimit_list(["/calculatematrix", format], '.'),
+                convert._delimit_list(["/calculatematrix", format], "."),
                 get_params=params,
-                dry_run=dry_run
+                dry_run=dry_run,
             )
         )
 
@@ -1360,21 +1388,21 @@ class HereMaps:
         index_distances = []
 
         next_ = None
-        mtx_objects = response['response']['matrixEntry']
+        mtx_objects = response["response"]["matrixEntry"]
         length = len(mtx_objects)
         for index, obj in enumerate(mtx_objects):
             if index < (length - 1):
                 next_ = mtx_objects[index + 1]
 
-            if 'travelTime' in obj['summary']:
-                index_durations.append(obj['summary']['travelTime'])
+            if "travelTime" in obj["summary"]:
+                index_durations.append(obj["summary"]["travelTime"])
             else:
-                index_durations.append(obj['summary']['costfactor'])
+                index_durations.append(obj["summary"]["costfactor"])
 
-            if 'distance' in obj['summary']:
-                index_distances.append(obj['summary']['distance'])
+            if "distance" in obj["summary"]:
+                index_distances.append(obj["summary"]["distance"])
 
-            if next_['startIndex'] > obj['startIndex']:
+            if next_["startIndex"] > obj["startIndex"]:
                 durations.append(index_durations)
                 distances.append(index_distances)
                 index_durations = []
@@ -1397,8 +1425,8 @@ class HereMaps:
                 if isinstance(locations, self.Waypoint):
                     locations.append(locations._make_waypoint())
                 elif isinstance(locations, (list, tuple)):
-                    wp = 'geo!' + convert._delimit_list(
-                        [convert._format_float(f) for f in list(reversed(coord))], ','
+                    wp = "geo!" + convert._delimit_list(
+                        [convert._format_float(f) for f in list(reversed(coord))], ","
                     )
                     locations.append(wp)
                 else:
@@ -1410,8 +1438,8 @@ class HereMaps:
 
         # Isochrones
         elif isinstance(coordinates[0], float):
-            center = 'geo!' + convert._delimit_list(
-                [convert._format_float(f) for f in list(reversed(coordinates))], ','
+            center = "geo!" + convert._delimit_list(
+                [convert._format_float(f) for f in list(reversed(coordinates))], ","
             )
             locations.append(center)
         # Isochrones using waypoint class

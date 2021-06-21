@@ -17,7 +17,7 @@
 
 from typing import List  # noqa: F401
 
-from routingpy.base import DEFAULT
+from routingpy.client_base import DEFAULT
 from routingpy.client_default import Client
 from routingpy import convert, utils
 from routingpy.direction import Directions, Direction
@@ -27,7 +27,7 @@ from routingpy.matrix import Matrix
 class OSRM:
     """Performs requests to the OSRM API services."""
 
-    _DEFAULT_BASE_URL = 'https://router.project-osrm.org'
+    _DEFAULT_BASE_URL = "https://router.project-osrm.org"
 
     def __init__(
         self,
@@ -35,10 +35,10 @@ class OSRM:
         user_agent=None,
         timeout=DEFAULT,
         retry_timeout=None,
-        requests_kwargs=None,
         retry_over_query_limit=False,
         skip_api_error=None,
-        client=Client
+        client=Client,
+        **client_kwargs
     ):
         """
         Initializes an OSRM client.
@@ -90,8 +90,13 @@ class OSRM:
         """
 
         self.client = client(
-            base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
-            skip_api_error
+            base_url,
+            user_agent,
+            timeout,
+            retry_timeout,
+            retry_over_query_limit,
+            skip_api_error,
+            **client_kwargs
         )
 
     def directions(
@@ -106,7 +111,7 @@ class OSRM:
         annotations=None,
         geometries=None,
         overview=None,
-        dry_run=None
+        dry_run=None,
     ):
         """Get directions between an origin point and a destination point.
 
@@ -167,17 +172,17 @@ class OSRM:
         """
 
         coords = convert._delimit_list(
-            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ';'
+            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ";"
         )
 
         params = dict()
 
         if radiuses:
-            params["radiuses"] = convert._delimit_list(radiuses, ';')
+            params["radiuses"] = convert._delimit_list(radiuses, ";")
 
         if bearings:
             params["bearings"] = convert._delimit_list(
-                [convert._delimit_list(pair) for pair in bearings], ';'
+                [convert._delimit_list(pair) for pair in bearings], ";"
             )
 
         if alternatives is not None:
@@ -199,8 +204,11 @@ class OSRM:
             params["overview"] = convert._convert_bool(overview)
 
         return self._parse_direction_json(
-            self.client._request("/route/v1/" + profile + '/' + coords, get_params=params, dry_run=dry_run),
-            alternatives, geometries
+            self.client._request(
+                "/route/v1/" + profile + "/" + coords, get_params=params, dry_run=dry_run
+            ),
+            alternatives,
+            geometries,
         )
 
     @staticmethod
@@ -212,12 +220,12 @@ class OSRM:
                 return Direction()
 
         def _parse_geometry(route_geometry):
-            if geometry_format in (None, 'polyline'):
+            if geometry_format in (None, "polyline"):
                 geometry = utils.decode_polyline5(route_geometry, is3d=False)
-            elif geometry_format == 'polyline6':
+            elif geometry_format == "polyline6":
                 geometry = utils.decode_polyline6(route_geometry, is3d=False)
-            elif geometry_format == 'geojson':
-                geometry = route_geometry['coordinates']
+            elif geometry_format == "geojson":
+                geometry = route_geometry["coordinates"]
             else:
                 raise ValueError(
                     "OSRM: parameter geometries needs one of ['polyline', 'polyline6', 'geojson"
@@ -226,22 +234,22 @@ class OSRM:
 
         if alternatives:
             routes = []
-            for route in response['routes']:
+            for route in response["routes"]:
                 routes.append(
                     Direction(
-                        geometry=_parse_geometry(route['geometry']),
-                        duration=int(route['duration']),
-                        distance=int(route['distance']),
-                        raw=route
+                        geometry=_parse_geometry(route["geometry"]),
+                        duration=int(route["duration"]),
+                        distance=int(route["distance"]),
+                        raw=route,
                     )
                 )
             return Directions(routes, response)
         else:
             return Direction(
-                geometry=_parse_geometry(response['routes'][0]['geometry']),
-                duration=int(response['routes'][0]['duration']),
-                distance=int(response['routes'][0]['distance']),
-                raw=response
+                geometry=_parse_geometry(response["routes"][0]["geometry"]),
+                duration=int(response["routes"][0]["duration"]),
+                distance=int(response["routes"][0]["distance"]),
+                raw=response,
             )
 
     def isochrones(self):  # pragma: no cover
@@ -256,7 +264,7 @@ class OSRM:
         sources=None,
         destinations=None,
         dry_run=None,
-        annotations=['duration', 'distance']
+        annotations=["duration", "distance"],
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
@@ -311,22 +319,24 @@ class OSRM:
         """
 
         coords = convert._delimit_list(
-            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ';'
+            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ";"
         )
 
         params = dict()
 
         if sources:
-            params['sources'] = convert._delimit_list(sources, ';')
+            params["sources"] = convert._delimit_list(sources, ";")
 
         if destinations:
-            params['destinations'] = convert._delimit_list(destinations, ';')
+            params["destinations"] = convert._delimit_list(destinations, ";")
 
         if annotations:
-            params['annotations'] = convert._delimit_list(annotations)
+            params["annotations"] = convert._delimit_list(annotations)
 
         return self._parse_matrix_json(
-            self.client._request("/table/v1/" + profile + '/' + coords, get_params=params, dry_run=dry_run)
+            self.client._request(
+                "/table/v1/" + profile + "/" + coords, get_params=params, dry_run=dry_run
+            )
         )
 
     @staticmethod
@@ -335,5 +345,5 @@ class OSRM:
             return Matrix()
 
         return Matrix(
-            durations=response.get('durations'), distances=response.get('distances'), raw=response
+            durations=response.get("durations"), distances=response.get("distances"), raw=response
         )

@@ -15,7 +15,7 @@
 # the License.
 #
 
-from .base import BaseClient, DEFAULT, _RETRIABLE_STATUSES, options
+from .client_base import BaseClient, DEFAULT, _RETRIABLE_STATUSES, options
 from routingpy import exceptions
 from routingpy.utils import get_ordinal
 
@@ -29,15 +29,16 @@ import warnings
 
 class Client(BaseClient):
     """Default client class for requests handling. Uses the requests package."""
+
     def __init__(
         self,
         base_url,
         user_agent=None,
         timeout=DEFAULT,
         retry_timeout=None,
-        requests_kwargs=None,
         retry_over_query_limit=None,
-        skip_api_error=None
+        skip_api_error=None,
+        **kwargs
     ):
         """
         :param base_url: The base URL for the request. All routers must provide a default.
@@ -81,22 +82,27 @@ class Client(BaseClient):
 
         self._session = requests.Session()
         super(Client, self).__init__(
-            base_url, user_agent=user_agent, timeout=timeout, retry_timeout=retry_timeout,
-            retry_over_query_limit=retry_over_query_limit, skip_api_error=skip_api_error
+            base_url,
+            user_agent=user_agent,
+            timeout=timeout,
+            retry_timeout=retry_timeout,
+            retry_over_query_limit=retry_over_query_limit,
+            skip_api_error=skip_api_error,
+            **kwargs
         )
 
-        self.requests_kwargs = requests_kwargs or {}
+        self.kwargs = kwargs or {}
         try:
-            self.headers.update(self.requests_kwargs['headers'])
+            self.headers.update(self.kwargs["headers"])
         except KeyError:
             pass
 
-        self.requests_kwargs['headers'] = self.headers
-        self.requests_kwargs['timeout'] = self.timeout
+        self.kwargs["headers"] = self.headers
+        self.kwargs["timeout"] = self.timeout
 
-        self.proxies = self.requests_kwargs.get('proxies') or options.default_proxies
+        self.proxies = self.kwargs.get("proxies") or options.default_proxies
         if self.proxies:
-            self.requests_kwargs['proxies'] = self.proxies
+            self.kwargs["proxies"] = self.proxies
 
     def _request(
         self,
@@ -105,8 +111,8 @@ class Client(BaseClient):
         post_params=None,
         first_request_time=None,
         retry_counter=0,
-        requests_kwargs=None,
-        dry_run=None
+        dry_run=None,
+        **client_kwargs
     ):
         """Performs HTTP GET/POST with credentials, returning the body as
         JSON.
@@ -158,27 +164,27 @@ class Client(BaseClient):
             # 0.5 * (1.5 ^ i) is an increased sleep time of 1.5x per iteration,
             # starting at 0.5s when retry_counter=1. The first retry will occur
             # at 1, so subtract that first.
-            delay_seconds = 1.5**(retry_counter - 1)
+            delay_seconds = 1.5 ** (retry_counter - 1)
 
             # Jitter this value by 50% and pause.
             time.sleep(delay_seconds * (random.random() + 0.5))
 
         authed_url = self._generate_auth_url(url, get_params)
 
-        # Default to the client-level self.requests_kwargs, with method-level
-        # requests_kwargs arg overriding.
-        requests_kwargs = requests_kwargs or {}
-        final_requests_kwargs = dict(self.requests_kwargs, **requests_kwargs)
+        # Default to the client-level self.kwargs, with method-level
+        # client_kwargs arg overriding.
+        client_kwargs = client_kwargs or {}
+        final_requests_kwargs = dict(self.kwargs, **client_kwargs)
 
         # Determine GET/POST.
         requests_method = self._session.get
         if post_params is not None:
             requests_method = self._session.post
-            if final_requests_kwargs['headers']['Content-Type'] == 'application/json':
+            if final_requests_kwargs["headers"]["Content-Type"] == "application/json":
                 final_requests_kwargs["json"] = post_params
             else:
                 # Send as x-www-form-urlencoded key-value pair string (e.g. Mapbox API)
-                final_requests_kwargs['data'] = post_params
+                final_requests_kwargs["data"] = post_params
 
         # Only print URL and parameters for dry_run
         if dry_run:
@@ -201,12 +207,12 @@ class Client(BaseClient):
         if response.status_code in _RETRIABLE_STATUSES:
             # Retry request.
             warnings.warn(
-                'Server down.\nRetrying for the {}{} time.'.format(tried, get_ordinal(tried)),
-                UserWarning
+                "Server down.\nRetrying for the {}{} time.".format(tried, get_ordinal(tried)),
+                UserWarning,
             )
 
             return self._request(
-                url, get_params, post_params, first_request_time, retry_counter + 1, requests_kwargs
+                url, get_params, post_params, first_request_time, retry_counter + 1, **client_kwargs
             )
 
         try:
@@ -229,10 +235,38 @@ class Client(BaseClient):
                 raise
 
             warnings.warn(
-                'Rate limit exceeded.\nRetrying for the {}{} time.'.format(tried, get_ordinal(tried)),
-                UserWarning
+                "Rate limit exceeded.\nRetrying for the {}{} time.".format(tried, get_ordinal(tried)),
+                UserWarning,
             )
             # Retry request.
             return self._request(
-                url, get_params, post_params, first_request_time, retry_counter + 1, requests_kwargs
+                url, get_params, post_params, first_request_time, retry_counter + 1, **client_kwargs
             )
+
+    @property
+    def req(self):
+        """Holds the :class:`requests.PreparedRequest` property for the last request."""
+        return self._req
+
+    @staticmethod
+    def _get_body(response):
+        status_code = response.status_code
+
+        try:
+            body = response.json()
+        except json.decoder.JSONDecodeError:
+            raise exceptions.JSONParseError("Can't decode JSON response:{}".format(response.text))
+
+        if status_code == 429:
+            raise exceptions.OverQueryLimit(status_code, body)
+
+        if 400 <= status_code < 500:
+            raise exceptions.RouterApiError(status_code, body)
+
+        if 500 <= status_code:
+            raise exceptions.RouterServerError(status_code, body)
+
+        if status_code != 200:
+            raise exceptions.RouterError(status_code, body)
+
+        return body
