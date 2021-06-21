@@ -22,10 +22,10 @@ import tests as _test
 
 class UtilsTest(_test.TestCase):
     def setUp(self):
-        self.coords2d_5prec = '__`t@smslHfo@~\\'
-        self.coords3d_5prec = '__`t@smslH_sVfo@~\\etjG'
-        self.coords2d_6prec = 'a_iqOaqkg}AxaN`kH'
-        self.coords3d_6prec = 'a_iqOaqkg}A_sVxaN`kHetjG'
+        self.coords2d_5prec = "__`t@smslHfo@~\\"
+        self.coords3d_5prec = "__`t@smslH_sVfo@~\\etjG"
+        self.coords2d_6prec = "a_iqOaqkg}AxaN`kH"
+        self.coords3d_6prec = "a_iqOaqkg}A_sVxaN`kHetjG"
 
     def test_polyline5_2d_decoding(self):
 
@@ -49,7 +49,7 @@ class UtilsTest(_test.TestCase):
 
     def test_get_ordinal(self):
 
-        self.assertEqual(utils.get_ordinal(0), 'th')
-        self.assertEqual(utils.get_ordinal(1), 'st')
-        self.assertEqual(utils.get_ordinal(2), 'nd')
-        self.assertEqual(utils.get_ordinal(3), 'rd')
+        self.assertEqual(utils.get_ordinal(0), "th")
+        self.assertEqual(utils.get_ordinal(1), "st")
+        self.assertEqual(utils.get_ordinal(2), "nd")
+        self.assertEqual(utils.get_ordinal(3), "rd")

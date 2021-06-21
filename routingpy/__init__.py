@@ -23,7 +23,7 @@ are the same for all services, while still preserving each service's special par
 more info, please look at our `README`_.
 Take a look at our `Examples`_ to see how simple you can compare routes from different providers.
 
-**routingpy** is tested against 3.5, 3.6, 3.7 and PyPy3.
+**routingpy** is tested against 3.6, 3.7, 3.8, 3.9 and PyPy3.
 
 .. _`README`: https://github.com/gis-ops/routing-py#api
 .. _`Examples`: https://github.com/gis-ops/routing-py#examples

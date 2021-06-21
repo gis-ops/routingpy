@@ -31,6 +31,7 @@ from operator import itemgetter
 
 class Valhalla(Router):
     """Performs requests to a Valhalla instance."""
+
     def __init__(
         self,
         base_url,
@@ -40,7 +41,7 @@ class Valhalla(Router):
         retry_timeout=None,
         requests_kwargs=None,
         retry_over_query_limit=False,
-        skip_api_error=None
+        skip_api_error=None,
     ):
         """
         Initializes a Valhalla client.
@@ -82,7 +83,7 @@ class Valhalla(Router):
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
-            Default :attr:`routingpy.routers.options.default_over_query_limit`.
+            Default :attr:`routingpy.routers.options.default_retry_over_query_limit`.
         :type retry_over_query_limit: bool
 
         :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
@@ -94,8 +95,13 @@ class Valhalla(Router):
         self.api_key = api_key
 
         super(Valhalla, self).__init__(
-            base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
-            skip_api_error
+            base_url,
+            user_agent,
+            timeout,
+            retry_timeout,
+            requests_kwargs,
+            retry_over_query_limit,
+            skip_api_error,
         )
 
     class Waypoint(object):
@@ -111,13 +117,14 @@ class Valhalla(Router):
         >>> waypoint = Valhalla.WayPoint(position=[8.15315, 52.53151], type='through', heading=120, heading_tolerance=10, minimum_reachability=10, radius=400)
         >>> route = Valhalla('http://localhost').directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
+
         def __init__(self, position, **kwargs):
             self._position = position
             self._kwargs = kwargs
 
         def _make_waypoint(self):
 
-            waypoint = {'lon': self._position[0], 'lat': self._position[1]}
+            waypoint = {"lon": self._position[0], "lat": self._position[1]}
             for k, v in self._kwargs.items():
                 waypoint[k] = v
 
@@ -194,39 +201,39 @@ class Valhalla(Router):
 
         params = dict(costing=profile)
 
-        params['locations'] = self._build_locations(locations)
+        params["locations"] = self._build_locations(locations)
 
         if options or preference:
-            params['costing_options'] = dict()
-            profile = profile if profile not in ('multimodal', 'transit') else 'transit'
-            params['costing_options'][profile] = dict()
+            params["costing_options"] = dict()
+            profile = profile if profile not in ("multimodal", "transit") else "transit"
+            params["costing_options"][profile] = dict()
             if options:
-                params['costing_options'][profile] = options
-            if preference == 'shortest':
-                params['costing_options'][profile]['shortest'] = True
+                params["costing_options"][profile] = options
+            if preference == "shortest":
+                params["costing_options"][profile]["shortest"] = True
 
         if any((units, language, directions_type)):
-            params['directions_options'] = dict()
+            params["directions_options"] = dict()
             if units:
-                params['directions_options']['units'] = units
+                params["directions_options"]["units"] = units
             if language:
-                params['directions_options']['language'] = language
+                params["directions_options"]["language"] = language
             if directions_type:
-                params['directions_options']['directions_type'] = directions_type
+                params["directions_options"]["directions_type"] = directions_type
 
         if avoid_locations:
-            params['avoid_locations'] = self._build_locations(avoid_locations)
+            params["avoid_locations"] = self._build_locations(avoid_locations)
 
         if avoid_polygons:
-            params['avoid_polygons'] = avoid_polygons
+            params["avoid_polygons"] = avoid_polygons
 
         if date_time:
-            params['date_time'] = date_time
+            params["date_time"] = date_time
 
         if id:
-            params['id'] = id
+            params["id"] = id
 
-        get_params = {'access_token': self.api_key} if self.api_key else {}
+        get_params = {"access_token": self.api_key} if self.api_key else {}
 
         return self._parse_direction_json(
             self._request("/route", get_params=get_params, post_params=params, dry_run=dry_run), units
@@ -238,12 +245,12 @@ class Valhalla(Router):
             return Direction()
 
         geometry, duration, distance = [], 0, 0
-        for leg in response['trip']['legs']:
-            geometry.extend([list(reversed(coord)) for coord in utils.decode_polyline6(leg['shape'])])
-            duration += leg['summary']['time']
+        for leg in response["trip"]["legs"]:
+            geometry.extend([list(reversed(coord)) for coord in utils.decode_polyline6(leg["shape"])])
+            duration += leg["summary"]["time"]
 
-            factor = 0.621371 if units == 'mi' else 1
-            distance += int(leg['summary']['length'] * 1000 * factor)
+            factor = 0.621371 if units == "mi" else 1
+            distance += int(leg["summary"]["length"] * 1000 * factor)
 
         return Direction(geometry=geometry, duration=int(duration), distance=int(distance), raw=response)
 
@@ -267,7 +274,7 @@ class Valhalla(Router):
         date_time=None,
         show_locations=None,
         id=None,
-        dry_run=None
+        dry_run=None,
     ):
         """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
 
@@ -353,10 +360,10 @@ class Valhalla(Router):
 
         contours = []
         for idx, r in enumerate(intervals):
-            key = 'time'
+            key = "time"
             value = r / 60
-            if interval_type == 'distance':
-                key = 'distance'
+            if interval_type == "distance":
+                key = "distance"
                 value = r / 1000
 
             d = {key: value}
@@ -374,42 +381,43 @@ class Valhalla(Router):
         }
 
         if options:
-            params['costing_options'] = dict()
-            profile = profile if profile != 'multimodal' else 'transit'
-            params['costing_options'][profile] = dict()
+            params["costing_options"] = dict()
+            profile = profile if profile != "multimodal" else "transit"
+            params["costing_options"][profile] = dict()
             if options:
-                params['costing_options'][profile] = options
-            if preference == 'shortest':
-                params['costing_options'][profile]['shortest'] = True
+                params["costing_options"][profile] = options
+            if preference == "shortest":
+                params["costing_options"][profile]["shortest"] = True
 
         if polygons is not None:
-            params['polygons'] = polygons
+            params["polygons"] = polygons
 
         if denoise:
-            params['denoise'] = denoise
+            params["denoise"] = denoise
 
         if generalize:
-            params['generalize'] = generalize
+            params["generalize"] = generalize
 
         if avoid_locations:
-            params['avoid_locations'] = self._build_locations(avoid_locations)
+            params["avoid_locations"] = self._build_locations(avoid_locations)
 
         if avoid_polygons:
-            params['avoid_polygons'] = avoid_polygons
+            params["avoid_polygons"] = avoid_polygons
 
         if date_time:
-            params['date_time'] = date_time
+            params["date_time"] = date_time
 
         if show_locations is not None:
-            params['show_locations'] = show_locations
+            params["show_locations"] = show_locations
 
         if id:
-            params['id'] = id
+            params["id"] = id
 
-        get_params = {'access_token': self.api_key} if self.api_key else {}
+        get_params = {"access_token": self.api_key} if self.api_key else {}
         return self._parse_isochrone_json(
             self._request("/isochrone", get_params=get_params, post_params=params, dry_run=dry_run),
-            intervals, locations
+            intervals,
+            locations,
         )
 
     @staticmethod
@@ -418,13 +426,13 @@ class Valhalla(Router):
             return Isochrones()
 
         isochrones = []
-        for idx, feature in enumerate(reversed(response['features'])):
-            if feature['geometry']['type'] in ('LineString', 'Polygon'):
+        for idx, feature in enumerate(reversed(response["features"])):
+            if feature["geometry"]["type"] in ("LineString", "Polygon"):
                 isochrones.append(
                     Isochrone(
-                        geometry=feature['geometry']['coordinates'],
+                        geometry=feature["geometry"]["coordinates"],
                         interval=intervals[idx],
-                        center=locations
+                        center=locations,
                     )
                 )
 
@@ -442,7 +450,7 @@ class Valhalla(Router):
         avoid_polygons=None,
         units=None,
         id=None,
-        dry_run=None
+        dry_run=None,
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
@@ -497,10 +505,10 @@ class Valhalla(Router):
 
         :returns: A matrix from the specified sources and destinations.
         :rtype: :class:`routingpy.matrix.Matrix`
-            """
+        """
 
         params = {
-            'costing': profile,
+            "costing": profile,
         }
 
         locations = self._build_locations(locations)
@@ -510,42 +518,43 @@ class Valhalla(Router):
             sources_coords = itemgetter(*sources)(sources_coords)
             if isinstance(sources_coords, dict):
                 sources_coords = [sources_coords]
-        params['sources'] = sources_coords
+        params["sources"] = sources_coords
 
         dest_coords = locations
         if destinations is not None:
             dest_coords = itemgetter(*destinations)(dest_coords)
             if isinstance(dest_coords, dict):
                 dest_coords = [dest_coords]
-        params['targets'] = dest_coords
+        params["targets"] = dest_coords
 
         if options:
-            params['costing_options'] = dict()
-            profile = profile if profile != 'multimodal' else 'transit'
-            params['costing_options'][profile] = dict()
+            params["costing_options"] = dict()
+            profile = profile if profile != "multimodal" else "transit"
+            params["costing_options"][profile] = dict()
             if options:
-                params['costing_options'][profile] = options
-            if preference == 'shortest':
-                params['costing_options'][profile]['shortest'] = True
+                params["costing_options"][profile] = options
+            if preference == "shortest":
+                params["costing_options"][profile]["shortest"] = True
 
         if avoid_locations:
-            params['avoid_locations'] = self._build_locations(avoid_locations)
+            params["avoid_locations"] = self._build_locations(avoid_locations)
 
         if avoid_polygons:
-            params['avoid_polygons'] = avoid_polygons
+            params["avoid_polygons"] = avoid_polygons
 
         if units:
             params["units"] = units
 
         if id:
-            params['id'] = id
+            params["id"] = id
 
-        get_params = {'access_token': self.api_key} if self.api_key else {}
+        get_params = {"access_token": self.api_key} if self.api_key else {}
 
         return self._parse_matrix_json(
             self._request(
-                '/sources_to_targets', get_params=get_params, post_params=params, dry_run=dry_run
-            ), units
+                "/sources_to_targets", get_params=get_params, post_params=params, dry_run=dry_run
+            ),
+            units,
         )
 
     @staticmethod
@@ -553,14 +562,13 @@ class Valhalla(Router):
         if response is None:  # pragma: no cover
             return Matrix()
 
-        factor = 0.621371 if units == 'mi' else 1
+        factor = 0.621371 if units == "mi" else 1
         durations = [
-            [destination['time'] for destination in origin] for origin in response['sources_to_targets']
+            [destination["time"] for destination in origin] for origin in response["sources_to_targets"]
         ]
         distances = [
-            [int(destination['distance'] * 1000 * factor)
-             for destination in origin]
-            for origin in response['sources_to_targets']
+            [int(destination["distance"] * 1000 * factor) for destination in origin]
+            for origin in response["sources_to_targets"]
         ]
 
         return Matrix(durations=durations, distances=distances, raw=response)
@@ -574,7 +582,7 @@ class Valhalla(Router):
         if isinstance(coordinates[0], (list, tuple, self.Waypoint)):
             for idx, coord in enumerate(coordinates):
                 if isinstance(coord, (list, tuple)):
-                    locations.append({'lon': coord[0], 'lat': coord[1]}),
+                    locations.append({"lon": coord[0], "lat": coord[1]}),
                 elif isinstance(coord, self.Waypoint):
                     locations.append(coord._make_waypoint())
                 else:
@@ -584,6 +592,6 @@ class Valhalla(Router):
                         )
                     )
         elif isinstance(coordinates[0], float):
-            locations.append({'lon': coordinates[0], 'lat': coordinates[1]})
+            locations.append({"lon": coordinates[0], "lat": coordinates[1]})
 
         return locations

@@ -21,7 +21,7 @@ from .base import DEFAULT
 class MapboxValhalla(Valhalla):
     """Performs requests to Mapbox's Valhalla instance."""
 
-    _base_url = 'https://api.mapbox.com/valhalla/v1'
+    _base_url = "https://api.mapbox.com/valhalla/v1"
 
     def __init__(
         self,
@@ -31,7 +31,7 @@ class MapboxValhalla(Valhalla):
         retry_timeout=None,
         requests_kwargs=None,
         retry_over_query_limit=False,
-        skip_api_error=None
+        skip_api_error=None,
     ):
         """
         Initializes a Valhalla client.
@@ -69,7 +69,7 @@ class MapboxValhalla(Valhalla):
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
-            Default :attr:`routingpy.routers.options.default_over_query_limit`.
+            Default :attr:`routingpy.routers.options.default_retry_over_query_limit`.
         :type retry_over_query_limit: bool
 
         :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
@@ -79,6 +79,12 @@ class MapboxValhalla(Valhalla):
         """
 
         super(MapboxValhalla, self).__init__(
-            self._base_url, api_key, user_agent, timeout, retry_timeout, requests_kwargs,
-            retry_over_query_limit, skip_api_error
+            self._base_url,
+            api_key,
+            user_agent,
+            timeout,
+            retry_timeout,
+            requests_kwargs,
+            retry_over_query_limit,
+            skip_api_error,
         )

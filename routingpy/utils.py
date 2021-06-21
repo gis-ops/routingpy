@@ -17,7 +17,7 @@
 
 import logging
 
-logger = logging.getLogger('routingpy')
+logger = logging.getLogger("routingpy")
 
 
 def _trans(value, index):
@@ -32,7 +32,7 @@ def _trans(value, index):
     while byte is None or byte >= 0x20:
         byte = ord(value[index]) - 63
         index += 1
-        result |= (byte & 0x1f) << shift
+        result |= (byte & 0x1F) << shift
         shift += 5
         comp = result & 1
 
@@ -46,8 +46,14 @@ def _decode(expression, precision=5, is3d=False):
 
     https://github.com/hicsail/polyline/commit/ddd12e85c53d394404952754e39c91f63a808656
     """
-    coordinates, index, lat, lng, z, length, factor = [], 0, 0, 0, 0, len(expression), float(
-        10**precision
+    coordinates, index, lat, lng, z, length, factor = (
+        [],
+        0,
+        0,
+        0,
+        0,
+        len(expression),
+        float(10 ** precision),
     )
 
     while index < length:
@@ -103,10 +109,10 @@ def get_ordinal(number):
     """Produces an ordinal (1st, 2nd, 3rd, 4th) from a number"""
 
     if number == 1:
-        return 'st'
+        return "st"
     elif number == 2:
-        return 'nd'
+        return "nd"
     elif number == 3:
-        return 'rd'
+        return "rd"
     else:
-        return 'th'
+        return "th"

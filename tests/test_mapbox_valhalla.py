@@ -21,10 +21,10 @@ import tests as _test
 
 
 class MapboxValhallaTest(_test.TestCase):
-    name = 'valhalla'
+    name = "valhalla"
 
     def setUp(self):
-        self.key = 'sample_key'
+        self.key = "sample_key"
         self.client = MapboxValhalla(api_key=self.key)
 
     def test_config(self):
