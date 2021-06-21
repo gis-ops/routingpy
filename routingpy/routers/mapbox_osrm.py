@@ -60,21 +60,6 @@ class MapboxOSRM:
             seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
-        :param requests_kwargs: Extra keyword arguments for the requests
-            library, which among other things allow for proxy auth to be
-            implemented. **Note**, that ``proxies`` can be set globally
-            in :attr:`routingpy.routers.options.default_proxies`.
-
-            Example:
-
-            >>> from routingpy.routers import MapboxOSRM
-            >>> router = MapboxOSRM(my_key, requests_kwargs={
-            >>>     'proxies': {'https': '129.125.12.0'}
-            >>> })
-            >>> print(router.client.proxies)
-            {'https': '129.125.12.0'}
-        :type requests_kwargs: dict
-
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
@@ -88,9 +73,14 @@ class MapboxOSRM:
 
         :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
         :type client: abc.ABCMeta
+
+        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type **client_kwargs: dict
         """
 
         self.api_key = api_key
+
+        client_kwargs.update({"headers": {"Content-Type": "application/x-www-form-urlencoded"}})
 
         self.client = client(
             self._base_url,
@@ -304,7 +294,6 @@ class MapboxOSRM:
                 get_params=get_params,
                 post_params=params,
                 dry_run=dry_run,
-                headers={"Content-Type": "application/x-www-form-urlencoded"},
             ),
             alternatives,
             geometries,

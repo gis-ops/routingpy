@@ -67,25 +67,10 @@ class Valhalla:
             seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
-        :param requests_kwargs: Extra keyword arguments for the requests
-            library, which among other things allow for proxy auth to be
-            implemented. **Note**, that ``proxies`` can be set globally
-            in :attr:`routingpy.routers.options.default_proxies`.
-
-            Example:
-
-            >>> from routingpy.routers import Valhalla
-            >>> router = Valhalla(my_key, requests_kwargs={
-            >>>     'proxies': {'https': '129.125.12.0'}
-            >>> })
-            >>> print(router.client.proxies)
-            {'https': '129.125.12.0'}
-        :type requests_kwargs: dict
-
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
-            Default :attr:`routingpy.routers.options.default_over_query_limit`.
+            Default :attr:`routingpy.routers.options.default_retry_over_query_limit`.
         :type retry_over_query_limit: bool
 
         :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
@@ -95,6 +80,9 @@ class Valhalla:
 
         :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
         :type client: abc.ABCMeta
+
+        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type **client_kwargs: dict
         """
 
         self.api_key = api_key

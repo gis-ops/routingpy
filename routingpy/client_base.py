@@ -115,17 +115,6 @@ class BaseClient(metaclass=ABCMeta):
             seconds.
         :type retry_timeout: int
 
-        :param requests_kwargs: Extra keyword arguments for the requests
-            library, which among other things allow for proxy auth to be
-            implemented.
-
-            Example:
-
-            >>> from routingpy.routers import ORS
-            >>> router = ORS(my_key, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
-            >>> print(router.proxies)
-            {'https': '129.125.12.0'}
-
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
@@ -134,6 +123,9 @@ class BaseClient(metaclass=ABCMeta):
         :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
             encountered (e.g. no route found). If False, processing will discontinue and raise an error. Default False.
         :type skip_api_error: bool
+
+        :param **kwargs: Additional keyword arguments
+        :type **kwargs: dict
         """
         self.base_url = base_url
 
@@ -158,8 +150,48 @@ class BaseClient(metaclass=ABCMeta):
         self._req = None
 
     @abstractmethod
-    def _request(self):
-        """Must be implemented for inheriting client classes."""
+    def _request(
+        self,
+        url,
+        get_params={},
+        post_params=None,
+        first_request_time=None,
+        retry_counter=0,
+        dry_run=None,
+    ):
+        """Performs HTTP GET/POST with credentials, returning the body as
+        JSON.
+
+        :param url: URL path for the request. Should begin with a slash.
+        :type url: string
+
+        :param get_params: HTTP GET parameters.
+        :type get_params: dict or list of tuples
+
+        :param post_params: HTTP POST parameters. Only specified by calling method.
+        :type post_params: dict
+
+        :param first_request_time: The time of the first request (None if no
+            retries have occurred).
+        :type first_request_time: :class:`datetime.datetime`
+
+        :param retry_counter: The number of this retry, or zero for first attempt.
+        :type retry_counter: int
+
+        :param dry_run: If 'true', only prints URL and parameters. 'true' or 'false'.
+        :type dry_run: string
+
+        :raises routingpy.exceptions.RouterApiError: when the API returns an error due to faulty configuration.
+        :raises routingpy.exceptions.RouterServerError: when the API returns a server error.
+        :raises routingpy.exceptions.RouterError: when anything else happened while requesting.
+        :raises routingpy.exceptions.JSONParseError: when the JSON response can't be parsed.
+        :raises routingpy.exceptions.Timeout: when the request timed out.
+        :raises routingpy.exceptions.TransportError: when something went wrong while trying to
+            execute a request.
+
+        :returns: raw JSON response.
+        :rtype: dict
+        """
         pass
 
     @staticmethod

@@ -43,8 +43,8 @@ class Google:
         """
         Initializes a Google client.
 
-        :param key: API key.
-        :type key: str
+        :param api_key: API key.
+        :type api_key: str
 
         :param user_agent: User Agent to be used when requesting.
             Default :attr:`routingpy.routers.options.default_user_agent`.
@@ -57,21 +57,6 @@ class Google:
         :param retry_timeout: Timeout across multiple retriable requests, in
             seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
-
-        :param requests_kwargs: Extra keyword arguments for the requests
-            library, which among other things allow for proxy auth to be
-            implemented. **Note**, that ``proxies`` can be set globally
-            in :attr:`routingpy.routers.options.default_proxies`.
-
-            Example:
-
-            >>> from routingpy.routers import Google
-            >>> router = Google(my_key, requests_kwargs={
-            >>>     'proxies': {'https': '129.125.12.0'}
-            >>> })
-            >>> print(router.client.proxies)
-            {'https': '129.125.12.0'}
-        :type requests_kwargs: dict
 
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
@@ -86,6 +71,9 @@ class Google:
 
         :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
         :type client: abc.ABCMeta
+
+        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type **client_kwargs: dict
         """
 
         self.key = api_key
@@ -185,7 +173,7 @@ class Google:
 
         :param avoid: Indicates that the calculated route(s) should avoid the indicated features. One or more of
             ['tolls', 'highways', 'ferries', 'indoor']. Default None.
-        :param avoid: list of str
+        :type avoid: list of str
 
         :param optimize: Optimize the given order of via waypoints (i.e. between first and last location). Default False.
         :type optimize: bool
@@ -223,7 +211,7 @@ class Google:
         :type transit_routing_preference: str
 
         :param dry_run: Print URL and parameters without sending the request.
-        :param dry_run: bool
+        :type dry_run: bool
 
         :returns: One or multiple route(s) from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`

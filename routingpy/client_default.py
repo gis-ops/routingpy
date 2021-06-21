@@ -57,19 +57,6 @@ class Client(BaseClient):
             seconds.
         :type retry_timeout: int
 
-        :param requests_kwargs: Extra keyword arguments for the requests
-            library, which among other things allow for proxy auth to be
-            implemented.
-
-            Example:
-
-            >>> from routingpy.routers import ORS
-            >>> router = ORS(my_key, requests_kwargs={'proxies': {'https': '129.125.12.0'}})
-            >>> print(router.client.proxies)
-            {'https': '129.125.12.0'}
-
-        :type requests_kwargs: dict
-
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
@@ -78,6 +65,9 @@ class Client(BaseClient):
         :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
             encountered (e.g. no route found). If False, processing will discontinue and raise an error. Default False.
         :type skip_api_error: bool
+
+        :param **kwargs: Additional arguments, such as headers or proxies.
+        :type **kwargs: dict
         """
 
         self._session = requests.Session()
@@ -112,7 +102,6 @@ class Client(BaseClient):
         first_request_time=None,
         retry_counter=0,
         dry_run=None,
-        **client_kwargs
     ):
         """Performs HTTP GET/POST with credentials, returning the body as
         JSON.
@@ -132,11 +121,6 @@ class Client(BaseClient):
 
         :param retry_counter: The number of this retry, or zero for first attempt.
         :type retry_counter: int
-
-        :param requests_kwargs: Extra keyword arguments for the requests
-            library, which among other things allow for proxy auth to be
-            implemented.
-        :type requests_kwargs: dict
 
         :param dry_run: If 'true', only prints URL and parameters. 'true' or 'false'.
         :type dry_run: string
@@ -171,10 +155,7 @@ class Client(BaseClient):
 
         authed_url = self._generate_auth_url(url, get_params)
 
-        # Default to the client-level self.kwargs, with method-level
-        # client_kwargs arg overriding.
-        client_kwargs = client_kwargs or {}
-        final_requests_kwargs = dict(self.kwargs, **client_kwargs)
+        final_requests_kwargs = self.kwargs
 
         # Determine GET/POST.
         requests_method = self._session.get
@@ -211,9 +192,7 @@ class Client(BaseClient):
                 UserWarning,
             )
 
-            return self._request(
-                url, get_params, post_params, first_request_time, retry_counter + 1, **client_kwargs
-            )
+            return self._request(url, get_params, post_params, first_request_time, retry_counter + 1)
 
         try:
             result = self._get_body(response)
@@ -239,9 +218,7 @@ class Client(BaseClient):
                 UserWarning,
             )
             # Retry request.
-            return self._request(
-                url, get_params, post_params, first_request_time, retry_counter + 1, **client_kwargs
-            )
+            return self._request(url, get_params, post_params, first_request_time, retry_counter + 1)
 
     @property
     def req(self):
