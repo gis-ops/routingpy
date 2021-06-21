@@ -26,7 +26,7 @@ eventually be able to cover all remote routing API's, but have to rely on commun
 
 We welcome patches and fixes to existing clients and want to make sure everything goes smoothly for you while submitting a PR.
 
-We use Google's [`yapf`](https://github.com/google/yapf) to make sure the formatting is consistent.
+We use the PSF's [`black`](https://github.com/psf/black) to make sure the code style is consistent, and `flake8` as a linter. 
 
 When contributing, we expect you to:
 
@@ -54,12 +54,10 @@ poetry install
 nosetests -v
 ```
 
-4. Please add a pre-commit hook for `yapf`, so your code gets auto-formatted before committing it:
+4. Please install the pre-commit hook, so your code gets auto-formatted and linted before committing it:
 ```bash
 # From the root of your git project
-curl -o pre-commit.sh https://raw.githubusercontent.com/google/yapf/master/plugins/pre-commit.sh
-chmod a+x pre-commit.sh
-mv pre-commit.sh .git/hooks/pre-commit
+pre-commit install
 ```
 
 ### Tests
