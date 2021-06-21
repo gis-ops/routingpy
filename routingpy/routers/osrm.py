@@ -17,13 +17,14 @@
 
 from typing import List  # noqa: F401
 
-from .base import Router, DEFAULT
+from routingpy.client_base import DEFAULT
+from routingpy.client_default import Client
 from routingpy import convert, utils
 from routingpy.direction import Directions, Direction
 from routingpy.matrix import Matrix
 
 
-class OSRM(Router):
+class OSRM:
     """Performs requests to the OSRM API services."""
 
     _DEFAULT_BASE_URL = "https://router.project-osrm.org"
@@ -34,9 +35,10 @@ class OSRM(Router):
         user_agent=None,
         timeout=DEFAULT,
         retry_timeout=None,
-        requests_kwargs=None,
         retry_over_query_limit=False,
         skip_api_error=None,
+        client=Client,
+        **client_kwargs
     ):
         """
         Initializes an OSRM client.
@@ -57,21 +59,6 @@ class OSRM(Router):
             seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
-        :param requests_kwargs: Extra keyword arguments for the requests
-            library, which among other things allow for proxy auth to be
-            implemented. **Note**, that ``proxies`` can be set globally
-            in :attr:`routingpy.routers.options.default_proxies`.
-
-            Example:
-
-            >>> from routingpy.routers import OSRM
-            >>> router = OSRM(my_key, requests_kwargs={
-            >>>     'proxies': {'https': '129.125.12.0'}
-            >>> })
-            >>> print(router.proxies)
-            {'https': '129.125.12.0'}
-        :type requests_kwargs: dict
-
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
@@ -82,16 +69,22 @@ class OSRM(Router):
             encountered (e.g. no route found). If False, processing will discontinue and raise an error.
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
+
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :type client: abc.ABCMeta
+
+        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type **client_kwargs: dict
         """
 
-        super(OSRM, self).__init__(
+        self.client = client(
             base_url,
             user_agent,
             timeout,
             retry_timeout,
-            requests_kwargs,
             retry_over_query_limit,
             skip_api_error,
+            **client_kwargs
         )
 
     def directions(
@@ -199,7 +192,9 @@ class OSRM(Router):
             params["overview"] = convert._convert_bool(overview)
 
         return self._parse_direction_json(
-            self._request("/route/v1/" + profile + "/" + coords, get_params=params, dry_run=dry_run),
+            self.client._request(
+                "/route/v1/" + profile + "/" + coords, get_params=params, dry_run=dry_run
+            ),
             alternatives,
             geometries,
         )
@@ -327,7 +322,9 @@ class OSRM(Router):
             params["annotations"] = convert._delimit_list(annotations)
 
         return self._parse_matrix_json(
-            self._request("/table/v1/" + profile + "/" + coords, get_params=params, dry_run=dry_run)
+            self.client._request(
+                "/table/v1/" + profile + "/" + coords, get_params=params, dry_run=dry_run
+            )
         )
 
     @staticmethod

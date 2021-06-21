@@ -15,7 +15,8 @@
 # the License.
 #
 
-from .base import Router, DEFAULT
+from routingpy.client_base import DEFAULT
+from routingpy.client_default import Client
 from routingpy import convert
 from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrones, Isochrone
@@ -24,7 +25,7 @@ from routingpy.matrix import Matrix
 from operator import itemgetter
 
 
-class HereMaps(Router):
+class HereMaps:
     """Performs requests to the HERE Maps API services."""
 
     _DEFAULT_BASE_URL = "https://route.api.here.com/routing/7.2"
@@ -37,10 +38,11 @@ class HereMaps(Router):
         user_agent=None,
         timeout=DEFAULT,
         retry_timeout=None,
-        requests_kwargs=None,
         retry_over_query_limit=False,
         skip_api_error=None,
         api_key=None,
+        client=Client,
+        **client_kwargs
     ):
         """
         Initializes a HERE Maps client.
@@ -63,21 +65,6 @@ class HereMaps(Router):
             seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
-        :param requests_kwargs: Extra keyword arguments for the requests
-            library, which among other things allow for proxy auth to be
-            implemented. **Note**, that ``proxies`` can be set globally
-            in :attr:`routingpy.routers.options.default_proxies`.
-
-            Example:
-
-            >>> from routingpy.routers import HereMaps
-            >>> router = HereMaps(my_key, requests_kwargs={
-            >>>     'proxies': {'https': '129.125.12.0'}
-            >>> })
-            >>> print(router.proxies)
-            {'https': '129.125.12.0'}
-        :type requests_kwargs: dict
-
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
@@ -88,6 +75,12 @@ class HereMaps(Router):
             encountered (e.g. no route found). If False, processing will discontinue and raise an error.
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
+
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :type client: abc.ABCMeta
+
+        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type **client_kwargs: dict
         """
 
         if app_id is None and app_code is None and api_key is None:
@@ -108,14 +101,14 @@ class HereMaps(Router):
             self.base_url = self._DEFAULT_BASE_URL
             self.auth = {"app_id": self.app_id, "app_code": self.app_code}
 
-        super(HereMaps, self).__init__(
+        self.client = client(
             self.base_url,
             user_agent,
             timeout,
             retry_timeout,
-            requests_kwargs,
             retry_over_query_limit,
             skip_api_error,
+            **client_kwargs
         )
 
     class Waypoint(object):
@@ -779,7 +772,7 @@ class HereMaps(Router):
             params["speedProfile"] = speed_profile
 
         return self._parse_direction_json(
-            self._request(
+            self.client._request(
                 convert._delimit_list(["/calculateroute", format], "."),
                 get_params=params,
                 dry_run=dry_run,
@@ -1076,7 +1069,7 @@ class HereMaps(Router):
             params["speedProfile"] = speed_profile
 
         return self._parse_isochrone_json(
-            self._request(
+            self.client._request(
                 convert._delimit_list(["/calculateisoline", format], "."),
                 get_params=params,
                 dry_run=dry_run,
@@ -1365,7 +1358,7 @@ class HereMaps(Router):
             params["speedProfile"] = speed_profile
 
         return self._parse_matrix_json(
-            self._request(
+            self.client._request(
                 convert._delimit_list(["/calculatematrix", format], "."),
                 get_params=params,
                 dry_run=dry_run,

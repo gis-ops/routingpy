@@ -15,14 +15,15 @@
 # the License.
 #
 
-from .base import Router, DEFAULT
+from routingpy.client_base import DEFAULT
+from routingpy.client_default import Client
 from routingpy import utils
 from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
 
 
-class ORS(Router):
+class ORS:
     """Performs requests to the ORS API services."""
 
     _DEFAULT_BASE_URL = "https://api.openrouteservice.org"
@@ -34,9 +35,10 @@ class ORS(Router):
         user_agent=None,
         timeout=DEFAULT,
         retry_timeout=None,
-        requests_kwargs=None,
         retry_over_query_limit=False,
         skip_api_error=None,
+        client=Client,
+        **client_kwargs
     ):
         """
         Initializes an openrouteservice client.
@@ -60,21 +62,6 @@ class ORS(Router):
             seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
-        :param requests_kwargs: Extra keyword arguments for the requests
-            library, which among other things allow for proxy auth to be
-            implemented. **Note**, that ``proxies`` can be set globally
-            in :attr:`routingpy.routers.options.default_proxies`.
-
-            Example:
-
-            >>> from routingpy.routers import ORS
-            >>> router = ORS(my_key, requests_kwargs={
-            >>>     'proxies': {'https': '129.125.12.0'}
-            >>> })
-            >>> print(router.proxies)
-            {'https': '129.125.12.0'}
-        :type requests_kwargs: dict
-
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
@@ -85,24 +72,30 @@ class ORS(Router):
             encountered (e.g. no route found). If False, processing will discontinue and raise an error.
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
+
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :type client: abc.ABCMeta
+
+        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type **client_kwargs: dict
         """
 
         if base_url == self._DEFAULT_BASE_URL and api_key is None:
             raise KeyError("API key must be specified.")
 
-        requests_kwargs = requests_kwargs or {}
-        headers = requests_kwargs.get("headers") or {}
+        client_kwargs = client_kwargs or {}
+        headers = client_kwargs.get("headers") or {}
         headers.update({"Authorization": api_key})
-        requests_kwargs.update({"headers": headers})
+        client_kwargs.update({"headers": headers})
 
-        super(ORS, self).__init__(
+        self.client = client(
             base_url,
             user_agent,
             timeout,
             retry_timeout,
-            requests_kwargs,
             retry_over_query_limit,
             skip_api_error,
+            **client_kwargs
         )
 
     def directions(  # noqa: C901
@@ -314,7 +307,7 @@ class ORS(Router):
             params["options"] = options
 
         return self._parse_direction_json(
-            self._request(
+            self.client._request(
                 "/v2/directions/" + profile + "/" + format,
                 get_params={},
                 post_params=params,
@@ -465,7 +458,7 @@ class ORS(Router):
             params["intersections"] = intersections
 
         return self._parse_isochrone_json(
-            self._request(
+            self.client._request(
                 "/v2/isochrones/" + profile + "/geojson",
                 get_params={},
                 post_params=params,
@@ -559,7 +552,7 @@ class ORS(Router):
             params["units"] = units
 
         return self._parse_matrix_json(
-            self._request(
+            self.client._request(
                 "/v2/matrix/" + profile + "/json", get_params={}, post_params=params, dry_run=dry_run
             )
         )

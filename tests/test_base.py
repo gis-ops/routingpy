@@ -21,13 +21,14 @@ import requests
 import time
 
 import routingpy
-from routingpy.routers import options, base
+from routingpy.routers import options
+from routingpy import client_default
 import tests as _test
 
 
-class RouterMock(base.Router):
+class ClientMock(client_default.Client):
     def __init__(self, *args, **kwargs):
-        super(RouterMock, self).__init__(*args, **kwargs)
+        super(ClientMock, self).__init__(*args, **kwargs)
 
     def directions(self, *args, **kwargs):
         return self._request(*args, **kwargs)
@@ -41,7 +42,7 @@ class RouterMock(base.Router):
 
 class BaseTest(_test.TestCase):
     def setUp(self):
-        self.router = RouterMock("https://httpbin.org/")
+        self.client = ClientMock("https://httpbin.org/")
         self.params = {"c": "d", "a": "b", "1": "2"}
 
     def test_router_by_name(self):
@@ -57,17 +58,17 @@ class BaseTest(_test.TestCase):
         options.default_retry_timeout = 10
         options.default_retry_over_query_limit = False
         options.default_proxies = {"https": "192.103.10.102"}
-        new_router = RouterMock("https://foo.bar")
+        new_client = ClientMock("https://foo.bar")
         req_kwargs = {
             "timeout": options.default_timeout,
             "headers": {"User-Agent": options.default_user_agent, "Content-Type": "application/json"},
             "proxies": options.default_proxies,
         }
-        self.assertEqual(req_kwargs, new_router.requests_kwargs)
-        self.assertEqual(new_router.retry_over_query_limit, options.default_retry_over_query_limit)
+        self.assertEqual(req_kwargs, new_client.kwargs)
+        self.assertEqual(new_client.retry_over_query_limit, options.default_retry_over_query_limit)
 
     def test_urlencode(self):
-        encoded_params = self.router._generate_auth_url("directions", self.params)
+        encoded_params = self.client._generate_auth_url("directions", self.params)
         self.assertEqual("directions?1=2&a=b&c=d", encoded_params)
 
     @responses.activate
@@ -81,12 +82,12 @@ class BaseTest(_test.TestCase):
             content_type="application/json",
         )
 
-        client = RouterMock(base_url="https://httpbin.org", skip_api_error=False)
+        client = ClientMock(base_url="https://httpbin.org", skip_api_error=False)
         print(client.skip_api_error)
         with self.assertRaises(routingpy.exceptions.RouterApiError):
             client.directions(url="/post", post_params=self.params)
 
-        client = RouterMock(base_url="https://httpbin.org", skip_api_error=True)
+        client = ClientMock(base_url="https://httpbin.org", skip_api_error=True)
         client.directions(url="/post", post_params=self.params)
         self.assertEqual(responses.calls[1].response.json(), query)
 
@@ -101,7 +102,7 @@ class BaseTest(_test.TestCase):
             content_type="application/json",
         )
 
-        client = RouterMock(base_url="https://httpbin.org", retry_over_query_limit=True, retry_timeout=3)
+        client = ClientMock(base_url="https://httpbin.org", retry_over_query_limit=True, retry_timeout=3)
         with self.assertRaises(routingpy.exceptions.OverQueryLimit):
             client.directions(url="/post", post_params=query)
 
@@ -117,7 +118,7 @@ class BaseTest(_test.TestCase):
         )
 
         with self.assertRaises(routingpy.exceptions.OverQueryLimit):
-            client = RouterMock(base_url="https://httpbin.org", retry_over_query_limit=False)
+            client = ClientMock(base_url="https://httpbin.org", retry_over_query_limit=False)
             client.directions(url="/post", post_params=query)
 
     @responses.activate
@@ -134,7 +135,7 @@ class BaseTest(_test.TestCase):
             content_type="application/json",
         )
 
-        client = RouterMock(base_url="https://httpbin.org", retry_timeout=retry_timeout)
+        client = ClientMock(base_url="https://httpbin.org", retry_timeout=retry_timeout)
 
         start = time.time()
         with self.assertRaises(routingpy.exceptions.Timeout):
@@ -154,7 +155,7 @@ class BaseTest(_test.TestCase):
             content_type="application/json",
         )
 
-        self.router.directions(get_params={"format_out": "geojson"}, url="directions/", dry_run="true")
+        self.client.directions(get_params={"format_out": "geojson"}, url="directions/", dry_run="true")
 
         self.assertEqual(0, len(responses.calls))
 
@@ -164,10 +165,10 @@ class BaseTest(_test.TestCase):
         timeout = {"holaDieWaldFee": 600}
         headers = {"headers": {"X-Rate-Limit": "50"}}
 
-        client = RouterMock("https://httpbin.org", requests_kwargs=dict(timeout, **headers))
+        client = ClientMock("https://httpbin.org", **dict(timeout, **headers))
 
-        self.assertDictContainsSubset(timeout, client.requests_kwargs)
-        self.assertDictContainsSubset(headers["headers"], client.requests_kwargs["headers"])
+        self.assertDictContainsSubset(timeout, client.kwargs)
+        self.assertDictContainsSubset(headers["headers"], client.kwargs["headers"])
 
     @responses.activate
     def test_req_property(self):
@@ -181,7 +182,7 @@ class BaseTest(_test.TestCase):
             content_type="application/json",
         )
 
-        self.router.directions(url="routes", get_params={"a": "b"})
+        self.client.directions(url="routes", get_params={"a": "b"})
 
-        assert isinstance(self.router.req, requests.PreparedRequest)
-        self.assertEqual("https://httpbin.org/routes?a=b", self.router.req.url)
+        assert isinstance(self.client.req, requests.PreparedRequest)
+        self.assertEqual("https://httpbin.org/routes?a=b", self.client.req.url)

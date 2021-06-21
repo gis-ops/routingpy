@@ -15,7 +15,8 @@
 # the License.
 #
 
-from .base import Router, DEFAULT
+from routingpy.client_base import DEFAULT
+from routingpy.client_default import Client
 from routingpy import convert, utils
 from routingpy.direction import Directions, Direction
 from routingpy.matrix import Matrix
@@ -23,7 +24,7 @@ from routingpy.matrix import Matrix
 from operator import itemgetter
 
 
-class Google(Router):
+class Google:
     """Performs requests to the Google API services."""
 
     _base_url = "https://maps.googleapis.com/maps/api"
@@ -34,9 +35,10 @@ class Google(Router):
         user_agent=None,
         timeout=DEFAULT,
         retry_timeout=None,
-        requests_kwargs={},
         retry_over_query_limit=True,
         skip_api_error=None,
+        client=Client,
+        **client_kwargs
     ):
         """
         Initializes a Google client.
@@ -56,21 +58,6 @@ class Google(Router):
             seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
-        :param requests_kwargs: Extra keyword arguments for the requests
-            library, which among other things allow for proxy auth to be
-            implemented. **Note**, that ``proxies`` can be set globally
-            in :attr:`routingpy.routers.options.default_proxies`.
-
-            Example:
-
-            >>> from routingpy.routers import Google
-            >>> router = Google(my_key, requests_kwargs={
-            >>>     'proxies': {'https': '129.125.12.0'}
-            >>> })
-            >>> print(router.proxies)
-            {'https': '129.125.12.0'}
-        :type requests_kwargs: dict
-
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
@@ -81,18 +68,24 @@ class Google(Router):
             encountered (e.g. no route found). If False, processing will discontinue and raise an error.
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
+
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :type client: abc.ABCMeta
+
+        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type **client_kwargs: dict
         """
 
         self.key = api_key
 
-        super(Google, self).__init__(
+        self.client = client(
             self._base_url,
             user_agent,
             timeout,
             retry_timeout,
-            requests_kwargs,
             retry_over_query_limit,
             skip_api_error,
+            **client_kwargs
         )
 
     class WayPoint(object):
@@ -218,7 +211,7 @@ class Google(Router):
         :type transit_routing_preference: str
 
         :param dry_run: Print URL and parameters without sending the request.
-        :param dry_run: bool
+        :type dry_run: bool
 
         :returns: One or multiple route(s) from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
@@ -287,7 +280,7 @@ class Google(Router):
             params["transit_routing_preference"] = transit_routing_preference
 
         return self._parse_direction_json(
-            self._request("/directions/json", get_params=params, dry_run=dry_run), alternatives
+            self.client._request("/directions/json", get_params=params, dry_run=dry_run), alternatives
         )
 
     @staticmethod
@@ -468,7 +461,7 @@ class Google(Router):
             params["transit_routing_preference"] = transit_routing_preference
 
         return self._parse_matrix_json(
-            self._request("/distancematrix/json", get_params=params, dry_run=dry_run)
+            self.client._request("/distancematrix/json", get_params=params, dry_run=dry_run)
         )
 
     @staticmethod
