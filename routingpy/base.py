@@ -82,20 +82,20 @@ class options(object):
 
 
 # To avoid trouble when respecting timeout for individual routers (i.e. can't be None, since that's no timeout)
-DEFAULT = type('object', (object, ), {'__repr__': lambda self: 'DEFAULT'})()
+DEFAULT = type('object', (object,), {'__repr__': lambda self: 'DEFAULT'})()
 
 
 class BaseClient(metaclass=ABCMeta):
     """Abstract base class every client inherits from. Authentication is handled in each subclass."""
+
     def __init__(
-        self,
-        base_url,
-        user_agent=None,
-        timeout=DEFAULT,
-        retry_timeout=None,
-        requests_kwargs=None,
-        retry_over_query_limit=None,
-        skip_api_error=None
+            self,
+            base_url,
+            user_agent=None,
+            timeout=DEFAULT,
+            retry_timeout=None,
+            retry_over_query_limit=None,
+            skip_api_error=None
     ):
         """
         :param base_url: The base URL for the request. All routers must provide a default.
@@ -125,8 +125,6 @@ class BaseClient(metaclass=ABCMeta):
             >>> print(router.proxies)
             {'https': '129.125.12.0'}
 
-        :type requests_kwargs: dict
-
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
@@ -143,38 +141,17 @@ class BaseClient(metaclass=ABCMeta):
 
         self.skip_api_error = skip_api_error or options.default_skip_api_error
 
-        self.requests_kwargs = requests_kwargs or {}
         self.headers = {
             "User-Agent": user_agent or options.default_user_agent,
             'Content-Type': 'application/json'
         }
 
-        try:
-            self.headers.update(self.requests_kwargs['headers'])
-        except KeyError:
-            pass
-        self.requests_kwargs['headers'] = self.headers
-
         self.timeout = timeout if timeout != DEFAULT else options.default_timeout
-        self.requests_kwargs['timeout'] = self.timeout
-
-        self.proxies = self.requests_kwargs.get('proxies') or options.default_proxies
-        if self.proxies:
-            self.requests_kwargs['proxies'] = self.proxies
 
         self._req = None
 
     @abstractmethod
-    def _request(
-        self,
-        url,
-        get_params={},
-        post_params=None,
-        first_request_time=None,
-        retry_counter=0,
-        requests_kwargs=None,
-        dry_run=None
-    ):
+    def _request(self):
         """Must be implemented for inheriting client classes."""
         pass
 

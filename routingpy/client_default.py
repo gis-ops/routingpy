@@ -15,7 +15,7 @@
 # the License.
 #
 
-from .base import BaseClient, DEFAULT, _RETRIABLE_STATUSES
+from .base import BaseClient, DEFAULT, _RETRIABLE_STATUSES, options
 from routingpy import exceptions
 from routingpy.utils import get_ordinal
 
@@ -81,9 +81,22 @@ class Client(BaseClient):
 
         self._session = requests.Session()
         super(Client, self).__init__(
-            base_url, user_agent=user_agent, timeout=timeout, retry_timeout=retry_timeout, requests_kwargs=requests_kwargs,
+            base_url, user_agent=user_agent, timeout=timeout, retry_timeout=retry_timeout,
             retry_over_query_limit=retry_over_query_limit, skip_api_error=skip_api_error
         )
+
+        self.requests_kwargs = requests_kwargs or {}
+        try:
+            self.headers.update(self.requests_kwargs['headers'])
+        except KeyError:
+            pass
+
+        self.requests_kwargs['headers'] = self.headers
+        self.requests_kwargs['timeout'] = self.timeout
+
+        self.proxies = self.requests_kwargs.get('proxies') or options.default_proxies
+        if self.proxies:
+            self.requests_kwargs['proxies'] = self.proxies
 
     def _request(
         self,
