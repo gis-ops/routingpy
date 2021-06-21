@@ -21,6 +21,7 @@ Defines exceptions that are thrown by the ORS client.
 
 class RouterError(Exception):  # pragma: no cover
     """Represents an exception returned by the remote or local API."""
+
     def __init__(self, status, message=None):
         self.status = status
         self.message = message
@@ -46,16 +47,19 @@ class RouterNotFound(Exception):
 
 class Timeout(Exception):  # pragma: no cover
     """The request timed out."""
+
     pass
 
 
 class JSONParseError(Exception):  # pragma: no cover
     """The Json response can't be parsed.."""
+
     pass
 
 
 class RetriableRequest(Exception):  # pragma: no cover
     """Signifies that the request can be retried."""
+
     pass
 
 
@@ -65,4 +69,5 @@ class OverQueryLimit(RouterError, RetriableRequest):
     Normally we treat this as a retriable condition, but we allow the calling code to specify that these requests should
     not be retried.
     """
+
     pass

@@ -18,7 +18,7 @@
 """
 
 
-def _delimit_list(arg, delimiter=','):
+def _delimit_list(arg, delimiter=","):
     """Convert list to delimiter-separated string"""
     if not _is_list(arg):
         raise TypeError("Expected a list or tuple, " "but got {}".format(type(arg).__name__))
@@ -51,7 +51,7 @@ def _format_float(arg):
 
     :rtype: string
     """
-    return ("{}".format(round(float(arg), 6)).rstrip("0").rstrip("."))
+    return "{}".format(round(float(arg), 6)).rstrip("0").rstrip(".")
 
 
 def _is_list(arg):
@@ -61,8 +61,7 @@ def _is_list(arg):
     if isinstance(arg, str):  # Python 3-only, as str has __iter__
         return False
     return (
-        not _has_method(arg, "strip") and _has_method(arg, "__getitem__")
-        or _has_method(arg, "__iter__")
+        not _has_method(arg, "strip") and _has_method(arg, "__getitem__") or _has_method(arg, "__iter__")
     )
 
 
