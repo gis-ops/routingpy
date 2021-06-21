@@ -87,11 +87,12 @@ class options(object):
 
 
 # To avoid trouble when respecting timeout for individual routers (i.e. can't be None, since that's no timeout)
-DEFAULT = type('object', (object, ), {'__repr__': lambda self: 'DEFAULT'})()
+DEFAULT = type("object", (object,), {"__repr__": lambda self: "DEFAULT"})()
 
 
 class Router(metaclass=ABCMeta):
     """Abstract base class every router inherits from. Authentication is handled in each subclass."""
+
     def __init__(
         self,
         base_url,
@@ -100,7 +101,7 @@ class Router(metaclass=ABCMeta):
         retry_timeout=None,
         requests_kwargs=None,
         retry_over_query_limit=None,
-        skip_api_error=None
+        skip_api_error=None,
     ):
         """
         :param base_url: The base URL for the request. All routers must provide a default.
@@ -145,7 +146,11 @@ class Router(metaclass=ABCMeta):
         self._session = requests.Session()
         self.base_url = base_url
 
-        self.retry_over_query_limit = retry_over_query_limit if retry_over_query_limit is False else options.default_retry_over_query_limit
+        self.retry_over_query_limit = (
+            retry_over_query_limit
+            if retry_over_query_limit is False
+            else options.default_retry_over_query_limit
+        )
         self.retry_timeout = timedelta(seconds=retry_timeout or options.default_retry_timeout)
 
         self.skip_api_error = skip_api_error or options.default_skip_api_error
@@ -153,21 +158,21 @@ class Router(metaclass=ABCMeta):
         self.requests_kwargs = requests_kwargs or {}
         self.headers = {
             "User-Agent": user_agent or options.default_user_agent,
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
         }
 
         try:
-            self.headers.update(self.requests_kwargs['headers'])
+            self.headers.update(self.requests_kwargs["headers"])
         except KeyError:
             pass
-        self.requests_kwargs['headers'] = self.headers
+        self.requests_kwargs["headers"] = self.headers
 
         self.timeout = timeout if timeout != DEFAULT else options.default_timeout
-        self.requests_kwargs['timeout'] = self.timeout
+        self.requests_kwargs["timeout"] = self.timeout
 
-        self.proxies = self.requests_kwargs.get('proxies') or options.default_proxies
+        self.proxies = self.requests_kwargs.get("proxies") or options.default_proxies
         if self.proxies:
-            self.requests_kwargs['proxies'] = self.proxies
+            self.requests_kwargs["proxies"] = self.proxies
 
         self._req = None
 
@@ -179,7 +184,7 @@ class Router(metaclass=ABCMeta):
         first_request_time=None,
         retry_counter=0,
         requests_kwargs=None,
-        dry_run=None
+        dry_run=None,
     ):
         """Performs HTTP GET/POST with credentials, returning the body as
         JSON.
@@ -231,7 +236,7 @@ class Router(metaclass=ABCMeta):
             # 0.5 * (1.5 ^ i) is an increased sleep time of 1.5x per iteration,
             # starting at 0.5s when retry_counter=1. The first retry will occur
             # at 1, so subtract that first.
-            delay_seconds = 1.5**(retry_counter - 1)
+            delay_seconds = 1.5 ** (retry_counter - 1)
 
             # Jitter this value by 50% and pause.
             time.sleep(delay_seconds * (random.random() + 0.5))
@@ -247,11 +252,11 @@ class Router(metaclass=ABCMeta):
         requests_method = self._session.get
         if post_params is not None:
             requests_method = self._session.post
-            if final_requests_kwargs['headers']['Content-Type'] == 'application/json':
+            if final_requests_kwargs["headers"]["Content-Type"] == "application/json":
                 final_requests_kwargs["json"] = post_params
             else:
                 # Send as x-www-form-urlencoded key-value pair string (e.g. Mapbox API)
-                final_requests_kwargs['data'] = post_params
+                final_requests_kwargs["data"] = post_params
 
         # Only print URL and parameters for dry_run
         if dry_run:
@@ -274,8 +279,8 @@ class Router(metaclass=ABCMeta):
         if response.status_code in _RETRIABLE_STATUSES:
             # Retry request.
             warnings.warn(
-                'Server down.\nRetrying for the {}{} time.'.format(tried, get_ordinal(tried)),
-                UserWarning
+                "Server down.\nRetrying for the {}{} time.".format(tried, get_ordinal(tried)),
+                UserWarning,
             )
 
             return self._request(
@@ -302,8 +307,8 @@ class Router(metaclass=ABCMeta):
                 raise
 
             warnings.warn(
-                'Rate limit exceeded.\nRetrying for the {}{} time.'.format(tried, get_ordinal(tried)),
-                UserWarning
+                "Rate limit exceeded.\nRetrying for the {}{} time.".format(tried, get_ordinal(tried)),
+                UserWarning,
             )
             # Retry request.
             return self._request(

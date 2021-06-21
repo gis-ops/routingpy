@@ -23,6 +23,7 @@ class Matrix(object):
     """
     Contains a parsed matrix response. Access via properties ``geometry`` and ``raw``.
     """
+
     def __init__(self, durations=None, distances=None, raw=None):
         self._durations = durations
         self._distances = distances
@@ -88,4 +89,4 @@ class Matrix(object):
         return self._raw
 
     def __repr__(self):  # pragma: no cover
-        return 'Matrix({}, {})'.format(self.durations, self.distances)
+        return "Matrix({}, {})".format(self.durations, self.distances)

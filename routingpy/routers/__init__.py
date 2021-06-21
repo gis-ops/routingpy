@@ -41,7 +41,7 @@ _SERVICE_TO_ROUTER = {
     "graphhopper": Graphhopper,
     "google": Google,
     "here": HereMaps,
-    "heremaps": HereMaps
+    "heremaps": HereMaps,
 }
 
 
