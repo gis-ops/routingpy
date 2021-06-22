@@ -191,7 +191,8 @@ ENDPOINTS_RESPONSES = {
                         }
                     ]
                 }
-            ]
+            ],
+            "status": "OK",
         },
         "matrix": {
             "rows": [
