@@ -332,10 +332,8 @@ class Google:
         }
         status = response["status"]
         if status in status_codes.keys():
-            if status == "UNKOWN_ERROR":
-                error = RouterServerError
-            else:
-                error = RouterApiError
+            error = RouterServerError if status == "UNKOWN_ERROR" else RouterApiError
+            
             raise error(status_codes[status]["code"], status_codes[status]["message"])
 
         if alternatives:
