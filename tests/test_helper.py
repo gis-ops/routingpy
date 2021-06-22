@@ -809,3 +809,20 @@ ENDPOINTS_EXPECTED = {
         },
     },
 }
+
+ENDPOINTS_ERROR_RESPONSES = {
+    "google": {
+        "ZERO_RESULTS": {
+            "available_travel_modes": ["DRIVING", "WALKING", "BICYCLING"],
+            "geocoded_waypoints": [{}, {}],
+            "routes": [],
+            "status": "ZERO_RESULTS",
+        },
+        "UNKNOWN_ERROR": {
+            "available_travel_modes": ["DRIVING", "WALKING", "BICYCLING"],
+            "geocoded_waypoints": [{}, {}],
+            "routes": [],
+            "status": "UNKNOWN_ERROR",
+        },
+    }
+}
