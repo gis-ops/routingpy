@@ -26,11 +26,11 @@ from operator import itemgetter
 
 STATUS_CODES = {
     "NOT_FOUND": {
-        "code": 422,
+        "code": 404,
         "message": "At least one of the locations specified in the request's origin, destination, or waypoints could not be geocoded.",
     },
     "ZERO_RESULTS": {
-        "code": 422,
+        "code": 404,
         "message": "No route could be found between the origin and destination.",
     },
     "MAX_WAYPOINTS_EXCEEDED": {
