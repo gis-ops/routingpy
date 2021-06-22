@@ -24,6 +24,45 @@ from routingpy.exceptions import RouterApiError, RouterServerError
 
 from operator import itemgetter
 
+STATUS_CODES = {
+    "NOT_FOUND": {
+        "code": 422,
+        "message": "At least one of the locations specified in the request's origin, destination, or waypoints could not be geocoded.",
+    },
+    "ZERO_RESULTS": {
+        "code": 422,
+        "message": "No route could be found between the origin and destination.",
+    },
+    "MAX_WAYPOINTS_EXCEEDED": {
+        "code": 413,
+        "message": "Too many waypoints were provided in the request. The maximum is 25 excluding the origin and destination points.",
+    },
+    "MAX_ROUTE_LENGTH_EXCEEDED": {
+        "code": 413,
+        "message": "The requested route is too long and cannot be processed.",
+    },
+    "INVALID_REQUEST": {
+        "code": 400,
+        "message": "The provided request is invalid. Please check your parameters or parameter values.",
+    },
+    "OVER_DAILY_LIMIT": {
+        "code": 429,
+        "message": "This may be caused by an invalid API key, or billing issues.",
+    },
+    "OVER_QUERY_LIMIT": {
+        "code": 429,
+        "message": "The service has received too many requests from your application within the allowed time period.",
+    },
+    "REQUEST_DENIED": {
+        "code": 403,
+        "message": "The service denied use of the directions service by your application.",
+    },
+    "UNKNOWN_ERROR": {
+        "code": 503,
+        "message": "The directions request could not be processed due to a server error. The request may succeed if you try again.",
+    },
+}
+
 
 class Google:
     """Performs requests to the Google API services."""
@@ -292,51 +331,13 @@ class Google:
             else:
                 return Direction()
 
-        status_codes = {
-            "NOT_FOUND": {
-                "code": 422,
-                "message": "At least one of the locations specified in the request's origin, destination, or waypoints could not be geocoded.",
-            },
-            "ZERO_RESULTS": {
-                "code": 422,
-                "message": "No route could be found between the origin and destination.",
-            },
-            "MAX_WAYPOINTS_EXCEEDED": {
-                "code": 413,
-                "message": "Too many waypoints were provided in the request. The maximum is 25 excluding the origin and destination points.",
-            },
-            "MAX_ROUTE_LENGTH_EXCEEDED": {
-                "code": 413,
-                "message": "The requested route is too long and cannot be processed.",
-            },
-            "INVALID_REQUEST": {
-                "code": 400,
-                "message": "The provided request is invalid. Please check your parameters or parameter values.",
-            },
-            "OVER_DAILY_LIMIT": {
-                "code": 429,
-                "message": "This may be caused by an invalid API key, or billing issues.",
-            },
-            "OVER_QUERY_LIMIT": {
-                "code": 429,
-                "message": "The service has received too many requests from your application within the allowed time period.",
-            },
-            "REQUEST_DENIED": {
-                "code": 403,
-                "message": "The service denied use of the directions service by your application.",
-            },
-            "UNKNOWN_ERROR": {
-                "code": 503,
-                "message": "The directions request could not be processed due to a server error. The request may succeed if you try again.",
-            },
-        }
         status = response["status"]
-        if status in status_codes.keys():
+        if status in STATUS_CODES.keys():
             if status == "UNKOWN_ERROR":
                 error = RouterServerError
             else:
                 error = RouterApiError
-            raise error(status_codes[status]["code"], status_codes[status]["message"])
+            raise error(STATUS_CODES[status]["code"], STATUS_CODES[status]["message"])
 
         if alternatives:
             routes = []
