@@ -20,7 +20,7 @@ from routingpy.client_default import Client
 from routingpy import convert, utils
 from routingpy.direction import Directions, Direction
 from routingpy.matrix import Matrix
-from routingpy.exceptions import RouterApiError, RouterServerError
+from routingpy.exceptions import RouterApiError, RouterServerError, OverQueryLimit
 
 from operator import itemgetter
 
@@ -334,7 +334,13 @@ class Google:
         status = response["status"]
 
         if status in STATUS_CODES.keys():
-            error = RouterServerError if status == "UNKOWN_ERROR" else RouterApiError
+            error = (
+                RouterServerError
+                if status == "UNKOWN_ERROR"
+                else OverQueryLimit
+                if status in ["OVER_QUERY_LIMIT", "OVER_DAILY_LIMIT"]
+                else RouterApiError
+            )
 
             raise error(STATUS_CODES[status]["code"], STATUS_CODES[status]["message"])
 
