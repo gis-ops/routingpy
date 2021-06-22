@@ -334,13 +334,15 @@ class Google:
         status = response["status"]
 
         if status in STATUS_CODES.keys():
-            error = (
-                RouterServerError
-                if status == "UNKNOWN_ERROR"
-                else OverQueryLimit
-                if status in ["OVER_QUERY_LIMIT", "OVER_DAILY_LIMIT"]
-                else RouterApiError
-            )
+            if status == "UNKNOWN_ERROR":
+                error = RouterServerError
+
+            elif status in ["OVER_QUERY_LIMIT", "OVER_DAILY_LIMIT"]:
+                error = OverQueryLimit
+
+            else:
+                error = RouterApiError
+
             raise error(STATUS_CODES[status]["code"], STATUS_CODES[status]["message"])
 
         if alternatives:
