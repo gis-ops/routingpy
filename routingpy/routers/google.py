@@ -332,11 +332,10 @@ class Google:
                 return Direction()
 
         status = response["status"]
+
         if status in STATUS_CODES.keys():
-            if status == "UNKOWN_ERROR":
-                error = RouterServerError
-            else:
-                error = RouterApiError
+            error = RouterServerError if status == "UNKOWN_ERROR" else RouterApiError
+
             raise error(STATUS_CODES[status]["code"], STATUS_CODES[status]["message"])
 
         if alternatives:
