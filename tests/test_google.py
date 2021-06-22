@@ -19,6 +19,7 @@
 from routingpy import Google
 from routingpy.direction import Direction, Directions
 from routingpy.matrix import Matrix
+from routingpy.exceptions import RouterApiError, RouterServerError
 
 from tests.test_helper import *
 import tests as _test
@@ -253,3 +254,18 @@ class GoogleTest(_test.TestCase):
             "mode=driving&region=de&traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&units=metrics",
             responses.calls[0].request.url,
         )
+
+    def test_status_codes(self):
+
+        error_responses = ENDPOINTS_ERROR_RESPONSES[self.name]
+
+        for alternatives in [True, False]:
+            with self.assertRaises(RouterApiError):
+                self.client._parse_direction_json(
+                    error_responses["ZERO_RESULTS"], alternatives=alternatives
+                )
+
+            with self.assertRaises(RouterServerError):
+                self.client._parse_direction_json(
+                    error_responses["UNKNOWN_ERROR"], alternatives=alternatives
+                )

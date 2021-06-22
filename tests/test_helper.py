@@ -191,7 +191,8 @@ ENDPOINTS_RESPONSES = {
                         }
                     ]
                 }
-            ]
+            ],
+            "status": "OK",
         },
         "matrix": {
             "rows": [
@@ -807,4 +808,21 @@ ENDPOINTS_EXPECTED = {
             "units": "mi",
         },
     },
+}
+
+ENDPOINTS_ERROR_RESPONSES = {
+    "google": {
+        "ZERO_RESULTS": {
+            "available_travel_modes": ["DRIVING", "WALKING", "BICYCLING"],
+            "geocoded_waypoints": [{}, {}],
+            "routes": [],
+            "status": "ZERO_RESULTS",
+        },
+        "UNKNOWN_ERROR": {
+            "available_travel_modes": ["DRIVING", "WALKING", "BICYCLING"],
+            "geocoded_waypoints": [{}, {}],
+            "routes": [],
+            "status": "UNKNOWN_ERROR",
+        },
+    }
 }
