@@ -596,6 +596,9 @@ class HereMaps:
             if self.api_key is None
             else "https://route.ls.hereapi.com/routing/7.2"
         )
+
+        self.client.base_url = self.base_url
+
         params = self.auth.copy()
 
         locations = self._build_locations(locations)
@@ -997,6 +1000,9 @@ class HereMaps:
             if self.api_key is None
             else "https://isoline.route.ls.hereapi.com/routing/7.2"
         )
+
+        self.client.base_url = self.base_url
+
         params = self.auth.copy()
 
         params[center_type] = self._build_locations(locations)[0]
@@ -1264,6 +1270,8 @@ class HereMaps:
             if self.api_key is None
             else "https://matrix.route.ls.hereapi.com/routing/7.2"
         )
+        self.client.base_url = self.base_url
+
         params = self.auth.copy()
 
         locations = self._build_locations(locations)
