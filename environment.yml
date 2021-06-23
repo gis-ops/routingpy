@@ -1,13 +1,14 @@
-# for https://mybinder.org
-# from https://github.com/binder-examples/python-conda_pip/blob/master/environment.yml
-name: routingpy-examples
+name: routingpy-examples_2
 channels:
   - conda-forge
+  - defaults
 dependencies:
-  - python
-  - folium
   - pandas
   - shapely
-  - colour
+  - contextily
+  - python
+  - jupyter
+  - pyproj
+  - geopandas
   - pip:
     - routingpy
