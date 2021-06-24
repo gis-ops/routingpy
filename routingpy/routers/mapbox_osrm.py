@@ -504,8 +504,6 @@ class MapboxOSRM(Router):
         if fallback_speed:
             params['fallback_speed'] = str(fallback_speed)
 
-        profile = profile.replace('mapbox/','')
-
         return self._parse_matrix_json(
             self._request(
                 "/directions-matrix/v1/mapbox/" + profile + '/' + coords,
