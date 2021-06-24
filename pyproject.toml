@@ -11,9 +11,12 @@ python = "^3.7.0"
 requests = "^2.20.0"
 # For the Jupyter notebooks:
 pandas = {version = "^1.1.0", optional = true}
-folium = {version = "^0.11.0", optional = true}
 shapely = {version = "^1.7.0", optional = true}
 ipykernel = {version = "^5.3.4", optional = true}
+matplotlib = {version = "^3.4.1", optional = true}
+contextily = {version = "^1.1.0", optional = true}
+geopandas = {version = "^0.8.2", optional = true}
+
 
 [tool.poetry.dev-dependencies]
 sphinx = "^3.0.0"
@@ -27,7 +30,7 @@ flake8 = "^3.9.1"
 black = "^21.6b0"
 
 [tool.poetry.extras]
-notebooks = ["pandas", "folium", "shapely", "ipykernel"]
+notebooks = ["pandas", "shapely", "ipykernel", "geopandas", "contextily", "matplotlib"]
 
 [tool.black]
 line-length = 105
