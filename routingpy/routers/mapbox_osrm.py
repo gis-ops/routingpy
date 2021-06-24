@@ -320,7 +320,7 @@ class MapboxOSRM:
                 geometry = route_geometry["coordinates"]
             else:
                 raise ValueError(
-                    "OSRM: parameter geometries needs one of ['polyline', 'polyline6', 'geojson"
+                    "OSRM: parameter geometries needs one of ['polyline', 'polyline6', 'geojson']"
                 )
             return geometry
 
@@ -363,7 +363,7 @@ class MapboxOSRM:
         :type locations: list of float
 
         :param profile: Specifies the mode of transport to use when calculating
-            directions. One of ["mapbox/driving", "mapbox/walking", "mapbox/cycling".
+            directions. One of ["driving", "walking", "cycling".
         :type profile: str
 
         :param intervals: Time ranges to calculate isochrones for. Up to 4 ranges are possible. In seconds.
@@ -395,7 +395,6 @@ class MapboxOSRM:
         params = {
             "contours_minutes": convert._delimit_list([int(x / 60) for x in sorted(intervals)], ","),
             "access_token": self.api_key,
-            "costing": profile,
         }
 
         locations_string = convert._delimit_list(locations, ",")
@@ -412,9 +411,13 @@ class MapboxOSRM:
         if generalize:
             params["generalize"] = generalize
 
+        profile = profile.replace("mapbox/", "")
+
         return self._parse_isochrone_json(
             self.client._request(
-                "/isochrone/v1/" + profile + "/" + locations_string, get_params=params, dry_run=dry_run
+                "/isochrone/v1/mapbox/" + profile + "/" + locations_string,
+                get_params=params,
+                dry_run=dry_run,
             ),
             intervals,
             locations,
