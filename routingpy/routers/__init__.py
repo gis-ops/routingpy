@@ -13,7 +13,7 @@ locations and profile (car, bike, pedestrian etc.), among others (full list here
 .. _`contribution guidelines`: https://github.com/gis-ops/routing-py/blob/master/CONTRIBUTING.md
 .. _here: https://github.com/gis-ops/routing-py#api
 """
-from .base import options  # noqa: F401
+from routingpy.client_base import options  # noqa: F401
 from routingpy.exceptions import RouterNotFound
 
 from .openrouteservice import ORS
@@ -41,7 +41,7 @@ _SERVICE_TO_ROUTER = {
     "graphhopper": Graphhopper,
     "google": Google,
     "here": HereMaps,
-    "heremaps": HereMaps
+    "heremaps": HereMaps,
 }
 
 

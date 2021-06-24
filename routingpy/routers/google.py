@@ -15,15 +15,56 @@
 # the License.
 #
 
-from .base import Router, DEFAULT
+from routingpy.client_base import DEFAULT
+from routingpy.client_default import Client
 from routingpy import convert, utils
 from routingpy.direction import Directions, Direction
 from routingpy.matrix import Matrix
+from routingpy.exceptions import RouterApiError, RouterServerError, OverQueryLimit
 
 from operator import itemgetter
 
+STATUS_CODES = {
+    "NOT_FOUND": {
+        "code": 404,
+        "message": "At least one of the locations specified in the request's origin, destination, or waypoints could not be geocoded.",
+    },
+    "ZERO_RESULTS": {
+        "code": 404,
+        "message": "No route could be found between the origin and destination.",
+    },
+    "MAX_WAYPOINTS_EXCEEDED": {
+        "code": 413,
+        "message": "Too many waypoints were provided in the request. The maximum is 25 excluding the origin and destination points.",
+    },
+    "MAX_ROUTE_LENGTH_EXCEEDED": {
+        "code": 413,
+        "message": "The requested route is too long and cannot be processed.",
+    },
+    "INVALID_REQUEST": {
+        "code": 400,
+        "message": "The provided request is invalid. Please check your parameters or parameter values.",
+    },
+    "OVER_DAILY_LIMIT": {
+        "code": 429,
+        "message": "This may be caused by an invalid API key, or billing issues.",
+    },
+    "OVER_QUERY_LIMIT": {
+        "code": 429,
+        "message": "The service has received too many requests from your application within the allowed time period.",
+    },
+    "REQUEST_DENIED": {
+        "code": 403,
+        "message": "The service denied use of the directions service by your application.",
+    },
+    "UNKNOWN_ERROR": {
+        "code": 503,
+        "message": "The directions request could not be processed due to a server error. The request may succeed if you try again.",
+    },
+}
 
-class Google(Router):
+
+class Google:
     """Performs requests to the Google API services."""
 
     _base_url = "https://maps.googleapis.com/maps/api"
@@ -34,15 +75,16 @@ class Google(Router):
         user_agent=None,
         timeout=DEFAULT,
         retry_timeout=None,
-        requests_kwargs={},
         retry_over_query_limit=True,
-        skip_api_error=None
+        skip_api_error=None,
+        client=Client,
+        **client_kwargs
     ):
         """
         Initializes a Google client.
 
-        :param key: API key.
-        :type key: str
+        :param api_key: API key.
+        :type api_key: str
 
         :param user_agent: User Agent to be used when requesting.
             Default :attr:`routingpy.routers.options.default_user_agent`.
@@ -56,21 +98,6 @@ class Google(Router):
             seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
-        :param requests_kwargs: Extra keyword arguments for the requests
-            library, which among other things allow for proxy auth to be
-            implemented. **Note**, that ``proxies`` can be set globally
-            in :attr:`routingpy.routers.options.default_proxies`.
-
-            Example:
-
-            >>> from routingpy.routers import Google
-            >>> router = Google(my_key, requests_kwargs={
-            >>>     'proxies': {'https': '129.125.12.0'}
-            >>> })
-            >>> print(router.proxies)
-            {'https': '129.125.12.0'}
-        :type requests_kwargs: dict
-
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
@@ -81,13 +108,24 @@ class Google(Router):
             encountered (e.g. no route found). If False, processing will discontinue and raise an error.
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
+
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :type client: abc.ABCMeta
+
+        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type **client_kwargs: dict
         """
 
         self.key = api_key
 
-        super(Google, self).__init__(
-            self._base_url, user_agent, timeout, retry_timeout, requests_kwargs, retry_over_query_limit,
-            skip_api_error
+        self.client = client(
+            self._base_url,
+            user_agent,
+            timeout,
+            retry_timeout,
+            retry_over_query_limit,
+            skip_api_error,
+            **client_kwargs
         )
 
     class WayPoint(object):
@@ -101,7 +139,8 @@ class Google(Router):
         >>> waypoint = Google.WayPoint(position=[8.15315, 52.53151], waypoint_type='coords', stopover=False)
         >>> route = Google(api_key).directions(locations=[[[8.58232, 51.57234]], waypoint, [7.15315, 53.632415]])
         """
-        def __init__(self, position, waypoint_type='coords', stopover=True):
+
+        def __init__(self, position, waypoint_type="coords", stopover=True):
             """
             Constructs a waypoint with additional information, such as via or encoded lines.
 
@@ -122,18 +161,18 @@ class Google(Router):
 
         def make_waypoint(self):
 
-            waypoint = ''
-            if self.waypoint_type == 'coords':
+            waypoint = ""
+            if self.waypoint_type == "coords":
                 waypoint += convert._delimit_list(list(reversed(self.position)))
-            elif self.waypoint_type == 'place_id':
-                waypoint += self.waypoint_type + ':' + self.position
-            elif self.waypoint_type == 'enc':
-                waypoint += self.waypoint_type + ':' + self.position + ':'
+            elif self.waypoint_type == "place_id":
+                waypoint += self.waypoint_type + ":" + self.position
+            elif self.waypoint_type == "enc":
+                waypoint += self.waypoint_type + ":" + self.position + ":"
             else:
                 raise ValueError("waypoint_type only supports enc, place_id, coords")
 
             if not self.stopover:
-                waypoint = 'via:' + waypoint
+                waypoint = "via:" + waypoint
 
             return waypoint
 
@@ -152,7 +191,7 @@ class Google(Router):
         traffic_model=None,
         transit_mode=None,
         transit_routing_preference=None,
-        dry_run=None
+        dry_run=None,
     ):
         """Get directions between an origin point and a destination point.
 
@@ -174,7 +213,7 @@ class Google(Router):
 
         :param avoid: Indicates that the calculated route(s) should avoid the indicated features. One or more of
             ['tolls', 'highways', 'ferries', 'indoor']. Default None.
-        :param avoid: list of str
+        :type avoid: list of str
 
         :param optimize: Optimize the given order of via waypoints (i.e. between first and last location). Default False.
         :type optimize: bool
@@ -212,22 +251,22 @@ class Google(Router):
         :type transit_routing_preference: str
 
         :param dry_run: Print URL and parameters without sending the request.
-        :param dry_run: bool
+        :type dry_run: bool
 
         :returns: One or multiple route(s) from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
-        params = {'mode': profile}
+        params = {"mode": profile}
 
         origin, destination = locations[0], locations[-1]
         if isinstance(origin, (list, tuple)):
-            params['origin'] = convert._delimit_list(list(reversed(origin)))
+            params["origin"] = convert._delimit_list(list(reversed(origin)))
         elif isinstance(origin, self.WayPoint):
             raise TypeError("The first and last locations must be list/tuple of [lon, lat]")
 
         if isinstance(destination, (list, tuple)):
-            params['destination'] = convert._delimit_list(list(reversed(destination)))
+            params["destination"] = convert._delimit_list(list(reversed(destination)))
         elif isinstance(origin, self.WayPoint):
             raise TypeError("The first and last locations must be list/tuple of [lon, lat]")
 
@@ -240,48 +279,48 @@ class Google(Router):
                 elif isinstance(coord, self.WayPoint):
                     waypoints.append(coord.make_waypoint())
             if optimize:
-                waypoints.insert(0, 'optimize:true')
+                waypoints.insert(0, "optimize:true")
 
-            params['waypoints'] = convert._delimit_list(waypoints, '|')
+            params["waypoints"] = convert._delimit_list(waypoints, "|")
 
         if self.key is not None:
             params["key"] = self.key
 
         if alternatives is not None:
-            params['alternatives'] = convert._convert_bool(alternatives)
+            params["alternatives"] = convert._convert_bool(alternatives)
 
         if avoid:
-            params['avoid'] = convert._delimit_list(avoid, '|')
+            params["avoid"] = convert._delimit_list(avoid, "|")
 
         if language:
-            params['language'] = language
+            params["language"] = language
 
         if region:
-            params['region'] = region
+            params["region"] = region
 
         if units:
-            params['units'] = units
+            params["units"] = units
 
         if arrival_time and departure_time:
             raise ValueError("Specify either arrival_time or departure_time.")
 
         if arrival_time:
-            params['arrival_time'] = str(arrival_time)
+            params["arrival_time"] = str(arrival_time)
 
         if departure_time:
-            params['departure_time'] = str(departure_time)
+            params["departure_time"] = str(departure_time)
 
         if traffic_model:
-            params['traffic_model'] = traffic_model
+            params["traffic_model"] = traffic_model
 
         if transit_mode:
-            params['transit_mode'] = convert._delimit_list(transit_mode, '|')
+            params["transit_mode"] = convert._delimit_list(transit_mode, "|")
 
         if transit_routing_preference:
-            params['transit_routing_preference'] = transit_routing_preference
+            params["transit_routing_preference"] = transit_routing_preference
 
         return self._parse_direction_json(
-            self._request('/directions/json', get_params=params, dry_run=dry_run), alternatives
+            self.client._request("/directions/json", get_params=params, dry_run=dry_run), alternatives
         )
 
     @staticmethod
@@ -292,19 +331,33 @@ class Google(Router):
             else:
                 return Direction()
 
+        status = response["status"]
+
+        if status in STATUS_CODES.keys():
+            if status == "UNKNOWN_ERROR":
+                error = RouterServerError
+
+            elif status in ["OVER_QUERY_LIMIT", "OVER_DAILY_LIMIT"]:
+                error = OverQueryLimit
+
+            else:
+                error = RouterApiError
+
+            raise error(STATUS_CODES[status]["code"], STATUS_CODES[status]["message"])
+
         if alternatives:
             routes = []
-            for route in response['routes']:
+            for route in response["routes"]:
                 geometry = []
                 duration, distance = 0, 0
-                for leg in route['legs']:
-                    duration += leg['duration']['value']
-                    distance += leg['distance']['value']
-                    for step in leg['steps']:
+                for leg in route["legs"]:
+                    duration += leg["duration"]["value"]
+                    distance += leg["distance"]["value"]
+                    for step in leg["steps"]:
                         geometry.extend(
                             [
                                 list(reversed(coords))
-                                for coords in utils.decode_polyline5(step['polyline']['points'])
+                                for coords in utils.decode_polyline5(step["polyline"]["points"])
                             ]
                         )
                 routes.append(
@@ -316,14 +369,14 @@ class Google(Router):
         else:
             geometry = []
             duration, distance = 0, 0
-            for leg in response['routes'][0]['legs']:
-                duration = int(leg['duration']['value'])
-                distance = int(leg['distance']['value'])
-                for step in leg['steps']:
+            for leg in response["routes"][0]["legs"]:
+                duration = int(leg["duration"]["value"])
+                distance = int(leg["distance"]["value"])
+                for step in leg["steps"]:
                     geometry.extend(
                         [
                             list(reversed(coords))
-                            for coords in utils.decode_polyline5(step['polyline']['points'])
+                            for coords in utils.decode_polyline5(step["polyline"]["points"])
                         ]
                     )
             return Direction(geometry=geometry, duration=duration, distance=distance, raw=response)
@@ -346,9 +399,9 @@ class Google(Router):
         traffic_model=None,
         transit_mode=None,
         transit_routing_preference=None,
-        dry_run=None
+        dry_run=None,
     ):
-        """ Gets travel distance and time for a matrix of origins and destinations.
+        """Gets travel distance and time for a matrix of origins and destinations.
 
         :param locations: Two or more pairs of lng/lat values.
         :type locations: list of list
@@ -408,7 +461,7 @@ class Google(Router):
         :returns: A matrix from the specified sources and destinations.
         :rtype: :class:`routingpy.matrix.Matrix`
         """
-        params = {'mode': profile}
+        params = {"mode": profile}
 
         waypoints = []
         for coord in locations:
@@ -422,47 +475,47 @@ class Google(Router):
             sources_coords = itemgetter(*sources)(sources_coords)
             if not isinstance(sources_coords, (list, tuple)):
                 sources_coords = [sources_coords]
-        params['origins'] = convert._delimit_list(sources_coords, '|')
+        params["origins"] = convert._delimit_list(sources_coords, "|")
 
         destinations_coords = waypoints
         if destinations is not None:
             destinations_coords = itemgetter(*destinations)(destinations_coords)
             if not isinstance(destinations_coords, (list, tuple)):
                 destinations_coords = [destinations_coords]
-        params['destinations'] = convert._delimit_list(destinations_coords, '|')
+        params["destinations"] = convert._delimit_list(destinations_coords, "|")
 
         if self.key is not None:
             params["key"] = self.key
 
         if avoid:
-            params['avoid'] = convert._delimit_list(avoid, '|')
+            params["avoid"] = convert._delimit_list(avoid, "|")
 
         if language:
-            params['language'] = language
+            params["language"] = language
 
         if region:
-            params['region'] = region
+            params["region"] = region
 
         if units:
-            params['units'] = units
+            params["units"] = units
 
         if arrival_time:
-            params['arrival_time'] = str(arrival_time)
+            params["arrival_time"] = str(arrival_time)
 
         if departure_time:
-            params['departure_time'] = str(departure_time)
+            params["departure_time"] = str(departure_time)
 
         if traffic_model:
-            params['traffic_model'] = traffic_model
+            params["traffic_model"] = traffic_model
 
         if transit_mode:
-            params['transit_mode'] = convert._delimit_list(transit_mode, '|')
+            params["transit_mode"] = convert._delimit_list(transit_mode, "|")
 
         if transit_routing_preference:
-            params['transit_routing_preference'] = transit_routing_preference
+            params["transit_routing_preference"] = transit_routing_preference
 
         return self._parse_matrix_json(
-            self._request('/distancematrix/json', get_params=params, dry_run=dry_run)
+            self.client._request("/distancematrix/json", get_params=params, dry_run=dry_run)
         )
 
     @staticmethod
@@ -471,14 +524,12 @@ class Google(Router):
             return Matrix()
 
         durations = [
-            [destination['duration']['value']
-             for destination in origin['elements']]
-            for origin in response['rows']
+            [destination["duration"]["value"] for destination in origin["elements"]]
+            for origin in response["rows"]
         ]
         distances = [
-            [destination['distance']['value']
-             for destination in origin['elements']]
-            for origin in response['rows']
+            [destination["distance"]["value"] for destination in origin["elements"]]
+            for origin in response["rows"]
         ]
 
         return Matrix(durations, distances, response)

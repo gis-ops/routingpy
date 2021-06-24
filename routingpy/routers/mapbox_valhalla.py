@@ -15,13 +15,14 @@
 # the License.
 
 from .valhalla import Valhalla
-from .base import DEFAULT
+from routingpy.client_base import DEFAULT
+from routingpy.client_default import Client
 
 
 class MapboxValhalla(Valhalla):
     """Performs requests to Mapbox's Valhalla instance."""
 
-    _base_url = 'https://api.mapbox.com/valhalla/v1'
+    _base_url = "https://api.mapbox.com/valhalla/v1"
 
     def __init__(
         self,
@@ -29,9 +30,10 @@ class MapboxValhalla(Valhalla):
         user_agent=None,
         timeout=DEFAULT,
         retry_timeout=None,
-        requests_kwargs=None,
         retry_over_query_limit=False,
-        skip_api_error=None
+        skip_api_error=None,
+        client=Client,
+        **client_kwargs
     ):
         """
         Initializes a Valhalla client.
@@ -51,34 +53,32 @@ class MapboxValhalla(Valhalla):
             seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
         :type retry_timeout: int
 
-        :param requests_kwargs: Extra keyword arguments for the requests
-            library, which among other things allow for proxy auth to be
-            implemented. **Note**, that ``proxies`` can be set globally
-            in :attr:`routingpy.routers.options.default_proxies`.
-
-            Example:
-
-            >>> from routingpy.routers import MapboxValhalla
-            >>> router = MapboxValhalla(my_key, requests_kwargs={
-            >>>     'proxies': {'https': '129.125.12.0'}
-            >>> })
-            >>> print(router.proxies)
-            {'https': '129.125.12.0'}
-        :type requests_kwargs: dict
-
         :param retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
-            Default :attr:`routingpy.routers.options.default_over_query_limit`.
+            Default :attr:`routingpy.routers.options.default_retry_over_query_limit`.
         :type retry_over_query_limit: bool
 
         :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
             encountered (e.g. no route found). If False, processing will discontinue and raise an error.
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
+
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :type client: abc.ABCMeta
+
+        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type **client_kwargs: dict
         """
 
         super(MapboxValhalla, self).__init__(
-            self._base_url, api_key, user_agent, timeout, retry_timeout, requests_kwargs,
-            retry_over_query_limit, skip_api_error
+            self._base_url,
+            api_key,
+            user_agent,
+            timeout,
+            retry_timeout,
+            retry_over_query_limit,
+            skip_api_error,
+            client=client,
+            **client_kwargs
         )

@@ -30,27 +30,27 @@ from copy import deepcopy
 
 class ValhallaTest(_test.TestCase):
 
-    name = 'valhalla'
+    name = "valhalla"
 
     def setUp(self):
-        self.client = Valhalla('https://api.mapbox.com/valhalla/v1')
+        self.client = Valhalla("https://api.mapbox.com/valhalla/v1")
 
     @responses.activate
     def test_full_directions(self):
-        query = ENDPOINTS_QUERIES[self.name]['directions']
-        expected = ENDPOINTS_EXPECTED[self.name]['directions']
+        query = ENDPOINTS_QUERIES[self.name]["directions"]
+        expected = ENDPOINTS_EXPECTED[self.name]["directions"]
 
         responses.add(
             responses.POST,
-            'https://api.mapbox.com/valhalla/v1/route',
+            "https://api.mapbox.com/valhalla/v1/route",
             status=200,
-            json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json'
+            json=ENDPOINTS_RESPONSES[self.name]["directions"],
+            content_type="application/json",
         )
         routes = self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
         self.assertIsInstance(routes, Direction)
         self.assertIsInstance(routes.distance, int)
         self.assertIsInstance(routes.duration, int)
@@ -59,50 +59,50 @@ class ValhallaTest(_test.TestCase):
 
     @responses.activate
     def test_waypoint_generator(self):
-        query = deepcopy(ENDPOINTS_QUERIES[self.name]['directions'])
-        expected = deepcopy(ENDPOINTS_EXPECTED[self.name]['directions'])
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
+        expected = deepcopy(ENDPOINTS_EXPECTED[self.name]["directions"])
 
         extra_params = {
-            'type': 'break',
-            'heading': PARAM_INT_SMALL,
-            'heading_tolerance': PARAM_INT_SMALL,
-            'minimum_reachability': PARAM_INT_SMALL,
-            'radius': PARAM_INT_SMALL,
-            'rank_candidates': True
+            "type": "break",
+            "heading": PARAM_INT_SMALL,
+            "heading_tolerance": PARAM_INT_SMALL,
+            "minimum_reachability": PARAM_INT_SMALL,
+            "radius": PARAM_INT_SMALL,
+            "rank_candidates": True,
         }
 
-        query['locations'].append(Valhalla.Waypoint(PARAM_POINT, **extra_params))
-        expected['locations'].append({'lat': PARAM_POINT[1], 'lon': PARAM_POINT[0], **extra_params})
+        query["locations"].append(Valhalla.Waypoint(PARAM_POINT, **extra_params))
+        expected["locations"].append({"lat": PARAM_POINT[1], "lon": PARAM_POINT[0], **extra_params})
 
         responses.add(
             responses.POST,
-            'https://api.mapbox.com/valhalla/v1/route',
+            "https://api.mapbox.com/valhalla/v1/route",
             status=200,
-            json=ENDPOINTS_RESPONSES[self.name]['directions'],
-            content_type='application/json'
+            json=ENDPOINTS_RESPONSES[self.name]["directions"],
+            content_type="application/json",
         )
         self.client.directions(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
 
     @responses.activate
     def test_full_isochrones(self):
-        query = ENDPOINTS_QUERIES[self.name]['isochrones']
-        expected = ENDPOINTS_EXPECTED[self.name]['isochrones']
+        query = ENDPOINTS_QUERIES[self.name]["isochrones"]
+        expected = ENDPOINTS_EXPECTED[self.name]["isochrones"]
 
         responses.add(
             responses.POST,
-            'https://api.mapbox.com/valhalla/v1/isochrone',
+            "https://api.mapbox.com/valhalla/v1/isochrone",
             status=200,
-            json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
-            content_type='application/json'
+            json=ENDPOINTS_RESPONSES[self.name]["isochrones"],
+            content_type="application/json",
         )
 
         iso = self.client.isochrones(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
         self.assertIsInstance(iso, Isochrones)
         self.assertIsInstance(iso.raw, dict)
         self.assertEqual(2, len(iso))
@@ -114,51 +114,46 @@ class ValhallaTest(_test.TestCase):
 
     @responses.activate
     def test_isodistances(self):
-        query = deepcopy(ENDPOINTS_QUERIES[self.name]['isochrones'])
-        expected = deepcopy(ENDPOINTS_EXPECTED[self.name]['isochrones'])
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]["isochrones"])
+        expected = deepcopy(ENDPOINTS_EXPECTED[self.name]["isochrones"])
 
-        query['interval_type'] = 'distance'
-        expected['contours'] = [
-            {
-                'distance': 0.6,
-                'color': 'ff0000'
-            }, {
-                'distance': 1.2,
-                'color': '00FF00'
-            }
+        query["interval_type"] = "distance"
+        expected["contours"] = [
+            {"distance": 0.6, "color": "ff0000"},
+            {"distance": 1.2, "color": "00FF00"},
         ]
 
         responses.add(
             responses.POST,
-            'https://api.mapbox.com/valhalla/v1/isochrone',
+            "https://api.mapbox.com/valhalla/v1/isochrone",
             status=200,
-            json=ENDPOINTS_RESPONSES[self.name]['isochrones'],
-            content_type='application/json'
+            json=ENDPOINTS_RESPONSES[self.name]["isochrones"],
+            content_type="application/json",
         )
 
         self.client.isochrones(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
 
     # TODO: test colors having less items than range
     @responses.activate
     def test_full_matrix(self):
-        query = ENDPOINTS_QUERIES[self.name]['matrix']
-        expected = ENDPOINTS_EXPECTED[self.name]['matrix']
+        query = ENDPOINTS_QUERIES[self.name]["matrix"]
+        expected = ENDPOINTS_EXPECTED[self.name]["matrix"]
 
         responses.add(
             responses.POST,
-            'https://api.mapbox.com/valhalla/v1/sources_to_targets',
+            "https://api.mapbox.com/valhalla/v1/sources_to_targets",
             status=200,
-            json=ENDPOINTS_RESPONSES[self.name]['matrix'],
-            content_type='application/json'
+            json=ENDPOINTS_RESPONSES[self.name]["matrix"],
+            content_type="application/json",
         )
 
         matrix = self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
         self.assertIsInstance(matrix, Matrix)
         self.assertIsInstance(matrix.durations, list)
         self.assertIsInstance(matrix.distances, list)
@@ -166,25 +161,25 @@ class ValhallaTest(_test.TestCase):
 
     @responses.activate
     def test_few_sources_destinations_matrix(self):
-        query = deepcopy(ENDPOINTS_QUERIES[self.name]['matrix'])
-        query['sources'] = [2]
-        query['destinations'] = [0]
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]["matrix"])
+        query["sources"] = [2]
+        query["destinations"] = [0]
 
-        expected = deepcopy(ENDPOINTS_EXPECTED[self.name]['matrix'])
-        del expected['sources'][0]
-        del expected['sources'][0]
-        del expected['targets'][1]
-        del expected['targets'][1]
+        expected = deepcopy(ENDPOINTS_EXPECTED[self.name]["matrix"])
+        del expected["sources"][0]
+        del expected["sources"][0]
+        del expected["targets"][1]
+        del expected["targets"][1]
 
         responses.add(
             responses.POST,
-            'https://api.mapbox.com/valhalla/v1/sources_to_targets',
+            "https://api.mapbox.com/valhalla/v1/sources_to_targets",
             status=200,
-            json=ENDPOINTS_RESPONSES[self.name]['matrix'],
-            content_type='application/json'
+            json=ENDPOINTS_RESPONSES[self.name]["matrix"],
+            content_type="application/json",
         )
 
         self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertEqual(json.loads(responses.calls[0].request.body.decode('utf-8')), expected)
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)

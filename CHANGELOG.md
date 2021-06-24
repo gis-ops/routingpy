@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 -
 ### Fixed
--
+- enhanced error handling for directions with Google [#15](https://github.com/gis-ops/routing-py/issues/15)
 ### Changed
-- 
+
+- BREAKING: pulled client stuff into a separate Client class which gets passed to the individual router instances with the default being the same as before [#24](https://github.com/gis-ops/routing-py/pull/24)
+
 ### Deprecated
 -
 
