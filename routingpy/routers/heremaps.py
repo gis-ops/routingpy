@@ -28,8 +28,6 @@ from operator import itemgetter
 class HereMaps:
     """Performs requests to the HERE Maps API services."""
 
-    _base_url = ""
-
     def __init__(
         self,
         app_id=None,
@@ -99,7 +97,7 @@ class HereMaps:
             self.auth = {"app_id": self.app_id, "app_code": self.app_code}
 
         self.client = client(
-            self._base_url,
+            "",
             user_agent,
             timeout,
             retry_timeout,
