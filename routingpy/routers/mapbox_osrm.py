@@ -414,7 +414,7 @@ class MapboxOSRM:
         profile = profile.replace("mapbox/", "")
 
         return self._parse_isochrone_json(
-            self._request(
+            self.client._request(
                 "/isochrone/v1/mapbox/" + profile + "/" + locations_string,
                 get_params=params,
                 dry_run=dry_run,
