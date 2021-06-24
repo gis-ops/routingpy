@@ -28,9 +28,6 @@ from operator import itemgetter
 class HereMaps:
     """Performs requests to the HERE Maps API services."""
 
-    _DEFAULT_BASE_URL = "https://route.api.here.com/routing/7.2"
-    _APIKEY_BASE_URL = "https://route.ls.hereapi.com/routing/7.2"
-
     def __init__(
         self,
         app_id=None,
@@ -95,14 +92,12 @@ class HereMaps:
         self.api_key = api_key
 
         if self.api_key:
-            self.base_url = self._APIKEY_BASE_URL
             self.auth = {"apikey": self.api_key}
         else:
-            self.base_url = self._DEFAULT_BASE_URL
             self.auth = {"app_id": self.app_id, "app_code": self.app_code}
 
         self.client = client(
-            self.base_url,
+            "",
             user_agent,
             timeout,
             retry_timeout,
@@ -591,11 +586,12 @@ class HereMaps:
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
-        self.base_url = (
+        self.client.base_url = (
             "https://route.api.here.com/routing/7.2"
             if self.api_key is None
             else "https://route.ls.hereapi.com/routing/7.2"
         )
+
         params = self.auth.copy()
 
         locations = self._build_locations(locations)
@@ -992,11 +988,12 @@ class HereMaps:
         :rtype: dict
         """
 
-        self.base_url = (
+        self.client.base_url = (
             "https://isoline.route.api.here.com/routing/7.2"
             if self.api_key is None
             else "https://isoline.route.ls.hereapi.com/routing/7.2"
         )
+
         params = self.auth.copy()
 
         params[center_type] = self._build_locations(locations)[0]
@@ -1259,11 +1256,12 @@ class HereMaps:
         :returns: raw JSON response
         :rtype: dict
         """
-        self.base_url = (
+        self.client.base_url = (
             "https://matrix.route.api.here.com/routing/7.2"
             if self.api_key is None
             else "https://matrix.route.ls.hereapi.com/routing/7.2"
         )
+
         params = self.auth.copy()
 
         locations = self._build_locations(locations)
