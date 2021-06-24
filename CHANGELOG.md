@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - enhanced error handling for directions with Google [#15](https://github.com/gis-ops/routing-py/issues/15)
 - fixed MapboxOSRM client, removing unused parameters and unifying Isochrones interface [#21](https://github.com/gis-ops/routing-py/issues/21)
 - fixed bug that caused HereMaps client to use wrong API endpoints [#28](https://github.com/gis-ops/routing-py/pull/28)
+- fixed bug that caused HereMaps Isochrones to return lists of `list_reverseiterator`s instead of coordinates [#29](https://github.com/gis-ops/routing-py/issues/29)
 ### Changed
 
 - BREAKING: pulled client stuff into a separate Client class which gets passed to the individual router instances with the default being the same as before [#24](https://github.com/gis-ops/routing-py/pull/24)
