@@ -28,8 +28,7 @@ from operator import itemgetter
 class HereMaps:
     """Performs requests to the HERE Maps API services."""
 
-    _DEFAULT_BASE_URL = "https://route.api.here.com/routing/7.2"
-    _APIKEY_BASE_URL = "https://route.ls.hereapi.com/routing/7.2"
+    _base_url = ""
 
     def __init__(
         self,
@@ -95,14 +94,12 @@ class HereMaps:
         self.api_key = api_key
 
         if self.api_key:
-            self.base_url = self._APIKEY_BASE_URL
             self.auth = {"apikey": self.api_key}
         else:
-            self.base_url = self._DEFAULT_BASE_URL
             self.auth = {"app_id": self.app_id, "app_code": self.app_code}
 
         self.client = client(
-            self.base_url,
+            self._base_url,
             user_agent,
             timeout,
             retry_timeout,
