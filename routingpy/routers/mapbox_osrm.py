@@ -393,8 +393,8 @@ class MapboxOSRM:
         """
 
         params = {
-            "contours_minutes": convert._delimit_list([int(x / 60) for x in sorted(intervals)], ','),
-            'access_token': self.api_key,
+            "contours_minutes": convert._delimit_list([int(x / 60) for x in sorted(intervals)], ","),
+            "access_token": self.api_key,
         }
 
         locations_string = convert._delimit_list(locations, ",")
@@ -411,12 +411,16 @@ class MapboxOSRM:
         if generalize:
             params["generalize"] = generalize
 
-        profile = profile.replace('mapbox/','')
+        profile = profile.replace("mapbox/", "")
 
         return self._parse_isochrone_json(
             self._request(
-                "/isochrone/v1/mapbox/" + profile + '/' + locations_string, get_params=params, dry_run=dry_run
-            ), intervals, locations
+                "/isochrone/v1/mapbox/" + profile + "/" + locations_string,
+                get_params=params,
+                dry_run=dry_run,
+            ),
+            intervals,
+            locations,
         )
 
     @staticmethod
