@@ -148,7 +148,7 @@ class HereMapsTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            "https://route.api.here.com/routing/7.2/calculateisoline.json",
+            "https://isoline.route.api.here.com/routing/7.2/calculateisoline.json",
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]["isochrones"],
             content_type="application/json",
@@ -158,7 +158,7 @@ class HereMapsTest(_test.TestCase):
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
-            "https://route.api.here.com/routing/7.2/calculateisoline.json?app_code=sample_app_code&"
+            "https://isoline.route.api.here.com/routing/7.2/calculateisoline.json?app_code=sample_app_code&"
             "app_id=sample_app_id&mode=fastest%3Bcar&quality=1&range=1000%2C2000%2C3000&rangeType=distance&"
             "singleComponent=false&start=geo%2148.23424%2C8.34234",
             responses.calls[0].request.url,
@@ -178,7 +178,7 @@ class HereMapsTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            "https://route.api.here.com/routing/7.2/calculatematrix.json",
+            "https://matrix.route.api.here.com/routing/7.2/calculatematrix.json",
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]["matrix"],
             content_type="application/json",
@@ -188,7 +188,7 @@ class HereMapsTest(_test.TestCase):
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
-            "https://route.api.here.com/routing/7.2/calculatematrix.json?app_code=sample_app_code&"
+            "https://matrix.route.api.here.com/routing/7.2/calculatematrix.json?app_code=sample_app_code&"
             "app_id=sample_app_id&destination0=geo%2149.445776%2C8.780916&height=20&length=10&limitedWeight=10&"
             "mode=fastest%3Bcar&shippedHazardousGoods=gas%2Cflammable&start0=geo%2149.420577%2C8.688641&"
             "start1=geo%2149.415776%2C8.680916&summaryAttributes=traveltime%2Ccostfactor&trailersCount=3&truckType=truck&"
@@ -333,7 +333,7 @@ class HereMapsKeyTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            "https://route.ls.hereapi.com/routing/7.2/calculateisoline.json",
+            "https://isoline.route.ls.hereapi.com/routing/7.2/calculateisoline.json",
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]["isochrones"],
             content_type="application/json",
@@ -343,7 +343,7 @@ class HereMapsKeyTest(_test.TestCase):
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
-            "https://route.ls.hereapi.com/routing/7.2/calculateisoline.json?apikey=sample_api_key&"
+            "https://isoline.route.ls.hereapi.com/routing/7.2/calculateisoline.json?apikey=sample_api_key&"
             "mode=fastest%3Bcar&quality=1&range=1000%2C2000%2C3000&rangeType=distance&"
             "singleComponent=false&start=geo%2148.23424%2C8.34234",
             responses.calls[0].request.url,
@@ -363,7 +363,7 @@ class HereMapsKeyTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            "https://route.ls.hereapi.com/routing/7.2/calculatematrix.json",
+            "https://matrix.route.ls.hereapi.com/routing/7.2/calculatematrix.json",
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]["matrix"],
             content_type="application/json",
@@ -373,7 +373,7 @@ class HereMapsKeyTest(_test.TestCase):
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
-            "https://route.ls.hereapi.com/routing/7.2/calculatematrix.json?apikey=sample_api_key&"
+            "https://matrix.route.ls.hereapi.com/routing/7.2/calculatematrix.json?apikey=sample_api_key&"
             "destination0=geo%2149.445776%2C8.780916&height=20&length=10&limitedWeight=10&"
             "mode=fastest%3Bcar&shippedHazardousGoods=gas%2Cflammable&start0=geo%2149.420577%2C8.688641&"
             "start1=geo%2149.415776%2C8.680916&summaryAttributes=traveltime%2Ccostfactor&trailersCount=3&truckType=truck&"
