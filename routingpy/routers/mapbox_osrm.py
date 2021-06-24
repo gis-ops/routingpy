@@ -288,8 +288,6 @@ class MapboxOSRM:
 
         get_params = {"access_token": self.api_key} if self.api_key else {}
 
-        profile = profile.replace('mapbox/','')
-
         return self._parse_direction_json(
             self.client._request(
                 "/directions/v5/mapbox/" + profile,
