@@ -591,13 +591,11 @@ class HereMaps:
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
-        self.base_url = (
+        self.client.base_url = (
             "https://route.api.here.com/routing/7.2"
             if self.api_key is None
             else "https://route.ls.hereapi.com/routing/7.2"
         )
-
-        self.client.base_url = self.base_url
 
         params = self.auth.copy()
 
@@ -995,13 +993,11 @@ class HereMaps:
         :rtype: dict
         """
 
-        self.base_url = (
+        self.client.base_url = (
             "https://isoline.route.api.here.com/routing/7.2"
             if self.api_key is None
             else "https://isoline.route.ls.hereapi.com/routing/7.2"
         )
-
-        self.client.base_url = self.base_url
 
         params = self.auth.copy()
 
@@ -1265,12 +1261,11 @@ class HereMaps:
         :returns: raw JSON response
         :rtype: dict
         """
-        self.base_url = (
+        self.client.base_url = (
             "https://matrix.route.api.here.com/routing/7.2"
             if self.api_key is None
             else "https://matrix.route.ls.hereapi.com/routing/7.2"
         )
-        self.client.base_url = self.base_url
 
         params = self.auth.copy()
 
