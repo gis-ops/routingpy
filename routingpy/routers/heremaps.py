@@ -1088,7 +1088,7 @@ class HereMaps:
                         coordinates_list = []
                         for coordinates in component["shape"]:
                             coords = [float(f) for f in coordinates.split(",")]
-                            coordinates_list.append(reversed(coords))
+                            coordinates_list.append(list(reversed(coords)))
                         range_polygons.append(coordinates_list)
 
             geometries.append(
