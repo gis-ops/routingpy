@@ -509,7 +509,7 @@ class Graphhopper:
             isochrones.append(
                 Isochrone(
                     geometry=[
-                        l[:2] for l in polygon["geometry"]["coordinates"][0]  # noqa: E741
+                        [l[:2] for l in polygon["geometry"]["coordinates"][0]]  # noqa: E741
                     ],  # takes in elevation for some reason
                     interval=int(max_range * ((polygon["properties"]["bucket"] + 1) / buckets)),
                     center=center,

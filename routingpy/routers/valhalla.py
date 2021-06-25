@@ -426,7 +426,7 @@ class Valhalla:
             if feature["geometry"]["type"] in ("LineString", "Polygon"):
                 isochrones.append(
                     Isochrone(
-                        geometry=feature["geometry"]["coordinates"],
+                        geometry=[feature["geometry"]["coordinates"]],
                         interval=intervals[idx],
                         center=locations,
                     )

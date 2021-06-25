@@ -475,7 +475,7 @@ class ORS:
         for idx, isochrone in enumerate(response["features"]):
             isochrones.append(
                 Isochrone(
-                    geometry=isochrone["geometry"]["coordinates"][0],
+                    geometry=isochrone["geometry"]["coordinates"],
                     interval=isochrone["properties"]["value"],
                     center=isochrone["properties"]["center"],
                 )
