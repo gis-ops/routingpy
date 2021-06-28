@@ -65,7 +65,7 @@ class Isochrone(object):
     def geometry(self):
         """
         The geometry of the isochrone as
-        [[[[lon_ex1, lat_ex1], [lon_ex2, lat_ex2], ...], [lon_in1, lat_in1], [lon_in2, lat_in2], ...]] list.
+        [[[[lon_ex1, lat_ex1], [lon_ex2, lat_ex2], ...], [[lon_in1, lat_in1], [lon_in2, lat_in2], ...]], [other_polygon]] list.
 
         :rtype: list or None
 
