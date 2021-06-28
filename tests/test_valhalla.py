@@ -22,6 +22,7 @@ from routingpy.isochrone import Isochrones, Isochrone
 from routingpy.matrix import Matrix
 from tests.test_helper import *
 import tests as _test
+from tests.utils import get_max_depth
 
 import json
 import responses
@@ -111,6 +112,7 @@ class ValhallaTest(_test.TestCase):
             self.assertIsInstance(i.geometry, list)
             self.assertIsInstance(i.interval, int)
             self.assertIsInstance(i.center, list)
+            self.assertEqual(get_max_depth(i.geometry), 4)
 
     @responses.activate
     def test_isodistances(self):

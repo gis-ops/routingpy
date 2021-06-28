@@ -509,7 +509,7 @@ class Graphhopper:
             geometry = (
                 [[polygon["geometry"]["coordinates"]]]
                 if polygon["geometry"]["type"] == "polygon"
-                else [polygon["geometry"]["coordinates"]]
+                else [polygon["geometry"]["coordinates"]]  # if MultiPolygon
             )
             isochrones.append(
                 Isochrone(

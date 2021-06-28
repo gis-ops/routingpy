@@ -474,9 +474,9 @@ class ORS:
         isochrones = []
         for idx, isochrone in enumerate(response["features"]):
             geometry = (
-                [[isochrone["geometry"]["coordinates"]]]
+                [isochrone["geometry"]["coordinates"]]
                 if isochrone["geometry"]["type"] == "Polygon"
-                else [isochrone["geometry"]["coordinates"]]
+                else [isochrone["geometry"]["coordinates"]]  # if MultiPolygon
             )
             isochrones.append(
                 Isochrone(
