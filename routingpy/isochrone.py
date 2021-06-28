@@ -64,9 +64,13 @@ class Isochrone(object):
     @property
     def geometry(self):
         """
-        The geometry of the isochrone as [[lon1, lat1], [lon2, lat2], ...] list.
+        The geometry of the isochrone as [[[lon1, lat1], [lon2, lat2], ...]] list.
 
         :rtype: list or None
+
+        .. note::
+           Since it's not known whether providers' responses adhere to OGC standards, caution is advised with regard
+           to possible orientation issues of Polygons.
         """
         return self._geometry
 
