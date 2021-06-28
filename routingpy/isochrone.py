@@ -71,7 +71,7 @@ class Isochrone(object):
 
         .. note::
            Since it's not known whether providers' responses adhere to OGC standards, caution is advised with regard
-           to possible orientation issues of Polygons.
+           to possible orientation issues of exterior and interior rings of the resulting polygons.
         """
         return self._geometry
 
