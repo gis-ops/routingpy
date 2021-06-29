@@ -1,4 +1,4 @@
-name: routingpy-examples_2
+name: routingpy-examples
 channels:
   - conda-forge
   - defaults
@@ -10,5 +10,6 @@ dependencies:
   - jupyter
   - pyproj
   - geopandas
+  - descartes
   - pip:
     - routingpy
