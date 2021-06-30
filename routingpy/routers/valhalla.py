@@ -103,7 +103,7 @@ class Valhalla:
 
         Refer to Valhalla's documentation for details: https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#locations
 
-        Use ``kwargs`` to spedify options, make sure the value is proper for each option.
+        Use ``kwargs`` to specify options, make sure the value is proper for each option.
 
         Example:
 
