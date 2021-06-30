@@ -43,9 +43,9 @@ class options(object):
     >>> options.default_user_agent = 'amazing_routing_app'
     >>> options.default_proxies = {'https': '129.125.12.0'}
     >>> router = MapboxValhalla(my_key)
-    >>> print(router.headers)
+    >>> print(router.client.headers)
     {'User-Agent': 'amazing_routing_app', 'Content-Type': 'application/json'}
-    >>> print(router.proxies)
+    >>> print(router.client.proxies)
     {'https': '129.125.12.0'}
 
     Attributes:
