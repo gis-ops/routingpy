@@ -124,7 +124,7 @@ class BaseClient(metaclass=ABCMeta):
             encountered (e.g. no route found). If False, processing will discontinue and raise an error. Default False.
         :type skip_api_error: bool
 
-        :param **kwargs: Additional keyword arguments for the `requests library <https://docs.python-requests.org/en/master/api/#requests.request>`_
+        :param **kwargs: Additional keyword arguments.
         :type **kwargs: dict
         """
         self.base_url = base_url
