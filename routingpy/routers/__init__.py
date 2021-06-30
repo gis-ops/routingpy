@@ -1,8 +1,7 @@
 """
-Every routing service below has a separate module in ``routingpy.routers``, which hosts a class which
-bases :class:`routingpy.routers.base.Router` astracting the service's API. Each router
-has at least a ``directions`` method, many offer additionally ``matrix`` and/or ``isochrones`` methods. Other
-available provider endpoints are allowed and generally encouraged. However, please refer
+Every routing service below has a separate module in ``routingpy.routers``, which hosts a class astracting the service's
+API. Each router has at least a ``directions`` method, many offer additionally ``matrix`` and/or ``isochrones`` methods.
+Other available provider endpoints are allowed and generally encouraged. However, please refer
 to our `contribution guidelines`_ for general instructions.
 
 **routingpy**'s dogma is, that all routers expose the same mandatory arguments for common methods in an
