@@ -28,7 +28,7 @@ import warnings
 
 
 class Client(BaseClient):
-    """Default client class for requests handling. Uses the requests package."""
+    """Default client class for requests handling, which is passed to each router. Uses the requests package."""
 
     def __init__(
         self,
