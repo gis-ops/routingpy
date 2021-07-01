@@ -1,9 +1,10 @@
 """
-Every routing service below has a separate module in ``routingpy.routers``, which hosts a class which
-bases :class:`routingpy.routers.base.Router` astracting the service's API. Each router
-has at least a ``directions`` method, many offer additionally ``matrix`` and/or ``isochrones`` methods. Other
-available provider endpoints are allowed and generally encouraged. However, please refer
+Every routing service below has a separate module in ``routingpy.routers``, which hosts a class abstracting the service's
+API. Each router has at least a ``directions`` method, many offer additionally ``matrix`` and/or ``isochrones`` methods.
+Other available provider endpoints are allowed and generally encouraged. However, please refer
 to our `contribution guidelines`_ for general instructions.
+
+The requests are handled via a client class derived from `:class: routingpy.base.BaseClient`.
 
 **routingpy**'s dogma is, that all routers expose the same mandatory arguments for common methods in an
 attempt to be consistent for the same method across different routers. Unlike other collective libraries,
@@ -61,7 +62,7 @@ def get_router_by_name(router_name):
     :param router_name: Name of the router as string.
     :type router_name: str
 
-    :rtype: :class:`routingpy.routers.base.Router`
+    :rtype: Union[:class:`routingpy.routers.google.Google`, :class:`routingpy.routers.graphhopper.Graphhopper`, :class:`routingpy.routers.heremaps.HereMaps`, :class:`routingpy.routers.mapbox_osrm.MapBoxOSRM`, :class:`routingpy.routers.mapbox_valhalla.MapBoxValhalla`, :class:`routingpy.routers.openrouteservice.ORS`, :class:`routingpy.routers.osrm.OSRM`, :class:`routingpy.routers.valhalla.Valhalla`]
 
     """
     try:

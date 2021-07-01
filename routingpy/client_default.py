@@ -28,7 +28,7 @@ import warnings
 
 
 class Client(BaseClient):
-    """Default client class for requests handling. Uses the requests package."""
+    """Default client class for requests handling, which is passed to each router. Uses the requests package."""
 
     def __init__(
         self,
@@ -122,8 +122,8 @@ class Client(BaseClient):
         :param retry_counter: The number of this retry, or zero for first attempt.
         :type retry_counter: int
 
-        :param dry_run: If 'true', only prints URL and parameters. 'true' or 'false'.
-        :type dry_run: string
+        :param dry_run: If true, only prints URL and parameters. true or false.
+        :type dry_run: bool
 
         :raises routingpy.exceptions.RouterApiError: when the API returns an error due to faulty configuration.
         :raises routingpy.exceptions.RouterServerError: when the API returns a server error.

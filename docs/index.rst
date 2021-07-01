@@ -105,6 +105,13 @@ Valhalla
 
    .. automethod:: __init__
 
+Client
+~~~~
+.. autoclass:: routingpy.client_default.Client
+    :members:
+
+    .. automethod:: __init__
+
 Data
 ~~~~
 

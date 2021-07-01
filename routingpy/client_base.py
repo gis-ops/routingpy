@@ -43,9 +43,9 @@ class options(object):
     >>> options.default_user_agent = 'amazing_routing_app'
     >>> options.default_proxies = {'https': '129.125.12.0'}
     >>> router = MapboxValhalla(my_key)
-    >>> print(router.headers)
+    >>> print(router.client.headers)
     {'User-Agent': 'amazing_routing_app', 'Content-Type': 'application/json'}
-    >>> print(router.proxies)
+    >>> print(router.client.proxies)
     {'https': '129.125.12.0'}
 
     Attributes:
@@ -124,7 +124,7 @@ class BaseClient(metaclass=ABCMeta):
             encountered (e.g. no route found). If False, processing will discontinue and raise an error. Default False.
         :type skip_api_error: bool
 
-        :param **kwargs: Additional keyword arguments for the `requests library <https://docs.python-requests.org/en/master/api/#requests.request>`_
+        :param **kwargs: Additional keyword arguments.
         :type **kwargs: dict
         """
         self.base_url = base_url
@@ -178,8 +178,8 @@ class BaseClient(metaclass=ABCMeta):
         :param retry_counter: The number of this retry, or zero for first attempt.
         :type retry_counter: int
 
-        :param dry_run: If 'true', only prints URL and parameters. 'true' or 'false'.
-        :type dry_run: string
+        :param dry_run: If true, only prints URL and parameters. true or false.
+        :type dry_run: bool
 
         :raises routingpy.exceptions.RouterApiError: when the API returns an error due to faulty configuration.
         :raises routingpy.exceptions.RouterServerError: when the API returns a server error.
