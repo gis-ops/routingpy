@@ -178,8 +178,8 @@ class BaseClient(metaclass=ABCMeta):
         :param retry_counter: The number of this retry, or zero for first attempt.
         :type retry_counter: int
 
-        :param dry_run: If 'true', only prints URL and parameters. 'true' or 'false'.
-        :type dry_run: string
+        :param dry_run: If true, only prints URL and parameters. true or false.
+        :type dry_run: bool
 
         :raises routingpy.exceptions.RouterApiError: when the API returns an error due to faulty configuration.
         :raises routingpy.exceptions.RouterServerError: when the API returns a server error.
