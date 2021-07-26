@@ -71,7 +71,7 @@ def _decode(expression, precision=5, is3d=False):
     return coordinates
 
 
-def decode_polyline5(polyline, is3d=False):
+def decode_polyline5(polyline, is3d=False, order="latlng"):
     """Decodes an encoded polyline string which was encoded with a precision of 5.
 
     :param polyline: An encoded polyline, only the geometry.
@@ -81,14 +81,22 @@ def decode_polyline5(polyline, is3d=False):
         support this. Default False.
     :type is3d: bool
 
+    :param order: Specifies the order in which the coordinates are returned.
+                  Options: latlng, lnglat. Defaults to 'latlng'.
+    :type order: str
+
     :returns: List of decoded coordinates with precision 5.
     :rtype: list
     """
+    if order == "latlng":
+        return _decode(polyline, precision=5, is3d=is3d)
+    elif order == "lnglat":
+        return [list(reversed(coords)) for coords in _decode(polyline, precision=5, is3d=is3d)]
+    else:
+        raise ValueError(f"order must be either 'latlng' or 'lnglat', not {order}.")
 
-    return _decode(polyline, precision=5, is3d=is3d)
 
-
-def decode_polyline6(polyline, is3d=False):
+def decode_polyline6(polyline, is3d=False, order="latlng"):
     """Decodes an encoded polyline string which was encoded with a precision of 6.
 
     :param polyline: An encoded polyline, only the geometry.
@@ -102,7 +110,12 @@ def decode_polyline6(polyline, is3d=False):
     :rtype: list
     """
 
-    return _decode(polyline, precision=6, is3d=is3d)
+    if order == "latlng":
+        return _decode(polyline, precision=6, is3d=is3d)
+    elif order == "lnglat":
+        return [list(reversed(coords)) for coords in _decode(polyline, precision=6, is3d=is3d)]
+    else:
+        raise ValueError(f"order must be either 'latlng' or 'lnglat', not {order}.")
 
 
 def get_ordinal(number):

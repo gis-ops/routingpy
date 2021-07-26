@@ -209,9 +209,9 @@ class OSRM:
 
         def _parse_geometry(route_geometry):
             if geometry_format in (None, "polyline"):
-                geometry = utils.decode_polyline5(route_geometry, is3d=False)
+                geometry = utils.decode_polyline5(route_geometry, is3d=False, order="latlng")
             elif geometry_format == "polyline6":
-                geometry = utils.decode_polyline6(route_geometry, is3d=False)
+                geometry = utils.decode_polyline6(route_geometry, is3d=False, order="latlng")
             elif geometry_format == "geojson":
                 geometry = route_geometry["coordinates"]
             else:

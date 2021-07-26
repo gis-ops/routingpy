@@ -309,13 +309,9 @@ class MapboxOSRM:
 
         def _parse_geometry(route_geometry):
             if geometry_format in (None, "polyline"):
-                geometry = [
-                    list(reversed(coord)) for coord in utils.decode_polyline5(route_geometry, is3d=False)
-                ]
+                geometry = utils.decode_polyline5(route_geometry, is3d=False, order="lnglat")
             elif geometry_format == "polyline6":
-                geometry = [
-                    list(reversed(coord)) for coord in utils.decode_polyline6(route_geometry, is3d=False)
-                ]
+                geometry = utils.decode_polyline6(route_geometry, is3d=False, order="lnglat")
             elif geometry_format == "geojson":
                 geometry = route_geometry["coordinates"]
             else:
