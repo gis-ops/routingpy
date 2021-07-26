@@ -91,7 +91,7 @@ def decode_polyline5(polyline, is3d=False, order="latlng"):
     if order == "latlng":
         return _decode(polyline, precision=5, is3d=is3d)
     elif order == "lnglat":
-        return [list(reversed(coords)) for coords in _decode(polyline, precision=5, is3d=is3d)]
+        return [tuple(reversed(coords)) for coords in _decode(polyline, precision=5, is3d=is3d)]
     else:
         raise ValueError(f"order must be either 'latlng' or 'lnglat', not {order}.")
 
@@ -113,7 +113,7 @@ def decode_polyline6(polyline, is3d=False, order="latlng"):
     if order == "latlng":
         return _decode(polyline, precision=6, is3d=is3d)
     elif order == "lnglat":
-        return [list(reversed(coords)) for coords in _decode(polyline, precision=6, is3d=is3d)]
+        return [tuple(reversed(coords)) for coords in _decode(polyline, precision=6, is3d=is3d)]
     else:
         raise ValueError(f"order must be either 'latlng' or 'lnglat', not {order}.")
 
