@@ -39,7 +39,7 @@ def _trans(value, index):
     return ~(result >> 1) if comp else (result >> 1), index
 
 
-def _decode(expression, precision=5, is3d=False):
+def _decode(expression, precision=5, is3d=False, order="lnglat"):
     """
     Copyright (c) 2014 Bruno M. Custódio
     Copyright (c) 2016 Frederick Jansen
@@ -62,11 +62,11 @@ def _decode(expression, precision=5, is3d=False):
         lat += lat_change
         lng += lng_change
         if not is3d:
-            coordinates.append((lat / factor, lng / factor))
+            coordinates.append(_get_coords(lat, lng, factor, order=order))
         else:
             z_change, index = _trans(expression, index)
             z += z_change
-            coordinates.append((lat / factor, lng / factor, z / 100))
+            coordinates.append((*_get_coords(lat, lng, factor, order=order), z / 100))
 
     return coordinates
 
@@ -88,18 +88,7 @@ def decode_polyline5(polyline, is3d=False, order="lnglat"):
     :returns: List of decoded coordinates with precision 5.
     :rtype: list
     """
-    if order == "latlng":
-        return _decode(polyline, precision=5, is3d=is3d)
-    elif order == "lnglat":
-        if is3d:
-            return [
-                tuple((reversed(coords[:-1]), coords[-1]))
-                for coords in _decode(polyline, precision=5, is3d=is3d)
-            ]
-        else:
-            return [tuple(reversed(coords)) for coords in _decode(polyline, precision=5, is3d=is3d)]
-    else:
-        raise ValueError(f"order must be either 'latlng' or 'lnglat', not {order}.")
+    return _decode(polyline, precision=5, is3d=is3d, order=order)
 
 
 def decode_polyline6(polyline, is3d=False, order="lnglat"):
@@ -120,18 +109,7 @@ def decode_polyline6(polyline, is3d=False, order="lnglat"):
     :rtype: list
     """
 
-    if order == "latlng":
-        return _decode(polyline, precision=6, is3d=is3d)
-    elif order == "lnglat":
-        if is3d:
-            return [
-                tuple([*reversed(coords[:-1]), coords[-1]])
-                for coords in _decode(polyline, precision=6, is3d=is3d)
-            ]
-        else:
-            return [tuple(reversed(coords)) for coords in _decode(polyline, precision=6, is3d=is3d)]
-    else:
-        raise ValueError(f"order must be either 'latlng' or 'lnglat', not {order}.")
+    return _decode(polyline, precision=6, is3d=is3d, order=order)
 
 
 def get_ordinal(number):
@@ -145,3 +123,10 @@ def get_ordinal(number):
         return "rd"
     else:
         return "th"
+
+
+def _get_coords(lat, lng, factor, order="lnglat"):
+    """Determines coordinate order."""
+    if order not in ("lnglat", "latlng"):
+        raise ValueError(f"order must be either 'latlng' or 'lnglat', not {order}.")
+    return (lat / factor, lng / factor) if order == "latlng" else (lng / factor, lat / factor)
