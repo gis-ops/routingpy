@@ -30,12 +30,12 @@ class UtilsTest(_test.TestCase):
     def test_polyline5_2d_decoding(self):
 
         decoded = [(8.68864, 49.42058), (8.68092, 49.41578)]
-        self.assertEqual(decoded, utils.decode_polyline5(self.coords2d_5prec))
+        self.assertEqual(decoded, utils.decode_polyline5(self.coords2d_5prec, order="latlng"))
 
     def test_polyline5_3d_decoding(self):
 
         decoded = [(8.68864, 49.42058, 120.96), (8.68092, 49.41578, 1491.39)]
-        self.assertEqual(decoded, utils.decode_polyline5(self.coords3d_5prec, True))
+        self.assertEqual(decoded, utils.decode_polyline5(self.coords3d_5prec, True, order="latlng"))
 
     def test_polyline6_2d_decoding(self):
 

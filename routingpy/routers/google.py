@@ -354,9 +354,7 @@ class Google:
                     duration += leg["duration"]["value"]
                     distance += leg["distance"]["value"]
                     for step in leg["steps"]:
-                        geometry.extend(
-                            utils.decode_polyline5(step["polyline"]["points"], order="lnglat")
-                        )
+                        geometry.extend(utils.decode_polyline5(step["polyline"]["points"]))
 
                 routes.append(
                     Direction(

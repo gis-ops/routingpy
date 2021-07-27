@@ -240,7 +240,7 @@ class Valhalla:
 
         geometry, duration, distance = [], 0, 0
         for leg in response["trip"]["legs"]:
-            geometry.extend(utils.decode_polyline6(leg["shape"], order="lnglat"))
+            geometry.extend(utils.decode_polyline6(leg["shape"]))
             duration += leg["summary"]["time"]
 
             factor = 0.621371 if units == "mi" else 1
