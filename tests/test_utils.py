@@ -40,12 +40,12 @@ class UtilsTest(_test.TestCase):
     def test_polyline6_2d_decoding(self):
 
         decoded = [(8.688641, 49.420577), (8.680916, 49.415776)]
-        self.assertEqual(decoded, utils.decode_polyline6(self.coords2d_6prec))
+        self.assertEqual(decoded, utils.decode_polyline6(self.coords2d_6prec, order="latlng"))
 
     def test_polyline6_3d_decoding(self):
 
         decoded = [(8.688641, 49.420577, 120.96), (8.680916, 49.415776, 1491.39)]
-        self.assertEqual(decoded, utils.decode_polyline6(self.coords3d_6prec, True))
+        self.assertEqual(decoded, utils.decode_polyline6(self.coords3d_6prec, True, order="latlng"))
 
     def test_get_ordinal(self):
 
