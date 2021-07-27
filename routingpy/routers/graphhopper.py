@@ -388,10 +388,7 @@ class Graphhopper:
         if algorithm == "alternative_route":
             routes = []
             for route in response["paths"]:
-                geometry = utils.decode_polyline5(
-                    route["points"],
-                    elevation,
-                )
+                geometry = utils.decode_polyline5(route["points"], elevation, order="lnglat")
                 routes.append(
                     Direction(
                         geometry=geometry,
