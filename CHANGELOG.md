@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - fixed bug that caused HereMaps client to use wrong API endpoints [#28](https://github.com/gis-ops/routing-py/pull/28)
 - fixed bug that caused HereMaps Isochrones to return lists of `list_reverseiterator`s instead of coordinates [#29](https://github.com/gis-ops/routing-py/issues/29)
 - updated jupyter notebooks examples
+- switched coordinate order of OSRM
 
 ### Changed
 

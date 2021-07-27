@@ -364,10 +364,7 @@ class ORS:
                     )
                 return Directions(routes, response)
             else:
-                geometry = [
-                    list(reversed(coord))
-                    for coord in utils.decode_polyline5(response["routes"][0]["geometry"])
-                ]
+                geometry = utils.decode_polyline5(response["routes"][0]["geometry"])
                 duration = int(response["routes"][0]["summary"]["duration"])
                 distance = int(response["routes"][0]["summary"]["distance"] * units_factor)
 

@@ -39,7 +39,7 @@ def _trans(value, index):
     return ~(result >> 1) if comp else (result >> 1), index
 
 
-def _decode(expression, precision=5, is3d=False):
+def _decode(expression, precision=5, is3d=False, order="lnglat"):
     """
     Copyright (c) 2014 Bruno M. Custódio
     Copyright (c) 2016 Frederick Jansen
@@ -62,16 +62,16 @@ def _decode(expression, precision=5, is3d=False):
         lat += lat_change
         lng += lng_change
         if not is3d:
-            coordinates.append((lat / factor, lng / factor))
+            coordinates.append(_get_coords(lat, lng, factor, order=order))
         else:
             z_change, index = _trans(expression, index)
             z += z_change
-            coordinates.append((lat / factor, lng / factor, z / 100))
+            coordinates.append((*_get_coords(lat, lng, factor, order=order), z / 100))
 
     return coordinates
 
 
-def decode_polyline5(polyline, is3d=False):
+def decode_polyline5(polyline, is3d=False, order="lnglat"):
     """Decodes an encoded polyline string which was encoded with a precision of 5.
 
     :param polyline: An encoded polyline, only the geometry.
@@ -81,14 +81,17 @@ def decode_polyline5(polyline, is3d=False):
         support this. Default False.
     :type is3d: bool
 
+    :param order: Specifies the order in which the coordinates are returned.
+                  Options: latlng, lnglat. Defaults to 'lnglat'.
+    :type order: str
+
     :returns: List of decoded coordinates with precision 5.
     :rtype: list
     """
+    return _decode(polyline, precision=5, is3d=is3d, order=order)
 
-    return _decode(polyline, precision=5, is3d=is3d)
 
-
-def decode_polyline6(polyline, is3d=False):
+def decode_polyline6(polyline, is3d=False, order="lnglat"):
     """Decodes an encoded polyline string which was encoded with a precision of 6.
 
     :param polyline: An encoded polyline, only the geometry.
@@ -98,11 +101,15 @@ def decode_polyline6(polyline, is3d=False):
         support this. Default False.
     :type is3d: bool
 
+    :param order: Specifies the order in which the coordinates are returned.
+                  Options: latlng, lnglat. Defaults to 'lnglat'.
+    :type order: str
+
     :returns: List of decoded coordinates with precision 6.
     :rtype: list
     """
 
-    return _decode(polyline, precision=6, is3d=is3d)
+    return _decode(polyline, precision=6, is3d=is3d, order=order)
 
 
 def get_ordinal(number):
@@ -116,3 +123,10 @@ def get_ordinal(number):
         return "rd"
     else:
         return "th"
+
+
+def _get_coords(lat, lng, factor, order="lnglat"):
+    """Determines coordinate order."""
+    if order not in ("lnglat", "latlng"):
+        raise ValueError(f"order must be either 'latlng' or 'lnglat', not {order}.")
+    return (lat / factor, lng / factor) if order == "latlng" else (lng / factor, lat / factor)

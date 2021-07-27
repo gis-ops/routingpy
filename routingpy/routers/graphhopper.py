@@ -388,9 +388,7 @@ class Graphhopper:
         if algorithm == "alternative_route":
             routes = []
             for route in response["paths"]:
-                geometry = [
-                    list(reversed(coord)) for coord in utils.decode_polyline5(route["points"], elevation)
-                ]
+                geometry = utils.decode_polyline5(route["points"], elevation)
                 routes.append(
                     Direction(
                         geometry=geometry,
@@ -401,10 +399,7 @@ class Graphhopper:
                 )
             return Directions(routes, response)
         else:
-            geometry = [
-                list(reversed(coord))
-                for coord in utils.decode_polyline5(response["paths"][0]["points"], elevation)
-            ]
+            geometry = utils.decode_polyline5(response["paths"][0]["points"], elevation)
             return Direction(
                 geometry=geometry,
                 duration=int(response["paths"][0]["time"] / 1000),
