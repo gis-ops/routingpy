@@ -18,20 +18,20 @@
 """
 
 
-def _delimit_list(arg, delimiter=","):
+def delimit_list(arg, delimiter=","):
     """Convert list to delimiter-separated string"""
-    if not _is_list(arg):
+    if not is_list(arg):
         raise TypeError("Expected a list or tuple, " "but got {}".format(type(arg).__name__))
     return delimiter.join(map(str, arg))
 
 
-def _convert_bool(boolean):
+def convert_bool(boolean):
     """Convert to stringified boolean"""
 
     return str(boolean).lower()
 
 
-def _format_float(arg):
+def format_float(arg):
     """Formats a float value to be as short as possible.
 
     Trims extraneous trailing zeros and period to give API
@@ -54,7 +54,7 @@ def _format_float(arg):
     return "{}".format(round(float(arg), 6)).rstrip("0").rstrip(".")
 
 
-def _is_list(arg):
+def is_list(arg):
     """Checks if arg is list-like."""
     if isinstance(arg, dict):
         return False

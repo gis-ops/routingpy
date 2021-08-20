@@ -5,7 +5,7 @@ repos:
     - id: black
       language_version: python3
       # temp exlude osrm: black fails to reformat for some reason
-      args: [--check, routingpy, tests, --exclude, routingpy/routers/mapbox_osrm.py]
+      args: [routingpy, tests, --exclude, routingpy/routers/mapbox_osrm.py]
 - repo: https://gitlab.com/pycqa/flake8
   rev: 3.9.0  # pick a git hash / tag to point to
   hooks:

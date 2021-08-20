@@ -158,38 +158,13 @@ class OSRM:
         :returns: One or multiple route(s) from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
-
-        coords = convert._delimit_list(
-            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ";"
+        coords = convert.delimit_list(
+            [convert.delimit_list([convert.format_float(f) for f in pair]) for pair in locations], ";"
         )
 
-        params = dict()
-
-        if radiuses:
-            params["radiuses"] = convert._delimit_list(radiuses, ";")
-
-        if bearings:
-            params["bearings"] = convert._delimit_list(
-                [convert._delimit_list(pair) for pair in bearings], ";"
-            )
-
-        if alternatives is not None:
-            params["alternatives"] = convert._convert_bool(alternatives)
-
-        if steps is not None:
-            params["steps"] = convert._convert_bool(steps)
-
-        if continue_straight is not None:
-            params["continue_straight"] = convert._convert_bool(continue_straight)
-
-        if annotations is not None:
-            params["annotations"] = convert._convert_bool(annotations)
-
-        if geometries:
-            params["geometries"] = geometries
-
-        if overview is not None:
-            params["overview"] = convert._convert_bool(overview)
+        params = self.get_direction_params(
+            radiuses, bearings, alternatives, steps, continue_straight, annotations, geometries, overview
+        )
 
         return self._parse_direction_json(
             self.client._request(
@@ -198,6 +173,47 @@ class OSRM:
             alternatives,
             geometries,
         )
+
+    @staticmethod
+    def get_direction_params(
+        radiuses=None,
+        bearings=None,
+        alternatives=None,
+        steps=None,
+        continue_straight=None,
+        annotations=None,
+        geometries=None,
+        overview=None,
+    ):
+        params = dict()
+
+        if radiuses:
+            params["radiuses"] = convert.delimit_list(radiuses, ";")
+
+        if bearings:
+            params["bearings"] = convert.delimit_list(
+                [convert.delimit_list(pair) for pair in bearings], ";"
+            )
+
+        if alternatives is not None:
+            params["alternatives"] = convert.convert_bool(alternatives)
+
+        if steps is not None:
+            params["steps"] = convert.convert_bool(steps)
+
+        if continue_straight is not None:
+            params["continue_straight"] = convert.convert_bool(continue_straight)
+
+        if annotations is not None:
+            params["annotations"] = convert.convert_bool(annotations)
+
+        if geometries:
+            params["geometries"] = geometries
+
+        if overview is not None:
+            params["overview"] = convert.convert_bool(overview)
+
+        return params
 
     @staticmethod
     def _parse_direction_json(response, alternatives, geometry_format):
@@ -252,7 +268,7 @@ class OSRM:
         sources=None,
         destinations=None,
         dry_run=None,
-        annotations=["duration", "distance"],
+        annotations=("duration", "distance"),
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
@@ -306,26 +322,32 @@ class OSRM:
            Add annotations parameter to get both distance and duration
         """
 
-        coords = convert._delimit_list(
-            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ";"
+        coords = convert.delimit_list(
+            [convert.delimit_list([convert.format_float(f) for f in pair]) for pair in locations], ";"
         )
 
-        params = dict()
-
-        if sources:
-            params["sources"] = convert._delimit_list(sources, ";")
-
-        if destinations:
-            params["destinations"] = convert._delimit_list(destinations, ";")
-
-        if annotations:
-            params["annotations"] = convert._delimit_list(annotations)
+        params = self.get_matrix_params(sources, destinations, annotations)
 
         return self._parse_matrix_json(
             self.client._request(
                 "/table/v1/" + profile + "/" + coords, get_params=params, dry_run=dry_run
             )
         )
+
+    @staticmethod
+    def get_matrix_params(sources=None, destinations=None, annotations=("duration", "distance")):
+        params = dict()
+
+        if sources:
+            params["sources"] = convert.delimit_list(sources, ";")
+
+        if destinations:
+            params["destinations"] = convert.delimit_list(destinations, ";")
+
+        if annotations:
+            params["annotations"] = convert.delimit_list(annotations)
+
+        return params
 
     @staticmethod
     def _parse_matrix_json(response):

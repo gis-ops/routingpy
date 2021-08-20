@@ -168,19 +168,19 @@ class HereMaps:
             here_waypoint = ["geo"]
             if self.waypoint_type is not None and self.stopover_duration is not None:
                 here_waypoint.append(
-                    convert._delimit_list([self.waypoint_type, self.stopover_duration], ",")
+                    convert.delimit_list([self.waypoint_type, self.stopover_duration], ",")
                 )
             elif self.waypoint_type is not None:
                 here_waypoint.append(self.waypoint_type)
 
-            position = convert._delimit_list(
-                [convert._format_float(f) for f in list(reversed(self.position))], ","
+            position = convert.delimit_list(
+                [convert.format_float(f) for f in list(reversed(self.position))], ","
             )
             position += ";" + self.transit_radius
             position += ";" + self.user_label
             position += ";" + self.heading
             here_waypoint.append(position)
-            return convert._delimit_list(here_waypoint, "!")
+            return convert.delimit_list(here_waypoint, "!")
 
     class RoutingMode(object):
         """
@@ -229,9 +229,9 @@ class HereMaps:
             if self.features is not None:
                 get_features = []
                 for f, w in self.features.items():
-                    get_features.append(convert._delimit_list([f, str(w)], ":"))
-                routing_mode.append(convert._delimit_list(get_features, ","))
-            return convert._delimit_list(routing_mode, ";")
+                    get_features.append(convert.delimit_list([f, str(w)], ":"))
+                routing_mode.append(convert.delimit_list(get_features, ","))
+            return convert.delimit_list(routing_mode, ";")
 
     def directions(  # noqa: C901
         self,
@@ -609,12 +609,12 @@ class HereMaps:
             params["requestId"] = request_id
 
         if avoid_areas is not None:
-            params["avoidAreas"] = convert._delimit_list(
+            params["avoidAreas"] = convert.delimit_list(
                 [
-                    convert._delimit_list(
+                    convert.delimit_list(
                         [
-                            convert._delimit_list(
-                                [convert._format_float(f) for f in list(reversed(pair))], ","
+                            convert.delimit_list(
+                                [convert.format_float(f) for f in list(reversed(pair))], ","
                             )
                             for pair in bounding_box
                         ],
@@ -626,25 +626,25 @@ class HereMaps:
             )
 
         if avoid_links is not None:
-            params["avoidLinks"] = convert._delimit_list(avoid_links, ",")
+            params["avoidLinks"] = convert.delimit_list(avoid_links, ",")
 
         if avoid_seasonal_closures is not None:
-            params["avoidSeasonalClosures"] = convert._convert_bool(avoid_seasonal_closures)
+            params["avoidSeasonalClosures"] = convert.convert_bool(avoid_seasonal_closures)
 
         if avoid_turns is not None:
             params["avoidTurns"] = avoid_turns
 
         if allowed_zones is not None:
-            params["allowedZones"] = convert._delimit_list(allowed_zones, ",")
+            params["allowedZones"] = convert.delimit_list(allowed_zones, ",")
 
         if exclude_zones is not None:
-            params["excludeZones"] = convert._delimit_list(exclude_zones, ",")
+            params["excludeZones"] = convert.delimit_list(exclude_zones, ",")
 
         if exclude_zone_types is not None:
-            params["excludeZoneTypes"] = convert._delimit_list(exclude_zone_types, ",")
+            params["excludeZoneTypes"] = convert.delimit_list(exclude_zone_types, ",")
 
         if exclude_countries is not None:
-            params["excludeCountries"] = convert._delimit_list(exclude_countries, ",")
+            params["excludeCountries"] = convert.delimit_list(exclude_countries, ",")
 
         if departure is not None:
             params["departure"] = departure
@@ -658,9 +658,9 @@ class HereMaps:
             params["metricSystem"] = metric_system
 
         if view_bounds is not None:
-            params["viewBounds"] = convert._delimit_list(
+            params["viewBounds"] = convert.delimit_list(
                 [
-                    convert._delimit_list([convert._format_float(f) for f in list(reversed(pair))], ",")
+                    convert.delimit_list([convert.format_float(f) for f in list(reversed(pair))], ",")
                     for pair in view_bounds
                 ],
                 ";",
@@ -681,25 +681,25 @@ class HereMaps:
             params["jsonCallback"] = json_callback
 
         if representation is not None:
-            params["representation"] = convert._delimit_list(representation, ",")
+            params["representation"] = convert.delimit_list(representation, ",")
 
         if route_attributes is not None:
-            params["routeAttributes"] = convert._delimit_list(route_attributes, ",")
+            params["routeAttributes"] = convert.delimit_list(route_attributes, ",")
 
         if leg_attributes is not None:
-            params["legAttributes"] = convert._delimit_list(leg_attributes, ",")
+            params["legAttributes"] = convert.delimit_list(leg_attributes, ",")
 
         if maneuver_attributes is not None:
-            params["maneuverAttributes"] = convert._delimit_list(maneuver_attributes, ",")
+            params["maneuverAttributes"] = convert.delimit_list(maneuver_attributes, ",")
 
         if link_attributes is not None:
-            params["linkAttributes"] = convert._delimit_list(link_attributes, ",")
+            params["linkAttributes"] = convert.delimit_list(link_attributes, ",")
 
         if line_attributes is not None:
-            params["lineAttributes"] = convert._delimit_list(line_attributes, ",")
+            params["lineAttributes"] = convert.delimit_list(line_attributes, ",")
 
         if generalization_tolerances is not None:
-            params["generalizationTolerances"] = convert._delimit_list(generalization_tolerances, ",")
+            params["generalizationTolerances"] = convert.delimit_list(generalization_tolerances, ",")
 
         if vehicle_type is not None:
             params["vehicleType"] = vehicle_type
@@ -711,7 +711,7 @@ class HereMaps:
             params["maxNumberOfChanges"] = max_number_of_changes
 
         if avoid_transport_types is not None:
-            params["avoidTransportTypes"] = convert._delimit_list(avoid_transport_types, ",")
+            params["avoidTransportTypes"] = convert.delimit_list(avoid_transport_types, ",")
 
         if walk_time_multiplier is not None:
             params["walkTimeMultiplier"] = walk_time_multiplier
@@ -723,7 +723,7 @@ class HereMaps:
             params["walkRadius"] = walk_radius
 
         if combine_change is not None:
-            params["combineChange"] = convert._convert_bool(combine_change)
+            params["combineChange"] = convert.convert_bool(combine_change)
 
         if truck_type is not None:
             params["truckType"] = truck_type
@@ -732,7 +732,7 @@ class HereMaps:
             params["trailersCount"] = trailers_count
 
         if shipped_hazardous_goods is not None:
-            params["shippedHazardousGoods"] = convert._delimit_list(shipped_hazardous_goods, ",")
+            params["shippedHazardousGoods"] = convert.delimit_list(shipped_hazardous_goods, ",")
 
         if limited_weight is not None:
             params["limitedWeight"] = limited_weight
@@ -750,13 +750,13 @@ class HereMaps:
             params["length"] = length
 
         if tunnel_category is not None:
-            params["tunnelCategory"] = convert._delimit_list(tunnel_category, ",")
+            params["tunnelCategory"] = convert.delimit_list(tunnel_category, ",")
 
         if truck_restriction_penalty is not None:
             params["truckRestrictionPenalty"] = truck_restriction_penalty
 
         if return_elevation is not None:
-            params["returnElevation"] = convert._convert_bool(return_elevation)
+            params["returnElevation"] = convert.convert_bool(return_elevation)
 
         if consumption_model is not None:
             params["consumptionModel"] = consumption_model
@@ -769,7 +769,7 @@ class HereMaps:
 
         return self._parse_direction_json(
             self.client._request(
-                convert._delimit_list(["/calculateroute", format], "."),
+                convert.delimit_list(["/calculateroute", format], "."),
                 get_params=params,
                 dry_run=dry_run,
             ),
@@ -1004,7 +1004,7 @@ class HereMaps:
             params["mode"] = profile.make_routing_mode()
 
         if intervals is not None:
-            params["range"] = convert._delimit_list(intervals, ",")
+            params["range"] = convert.delimit_list(intervals, ",")
 
         if interval_type is not None:
             params["rangeType"] = interval_type
@@ -1015,7 +1015,7 @@ class HereMaps:
             params["arrival"] = arrival
 
         if single_component is not None:
-            params["singleComponent"] = convert._convert_bool(single_component)
+            params["singleComponent"] = convert.convert_bool(single_component)
 
         if max_points is not None:
             params["maxPoints"] = max_points
@@ -1036,7 +1036,7 @@ class HereMaps:
             params["trailersCount"] = trailers_count
 
         if shipped_hazardous_goods is not None:
-            params["shippedHazardousGoods"] = convert._delimit_list(shipped_hazardous_goods, ",")
+            params["shippedHazardousGoods"] = convert.delimit_list(shipped_hazardous_goods, ",")
 
         if limited_weight is not None:
             params["limitedWeight"] = limited_weight
@@ -1054,7 +1054,7 @@ class HereMaps:
             params["length"] = length
 
         if tunnel_category is not None:
-            params["tunnelCategory"] = convert._delimit_list(tunnel_category, ",")
+            params["tunnelCategory"] = convert.delimit_list(tunnel_category, ",")
 
         if consumption_model is not None:
             params["consumptionModel"] = consumption_model
@@ -1067,7 +1067,7 @@ class HereMaps:
 
         return self._parse_isochrone_json(
             self.client._request(
-                convert._delimit_list(["/calculateisoline", format], "."),
+                convert.delimit_list(["/calculateisoline", format], "."),
                 get_params=params,
                 dry_run=dry_run,
             ),
@@ -1291,12 +1291,12 @@ class HereMaps:
             params["searchRange"] = search_range
 
         if avoid_areas is not None:
-            params["avoidAreas"] = convert._delimit_list(
+            params["avoidAreas"] = convert.delimit_list(
                 [
-                    convert._delimit_list(
+                    convert.delimit_list(
                         [
-                            convert._delimit_list(
-                                [convert._format_float(f) for f in list(reversed(pair))], ","
+                            convert.delimit_list(
+                                [convert.format_float(f) for f in list(reversed(pair))], ","
                             )
                             for pair in bounding_box
                         ],
@@ -1308,22 +1308,22 @@ class HereMaps:
             )
 
         if avoid_links is not None:
-            params["avoidLinks"] = convert._delimit_list(avoid_links, ",")
+            params["avoidLinks"] = convert.delimit_list(avoid_links, ",")
 
         if avoid_turns is not None:
             params["avoidTurns"] = avoid_turns
 
         if exclude_countries is not None:
-            params["excludeCountries"] = convert._delimit_list(exclude_countries, ",")
+            params["excludeCountries"] = convert.delimit_list(exclude_countries, ",")
 
         if departure is not None:
             params["departure"] = departure.isoformat()
 
         if matrix_attributes is not None:
-            params["matrixAttributes"] = convert._delimit_list(matrix_attributes, ",")
+            params["matrixAttributes"] = convert.delimit_list(matrix_attributes, ",")
 
         if summary_attributes is not None:
-            params["summaryAttributes"] = convert._delimit_list(summary_attributes, ",")
+            params["summaryAttributes"] = convert.delimit_list(summary_attributes, ",")
 
         if truck_type is not None:
             params["truckType"] = truck_type
@@ -1332,7 +1332,7 @@ class HereMaps:
             params["trailersCount"] = trailers_count
 
         if shipped_hazardous_goods is not None:
-            params["shippedHazardousGoods"] = convert._delimit_list(shipped_hazardous_goods, ",")
+            params["shippedHazardousGoods"] = convert.delimit_list(shipped_hazardous_goods, ",")
 
         if limited_weight is not None:
             params["limitedWeight"] = limited_weight
@@ -1350,14 +1350,14 @@ class HereMaps:
             params["length"] = length
 
         if tunnel_category is not None:
-            params["tunnelCategory"] = convert._delimit_list(tunnel_category, ",")
+            params["tunnelCategory"] = convert.delimit_list(tunnel_category, ",")
 
         if speed_profile is not None:
             params["speedProfile"] = speed_profile
 
         return self._parse_matrix_json(
             self.client._request(
-                convert._delimit_list(["/calculatematrix", format], "."),
+                convert.delimit_list(["/calculatematrix", format], "."),
                 get_params=params,
                 dry_run=dry_run,
             )
@@ -1411,8 +1411,8 @@ class HereMaps:
                 if isinstance(locations, self.Waypoint):
                     locations.append(locations._make_waypoint())
                 elif isinstance(locations, (list, tuple)):
-                    wp = "geo!" + convert._delimit_list(
-                        [convert._format_float(f) for f in list(reversed(coord))], ","
+                    wp = "geo!" + convert.delimit_list(
+                        [convert.format_float(f) for f in list(reversed(coord))], ","
                     )
                     locations.append(wp)
                 else:
@@ -1424,8 +1424,8 @@ class HereMaps:
 
         # Isochrones
         elif isinstance(coordinates[0], float):
-            center = "geo!" + convert._delimit_list(
-                [convert._format_float(f) for f in list(reversed(coordinates))], ","
+            center = "geo!" + convert.delimit_list(
+                [convert.format_float(f) for f in list(reversed(coordinates))], ","
             )
             locations.append(center)
         # Isochrones using waypoint class

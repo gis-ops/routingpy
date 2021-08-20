@@ -277,7 +277,7 @@ class Graphhopper:
         params = [("vehicle", profile)]
 
         for coordinate in locations:
-            coord_latlng = reversed([convert._format_float(f) for f in coordinate])
+            coord_latlng = reversed([convert.format_float(f) for f in coordinate])
             params.append(("point", ",".join(coord_latlng)))
 
         if self.key is not None:
@@ -287,38 +287,38 @@ class Graphhopper:
             params.append(("type", format))
 
         if optimize is not None:
-            params.append(("optimize", convert._convert_bool(optimize)))
+            params.append(("optimize", convert.convert_bool(optimize)))
 
         if instructions is not None:
-            params.append(("instructions", convert._convert_bool(instructions)))
+            params.append(("instructions", convert.convert_bool(instructions)))
 
         if locale is not None:
             params.append(("locale", locale))
 
         if elevation is not None:
-            params.append(("elevation", convert._convert_bool(elevation)))
+            params.append(("elevation", convert.convert_bool(elevation)))
 
         if points_encoded is not None:
-            params.append(("points_encoded", convert._convert_bool(points_encoded)))
+            params.append(("points_encoded", convert.convert_bool(points_encoded)))
 
         if calc_points is not None:
-            params.append(("calc_points", convert._convert_bool(calc_points)))
+            params.append(("calc_points", convert.convert_bool(calc_points)))
 
         if debug is not None:
-            params.append(("debug", convert._convert_bool(debug)))
+            params.append(("debug", convert.convert_bool(debug)))
 
         if point_hint is not None:
             for hint in point_hint:
                 params.append(("point_hint", hint))
 
         if snap_prevention:
-            params.append(("snap_prevention", convert._delimit_list(snap_prevention)))
+            params.append(("snap_prevention", convert.delimit_list(snap_prevention)))
 
         if turn_costs:
-            params.append(("turn_costs", convert._convert_bool(turn_costs)))
+            params.append(("turn_costs", convert.convert_bool(turn_costs)))
 
         if curb_side:
-            params.append(("curb_side", convert._delimit_list(curb_side)))
+            params.append(("curb_side", convert.delimit_list(curb_side)))
 
         ### all below params will only work if ch is disabled
 
@@ -326,25 +326,25 @@ class Graphhopper:
             params.extend([("details", detail) for detail in details])
 
         if ch_disable is not None:
-            params.append(("ch.disable", convert._convert_bool(ch_disable)))
+            params.append(("ch.disable", convert.convert_bool(ch_disable)))
 
         if weighting is not None:
             params.append(("weighting", weighting))
 
         if heading is not None:
-            params.append(("heading", convert._delimit_list(heading)))
+            params.append(("heading", convert.delimit_list(heading)))
 
         if heading_penalty is not None:
             params.append(("heading_penalty", heading_penalty))
 
         if pass_through is not None:
-            params.append(("pass_through", convert._convert_bool(pass_through)))
+            params.append(("pass_through", convert.convert_bool(pass_through)))
 
         if block_area is not None:
             params.append(("block_area", block_area))
 
         if avoid is not None:
-            params.append(("avoid", convert._delimit_list(avoid, ";")))
+            params.append(("avoid", convert.delimit_list(avoid, ";")))
 
         if algorithm is not None:
 
@@ -461,7 +461,7 @@ class Graphhopper:
 
         params = [("vehicle", profile), ("type", type)]
 
-        if convert._is_list(intervals):
+        if convert.is_list(intervals):
             if interval_type in (None, "time"):
                 params.append(("time_limit", intervals[0]))
             elif interval_type == "distance":
@@ -469,7 +469,7 @@ class Graphhopper:
         else:
             raise TypeError("Parameter range={} must be of type list or tuple".format(range))
 
-        center = [convert._format_float(f) for f in locations]
+        center = [convert.format_float(f) for f in locations]
         center.reverse()
         params.append(("point", ",".join(center)))
 
@@ -480,10 +480,10 @@ class Graphhopper:
             params.append(("buckets", buckets))
 
         if reverse_flow is not None:
-            params.append(("reverse_flow", convert._convert_bool(reverse_flow)))
+            params.append(("reverse_flow", convert.convert_bool(reverse_flow)))
 
         if debug is not None:
-            params.append(("debug", convert._convert_bool(debug)))
+            params.append(("debug", convert.convert_bool(debug)))
 
         return self._parse_isochrone_json(
             self.client._request("/isochrone", get_params=params, dry_run=dry_run),
@@ -566,7 +566,7 @@ class Graphhopper:
             params.append(("key", self.key))
 
         if sources is None and destinations is None:
-            locations = (reversed([convert._format_float(f) for f in coord]) for coord in locations)
+            locations = (reversed([convert.format_float(f) for f in coord]) for coord in locations)
             params.extend([("point", ",".join(coord)) for coord in locations])
 
         else:
@@ -593,11 +593,11 @@ class Graphhopper:
                 # Raised when destinations == None
                 pass
 
-            sources_out = (reversed([convert._format_float(f) for f in coord]) for coord in sources_out)
+            sources_out = (reversed([convert.format_float(f) for f in coord]) for coord in sources_out)
             params.extend([("from_point", ",".join(coord)) for coord in sources_out])
 
             destinations_out = (
-                reversed([convert._format_float(f) for f in coord]) for coord in destinations_out
+                reversed([convert.format_float(f) for f in coord]) for coord in destinations_out
             )
             params.extend([("to_point", ",".join(coord)) for coord in destinations_out])
 
@@ -606,7 +606,7 @@ class Graphhopper:
                 params.append(("out_array", e))
 
         if debug is not None:
-            params.append(("debug", convert._convert_bool(debug)))
+            params.append(("debug", convert.convert_bool(debug)))
 
         return self._parse_matrix_json(
             self.client._request("/matrix", get_params=params, dry_run=dry_run),

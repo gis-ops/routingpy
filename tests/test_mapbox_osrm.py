@@ -117,7 +117,7 @@ class MapboxOSRMTest(_test.TestCase):
             responses.GET,
             "https://api.mapbox.com/isochrone/v1/mapbox/{}/{}".format(
                 query["profile"],
-                convert._delimit_list(query["locations"]),
+                convert.delimit_list(query["locations"]),
             ),
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]["isochrones"],
@@ -143,7 +143,7 @@ class MapboxOSRMTest(_test.TestCase):
     @responses.activate
     def test_full_matrix(self):
         query = ENDPOINTS_QUERIES[self.name]["matrix"]
-        coords = convert._delimit_list([convert._delimit_list(pair) for pair in query["locations"]], ";")
+        coords = convert.delimit_list([convert.delimit_list(pair) for pair in query["locations"]], ";")
 
         responses.add(
             responses.GET,
@@ -169,7 +169,7 @@ class MapboxOSRMTest(_test.TestCase):
     @responses.activate
     def test_few_sources_destinations_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["matrix"])
-        coords = convert._delimit_list([convert._delimit_list(pair) for pair in query["locations"]], ";")
+        coords = convert.delimit_list([convert.delimit_list(pair) for pair in query["locations"]], ";")
 
         query["sources"] = [1, 2]
         query["destinations"] = [0, 2]

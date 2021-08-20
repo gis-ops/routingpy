@@ -24,7 +24,7 @@ class UtilsTest(_test.TestCase):  # noqa: E741
     def test_delimit_list(self):
 
         l = [(8.68864, 49.42058), (8.68092, 49.41578)]  # noqa: E741
-        s = convert._delimit_list([convert._delimit_list(pair, ",") for pair in l], "|")
+        s = convert.delimit_list([convert.delimit_list(pair, ",") for pair in l], "|")
         self.assertEqual(s, "8.68864,49.42058|8.68092,49.41578")
 
     def test_delimit_list_error(self):
@@ -32,4 +32,4 @@ class UtilsTest(_test.TestCase):  # noqa: E741
         falses = ["8", 8, {"a": "b", 3: "a", 4: 4}]
         for f in falses:
             with self.assertRaises(TypeError):
-                convert._delimit_list(f)
+                convert.delimit_list(f)
