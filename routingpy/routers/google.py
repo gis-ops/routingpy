@@ -163,7 +163,7 @@ class Google:
 
             waypoint = ""
             if self.waypoint_type == "coords":
-                waypoint += convert._delimit_list(list(reversed(self.position)))
+                waypoint += convert.delimit_list(list(reversed(self.position)))
             elif self.waypoint_type == "place_id":
                 waypoint += self.waypoint_type + ":" + self.position
             elif self.waypoint_type == "enc":
@@ -261,12 +261,12 @@ class Google:
 
         origin, destination = locations[0], locations[-1]
         if isinstance(origin, (list, tuple)):
-            params["origin"] = convert._delimit_list(list(reversed(origin)))
+            params["origin"] = convert.delimit_list(list(reversed(origin)))
         elif isinstance(origin, self.WayPoint):
             raise TypeError("The first and last locations must be list/tuple of [lon, lat]")
 
         if isinstance(destination, (list, tuple)):
-            params["destination"] = convert._delimit_list(list(reversed(destination)))
+            params["destination"] = convert.delimit_list(list(reversed(destination)))
         elif isinstance(origin, self.WayPoint):
             raise TypeError("The first and last locations must be list/tuple of [lon, lat]")
 
@@ -275,22 +275,22 @@ class Google:
             s = slice(1, -1)
             for coord in locations[s]:
                 if isinstance(coord, (list, tuple)):
-                    waypoints.append(convert._delimit_list(list(reversed(coord))))
+                    waypoints.append(convert.delimit_list(list(reversed(coord))))
                 elif isinstance(coord, self.WayPoint):
                     waypoints.append(coord.make_waypoint())
             if optimize:
                 waypoints.insert(0, "optimize:true")
 
-            params["waypoints"] = convert._delimit_list(waypoints, "|")
+            params["waypoints"] = convert.delimit_list(waypoints, "|")
 
         if self.key is not None:
             params["key"] = self.key
 
         if alternatives is not None:
-            params["alternatives"] = convert._convert_bool(alternatives)
+            params["alternatives"] = convert.convert_bool(alternatives)
 
         if avoid:
-            params["avoid"] = convert._delimit_list(avoid, "|")
+            params["avoid"] = convert.delimit_list(avoid, "|")
 
         if language:
             params["language"] = language
@@ -314,7 +314,7 @@ class Google:
             params["traffic_model"] = traffic_model
 
         if transit_mode:
-            params["transit_mode"] = convert._delimit_list(transit_mode, "|")
+            params["transit_mode"] = convert.delimit_list(transit_mode, "|")
 
         if transit_routing_preference:
             params["transit_routing_preference"] = transit_routing_preference
@@ -462,7 +462,7 @@ class Google:
         waypoints = []
         for coord in locations:
             if isinstance(coord, (list, tuple)):
-                waypoints.append(convert._delimit_list(list(reversed(coord))))
+                waypoints.append(convert.delimit_list(list(reversed(coord))))
             elif isinstance(coord, self.WayPoint):
                 waypoints.append(coord.make_waypoint())
 
@@ -471,20 +471,20 @@ class Google:
             sources_coords = itemgetter(*sources)(sources_coords)
             if not isinstance(sources_coords, (list, tuple)):
                 sources_coords = [sources_coords]
-        params["origins"] = convert._delimit_list(sources_coords, "|")
+        params["origins"] = convert.delimit_list(sources_coords, "|")
 
         destinations_coords = waypoints
         if destinations is not None:
             destinations_coords = itemgetter(*destinations)(destinations_coords)
             if not isinstance(destinations_coords, (list, tuple)):
                 destinations_coords = [destinations_coords]
-        params["destinations"] = convert._delimit_list(destinations_coords, "|")
+        params["destinations"] = convert.delimit_list(destinations_coords, "|")
 
         if self.key is not None:
             params["key"] = self.key
 
         if avoid:
-            params["avoid"] = convert._delimit_list(avoid, "|")
+            params["avoid"] = convert.delimit_list(avoid, "|")
 
         if language:
             params["language"] = language
@@ -505,7 +505,7 @@ class Google:
             params["traffic_model"] = traffic_model
 
         if transit_mode:
-            params["transit_mode"] = convert._delimit_list(transit_mode, "|")
+            params["transit_mode"] = convert.delimit_list(transit_mode, "|")
 
         if transit_routing_preference:
             params["transit_routing_preference"] = transit_routing_preference

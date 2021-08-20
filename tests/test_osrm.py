@@ -37,7 +37,7 @@ class OSRMTest(_test.TestCase):
     def test_full_directions(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
         query["alternatives"] = False
-        coords = convert._delimit_list([convert._delimit_list(pair) for pair in query["locations"]], ";")
+        coords = convert.delimit_list([convert.delimit_list(pair) for pair in query["locations"]], ";")
 
         responses.add(
             responses.GET,
@@ -64,7 +64,7 @@ class OSRMTest(_test.TestCase):
     @responses.activate
     def test_full_directions_alternatives(self):
         query = ENDPOINTS_QUERIES[self.name]["directions"]
-        coords = convert._delimit_list([convert._delimit_list(pair) for pair in query["locations"]], ";")
+        coords = convert.delimit_list([convert.delimit_list(pair) for pair in query["locations"]], ";")
 
         responses.add(
             responses.GET,
@@ -95,7 +95,7 @@ class OSRMTest(_test.TestCase):
     def test_directions_polyline5(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
         query["geometries"] = "polyline"
-        coords = convert._delimit_list([convert._delimit_list(pair) for pair in query["locations"]], ";")
+        coords = convert.delimit_list([convert.delimit_list(pair) for pair in query["locations"]], ";")
 
         responses.add(
             responses.GET,
@@ -160,7 +160,7 @@ class OSRMTest(_test.TestCase):
     def test_directions_polyline6(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
         query["geometries"] = "polyline6"
-        coords = convert._delimit_list([convert._delimit_list(pair) for pair in query["locations"]], ";")
+        coords = convert.delimit_list([convert.delimit_list(pair) for pair in query["locations"]], ";")
 
         responses.add(
             responses.GET,
@@ -224,7 +224,7 @@ class OSRMTest(_test.TestCase):
     @responses.activate
     def test_full_matrix(self):
         query = ENDPOINTS_QUERIES[self.name]["matrix"]
-        coords = convert._delimit_list([convert._delimit_list(pair) for pair in query["locations"]], ";")
+        coords = convert.delimit_list([convert.delimit_list(pair) for pair in query["locations"]], ";")
 
         responses.add(
             responses.GET,
@@ -250,7 +250,7 @@ class OSRMTest(_test.TestCase):
     @responses.activate
     def test_few_sources_destinations_matrix(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["matrix"])
-        coords = convert._delimit_list([convert._delimit_list(pair) for pair in query["locations"]], ";")
+        coords = convert.delimit_list([convert.delimit_list(pair) for pair in query["locations"]], ";")
 
         query["sources"] = [1, 2]
         query["destinations"] = [0, 2]

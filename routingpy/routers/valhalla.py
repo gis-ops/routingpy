@@ -192,9 +192,44 @@ class Valhalla:
         :rtype: :class:`routingpy.direction.Direction`
         """
 
+        params = self._get_direction_params(
+            locations,
+            profile,
+            preference,
+            options,
+            units,
+            language,
+            directions_type,
+            avoid_locations,
+            avoid_polygons,
+            date_time,
+            id,
+        )
+
+        get_params = {"access_token": self.api_key} if self.api_key else {}
+
+        return self._parse_direction_json(
+            self.client._request("/route", get_params=get_params, post_params=params, dry_run=dry_run),
+            units,
+        )
+
+    @staticmethod
+    def _get_direction_params(
+        locations,
+        profile,
+        preference=None,
+        options=None,
+        units=None,
+        language=None,
+        directions_type=None,
+        avoid_locations=None,
+        avoid_polygons=None,
+        date_time=None,
+        id=None,
+    ):
         params = dict(costing=profile)
 
-        params["locations"] = self._build_locations(locations)
+        params["locations"] = Valhalla._build_locations(locations)
 
         if options or preference:
             params["costing_options"] = dict()
@@ -215,7 +250,7 @@ class Valhalla:
                 params["directions_options"]["directions_type"] = directions_type
 
         if avoid_locations:
-            params["avoid_locations"] = self._build_locations(avoid_locations)
+            params["avoid_locations"] = Valhalla._build_locations(avoid_locations)
 
         if avoid_polygons:
             params["avoid_polygons"] = avoid_polygons
@@ -226,12 +261,7 @@ class Valhalla:
         if id:
             params["id"] = id
 
-        get_params = {"access_token": self.api_key} if self.api_key else {}
-
-        return self._parse_direction_json(
-            self.client._request("/route", get_params=get_params, post_params=params, dry_run=dry_run),
-            units,
-        )
+        return params
 
     @staticmethod
     def _parse_direction_json(response, units):
@@ -350,8 +380,51 @@ class Valhalla:
         :rtype: :class:`routingpy.isochrone.Isochrones`
         """
 
-        location_objects = self._build_locations(locations)
+        params = self._get_isochrone_params(
+            locations,
+            profile,
+            intervals,
+            interval_type,
+            colors,
+            polygons,
+            denoise,
+            generalize,
+            preference,
+            options,
+            avoid_locations,
+            avoid_polygons,
+            date_time,
+            show_locations,
+            id,
+        )
 
+        get_params = {"access_token": self.api_key} if self.api_key else {}
+        return self._parse_isochrone_json(
+            self.client._request(
+                "/isochrone", get_params=get_params, post_params=params, dry_run=dry_run
+            ),
+            intervals,
+            locations,
+        )
+
+    @staticmethod
+    def _get_isochrone_params(  # noqa: C901
+        locations,
+        profile,
+        intervals,
+        interval_type=None,
+        colors=None,
+        polygons=None,
+        denoise=None,
+        generalize=None,
+        preference=None,
+        options=None,
+        avoid_locations=None,
+        avoid_polygons=None,
+        date_time=None,
+        show_locations=None,
+        id=None,
+    ):
         contours = []
         for idx, r in enumerate(intervals):
             key = "time"
@@ -369,7 +442,7 @@ class Valhalla:
             contours.append(d)
 
         params = {
-            "locations": location_objects,
+            "locations": Valhalla._build_locations(locations),
             "costing": profile,
             "contours": contours,
         }
@@ -393,7 +466,7 @@ class Valhalla:
             params["generalize"] = generalize
 
         if avoid_locations:
-            params["avoid_locations"] = self._build_locations(avoid_locations)
+            params["avoid_locations"] = Valhalla._build_locations(avoid_locations)
 
         if avoid_polygons:
             params["avoid_polygons"] = avoid_polygons
@@ -407,14 +480,7 @@ class Valhalla:
         if id:
             params["id"] = id
 
-        get_params = {"access_token": self.api_key} if self.api_key else {}
-        return self._parse_isochrone_json(
-            self.client._request(
-                "/isochrone", get_params=get_params, post_params=params, dry_run=dry_run
-            ),
-            intervals,
-            locations,
-        )
+        return params
 
     @staticmethod
     def _parse_isochrone_json(response, intervals, locations):
@@ -503,11 +569,46 @@ class Valhalla:
         :rtype: :class:`routingpy.matrix.Matrix`
         """
 
+        params = self._get_matrix_params(
+            locations,
+            profile,
+            sources,
+            destinations,
+            preference,
+            options,
+            avoid_locations,
+            avoid_polygons,
+            units,
+            id,
+        )
+
+        get_params = {"access_token": self.api_key} if self.api_key else {}
+
+        return self._parse_matrix_json(
+            self.client._request(
+                "/sources_to_targets", get_params=get_params, post_params=params, dry_run=dry_run
+            ),
+            units,
+        )
+
+    @staticmethod
+    def _get_matrix_params(
+        locations,
+        profile,
+        sources=None,
+        destinations=None,
+        preference=None,
+        options=None,
+        avoid_locations=None,
+        avoid_polygons=None,
+        units=None,
+        id=None,
+    ):
         params = {
             "costing": profile,
         }
 
-        locations = self._build_locations(locations)
+        locations = Valhalla._build_locations(locations)
 
         sources_coords = locations
         if sources is not None:
@@ -533,7 +634,7 @@ class Valhalla:
                 params["costing_options"][profile]["shortest"] = True
 
         if avoid_locations:
-            params["avoid_locations"] = self._build_locations(avoid_locations)
+            params["avoid_locations"] = Valhalla._build_locations(avoid_locations)
 
         if avoid_polygons:
             params["avoid_polygons"] = avoid_polygons
@@ -544,14 +645,7 @@ class Valhalla:
         if id:
             params["id"] = id
 
-        get_params = {"access_token": self.api_key} if self.api_key else {}
-
-        return self._parse_matrix_json(
-            self.client._request(
-                "/sources_to_targets", get_params=get_params, post_params=params, dry_run=dry_run
-            ),
-            units,
-        )
+        return params
 
     @staticmethod
     def _parse_matrix_json(response, units):
@@ -569,17 +663,18 @@ class Valhalla:
 
         return Matrix(durations=durations, distances=distances, raw=response)
 
-    def _build_locations(self, coordinates):
+    @staticmethod
+    def _build_locations(coordinates):
         """Build the locations object for all methods"""
 
         locations = []
 
         # Isochrones only support one coordinate tuple, so check for type of first element
-        if isinstance(coordinates[0], (list, tuple, self.Waypoint)):
+        if isinstance(coordinates[0], (list, tuple, Valhalla.Waypoint)):
             for idx, coord in enumerate(coordinates):
                 if isinstance(coord, (list, tuple)):
                     locations.append({"lon": coord[0], "lat": coord[1]}),
-                elif isinstance(coord, self.Waypoint):
+                elif isinstance(coord, Valhalla.Waypoint):
                     locations.append(coord._make_waypoint())
                 else:
                     raise TypeError(

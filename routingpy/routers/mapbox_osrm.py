@@ -221,66 +221,66 @@ class MapboxOSRM:
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
 
-        coords = convert._delimit_list(
-            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ";"
+        coords = convert.delimit_list(
+            [convert.delimit_list([convert.format_float(f) for f in pair]) for pair in locations], ";"
         )
 
         params = {"coordinates": coords}
 
         if radiuses:
-            params["radiuses"] = convert._delimit_list(radiuses, ";")
+            params["radiuses"] = convert.delimit_list(radiuses, ";")
 
         if bearings:
-            params["bearings"] = convert._delimit_list(
-                [convert._delimit_list(pair) for pair in bearings], ";"
+            params["bearings"] = convert.delimit_list(
+                [convert.delimit_list(pair) for pair in bearings], ";"
             )
 
         if alternatives is not None:
-            params["alternatives"] = convert._convert_bool(alternatives)
+            params["alternatives"] = convert.convert_bool(alternatives)
 
         if steps is not None:
-            params["steps"] = convert._convert_bool(steps)
+            params["steps"] = convert.convert_bool(steps)
 
         if continue_straight is not None:
-            params["continue_straight"] = convert._convert_bool(continue_straight)
+            params["continue_straight"] = convert.convert_bool(continue_straight)
 
         if annotations is not None:
-            params["annotations"] = convert._delimit_list(annotations)
+            params["annotations"] = convert.delimit_list(annotations)
 
         if geometries:
             params["geometries"] = geometries
 
         if overview is not None:
-            params["overview"] = convert._convert_bool(overview)
+            params["overview"] = convert.convert_bool(overview)
 
         if exclude is not None:
             params["exclude"] = exclude
 
         if approaches:
-            params["approaches"] = ";" + convert._delimit_list(approaches, ";")
+            params["approaches"] = ";" + convert.delimit_list(approaches, ";")
 
         if banner_instructions:
-            params["banner_instuctions"] = convert._convert_bool(banner_instructions)
+            params["banner_instuctions"] = convert.convert_bool(banner_instructions)
 
         if language:
             params["language"] = language
 
         if roundabout_exits:
-            params["roundabout_exits"] = convert._convert_bool(roundabout_exits)
+            params["roundabout_exits"] = convert.convert_bool(roundabout_exits)
 
         if voice_instructions:
-            params["voide_instructions"] = convert._convert_bool(voice_instructions)
+            params["voide_instructions"] = convert.convert_bool(voice_instructions)
 
         if voice_units:
             params["voice_units"] = voice_units
 
         if waypoint_names:
-            params["waypoint_names"] = convert._delimit_list(waypoint_names, ";")
+            params["waypoint_names"] = convert.delimit_list(waypoint_names, ";")
 
         if waypoint_targets:
-            params["waypoint_targets"] = ";" + convert._delimit_list(
+            params["waypoint_targets"] = ";" + convert.delimit_list(
                 [
-                    convert._delimit_list([convert._format_float(f) for f in pair])
+                    convert.delimit_list([convert.format_float(f) for f in pair])
                     for pair in waypoint_targets
                 ],
                 ";",
@@ -389,14 +389,14 @@ class MapboxOSRM:
         """
 
         params = {
-            "contours_minutes": convert._delimit_list([int(x / 60) for x in sorted(intervals)], ","),
+            "contours_minutes": convert.delimit_list([int(x / 60) for x in sorted(intervals)], ","),
             "access_token": self.api_key,
         }
 
-        locations_string = convert._delimit_list(locations, ",")
+        locations_string = convert.delimit_list(locations, ",")
 
         if contours_colors:
-            params["contours_colors"] = convert._delimit_list(contours_colors, ",")
+            params["contours_colors"] = convert.delimit_list(contours_colors, ",")
 
         if polygons is not None:
             params["polygons"] = polygons
@@ -483,20 +483,20 @@ class MapboxOSRM:
         :rtype: :class:`routingpy.matrix.Matrix`
         """
 
-        coords = convert._delimit_list(
-            [convert._delimit_list([convert._format_float(f) for f in pair]) for pair in locations], ";"
+        coords = convert.delimit_list(
+            [convert.delimit_list([convert.format_float(f) for f in pair]) for pair in locations], ";"
         )
 
         params = {"access_token": self.api_key}
 
         if sources:
-            params["sources"] = convert._delimit_list(sources, ";")
+            params["sources"] = convert.delimit_list(sources, ";")
 
         if destinations:
-            params["destinations"] = convert._delimit_list(destinations, ";")
+            params["destinations"] = convert.delimit_list(destinations, ";")
 
         if annotations:
-            params["annotations"] = convert._delimit_list(annotations)
+            params["annotations"] = convert.delimit_list(annotations)
 
         if fallback_speed:
             params["fallback_speed"] = str(fallback_speed)
