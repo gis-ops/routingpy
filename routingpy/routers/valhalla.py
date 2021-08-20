@@ -192,7 +192,7 @@ class Valhalla:
         :rtype: :class:`routingpy.direction.Direction`
         """
 
-        params = self._get_direction_params(
+        params = self.get_direction_params(
             locations,
             profile,
             preference,
@@ -214,7 +214,7 @@ class Valhalla:
         )
 
     @staticmethod
-    def _get_direction_params(
+    def get_direction_params(
         locations,
         profile,
         preference=None,
@@ -380,7 +380,7 @@ class Valhalla:
         :rtype: :class:`routingpy.isochrone.Isochrones`
         """
 
-        params = self._get_isochrone_params(
+        params = self.get_isochrone_params(
             locations,
             profile,
             intervals,
@@ -408,7 +408,7 @@ class Valhalla:
         )
 
     @staticmethod
-    def _get_isochrone_params(  # noqa: C901
+    def get_isochrone_params(  # noqa: C901
         locations,
         profile,
         intervals,
@@ -569,7 +569,7 @@ class Valhalla:
         :rtype: :class:`routingpy.matrix.Matrix`
         """
 
-        params = self._get_matrix_params(
+        params = self.get_matrix_params(
             locations,
             profile,
             sources,
@@ -592,7 +592,7 @@ class Valhalla:
         )
 
     @staticmethod
-    def _get_matrix_params(
+    def get_matrix_params(
         locations,
         profile,
         sources=None,

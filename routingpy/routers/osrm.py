@@ -162,7 +162,7 @@ class OSRM:
             [convert.delimit_list([convert.format_float(f) for f in pair]) for pair in locations], ";"
         )
 
-        params = self._get_direction_params(
+        params = self.get_direction_params(
             radiuses, bearings, alternatives, steps, continue_straight, annotations, geometries, overview
         )
 
@@ -175,7 +175,7 @@ class OSRM:
         )
 
     @staticmethod
-    def _get_direction_params(
+    def get_direction_params(
         radiuses=None,
         bearings=None,
         alternatives=None,
@@ -326,7 +326,7 @@ class OSRM:
             [convert.delimit_list([convert.format_float(f) for f in pair]) for pair in locations], ";"
         )
 
-        params = self._get_matrix_params(sources, destinations, annotations)
+        params = self.get_matrix_params(sources, destinations, annotations)
 
         return self._parse_matrix_json(
             self.client._request(
@@ -335,7 +335,7 @@ class OSRM:
         )
 
     @staticmethod
-    def _get_matrix_params(sources=None, destinations=None, annotations=("duration", "distance")):
+    def get_matrix_params(sources=None, destinations=None, annotations=("duration", "distance")):
         params = dict()
 
         if sources:
