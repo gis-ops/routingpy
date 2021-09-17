@@ -9,6 +9,8 @@ on:
       - "setup.py"
       - "pyproject.toml"
       - ".coveragerc"
+    branches:
+      - master
   pull_request:
     branches:
       - master
@@ -47,7 +49,7 @@ jobs:
         echo ::set-output name=versionshort::$(python -c "import sys; print(''.join(str(v) for v in sys.version_info[:2]))")
     - name: Install and set up Poetry
       run: |
-        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
         source $HOME/.poetry/env
         poetry config virtualenvs.in-project true
     - name: Cache dependencies
