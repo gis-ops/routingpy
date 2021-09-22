@@ -17,13 +17,12 @@
 
 from typing import List, Tuple  # noqa: F401
 
-from routingpy.client_base import DEFAULT
-from routingpy.client_default import Client
-from routingpy import convert
-from routingpy import utils
-from routingpy.direction import Direction, Directions
-from routingpy.isochrone import Isochrone, Isochrones
-from routingpy.matrix import Matrix
+from ..client_base import DEFAULT
+from ..client_default import Client
+from .. import convert, utils
+from ..direction import Direction, Directions
+from ..isochrone import Isochrone, Isochrones
+from ..matrix import Matrix
 
 
 class Graphhopper:

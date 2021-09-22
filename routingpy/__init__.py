@@ -29,7 +29,7 @@ Take a look at our `Examples`_ to see how simple you can compare routes from dif
 .. _`Examples`: https://github.com/gis-ops/routing-py#examples
 """
 
-from routingpy.routers import *  # noqa: F401
+from .routers import *  # noqa: F401
 
 # Delete so options is only available over routingpy.routers.options
 del options  # noqa: F821

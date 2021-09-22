@@ -18,12 +18,12 @@
 Core client functionality, common across all API requests.
 """
 
-from routingpy.client_base import DEFAULT
-from routingpy.client_default import Client
-from routingpy import convert, utils
-from routingpy.direction import Direction, Directions
-from routingpy.isochrone import Isochrone, Isochrones
-from routingpy.matrix import Matrix
+from ..client_base import DEFAULT
+from ..client_default import Client
+from .. import convert, utils
+from ..direction import Direction, Directions
+from ..isochrone import Isochrone, Isochrones
+from ..matrix import Matrix
 
 
 class MapboxOSRM:
