@@ -20,12 +20,12 @@ Core client functionality, common across all API requests.
 
 from typing import List, Union  # noqa: F401
 
-from routingpy.client_base import DEFAULT
-from routingpy.client_default import Client
-from routingpy import utils
-from routingpy.direction import Direction
-from routingpy.isochrone import Isochrone, Isochrones
-from routingpy.matrix import Matrix
+from ..client_base import DEFAULT
+from ..client_default import Client
+from .. import utils
+from ..direction import Direction
+from ..isochrone import Isochrone, Isochrones
+from ..matrix import Matrix
 
 from operator import itemgetter
 

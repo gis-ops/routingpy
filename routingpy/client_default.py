@@ -16,8 +16,8 @@
 #
 
 from .client_base import BaseClient, DEFAULT, _RETRIABLE_STATUSES, options
-from routingpy import exceptions
-from routingpy.utils import get_ordinal
+from . import exceptions
+from .utils import get_ordinal
 
 from datetime import datetime
 import json

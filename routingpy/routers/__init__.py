@@ -14,8 +14,8 @@ locations and profile (car, bike, pedestrian etc.), among others (full list here
 .. _`contribution guidelines`: https://github.com/gis-ops/routing-py/blob/master/CONTRIBUTING.md
 .. _here: https://github.com/gis-ops/routing-py#api
 """
-from routingpy.client_base import options  # noqa: F401
-from routingpy.exceptions import RouterNotFound
+from ..client_base import options  # noqa: F401
+from ..exceptions import RouterNotFound
 
 from .openrouteservice import ORS
 from .osrm import OSRM

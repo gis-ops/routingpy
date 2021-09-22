@@ -9,6 +9,8 @@ on:
       - "setup.py"
       - "pyproject.toml"
       - ".coveragerc"
+    branches:
+      - master
   pull_request:
     branches:
       - master

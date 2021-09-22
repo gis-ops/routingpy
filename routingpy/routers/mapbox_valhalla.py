@@ -15,8 +15,8 @@
 # the License.
 
 from .valhalla import Valhalla
-from routingpy.client_base import DEFAULT
-from routingpy.client_default import Client
+from ..client_base import DEFAULT
+from ..client_default import Client
 
 
 class MapboxValhalla(Valhalla):
