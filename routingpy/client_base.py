@@ -209,6 +209,9 @@ class BaseClient(metaclass=ABCMeta):
 
         """
 
+        if not params:
+            return path
+
         if isinstance(params, dict):
             params = sorted(dict(**params).items())
         elif isinstance(params, (list, tuple)):
