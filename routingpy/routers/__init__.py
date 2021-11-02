@@ -25,6 +25,7 @@ from .mapbox_valhalla import MapboxValhalla
 from .mapbox_osrm import MapboxOSRM
 from .google import Google
 from .heremaps import HereMaps
+from .vroom import Vroom
 
 # Provide synonyms
 _SERVICE_TO_ROUTER = {
@@ -43,6 +44,7 @@ _SERVICE_TO_ROUTER = {
     "google": Google,
     "here": HereMaps,
     "heremaps": HereMaps,
+    "vroom": Vroom,
 }
 
 
