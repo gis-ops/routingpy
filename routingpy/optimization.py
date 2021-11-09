@@ -14,47 +14,38 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
+from typing import Optional, List
+
 from routingpy.utils import decode_polyline5
 
 
 class Job:
     def __init__(
         self,
-        id,
-        description=None,
-        location=None,
-        location_index=None,
-        setup=None,
-        service=None,
-        delivery=None,
-        pickup=None,
-        skills=None,
-        priority=None,
-        time_windows=None,
+        id: int,
+        description: Optional[str] = None,
+        location: Optional[List[float]] = None,
+        location_index: Optional[int] = None,
+        setup: Optional[int] = None,
+        service: Optional[int] = None,
+        delivery: Optional[List[int]] = None,
+        pickup: Optional[List[int]] = None,
+        skills: Optional[List[int]] = None,
+        priority: int = None,
+        time_windows: Optional[List[int]] = None,
     ):
         """
         :param id: The job id
-        :type id: int
         :param description: The job's description.
-        :type description: str
         :param location: A coordinates array in the format of [lon, lat]
-        :type location: list of float
         :param location_index: index of relevant row and column in custom matrices
-        :type location_index: int
         :param setup: job setup duration (in seconds; 0 if not specified)
-        :type setup: int
         :param service: job service duration (in seconds; 0 if not specified)
-        :type service: int
         :param delivery: an array of integers describing multidimensional quantities for delivery
-        :type delivery: list of int
         :param pickup: an array of integers describing multidimensional quantities for pickup
-        :type pickup: list of int
         :param skills: an array of integers defining mandatory skills
-        :type skills: list of int
         :param priority: an integer in the [0, 100] range describing priority level (0 if not specified)
-        :type priority: int
         :param time_windows: an array of time_window objects in the format [start, end] describing valid slots for job service start
-        :type time_windows: list of int
         """
         self.id = id
 
@@ -87,37 +78,6 @@ class Job:
 
         if time_windows is not None:
             self.time_windows = time_windows
-
-
-class Shipment:
-    def __init__(self, pickup=None, delivery=None, amount=None, skills=None, priority=None):
-        """
-        :param pickup: A :class:`ShipmentStep` object describing pickup
-        :type pickup: ShipmentStep
-        :param delivery: A :class:`ShipmentStep` object describing delivery
-        :type delivery: ShipmentStep
-        :param amount: An array of integers describing multidimensional quantities
-        :type amount: list of int
-        :param skills: An array of integers defining mandatory skills
-        :type skills: list of int
-        :param priority: An integer in the [0, 100] range describing priority level (0 if not specified)
-        :type priority: int
-        """
-
-        if pickup is not None:
-            self.pickup = pickup
-
-        if delivery is not None:
-            self.delivery = delivery
-
-        if amount is not None:
-            self.amount = amount
-
-        if skills is not None:
-            self.skills = skills
-
-        if priority is not None:
-            self.priority = priority
 
 
 class ShipmentStep:
@@ -168,50 +128,92 @@ class ShipmentStep:
             self.time_windows = time_windows
 
 
+class Shipment:
+    def __init__(
+        self,
+        pickup: Optional[ShipmentStep] = None,
+        delivery: Optional[ShipmentStep] = None,
+        amount: Optional[List[int]] = None,
+        skills: Optional[List[int]] = None,
+        priority: Optional[int] = None,
+    ):
+        """
+        :param pickup: A :class:`ShipmentStep` object describing pickup
+        :param delivery: A :class:`ShipmentStep` object describing delivery
+        :param amount: An array of integers describing multidimensional quantities
+        :param skills: An array of integers defining mandatory skills
+        :param priority: An integer in the [0, 100] range describing priority level (0 if not specified)
+        """
+
+        if pickup is not None:
+            self.pickup = pickup
+
+        if delivery is not None:
+            self.delivery = delivery
+
+        if amount is not None:
+            self.amount = amount
+
+        if skills is not None:
+            self.skills = skills
+
+        if priority is not None:
+            self.priority = priority
+
+
+class Break:
+    def __init__(self, id, time_windows, service=None, description=None):
+        """
+        :param id: The break id.
+        :type id: int
+        :param time_windows: An array of time_window objects in the format [start, end] describing valid slots for break start
+        :type time_windows: list of int
+        :param service: The break duration (in seconds; 0 if not specified)
+        :type service: int
+        :param description: The break's description
+        :type description: str
+        """
+        self.id = id
+        self.time_windows = time_windows
+
+        if service is not None:
+            self.service = service
+
+        if description is not None:
+            self.description = description
+
+
 class Vehicle:
     def __init__(
         self,
-        id,
-        profile=None,
-        description=None,
-        start=None,
-        start_index=None,
-        end=None,
-        end_index=None,
-        capacity=None,
-        skills=None,
-        time_window=None,
-        breaks=None,
-        speed_factor=None,
-        max_tasks=None,
+        id: int,
+        profile: Optional[str] = None,
+        description: Optional[str] = None,
+        start: Optional[List[float]] = None,
+        start_index: Optional[int] = None,
+        end: Optional[List[float]] = None,
+        end_index: Optional[int] = None,
+        capacity: Optional[List[int]] = None,
+        skills: Optional[List[int]] = None,
+        time_window: Optional[List[int]] = None,
+        breaks: Optional[List[Break]] = None,
+        speed_factor: Optional[float] = None,
+        max_tasks: Optional[float] = None,
     ):
         """
         :param id: The vehicle id
-        :type id: int
         :param profile: Routing profile (defaults to car)
-        :type profile: str
         :param description: A string describing this vehicle
-        :type description: str
         :param start: Coordinates array in the form [lon, lat]
-        :type start: list of float
         :param start_index: Index of relevant row and column in custom matrices
-        :type start_index: int
         :param end: Coordinates array in the form [lon, lat]
-        :type end: list of float
         :param end_index: Index of relevant row and column in custom matrices
-        :type end_index: int
         :param capacity: An array of integers describing multidimensional quantities
-        :type capacity: int
         :param skills: An array of integers defining skills
-        :type skills: list of int
         :param time_window: An array of time_window objects in the format [start, end] describing working hours
-        :type time_window: list of int
         :param breaks: An array of :class:`routingpy.optimization.Break` objects
-        :type breaks: list of Break
         :param speed_factor: A double value in the range (0, 5] used to scale all vehicle travel times (defaults to 1.), the respected precision is limited to two digits after the decimal point
-        :type speed_factor: float
         :param max_tasks: An integer defining the maximum number of tasks in a route for this vehicle
-        :type max_tasks: int
         """
         self.id = id
 
@@ -250,49 +252,6 @@ class Vehicle:
 
         if max_tasks is not None:
             self.max_tasks = max_tasks
-
-
-class Break:
-    def __init__(self, id, time_windows, service=None, description=None):
-        """
-        :param id: The break id.
-        :type id: int
-        :param time_windows: An array of time_window objects in the format [start, end] describing valid slots for break start
-        :type time_windows: list of int
-        :param service: The break duration (in seconds; 0 if not specified)
-        :type service: int
-        :param description: The break's description
-        :type description: str
-        """
-        self.id = id
-        self.time_windows = time_windows
-
-        if service is not None:
-            self.service = service
-
-        if description is not None:
-            self.description = description
-
-
-class Optimization:
-    def __init__(self, code=None, error=None, summary=None, unassigned=None, routes=None):
-        """
-        :param code: The response code. Possible values for the status code are: 0 – no error raised; 1 – internal error; 2 – input error; 3 - routing error
-        :type code: int
-        :param error: Error message (present if code is different from 0)
-        :type error: str
-        :param summary: Object summarizing solution indicators
-        :type summary: Summary
-        :param unassigned: Array of objects describing unassigned tasks with their id, type and location (if provided)
-        :type unassigned: list of Unassigned
-        :param routes: array of route objects
-        :type routes: list of Route
-        """
-        self._code = code
-        self._error = error
-        self._summary = summary
-        self._unassigned = unassigned
-        self._routes = routes
 
 
 class Summary:
@@ -359,6 +318,23 @@ class Summary:
 
         if distance is not None:
             self.distance = distance
+
+
+class Unassigned:
+    def __init__(self, id, type, location=None):
+        """
+        :param id: id of the unassigned task
+        :type id: int
+        :param type: Type of the unassigned task
+        :type type: str
+        :param location: Array of coordinates (if provided)
+        :type location: list of float
+        """
+        self.id = id
+        self.type = type
+
+        if location is not None:
+            self.location = location
 
 
 class Route:
@@ -437,50 +413,60 @@ class Route:
             self.distance = distance
 
 
+class Optimization:
+    def __init__(
+        self,
+        code: Optional[int] = None,
+        error: Optional[str] = None,
+        summary: Optional[Summary] = None,
+        unassigned: Optional[List[Unassigned]] = None,
+        routes: Optional[List[Route]] = None,
+    ):
+        """
+        :param code: The response code. Possible values for the status code are: 0 – no error raised; 1 – internal error; 2 – input error; 3 - routing error
+        :param error: Error message (present if code is different from 0)
+        :param summary: Object summarizing solution indicators
+        :param unassigned: Array of objects describing unassigned tasks with their id, type and location (if provided)
+        :param routes: array of route objects
+        """
+        self.code = code
+        self.error = error
+        self.summary = summary
+        self.unassigned = unassigned
+        self.routes = routes
+
+
 class Step:
     def __init__(
         self,
-        type,
-        arrival,
-        duration,
-        service,
-        waiting_time,
-        violations,
-        setup=None,
-        description=None,
-        location=None,
-        id=None,
-        load=None,
-        distance=None,
-        job=None,
+        type: str,
+        arrival: int,
+        duration: int,
+        service: int,
+        waiting_time: int,
+        violations: List[dict],
+        setup: Optional[int] = None,
+        description: Optional[str] = None,
+        location: Optional[List[float]] = None,
+        id: Optional[int] = None,
+        load: Optional[int] = None,
+        distance: Optional[int] = None,
+        job: Optional[int] = None,
     ):
         """
         :param type: A string (either start, job, pickup, delivery, break or end)
-        :type type: str
         :param arrival: Estimated time of arrival at this step
-        :type arrival: int
         :param duration: Cumulated travel time upon arrival at this step (in seconds)
-        :type duration: int
         :param service: Service time at this step
-        :type service: int
         :param waiting_time: Waiting time upon arrival at this step
-        :type waiting_time: int
         :param violations: Array of violation objects for this step
-        :type violations: list of dict
         :param setup: Setup time at this step (in seconds)
-        :type setup: int
         :param description: Step description, if provided in input
-        :type description: str
         :param location: Coordinates array for this step (if provided in input)
-        :type location: list of float
         :param id: id of the task performed at this step, only provided if type value is job, pickup, delivery or break
-        :type id: int
         :param load: Vehicle load after step completion (with capacity constraints)
-        :type load: int
         :param distance: Traveled distance upon arrival at this step (in meters)
-        :type distance: int
         :param job: id of the job performed at this step, only provided if type value is job
-        :type job: int
         """
         self.type = type
         self.arrival = arrival
@@ -509,20 +495,3 @@ class Step:
 
         if job is not None:
             self.job = job
-
-
-class Unassigned:
-    def __init__(self, id, type, location=None):
-        """
-        :param id: id of the unassigned task
-        :type id: int
-        :param type: Type of the unassigned task
-        :type type: str
-        :param location: Array of coordinates (if provided)
-        :type location: list of float
-        """
-        self.id = id
-        self.type = type
-
-        if location is not None:
-            self.location = location
