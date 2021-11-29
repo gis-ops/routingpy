@@ -14,10 +14,12 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
+from datetime import datetime
 from typing import List, Union, Optional
 
 from routingpy.client_base import DEFAULT
 from routingpy.client_default import Client
+from routingpy.exceptions import RouterApiError
 from routingpy.isochrone import Isochrone, Isochrones
 
 
@@ -49,9 +51,8 @@ class OpenTripPlanner:
         self,
         locations: List[float],
         intervals: List[int],
-        profile: Optional[Union[str, List[str]]] = None,
-        date: str = None,
-        time: str = None,
+        profiles: Optional[Union[str, List[str]]] = None,
+        date_time: datetime = None,
         arrive_by: bool = False,  # TODO: check whether param makes sense (if so, keep in mind that toPlace must be specified)
         bike_speed: Optional[float] = None,
         max_time_sec: Optional[int] = None,
@@ -63,12 +64,11 @@ class OpenTripPlanner:
         dry_run: bool = None,
     ) -> Isochrones:
 
-        get_params = self._get_isochrone_params(
+        get_params = self.get_isochrone_params(
             locations,
-            profile,
+            profiles,
             intervals,
-            date,
-            time,
+            date_time,
             arrive_by,
             bike_speed,
             max_time_sec,
@@ -79,7 +79,7 @@ class OpenTripPlanner:
             min_transfer_time,
         )
 
-        return self._parse_isochrone_json(
+        return self.parse_isochrone_json(
             self.client._request(
                 f"/otp/routers/{self.router_id}/isochrone", get_params=get_params, dry_run=dry_run
             ),
@@ -88,12 +88,11 @@ class OpenTripPlanner:
         )
 
     @staticmethod
-    def _get_isochrone_params(
+    def get_isochrone_params(
         locations,
         profile,
         intervals,
-        date,
-        time,
+        date_time,
         arrive_by,
         bike_speed,
         max_time_sec,
@@ -103,17 +102,20 @@ class OpenTripPlanner:
         max_walk_distance,
         min_transfer_time,
     ):
+        locations = list(reversed(locations))
 
-        params = [("fromPlace", locations)]
-        params.extend([("cutoffSec", interval) for interval in intervals])
+        params = [
+            ("fromPlace", locations),
+            ("toPlace", locations),
+            *[("cutoffSec", interval) for interval in intervals],
+        ]
 
         if profile:
-            profiles = profile if type(profile) == str else ",".join(profile)
+            profiles = profile if isinstance(profile, str) else ",".join(profile)
             params.append(("mode", profiles))
-        if date:
-            params.append(("date", date))
-        if time:
-            params.append(("time", time))
+        if date_time:
+            params.append(("date", date_time.strftime("%m-%d-%Y")))
+            params.append(("time", date_time.strftime("%I:%m%p")))
         if arrive_by:
             params.append(("arriveBy", arrive_by))
         if bike_speed:
@@ -131,15 +133,19 @@ class OpenTripPlanner:
         if min_transfer_time:
             params.append(("minTransferTime", min_transfer_time))
 
-        return sorted(params)
+        return params
 
     @staticmethod
-    def _parse_isochrone_json(response, intervals, locations):
+    def parse_isochrone_json(response, intervals, locations):
         if response is None:
             return Isochrones()
 
         isochrones = []
         for idx, feature in enumerate(response["features"]):
+            # some queries give a 200, but don't have any features
+            if not feature["geometry"]:
+                raise RouterApiError(400, "No isochrone found for profile and parameters")
+
             isochrones.append(
                 Isochrone(
                     geometry=feature["geometry"]["coordinates"],
