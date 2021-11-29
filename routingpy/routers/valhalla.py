@@ -290,9 +290,6 @@ class Valhalla:
         generalize=None,
         preference=None,
         options=None,
-        units=None,
-        language=None,
-        directions_type=None,
         avoid_locations=None,
         avoid_polygons=None,
         date_time=None,
@@ -492,7 +489,7 @@ class Valhalla:
             if feature["geometry"]["type"] in ("LineString", "Polygon"):
                 isochrones.append(
                     Isochrone(
-                        geometry=feature["geometry"]["coordinates"],
+                        geometry=feature["geometry"],
                         interval=intervals[idx],
                         center=locations,
                     )
