@@ -20,7 +20,6 @@ Core client functionality, common across all API requests.
 
 from typing import List, Union  # noqa: F401
 
-from ..client_base import DEFAULT
 from ..client_default import Client
 from .. import utils
 from ..direction import Direction
@@ -33,69 +32,41 @@ from operator import itemgetter
 class Valhalla:
     """Performs requests to a Valhalla instance."""
 
-    def __init__(
-        self,
-        base_url,
-        api_key=None,
-        user_agent=None,
-        timeout=DEFAULT,
-        retry_timeout=None,
-        retry_over_query_limit=False,
-        skip_api_error=None,
-        client=Client,
-        **client_kwargs
-    ):
+    def __init__(self, base_url: str, client=Client, **client_kwargs):
         """
         Initializes a Valhalla client.
 
-        :param api_key: Mapbox API key. Required if base_url='https://api.mapbox.com/valhalla/v1'.
-        :type api_key: str
+        Additional keyword arguments are derived from :class:`routingpy.base.BaseClient`:
 
-        :param base_url: The base URL for the request. Defaults to the ORS API
-            server. Should not have a trailing slash.
-        :type base_url: str
+        api_key: Mapbox API key. Required if base_url='https://api.mapbox.com/valhalla/v1'.
 
-        :param user_agent: User Agent to be used when requesting.
+        user_agent: User Agent to be used when requesting.
             Default :attr:`routingpy.routers.options.default_user_agent`.
-        :type user_agent: str
 
-        :param timeout: Combined connect and read timeout for HTTP requests, in
+        timeout: Combined connect and read timeout for HTTP requests, in
             seconds. Specify ``None`` for no timeout. Default :attr:`routingpy.routers.options.default_timeout`.
-        :type timeout: int or None
 
-        :param retry_timeout: Timeout across multiple retriable requests, in
+        retry_timeout: Timeout across multiple retriable requests, in
             seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
-        :type retry_timeout: int
 
-        :param retry_over_query_limit: If True, client will not raise an exception
+        retry_over_query_limit: If True, client will not raise an exception
             on HTTP 429, but instead jitter a sleeping timer to pause between
             requests until HTTP 200 or retry_timeout is reached.
             Default :attr:`routingpy.routers.options.default_retry_over_query_limit`.
-        :type retry_over_query_limit: bool
 
-        :param skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
+        skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
             encountered (e.g. no route found). If False, processing will discontinue and raise an error.
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
-        :type skip_api_error: bool
 
+        :param base_url: The base URL for the request. Defaults to the ORS API
+            server. Should not have a trailing slash.
         :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
-        :type client: abc.ABCMeta
-
-        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
-        :type **client_kwargs: dict
+        :param **client_kwargs: Additional arguments passed to the client, see description.
         """
 
-        self.api_key = api_key
+        self.api_key = client_kwargs.get("api_key")
 
-        self.client = client(
-            base_url,
-            user_agent,
-            timeout,
-            retry_timeout,
-            retry_over_query_limit,
-            skip_api_error,
-            **client_kwargs
-        )
+        self.client = client(base_url, **client_kwargs)
 
     class Waypoint(object):
         """

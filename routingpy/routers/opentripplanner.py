@@ -17,7 +17,6 @@
 from datetime import datetime
 from typing import List, Union, Optional
 
-from routingpy.client_base import DEFAULT
 from routingpy.client_default import Client
 from routingpy.exceptions import RouterApiError
 from routingpy.isochrone import Isochrone, Isochrones
@@ -26,24 +25,44 @@ from routingpy.isochrone import Isochrone, Isochrones
 class OpenTripPlanner:
     def __init__(
         self,
-        base_url,
-        user_agent=None,
-        timeout=DEFAULT,
-        retry_timeout=None,
-        retry_over_query_limit=False,
-        skip_api_error=None,
+        base_url: str,
         client=Client,
         router_id="default",
         **client_kwargs,
     ):
+        """
+        Initializes a OpenTripPlanner client.
+
+        Additional keyword arguments are derived from :class:`routingpy.base.BaseClient`:
+
+        user_agent: User Agent to be used when requesting.
+            Default :attr:`routingpy.routers.options.default_user_agent`.
+
+        timeout: Combined connect and read timeout for HTTP requests, in
+            seconds. Specify ``None`` for no timeout. Default :attr:`routingpy.routers.options.default_timeout`.
+
+        retry_timeout: Timeout across multiple retriable requests, in
+            seconds.  Default :attr:`routingpy.routers.options.default_retry_timeout`.
+
+        retry_over_query_limit: If True, client will not raise an exception
+            on HTTP 429, but instead jitter a sleeping timer to pause between
+            requests until HTTP 200 or retry_timeout is reached.
+            Default :attr:`routingpy.routers.options.default_retry_over_query_limit`.
+
+        skip_api_error: Continue with batch processing if a :class:`routingpy.exceptions.RouterApiError` is
+            encountered (e.g. no route found). If False, processing will discontinue and raise an error.
+            Default :attr:`routingpy.routers.options.default_skip_api_error`.
+
+        :param router_id: The registered router ID. Default 'default'.
+        :param base_url: The base URL for the request. Defaults to the ORS API
+            server. Should not have a trailing slash.
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :param **client_kwargs: Additional arguments passed to the client, see description.
+        """
+
         self.router_id = router_id
         self.client = client(
             base_url,
-            user_agent,
-            timeout,
-            retry_timeout,
-            retry_over_query_limit,
-            skip_api_error,
             **client_kwargs,
         )
 
