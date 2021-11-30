@@ -70,7 +70,7 @@ class OpenTripPlanner:
         self,
         locations: List[float],
         intervals: List[int],
-        profiles: Optional[Union[str, List[str]]] = None,
+        profile: Optional[Union[str, List[str]]] = None,
         date_time: datetime = None,
         arrive_by: bool = False,  # TODO: check whether param makes sense (if so, keep in mind that toPlace must be specified)
         bike_speed: Optional[float] = None,
@@ -85,7 +85,7 @@ class OpenTripPlanner:
 
         get_params = self.get_isochrone_params(
             locations,
-            profiles,
+            profile,
             intervals,
             date_time,
             arrive_by,
