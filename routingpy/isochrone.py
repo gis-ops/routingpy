@@ -22,11 +22,11 @@
 class Isochrones(object):
     """
     Contains a list of :class:`Isochrone`, which can be iterated over or accessed by index. The property ¸`raw`` contains
-    the complete raw response of the isochrones request.
+    the complete raw response of the isochrones request. The isochrones are reverse ordered by ``interval``.
     """
 
     def __init__(self, isochrones=None, geom_type=None, raw=None):
-        self._isochrones = isochrones
+        self._isochrones = sorted(isochrones, key=lambda i: i.interval, reverse=True)
         self._geom_type = geom_type
         self._raw = raw
 

@@ -462,7 +462,7 @@ class Valhalla:
             if geom_type in ("LineString", "Polygon"):
                 isochrones.append(
                     Isochrone(
-                        geometry=feature["geometry"],
+                        geometry=feature["geometry"]["coordinates"],
                         interval=intervals[idx],
                         center=locations,
                     )
