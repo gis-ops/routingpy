@@ -17,9 +17,9 @@
 from datetime import datetime
 from typing import List, Union, Optional
 
-from routingpy.client_default import Client
-from routingpy.exceptions import RouterApiError
-from routingpy.isochrone import Isochrone, Isochrones
+from ..client_default import Client
+from ..exceptions import RouterApiError
+from ..isochrone import Isochrone, Isochrones
 
 
 class OpenTripPlanner:
@@ -173,4 +173,4 @@ class OpenTripPlanner:
                 )
             )
 
-        return Isochrones(isochrones, "Polygon", response)
+        return Isochrones(isochrones, "MultiPolygon", response)

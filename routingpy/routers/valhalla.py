@@ -468,6 +468,7 @@ class Valhalla:
                     )
                 )
 
+        isochrones.sort(key=lambda i: i.interval, reverse=True)
         return Isochrones(isochrones, geom_type, response)
 
     def matrix(

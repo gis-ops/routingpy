@@ -26,7 +26,7 @@ class Isochrones(object):
     """
 
     def __init__(self, isochrones=None, geom_type=None, raw=None):
-        self._isochrones = sorted(isochrones, key=lambda i: i.interval, reverse=True)
+        self._isochrones = isochrones
         self._geom_type = geom_type
         self._raw = raw
 
