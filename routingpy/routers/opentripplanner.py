@@ -173,4 +173,4 @@ class OpenTripPlanner:
                 )
             )
 
-        return Isochrones(isochrones, response)
+        return Isochrones(isochrones, "Polygon", response)

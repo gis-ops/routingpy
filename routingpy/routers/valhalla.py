@@ -456,8 +456,10 @@ class Valhalla:
             return Isochrones()
 
         isochrones = []
+        geom_type = None
         for idx, feature in enumerate(reversed(response["features"])):
-            if feature["geometry"]["type"] in ("LineString", "Polygon"):
+            geom_type = feature["geometry"]["type"]
+            if geom_type in ("LineString", "Polygon"):
                 isochrones.append(
                     Isochrone(
                         geometry=feature["geometry"],
@@ -466,7 +468,7 @@ class Valhalla:
                     )
                 )
 
-        return Isochrones(isochrones, response)
+        return Isochrones(isochrones, geom_type, response)
 
     def matrix(
         self,

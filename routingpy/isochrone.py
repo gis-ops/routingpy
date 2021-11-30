@@ -25,8 +25,9 @@ class Isochrones(object):
     the complete raw response of the isochrones request.
     """
 
-    def __init__(self, isochrones=None, raw=None):
+    def __init__(self, isochrones=None, geom_type=None, raw=None):
         self._isochrones = isochrones
+        self._geom_type = geom_type
         self._raw = raw
 
     @property
@@ -38,8 +39,15 @@ class Isochrones(object):
         """
         return self._raw
 
+    @property
+    def geom_type(self) -> str:
+        """
+        Returns the isochrones' geometry type as OGC string.
+        """
+        return self._geom_type
+
     def __repr__(self):  # pragma: no cover
-        return "Isochrones({}, {})".format(self._isochrones, self.raw)
+        return "Isochrones({}, {}, {})".format(self._isochrones, self._geom_type, self.raw)
 
     def __getitem__(self, item):
         return self._isochrones[item]
