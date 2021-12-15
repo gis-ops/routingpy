@@ -37,6 +37,7 @@ class OSRMTest(_test.TestCase):
     def test_full_directions(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
         query["alternatives"] = False
+        query["fallback_speed"] = 42
         coords = convert.delimit_list([convert.delimit_list(pair) for pair in query["locations"]], ";")
 
         responses.add(
@@ -52,7 +53,7 @@ class OSRMTest(_test.TestCase):
         self.assertURLEqual(
             "https://router.project-osrm.org/route/v1/car/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?"
             "alternatives=false&annotations=true&bearings=50%2C50%3B50%2C50%3B50%2C50&continue_straight=true&"
-            "geometries=geojson&overview=simplified&radiuses=500%3B500%3B500&steps=true",
+            "geometries=geojson&overview=simplified&radiuses=500%3B500%3B500&steps=true&fallback_speed=42",
             responses.calls[0].request.url,
         )
         self.assertIsInstance(routes, Direction)
@@ -224,6 +225,7 @@ class OSRMTest(_test.TestCase):
     @responses.activate
     def test_full_matrix(self):
         query = ENDPOINTS_QUERIES[self.name]["matrix"]
+        query["fallback_speed"] = 42
         coords = convert.delimit_list([convert.delimit_list(pair) for pair in query["locations"]], ";")
 
         responses.add(
@@ -239,7 +241,7 @@ class OSRMTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "https://router.project-osrm.org/table/v1/car/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776"
-            "?annotations=distance%2Cduration",
+            "?annotations=distance%2Cduration&fallback_speed=42",
             responses.calls[0].request.url,
         )
         self.assertIsInstance(matrix, Matrix)
