@@ -100,8 +100,11 @@ class OSRM:
         geometries=None,
         overview=None,
         dry_run=None,
+        **direction_kwargs
     ):
         """Get directions between an origin point and a destination point.
+
+        Use ``direction_kwargs`` for any missing ``directions`` request options.
 
         For more information, visit http://project-osrm.org/docs/v5.5.1/api/#route-service.
 
@@ -163,7 +166,15 @@ class OSRM:
         )
 
         params = self.get_direction_params(
-            radiuses, bearings, alternatives, steps, continue_straight, annotations, geometries, overview
+            radiuses,
+            bearings,
+            alternatives,
+            steps,
+            continue_straight,
+            annotations,
+            geometries,
+            overview,
+            **direction_kwargs
         )
 
         return self._parse_direction_json(
@@ -184,6 +195,7 @@ class OSRM:
         annotations=None,
         geometries=None,
         overview=None,
+        **directions_kwargs
     ):
         params = dict()
 
@@ -212,6 +224,8 @@ class OSRM:
 
         if overview is not None:
             params["overview"] = convert.convert_bool(overview)
+
+        params.update(directions_kwargs)
 
         return params
 
@@ -269,9 +283,12 @@ class OSRM:
         destinations=None,
         dry_run=None,
         annotations=("duration", "distance"),
+        **matrix_kwargs
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
+
+        Use ``matrix_kwargs`` for any missing ``matrix`` request options.
 
         For more information visit http://project-osrm.org/docs/v5.5.1/api/#table-service.
 
@@ -326,7 +343,7 @@ class OSRM:
             [convert.delimit_list([convert.format_float(f) for f in pair]) for pair in locations], ";"
         )
 
-        params = self.get_matrix_params(sources, destinations, annotations)
+        params = self.get_matrix_params(sources, destinations, annotations, **matrix_kwargs)
 
         return self._parse_matrix_json(
             self.client._request(
@@ -335,7 +352,9 @@ class OSRM:
         )
 
     @staticmethod
-    def get_matrix_params(sources=None, destinations=None, annotations=("duration", "distance")):
+    def get_matrix_params(
+        sources=None, destinations=None, annotations=("duration", "distance"), **matrix_kwargs
+    ):
         params = dict()
 
         if sources:
@@ -346,6 +365,8 @@ class OSRM:
 
         if annotations:
             params["annotations"] = convert.delimit_list(annotations)
+
+        params.update(matrix_kwargs)
 
         return params
 
