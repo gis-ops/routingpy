@@ -38,7 +38,7 @@ or **time-distance matrices**.
 This list is hopefully growing with time and contributions by other developers. An up-to-date list is always available
 in our documentation_.
 
-**routing-py** is tested against CPython versions 3.7, 3.8, 3.9 and against PyPy3. As other major libraries like ``numpy``
+**routing-py** is tested against CPython versions 3.7, 3.8, 3.9, 3.10 and against PyPy3. As other major libraries like ``numpy``
 and ``pandas`` decided to drop Python 2 support, we did not see any reason to burden the project with the compatibility
 weight.
 
