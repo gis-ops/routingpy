@@ -30,7 +30,7 @@ jobs:
             3.7,
             3.8,
             3.9,
-            '3.10',
+            '3.10'  ,
             pypy3
         ]
     steps:
@@ -47,7 +47,7 @@ jobs:
         echo ::set-output name=versionshort::$(python -c "import sys; print(''.join(str(v) for v in sys.version_info[:2]))")
     - name: Install and set up Poetry
       run: |
-        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+        curl -sSL https://install.python-poetry.org | python3 -
         source $HOME/.poetry/env
         poetry config virtualenvs.in-project true
     - name: Cache dependencies
