@@ -63,7 +63,7 @@ jobs:
       run: |
         source .venv/bin/activate
         pre-commit run
-    - name: nosetests
+    - name: pytest
       run: |
         source .venv/bin/activate
         coverage run --source=routingpy --module pytest
