@@ -91,7 +91,7 @@ class Edge:
         return self._status
 
     def __repr__(self):  # pragma: no cover
-        return "Expansion({})".format(", ".join([f"{k[1:]}: {v}" for k, v in vars(self).items() if v]))
+        return "Edge({})".format(", ".join([f"{k[1:]}: {v}" for k, v in vars(self).items() if v]))
 
 
 class Expansions:
@@ -108,7 +108,8 @@ class Expansions:
     @property
     def raw(self):
         """
-        Returns the expansion's raw, unparsed response. For details, consult the routing engine's API documentation.
+        Returns the expansion's raw, unparsed response. For details, consult the documentation
+         at https://valhalla.readthedocs.io/en/latest/api/expansion/api-reference/.
 
         :rtype: dict or None
         """
@@ -119,7 +120,7 @@ class Expansions:
         """
         The center coordinate in [lon, lat] of the expansion, which is the location from the user input.
 
-        :rtype: tuple of float
+        :rtype: list of float
         """
         return self._center
 
