@@ -735,7 +735,7 @@ class Valhalla:
                 "/expansion", get_params=get_params, post_params=params, dry_run=dry_run
             ),
             locations,
-            expansion_properties
+            expansion_properties,
         )
 
     @classmethod
@@ -777,13 +777,10 @@ class Valhalla:
             properties = {}
             if expansion_properties:
                 for expansion_prop in expansion_properties:
-                    properties[expansion_prop] = response["features"][0]["properties"][expansion_prop][idx]
-            expansions.append(
-                Edge(
-                    geometry=line,
-                    **properties
-                )
-            )
+                    properties[expansion_prop] = response["features"][0]["properties"][expansion_prop][
+                        idx
+                    ]
+            expansions.append(Edge(geometry=line, **properties))
 
         return Expansions(expansions, locations, response)
 

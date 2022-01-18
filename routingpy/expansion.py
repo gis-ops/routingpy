@@ -17,7 +17,6 @@
 """
 :class:`Expansion` returns expansion results.
 """
-from typing import List
 
 
 class Edge:
@@ -26,7 +25,9 @@ class Edge:
     Access via properties ``geometry``, ``distances`` ``durations``, ``costs``, ``edge_ids``, ``statuses``.
     """
 
-    def __init__(self, geometry=None, distances=None, durations=None, costs=None, edge_ids=None, statuses=None):
+    def __init__(
+        self, geometry=None, distances=None, durations=None, costs=None, edge_ids=None, statuses=None
+    ):
         self._geometry = geometry
         self._distance = distances
         self._duration = durations
@@ -127,7 +128,8 @@ class Expansions:
             return "Expansions({}, {})".format(self._expansions, self.raw)
         else:
             return "Expansions({}, ..., {})".format(
-                ", ".join([str(e) for e in self._expansions[:3]]), ", ".join(str(e) for e in self._expansions[-3:])
+                ", ".join([str(e) for e in self._expansions[:3]]),
+                ", ".join(str(e) for e in self._expansions[-3:]),
             )
 
     def __getitem__(self, item):
