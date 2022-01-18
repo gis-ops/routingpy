@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 ### Added
--
+- support for Valhalla's `/expansion` endpoint
 ### Fixed
 - enhanced error handling for directions with Google [#15](https://github.com/gis-ops/routing-py/issues/15)
 - fixed MapboxOSRM client, removing unused parameters and unifying Isochrones interface [#21](https://github.com/gis-ops/routing-py/issues/21)
