@@ -130,6 +130,12 @@ Data
 .. autoclass:: routingpy.matrix.Matrix
     :members: durations, distances, raw
 
+.. autoclass:: routingpy.expansion.Expansions
+    :members: expansions, center, raw
+
+.. autoclass:: routingpy.expansion.Edge
+    :members: geometry, distance, duration, cost, edge_id, status
+
 .. autofunction:: routingpy.utils.decode_polyline5
 
 .. autofunction:: routingpy.utils.decode_polyline6

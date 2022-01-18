@@ -18,12 +18,13 @@
 Core client functionality, common across all API requests.
 """
 
-from typing import List, Union  # noqa: F401
+from typing import List, Union, Sequence, Optional  # noqa: F401
 
 from ..client_base import DEFAULT
 from ..client_default import Client
 from .. import utils
 from ..direction import Direction
+from ..expansion import Expansions, Edge
 from ..isochrone import Isochrone, Isochrones
 from ..matrix import Matrix
 
@@ -662,6 +663,121 @@ class Valhalla:
         ]
 
         return Matrix(durations=durations, distances=distances, raw=response)
+
+    def expansion(
+        self,
+        locations: Sequence[float],
+        profile: str,
+        intervals: Sequence[int],
+        skip_opposites: Optional[bool] = None,
+        expansion_properties: Optional[Sequence[str]] = None,
+        interval_type: Optional[str] = None,
+        options: Optional[dict] = None,
+        date_time: Optional[dict] = None,
+        id: Optional[str] = None,
+        dry_run: Optional[bool] = None,
+    ) -> Expansions:
+        """Gets the expansion tree for a range of time or distance values around a given coordinate.
+
+        For more information, visit https://valhalla.readthedocs.io/en/latest/api/expansion/api-reference/.
+
+        :param locations: One pair of lng/lat values. Takes the form [Longitude, Latitude].
+
+        :param profile: Specifies the mode of transport to use when calculating
+            directions. One of ["auto", "bicycle", "multimodal", "pedestrian".
+
+        :param intervals: Time ranges to calculate isochrones for. In seconds or meters, depending on `interval_type`.
+
+        :param skip_opposites: If set to true the output won't contain an edge's opposing edge. Opposing edges can be thought of as both directions of one road segment. Of the two, we discard the directional edge with higher cost and keep the one with less cost.
+
+        :param expansion_properties: A JSON array of strings of the GeoJSON property keys you'd like to have in the response. One or multiple of "durations", "distances", "costs", "edge_ids", "statuses". Note, that each additional property will increase the output size by minimum ~ 25%.
+
+        :param interval_type: Set 'time' for isochrones or 'distance' for equidistants.
+            Default 'time'.
+
+        :param options: Profiles can have several options that can be adjusted to develop the route path,
+            as well as for estimating time along the path. Only specify the actual options dict, the profile
+            will be filled automatically. For more information, visit:
+            https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#costing-options
+
+        :param date_time: This is the local date and time at the location. Field ``type``: 0: Current departure time,
+            1: Specified departure time. Field ``value```: the date and time is specified
+            in format YYYY-MM-DDThh:mm, local time.
+
+            E.g. date_time = {type: 0, value: 2021-03-03T08:06}
+
+        :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
+
+        :param dry_run: Print URL and parameters without sending the request.
+
+        :returns: An expansions object consisting of single line strings and their attributes (if specified).
+        """
+
+        get_params = {"access_token": self.api_key} if self.api_key else {}
+        params = self.get_expansion_params(
+            locations,
+            profile,
+            intervals,
+            skip_opposites,
+            expansion_properties,
+            interval_type,
+            options,
+            date_time,
+            id,
+        )
+        return self._parse_expansion_json(
+            self.client._request(
+                "/expansion", get_params=get_params, post_params=params, dry_run=dry_run
+            ),
+            locations,
+            expansion_properties,
+        )
+
+    @classmethod
+    def get_expansion_params(
+        cls,
+        locations,
+        profile,
+        intervals,
+        skip_opposites=None,
+        expansion_properties=None,
+        interval_type=None,
+        options=None,
+        date_time=None,
+        id=None,
+    ):
+        params = cls.get_isochrone_params(
+            locations,
+            profile,
+            intervals,
+            interval_type,
+            options=options,
+            date_time=date_time,
+            id=id,
+        )
+        params["action"] = "isochrone"
+        if skip_opposites:
+            params["skip_opposites"] = skip_opposites
+        if expansion_properties:
+            params["expansion_properties"] = expansion_properties
+        return params
+
+    @staticmethod
+    def _parse_expansion_json(response, locations, expansion_properties):
+        if response is None:  # pragma: no cover
+            return Expansions()
+
+        expansions = []
+        for idx, line in enumerate(response["features"][0]["geometry"]["coordinates"]):
+            properties = {}
+            if expansion_properties:
+                for expansion_prop in expansion_properties:
+                    properties[expansion_prop] = response["features"][0]["properties"][expansion_prop][
+                        idx
+                    ]
+            expansions.append(Edge(geometry=line, **properties))
+
+        return Expansions(expansions, locations, response)
 
     @staticmethod
     def _build_locations(coordinates):

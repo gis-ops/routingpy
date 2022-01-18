@@ -183,3 +183,19 @@ class ValhallaTest(_test.TestCase):
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
+
+    @responses.activate
+    def test_expansion(self):
+        query = ENDPOINTS_QUERIES[self.name]["expansion"]
+        expected = ENDPOINTS_EXPECTED[self.name]["expansion"]
+        responses.add(
+            responses.POST,
+            "https://api.mapbox.com/valhalla/v1/expansion",
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]["expansion"],
+            content_type="application/json",
+        )
+        self.client.expansion(**query)
+
+        self.assertEqual(1, len(responses.calls))
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
