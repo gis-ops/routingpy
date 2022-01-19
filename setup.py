@@ -22,34 +22,37 @@ from setuptools import setup, find_packages
 here = os.path.abspath(os.path.dirname(__file__))
 
 about = {}
-with open(os.path.join(here, 'routingpy', '__version__.py')) as f:
+with open(os.path.join(here, "routingpy", "__version__.py")) as f:
     exec(f.read(), about)
 
 try:
-    with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
-        long_description = '\n' + f.read()
+    with open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
+        long_description = "\n" + f.read()
 except FileNotFoundError:
-    long_description = about['__description__']
+    long_description = about["__description__"]
 
 setup(
-    name=about['__title__'],
-    version=about['__version__'],
-    description=about['__description__'],
+    name=about["__title__"],
+    version=about["__version__"],
+    description=about["__description__"],
     long_description=long_description,
-    long_description_content_type='text/x-rst',
-    author=about['__author__'],
-    author_email=about['__author_email__'],
-    python_requires='>=3.5.0',
-    url=about['__url__'],
+    long_description_content_type="text/x-rst",
+    author=about["__author__"],
+    author_email=about["__author_email__"],
+    python_requires=">=3.5.0",
+    url=about["__url__"],
     packages=find_packages(exclude=["*tests*"]),
-    install_requires=['requests>=2.20.0'],
-    license='Apache 2.0',
+    install_requires=["requests>=2.20.0"],
+    license="Apache 2.0",
     classifiers=[
-        'License :: OSI Approved :: Apache Software License', 'Programming Language :: Python',
-        'Programming Language :: Python :: 3', 'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7', 'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy'
-    ]
+        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
+    ],
 )
