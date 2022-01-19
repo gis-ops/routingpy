@@ -2,25 +2,15 @@ name: tests
 
 on:
   push:
-    paths:
-      - "routingpy/**"
-      - "tests/**"
-      - ".github/workflows/ci-tests.yml"
-      - "setup.py"
-      - "pyproject.toml"
-      - ".coveragerc"
     branches:
       - master
+    paths-ignore:
+      - '*.md'
   pull_request:
     branches:
       - master
-    paths:
-      - "routingpy/**"
-      - "tests/**"
-      - ".github/workflows/ci-tests.yml"
-      - "setup.py"
-      - "pyproject.toml"
-      - ".coveragerc"
+    paths-ignore:
+      - '*.md'
 
 jobs:
   build:
@@ -62,7 +52,7 @@ jobs:
     - name: style & lint checks
       run: |
         source .venv/bin/activate
-        pre-commit run
+        pre-commit run --all-files
     - name: pytest
       run: |
         source .venv/bin/activate
