@@ -408,7 +408,7 @@ class Valhalla:
             locations,
         )
 
-    @staticmethod
+    @staticmethod  # noqa: C901
     def get_isochrone_params(  # noqa: C901
         locations,
         profile,
