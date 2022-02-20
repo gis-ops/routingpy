@@ -155,7 +155,7 @@ The following table gives you an overview which basic arguments are abstracted:
 |                       |                   | | take as sources for the matrix calculation. If not         |
 |                       |                   | | specified all ``locations`` are considered to be sources.  |
 |                       +-------------------+--------------------------------------------------------------+
-|                       | sources           | | The indices of the ``locations`` parameter iterable to     |
+|                       | destinations      | | The indices of the ``locations`` parameter iterable to     |
 |                       |                   | | take as destinations for the matrix calculation. If not    |
 |                       |                   | | specified all ``locations`` are considered to be           |
 |                       |                   | | destinations.                                              |
