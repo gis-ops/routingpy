@@ -39,6 +39,7 @@ class GraphhopperTest(_test.TestCase):
     def test_full_directions(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
         query["algorithm"] = None
+        query["fake_option"] = 42
 
         responses.add(
             responses.GET,
@@ -56,7 +57,7 @@ class GraphhopperTest(_test.TestCase):
             "elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&"
             "optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&"
             "point=49.445776%2C8.780916&point_hint=Graphhopper%20Lane&point_hint=OSM%20Street&point_hint=Routing%20Broadway&"
-            "&points_encoded=true&vehicle=car&type=json&weighting=short_fastest&snap_prevention=trunk%2Cferry&curb_side=any%2Cright&turn_costs=true",
+            "&points_encoded=true&vehicle=car&type=json&weighting=short_fastest&snap_prevention=trunk%2Cferry&curb_side=any%2Cright&turn_costs=true&fake_option=42",
             responses.calls[0].request.url,
         )
 
@@ -103,6 +104,7 @@ class GraphhopperTest(_test.TestCase):
     def test_full_isochrones(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["isochrones"])
         query["buckets"] = 3
+        query["fake_option"] = 42
 
         responses.add(
             responses.GET,
@@ -116,7 +118,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "https://graphhopper.com/api/1/isochrone?buckets=3&debug=false&key=sample_key&"
-            "point=48.23424%2C8.34234&vehicle=car&reverse_flow=true&time_limit=1000&type=json",
+            "point=48.23424%2C8.34234&vehicle=car&reverse_flow=true&time_limit=1000&type=json&fake_option=42",
             responses.calls[0].request.url,
         )
 
@@ -132,6 +134,7 @@ class GraphhopperTest(_test.TestCase):
     @responses.activate
     def test_full_matrix(self):
         query = ENDPOINTS_QUERIES[self.name]["matrix"]
+        query["fake_option"] = 42
 
         responses.add(
             responses.GET,
@@ -145,7 +148,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "https://graphhopper.com/api/1/matrix?key=sample_key&out_array=distances&out_array=times&out_array=weights&"
-            "point=49.415776%2C8.680916&point=49.420577%2C8.688641&point=49.445776%2C8.780916&vehicle=car&debug=true",
+            "point=49.415776%2C8.680916&point=49.420577%2C8.688641&point=49.445776%2C8.780916&vehicle=car&debug=true&fake_option=42",
             responses.calls[0].request.url,
         )
 
