@@ -128,8 +128,11 @@ class Graphhopper:
         snap_prevention=None,
         curb_side=None,
         turn_costs=None,
+        **direction_kwargs
     ):
         """Get directions between an origin point and a destination point.
+
+        Use ``direction_kwargs`` for any missing ``directions`` request options.
 
         For more information, visit https://docs.graphhopper.com/#tag/Routing-API/paths/~1route/get.
 
@@ -372,6 +375,8 @@ class Graphhopper:
                         ("alternative_route_max_share_factor", alternative_route_max_share_factor)
                     )
 
+        params.extend(direction_kwargs.items())
+
         return self._parse_directions_json(
             self.client._request("/route", get_params=params, dry_run=dry_run), algorithm, elevation
         )
@@ -417,10 +422,13 @@ class Graphhopper:
         reverse_flow=None,
         debug=None,
         dry_run=None,
+        **isochrones_kwargs
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
-        For mroe details visit https://docs.graphhopper.com/#tag/Isochrone-API.
+        Use ``isochrones_kwargs`` for missing ``isochrones`` request options.
+
+        For more details visit https://docs.graphhopper.com/#tag/Isochrone-API.
 
         :param locations: One coordinate pair denoting the location.
         :type locations: tuple of float or list of float
@@ -484,6 +492,8 @@ class Graphhopper:
         if debug is not None:
             params.append(("debug", convert.convert_bool(debug)))
 
+        params.extend(isochrones_kwargs.items())
+
         return self._parse_isochrone_json(
             self.client._request("/isochrone", get_params=params, dry_run=dry_run),
             type,
@@ -521,12 +531,15 @@ class Graphhopper:
         out_array=["times", "distances"],
         debug=None,
         dry_run=None,
+        **matrix_kwargs
     ):
         """Gets travel distance and time for a matrix of origins and destinations.
 
+        Use ``matrix_kwargs`` for any missing ``matrix`` request options.
+
         For more details visit https://docs.graphhopper.com/#tag/Matrix-API.
 
-        :param locations: Specifiy multiple points for which the weight-, route-, time- or distance-matrix should be calculated.
+        :param locations: Specify multiple points for which the weight-, route-, time- or distance-matrix should be calculated.
             In this case the starts are identical to the destinations.
             If there are N points, then NxN entries will be calculated.
             The order of the point parameter is important. Specify at least three points.
@@ -606,6 +619,8 @@ class Graphhopper:
 
         if debug is not None:
             params.append(("debug", convert.convert_bool(debug)))
+
+        params.extend(matrix_kwargs.items())
 
         return self._parse_matrix_json(
             self.client._request("/matrix", get_params=params, dry_run=dry_run),
