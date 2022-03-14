@@ -187,33 +187,13 @@ class GoogleTest(_test.TestCase):
 
         matrix = self.client.matrix(**query)
 
-        query["sources"] = None
-        query["destinations"] = [1, 2]
-
-        responses.add(
-            responses.GET,
-            "https://maps.googleapis.com/maps/api/distancematrix/json",
-            status=200,
-            json={},
-            content_type="application/json",
-        )
-
-        matrix = self.client.matrix(**query)
-
-        self.assertEqual(2, len(responses.calls))
+        self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "https://maps.googleapis.com/maps/api/distancematrix/json?arrival_time=1567512000&avoid=tolls%7Cferries&"
             "destinations=49.420577%2C8.688641&key=sample_key&language=de&origins=49.415776%2C8.680916&mode=driving&"
             "region=de&traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&"
             "units=metrics",
             responses.calls[0].request.url,
-        )
-        self.assertURLEqual(
-            "https://maps.googleapis.com/maps/api/distancematrix/json?arrival_time=1567512000&avoid=tolls%7Cferries&"
-            "destinations=49.415776%2C8.680916%7C49.445776%2C8.780916&key=sample_key&language=de&"
-            "origins=49.420577%2C8.688641%7C49.415776%2C8.680916%7C49.445776%2C8.780916&mode=driving&region=de&"
-            "traffic_model=optimistic&transit_mode=bus%7Crail&transit_routing_preference=less_walking&units=metrics",
-            responses.calls[1].request.url,
         )
 
         self.assertIsInstance(matrix, Matrix)
