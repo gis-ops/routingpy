@@ -288,6 +288,7 @@ class HereMaps:
         custom_consumption_details=None,
         speed_profile=None,
         dry_run=None,
+        **kwargs
     ):
         """Get directions between an origin point and a destination point.
 
@@ -842,6 +843,7 @@ class HereMaps:
         custom_consumption_details=None,
         speed_profile=None,
         dry_run=None,
+        **kwargs
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
@@ -1128,6 +1130,7 @@ class HereMaps:
         tunnel_category=None,
         speed_profile=None,
         dry_run=None,
+        **kwargs
     ):
         """Gets travel distance and time for a matrix of origins and destinations.
 

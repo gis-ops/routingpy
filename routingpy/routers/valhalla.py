@@ -300,6 +300,7 @@ class Valhalla:
         show_locations=None,
         id=None,
         dry_run=None,
+        **kwargs
     ):
         """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
 
@@ -514,6 +515,7 @@ class Valhalla:
         units=None,
         id=None,
         dry_run=None,
+        **kwargs
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
@@ -676,6 +678,7 @@ class Valhalla:
         date_time: Optional[dict] = None,
         id: Optional[str] = None,
         dry_run: Optional[bool] = None,
+        **kwargs
     ) -> Expansions:
         """Gets the expansion tree for a range of time or distance values around a given coordinate.
 
