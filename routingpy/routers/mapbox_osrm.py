@@ -114,6 +114,7 @@ class MapboxOSRM:
         waypoint_names=None,
         waypoint_targets=None,
         dry_run=None,
+        **kwargs
     ):
         """Get directions between an origin point and a destination point.
 
@@ -350,6 +351,7 @@ class MapboxOSRM:
         denoise=None,
         generalize=None,
         dry_run=None,
+        **kwargs
     ):
         """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
 
@@ -444,6 +446,7 @@ class MapboxOSRM:
         annotations=None,
         fallback_speed=None,
         dry_run=None,
+        **kwargs
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
