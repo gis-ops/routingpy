@@ -10,3 +10,4 @@ flake8==3.9.0
 black==21.6b0
 build>=0.7.0
 setuptools-scm>=6.4.2
+pytest>=6.2.5
