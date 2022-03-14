@@ -39,8 +39,5 @@ jobs:
     - name: pytest
       run: |
         coverage run --source=routingpy --module pytest
-    - name: coveralls
-      run: |
-        coveralls
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
