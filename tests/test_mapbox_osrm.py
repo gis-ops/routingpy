@@ -46,7 +46,6 @@ class MapboxOSRMTest(_test.TestCase):
             status=200,
             json=ENDPOINTS_RESPONSES["mapbox_osrm"]["directions"],
             content_type="application/x-www-form-urlencoded",
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
 
         routes = self.client.directions(**query)
@@ -81,7 +80,6 @@ class MapboxOSRMTest(_test.TestCase):
             status=200,
             json=ENDPOINTS_RESPONSES["mapbox_osrm"]["directions"],
             content_type="application/x-www-form-urlencoded",
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
 
         routes = self.client.directions(**query)
