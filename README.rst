@@ -42,7 +42,7 @@ in our documentation_.
 and ``pandas`` decided to drop Python 2 support, we did not see any reason to burden the project with the compatibility
 weight.
 
-© routing-py contributors 2021 under the `Apache 2.0 License`_.
+© routing-py contributors 2022 under the `Apache 2.0 License`_.
 
 .. image:: https://user-images.githubusercontent.com/10322094/57357720-e180c080-7173-11e9-97a4-cecb4670065d.jpg
     :alt: routing-py-image
