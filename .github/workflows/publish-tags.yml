@@ -11,40 +11,41 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.10
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10
 
-    - name: Build Wheels
-      run: |
-        pip install -r requirements_dev.txt
-        python -m build --wheel
+      - name: Build Wheels
+        run: |
+          pip install -r requirements_dev.txt
+          python -m build --wheel
 
-    - name: Upload wheels
-      uses: actions/upload-artifact@v2
-      with:
-        path: dist/*.whl
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          path: dist/*.whl
 
   upload_all:
     needs: [build_wheels]
     runs-on: ubuntu-latest
 
     steps:
-    - name: Set up python
-    - uses: actions/setup-python@v2
-      with:
-        python-version: 3.10
+      - name: Set up python
 
-    - name: Download artifact
-    - uses: actions/download-artifact@v2
-      with:
-        name: artifact
-        path: dist
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.10
 
-    - uses: pypa/gh-action-pypi-publish@v1.4.2
-      with:
-        user: nilsnolde
-        password: ${{ secrets.PYPI_PASS }}
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          user: nilsnolde
+          password: ${{ secrets.PYPI_PASS }}
