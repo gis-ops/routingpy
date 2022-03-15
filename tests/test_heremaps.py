@@ -38,7 +38,9 @@ class HereMapsTest(_test.TestCase):
 
     @responses.activate
     def test_full_directions(self):
-        query = ENDPOINTS_QUERIES[self.name]["directions"]
+
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
+        query["foo"] = "bar"
 
         responses.add(
             responses.GET,
@@ -62,7 +64,7 @@ class HereMapsTest(_test.TestCase):
             "routeAttributes=waypoints%2Csummary%2CsummaryByCountry%2Cshape%2CboundingBox%2Clegs%2Cnotes%2Clines%2CrouteId%2Cgroups%2Ctickets%2Cincidents%2Czones&"
             "shippedHazardousGoods=gas%2Cflammable&speedProfile=fast&trailersCount=3&truckRestrictionPenalty=soft&truckType=truck&vehicleType=diesel%2C5.5&"
             "viewBounds=49.420577%2C8.688641%3B49.415776%2C8.680916&waypoint0=geo%2149.420577%2C8.688641&waypoint1=geo%2149.415776%2C8.680916&"
-            "waypoint2=geo%2149.445776%2C8.780916&weightPerAxle=100&width=10",
+            "waypoint2=geo%2149.445776%2C8.780916&weightPerAxle=100&width=10&foo=bar",
             responses.calls[0].request.url,
         )
 
@@ -144,7 +146,8 @@ class HereMapsTest(_test.TestCase):
 
     @responses.activate
     def test_full_isochrones_response_object(self):
-        query = ENDPOINTS_QUERIES[self.name]["isochrones"]
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]["isochrones"])
+        query["foo"] = "bar"
 
         responses.add(
             responses.GET,
@@ -160,7 +163,7 @@ class HereMapsTest(_test.TestCase):
         self.assertURLEqual(
             "https://isoline.route.api.here.com/routing/7.2/calculateisoline.json?app_code=sample_app_code&"
             "app_id=sample_app_id&mode=fastest%3Bcar&quality=1&range=1000%2C2000%2C3000&rangeType=distance&"
-            "singleComponent=false&start=geo%2148.23424%2C8.34234",
+            "singleComponent=false&start=geo%2148.23424%2C8.34234&foo=bar",
             responses.calls[0].request.url,
         )
 
@@ -174,7 +177,8 @@ class HereMapsTest(_test.TestCase):
 
     @responses.activate
     def test_full_matrix(self):
-        query = ENDPOINTS_QUERIES[self.name]["matrix"]
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]["matrix"])
+        query["foo"] = "bar"
 
         responses.add(
             responses.GET,
@@ -192,7 +196,7 @@ class HereMapsTest(_test.TestCase):
             "app_id=sample_app_id&destination0=geo%2149.445776%2C8.780916&height=20&length=10&limitedWeight=10&"
             "mode=fastest%3Bcar&shippedHazardousGoods=gas%2Cflammable&start0=geo%2149.420577%2C8.688641&"
             "start1=geo%2149.415776%2C8.680916&summaryAttributes=traveltime%2Ccostfactor&trailersCount=3&truckType=truck&"
-            "weightPerAxle=100&width=10",
+            "weightPerAxle=100&width=10&foo=bar",
             responses.calls[0].request.url,
         )
 
