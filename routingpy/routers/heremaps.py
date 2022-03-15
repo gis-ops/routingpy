@@ -288,8 +288,11 @@ class HereMaps:
         custom_consumption_details=None,
         speed_profile=None,
         dry_run=None,
+        **directions_kwargs
     ):
         """Get directions between an origin point and a destination point.
+
+        Use ``direction_kwargs`` for any missing ``directions`` request options.
 
         For more information, https://developer.here.com/documentation/routing/topics/resource-calculate-route.html.
 
@@ -767,6 +770,8 @@ class HereMaps:
         if speed_profile is not None:
             params["speedProfile"] = speed_profile
 
+        params.update(directions_kwargs)
+
         return self._parse_direction_json(
             self.client._request(
                 convert.delimit_list(["/calculateroute", format], "."),
@@ -842,8 +847,11 @@ class HereMaps:
         custom_consumption_details=None,
         speed_profile=None,
         dry_run=None,
+        **isochrones_kwargs
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
+
+        Use ``isochrones_kwargs`` for any missing ``isochrones`` request options.
 
         For more information, https://developer.here.com/documentation/routing/topics/resource-calculate-isoline.html.
 
@@ -1065,6 +1073,8 @@ class HereMaps:
         if speed_profile is not None:
             params["speedProfile"] = speed_profile
 
+        params.update(isochrones_kwargs)
+
         return self._parse_isochrone_json(
             self.client._request(
                 convert.delimit_list(["/calculateisoline", format], "."),
@@ -1128,8 +1138,11 @@ class HereMaps:
         tunnel_category=None,
         speed_profile=None,
         dry_run=None,
+        **matrix_kwargs
     ):
         """Gets travel distance and time for a matrix of origins and destinations.
+
+        Use ``matrix_kwargs`` for any missing ``matrix`` request options.
 
         :param locations: The coordinates tuple the route should be calculated
             from in order of visit. Can be a list/tuple of [lon, lat] or :class:`HereMaps.Waypoint` instance or a
@@ -1354,6 +1367,8 @@ class HereMaps:
 
         if speed_profile is not None:
             params["speedProfile"] = speed_profile
+
+        params.update(matrix_kwargs)
 
         return self._parse_matrix_json(
             self.client._request(
