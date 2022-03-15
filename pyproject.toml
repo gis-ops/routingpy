@@ -1,3 +1,11 @@
+[build-system]
+requires = [
+    "setuptools>=45",
+    "wheel",
+    "setuptools_scm>=6.2",
+]
+build-backend = "setuptools.build_meta"
+
 [tool.poetry]
 name = "routingpy"
 version = "0.3.3"
@@ -17,22 +25,8 @@ contextily = {version = "^1.1.0", optional = true}
 geopandas = {version = "^0.8.2", optional = true}
 descartes = {version = "^1.0.0", optional = true}
 
-[tool.setuptools_scm]
-write_to = "routingpy/__version__.py"
-write_to_template = """
-__title__ = "routingpy"
-__description__ = "One lib to route them all."
-__url__ = "https://gis-ops.com/projects/routingpy"
-__version__ = "{version}"
-__author__ = "Nils Nolde"
-__author_email__ = "nils@gis-ops.com"
-__license__ = "Apache 2.0"
-__copyright__ = "Copyright 2022 GIS OPS UG"
-"""
-version_scheme = "post-release"
-
 [tool.poetry.dev-dependencies]
-sphinx = "^3.0.0"
+sphinx = "^4.4.0"
 sphinx-rtd-theme = "~0.5.0"
 coveralls = "^2.0.0"
 responses = "^0.10.0"
@@ -47,6 +41,20 @@ setuptools-scm = "^6.4.2"
 [tool.poetry.extras]
 notebooks = ["shapely", "ipykernel", "geopandas", "contextily", "matplotlib", "descartes"]
 
+[tool.setuptools_scm]
+write_to = "routingpy/__version__.py"
+write_to_template = """
+__title__ = "routingpy"
+__description__ = "One lib to route them all."
+__url__ = "https://gis-ops.com/projects/routingpy"
+__version__ = "{version}"
+__author__ = "Nils Nolde"
+__author_email__ = "nils@gis-ops.com"
+__license__ = "Apache 2.0"
+__copyright__ = "Copyright 2022 GIS OPS UG"
+"""
+version_scheme = "post-release"
+
 [tool.black]
 line-length = 105
 exclude = '''
@@ -57,11 +65,3 @@ exclude = '''
   | build
 )/
 '''
-
-[build-system]
-requires = [
-    "setuptools>=45",
-    "wheel",
-    "setuptools_scm>=6.2",
-]
-build-backend = "setuptools.build_meta"
