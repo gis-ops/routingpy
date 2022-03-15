@@ -40,9 +40,10 @@ jobs:
       run: |
         pre-commit run --all-files
 
-    - name: pytest
+    - name: pytest and coverage
       run: |
         coverage run --source=routingpy --module pytest
+        coverage lcov --include "routingpy/*"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -50,3 +51,4 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./coverage.lcov
