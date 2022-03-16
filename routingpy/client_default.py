@@ -66,8 +66,8 @@ class Client(BaseClient):
             encountered (e.g. no route found). If False, processing will discontinue and raise an error. Default False.
         :type skip_api_error: bool
 
-        :param **kwargs: Additional arguments, such as headers or proxies.
-        :type **kwargs: dict
+        :param kwargs: Additional arguments, such as headers or proxies.
+        :type kwargs: dict
         """
 
         self._session = requests.Session()

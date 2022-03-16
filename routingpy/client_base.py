@@ -19,7 +19,10 @@ Core client functionality, common across all routers.
 """
 
 
-from .__version__ import __version__
+try:
+    from .__version__ import __version__
+except (ModuleNotFoundError, ImportError):
+    __version__ = 'None'
 
 from abc import ABCMeta, abstractmethod
 from datetime import timedelta

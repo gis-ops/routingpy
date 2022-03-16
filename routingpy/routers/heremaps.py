@@ -73,11 +73,11 @@ class HereMaps:
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
 
-        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.client_base.BaseClient`
         :type client: abc.ABCMeta
 
-        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
-        :type **client_kwargs: dict
+        :param client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type client_kwargs: dict
         """
 
         if app_id is None and app_code is None and api_key is None:

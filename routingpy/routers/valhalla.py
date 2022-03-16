@@ -14,9 +14,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-"""
-Core client functionality, common across all API requests.
-"""
 
 from typing import List, Union, Sequence, Optional  # noqa: F401
 
@@ -82,8 +79,8 @@ class Valhalla:
         :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
         :type client: abc.ABCMeta
 
-        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
-        :type **client_kwargs: dict
+        :param client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type client_kwargs: dict
         """
 
         self.api_key = api_key

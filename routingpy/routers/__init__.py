@@ -4,7 +4,7 @@ API. Each router has at least a ``directions`` method, many offer additionally `
 Other available provider endpoints are allowed and generally encouraged. However, please refer
 to our `contribution guidelines`_ for general instructions.
 
-The requests are handled via a client class derived from `:class: routingpy.base.BaseClient`.
+The requests are handled via a client class derived from :class:`routingpy.client_base.BaseClient`.
 
 **routingpy**'s dogma is, that all routers expose the same mandatory arguments for common methods in an
 attempt to be consistent for the same method across different routers. Unlike other collective libraries,
