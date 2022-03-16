@@ -17,10 +17,12 @@ import os
 
 try:
     from importlib import metadata
-    version = metadata.version('routingpy')
+
+    version = metadata.version("routingpy")
 except (ModuleNotFoundError, ImportError):
     from pkg_resources import get_distribution
-    version = get_distribution('routingpy').version
+
+    version = get_distribution("routingpy").version
 
 sys.path.insert(0, os.path.abspath(".."))
 
