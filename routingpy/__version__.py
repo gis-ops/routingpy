@@ -1,8 +1,0 @@
-__title__ = "routingpy"
-__description__ = "One lib to route them all."
-__url__ = "https://gis-ops.com/projects/routingpy"
-__version__ = "0.3.0.post82+gdc63774.d20220315"
-__author__ = "Nils Nolde"
-__author_email__ = "nils@gis-ops.com"
-__license__ = "Apache 2.0"
-__copyright__ = "Copyright 2022 GIS OPS UG"
