@@ -42,6 +42,7 @@ jobs:
 
     - name: pytest and coverage
       run: |
+        pip install -e .
         coverage run --source=routingpy --module pytest
         coverage lcov --include "routingpy/*"
       env:
