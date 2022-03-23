@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
--
+### Fixed
+
+- GraphHopper parsing fails with not encoded points ([#54](https://github.com/gis-ops/routing-py/issues/54))
 
 ## [0.4.0](https://pypi.org/project/routingpy/0.4.0/)
 
