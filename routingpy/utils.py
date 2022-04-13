@@ -53,7 +53,7 @@ def _decode(expression, precision=5, is3d=False, order="lnglat"):
         0,
         0,
         len(expression),
-        float(10 ** precision),
+        float(10**precision),
     )
 
     while index < length:

@@ -42,7 +42,7 @@ class OSRMTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            "https://router.project-osrm.org/route/v1/{}/{}".format(query["profile"], coords),
+            "https://router.project-osrm.org/route/v1/driving/{}".format(coords),
             status=200,
             json=ENDPOINTS_RESPONSES["osrm"]["directions_geojson"],
             content_type="application/json",
@@ -51,7 +51,7 @@ class OSRMTest(_test.TestCase):
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
-            "https://router.project-osrm.org/route/v1/car/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?"
+            "https://router.project-osrm.org/route/v1/driving/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?"
             "alternatives=false&annotations=true&bearings=50%2C50%3B50%2C50%3B50%2C50&continue_straight=true&"
             "geometries=geojson&overview=simplified&radiuses=500%3B500%3B500&steps=true&fallback_speed=42",
             responses.calls[0].request.url,
@@ -69,7 +69,7 @@ class OSRMTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            "https://router.project-osrm.org/route/v1/{}/{}".format(query["profile"], coords),
+            "https://router.project-osrm.org/route/v1/driving/{}".format(coords),
             status=200,
             json=ENDPOINTS_RESPONSES["osrm"]["directions_geojson"],
             content_type="application/json",
@@ -78,7 +78,7 @@ class OSRMTest(_test.TestCase):
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
-            "https://router.project-osrm.org/route/v1/car/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?"
+            "https://router.project-osrm.org/route/v1/driving/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?"
             "alternatives=true&annotations=true&bearings=50%2C50%3B50%2C50%3B50%2C50&continue_straight=true&"
             "geometries=geojson&overview=simplified&radiuses=500%3B500%3B500&steps=true",
             responses.calls[0].request.url,
@@ -100,7 +100,7 @@ class OSRMTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            "https://router.project-osrm.org/route/v1/{}/{}".format(query["profile"], coords),
+            "https://router.project-osrm.org/route/v1/driving/{}".format(coords),
             status=200,
             json=ENDPOINTS_RESPONSES["osrm"]["directions_polyline"],
             content_type="application/json",
@@ -165,7 +165,7 @@ class OSRMTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            "https://router.project-osrm.org/route/v1/{}/{}".format(query["profile"], coords),
+            "https://router.project-osrm.org/route/v1/driving/{}".format(coords),
             status=200,
             json=ENDPOINTS_RESPONSES["osrm"]["directions_polyline6"],
             content_type="application/json",
@@ -230,7 +230,7 @@ class OSRMTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            "https://router.project-osrm.org/table/v1/{}/{}".format(query["profile"], coords),
+            "https://router.project-osrm.org/table/v1/driving/{}".format(coords),
             status=200,
             json=ENDPOINTS_RESPONSES["osrm"]["matrix"],
             content_type="application/json",
@@ -240,7 +240,7 @@ class OSRMTest(_test.TestCase):
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
-            "https://router.project-osrm.org/table/v1/car/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776"
+            "https://router.project-osrm.org/table/v1/driving/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776"
             "?annotations=distance%2Cduration&fallback_speed=42",
             responses.calls[0].request.url,
         )
@@ -259,7 +259,7 @@ class OSRMTest(_test.TestCase):
 
         responses.add(
             responses.GET,
-            "https://router.project-osrm.org/table/v1/{}/{}".format(query["profile"], coords),
+            "https://router.project-osrm.org/table/v1/driving/{}".format(coords),
             status=200,
             json=ENDPOINTS_RESPONSES["osrm"]["matrix"],
             content_type="application/json",
@@ -269,7 +269,7 @@ class OSRMTest(_test.TestCase):
 
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
-            "https://router.project-osrm.org/table/v1/car/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?"
+            "https://router.project-osrm.org/table/v1/driving/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?"
             "destinations=0%3B2&sources=1%3B2&annotations=distance%2Cduration",
             responses.calls[0].request.url,
         )
