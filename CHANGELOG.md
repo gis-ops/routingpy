@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
--
+### Fixed
+- OSRM wasn't requesting the right endpoints: profile is meaningless
 
 ## [0.4.0](https://pypi.org/project/routingpy/0.4.0/)
 
