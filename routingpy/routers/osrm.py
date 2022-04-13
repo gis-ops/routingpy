@@ -90,7 +90,6 @@ class OSRM:
     def directions(
         self,
         locations,
-        profile,
         radiuses=None,
         bearings=None,
         alternatives=None,
@@ -102,7 +101,8 @@ class OSRM:
         dry_run=None,
         **direction_kwargs
     ):
-        """Get directions between an origin point and a destination point.
+        """
+        Get directions between an origin point and a destination point.
 
         Use ``direction_kwargs`` for any missing ``directions`` request options.
 
@@ -111,10 +111,6 @@ class OSRM:
         :param locations: The coordinates tuple the route should be calculated
             from in order of visit.
         :type locations: list of list
-
-        :param profile: Specifies the mode of transport to use when calculating
-            directions. One of ["car", "bike", "foot"].
-        :type profile: str
 
         :param radiuses: A list of maximum distances (measured in
             meters) that limit the search of nearby road segments to every given waypoint.
@@ -178,9 +174,7 @@ class OSRM:
         )
 
         return self._parse_direction_json(
-            self.client._request(
-                "/route/v1/" + profile + "/" + coords, get_params=params, dry_run=dry_run
-            ),
+            self.client._request("/route/v1/driving/" + coords, get_params=params, dry_run=dry_run),
             alternatives,
             geometries,
         )
@@ -276,7 +270,6 @@ class OSRM:
     def matrix(
         self,
         locations,
-        profile,
         radiuses=None,
         bearings=None,
         sources=None,
@@ -346,9 +339,7 @@ class OSRM:
         params = self.get_matrix_params(sources, destinations, annotations, **matrix_kwargs)
 
         return self._parse_matrix_json(
-            self.client._request(
-                "/table/v1/" + profile + "/" + coords, get_params=params, dry_run=dry_run
-            )
+            self.client._request("/table/v1/driving/" + coords, get_params=params, dry_run=dry_run)
         )
 
     @staticmethod

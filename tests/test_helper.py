@@ -503,7 +503,6 @@ ENDPOINTS_QUERIES = {
     "osrm": {
         "directions": {
             "locations": PARAM_LINE_MULTI,
-            "profile": "car",
             "radiuses": [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
             "bearings": [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
             "alternatives": True,
@@ -515,7 +514,6 @@ ENDPOINTS_QUERIES = {
         },
         "matrix": {
             "locations": PARAM_LINE_MULTI,
-            "profile": "car",
             "radiuses": [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
             "bearings": [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
             "annotations": ["distance", "duration"],
