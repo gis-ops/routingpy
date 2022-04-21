@@ -106,7 +106,7 @@ class Graphhopper:
         instructions=None,
         locale=None,
         elevation=None,
-        points_encoded=None,
+        points_encoded=True,
         calc_points=None,
         debug=None,
         point_hint=None,
