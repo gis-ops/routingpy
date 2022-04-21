@@ -173,7 +173,7 @@ class OSRM:
             **direction_kwargs
         )
 
-        return self._parse_direction_json(
+        return self.parse_direction_json(
             self.client._request("/route/v1/driving/" + coords, get_params=params, dry_run=dry_run),
             alternatives,
             geometries,
@@ -224,7 +224,7 @@ class OSRM:
         return params
 
     @staticmethod
-    def _parse_direction_json(response, alternatives, geometry_format):
+    def parse_direction_json(response, alternatives, geometry_format):
         if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
@@ -338,7 +338,7 @@ class OSRM:
 
         params = self.get_matrix_params(sources, destinations, annotations, **matrix_kwargs)
 
-        return self._parse_matrix_json(
+        return self.parse_matrix_json(
             self.client._request("/table/v1/driving/" + coords, get_params=params, dry_run=dry_run)
         )
 
@@ -362,7 +362,7 @@ class OSRM:
         return params
 
     @staticmethod
-    def _parse_matrix_json(response):
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
 

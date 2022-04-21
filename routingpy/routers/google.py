@@ -319,12 +319,12 @@ class Google:
         if transit_routing_preference:
             params["transit_routing_preference"] = transit_routing_preference
 
-        return self._parse_direction_json(
+        return self.parse_direction_json(
             self.client._request("/directions/json", get_params=params, dry_run=dry_run), alternatives
         )
 
     @staticmethod
-    def _parse_direction_json(response, alternatives):
+    def parse_direction_json(response, alternatives):
         if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
@@ -510,12 +510,12 @@ class Google:
         if transit_routing_preference:
             params["transit_routing_preference"] = transit_routing_preference
 
-        return self._parse_matrix_json(
+        return self.parse_matrix_json(
             self.client._request("/distancematrix/json", get_params=params, dry_run=dry_run)
         )
 
     @staticmethod
-    def _parse_matrix_json(response):
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
 
