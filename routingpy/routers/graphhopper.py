@@ -106,7 +106,7 @@ class Graphhopper:
         instructions=None,
         locale=None,
         elevation=None,
-        points_encoded=None,
+        points_encoded=True,
         calc_points=None,
         debug=None,
         point_hint=None,
@@ -378,11 +378,14 @@ class Graphhopper:
         params.extend(direction_kwargs.items())
 
         return self._parse_directions_json(
-            self.client._request("/route", get_params=params, dry_run=dry_run), algorithm, elevation
+            self.client._request("/route", get_params=params, dry_run=dry_run),
+            algorithm,
+            elevation,
+            points_encoded,
         )
 
     @staticmethod
-    def _parse_directions_json(response, algorithm, elevation):
+    def _parse_directions_json(response, algorithm, elevation, points_encoded):
         if response is None:  # pragma: no cover
             if algorithm == "alternative_route":
                 return Directions()
@@ -392,7 +395,11 @@ class Graphhopper:
         if algorithm == "alternative_route":
             routes = []
             for route in response["paths"]:
-                geometry = utils.decode_polyline5(route["points"], elevation)
+                geometry = (
+                    utils.decode_polyline5(route["points"], elevation)
+                    if points_encoded
+                    else route["points"]["coordinates"]
+                )
                 routes.append(
                     Direction(
                         geometry=geometry,
@@ -403,7 +410,11 @@ class Graphhopper:
                 )
             return Directions(routes, response)
         else:
-            geometry = utils.decode_polyline5(response["paths"][0]["points"], elevation)
+            geometry = (
+                utils.decode_polyline5(response["paths"][0]["points"], elevation)
+                if points_encoded
+                else response["paths"][0]["points"]["coordinates"]
+            )
             return Direction(
                 geometry=geometry,
                 duration=int(response["paths"][0]["time"] / 1000),
