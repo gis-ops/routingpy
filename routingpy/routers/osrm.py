@@ -89,8 +89,8 @@ class OSRM:
 
     def directions(
         self,
-        profile,
         locations,
+        profile,
         radiuses=None,
         bearings=None,
         alternatives=None,
