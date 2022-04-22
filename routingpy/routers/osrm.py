@@ -348,7 +348,9 @@ class OSRM:
             [convert.delimit_list([convert.format_float(f) for f in pair]) for pair in locations], ";"
         )
 
-        params = self.get_matrix_params(sources, destinations, annotations, **matrix_kwargs)
+        params = self.get_matrix_params(
+            locations, profile, sources, destinations, annotations, **matrix_kwargs
+        )
 
         return self.parse_matrix_json(
             self.client._request("/table/v1/driving/" + coords, get_params=params, dry_run=dry_run)

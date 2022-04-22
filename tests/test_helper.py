@@ -474,8 +474,8 @@ ENDPOINTS_RESPONSES = {
 ENDPOINTS_QUERIES = {
     "google": {
         "directions": {
-            "locations": PARAM_LINE_MULTI,
             "profile": "driving",
+            "locations": PARAM_LINE_MULTI,
             "alternatives": True,
             "avoid": ["tolls", "ferries"],
             "optimize": False,
@@ -488,8 +488,8 @@ ENDPOINTS_QUERIES = {
             "transit_routing_preference": "less_walking",
         },
         "matrix": {
-            "locations": PARAM_LINE_MULTI,
             "profile": "driving",
+            "locations": PARAM_LINE_MULTI,
             "avoid": ["tolls", "ferries"],
             "language": "de",
             "region": "de",
@@ -502,6 +502,7 @@ ENDPOINTS_QUERIES = {
     },
     "osrm": {
         "directions": {
+            "profile": "",
             "locations": PARAM_LINE_MULTI,
             "radiuses": [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
             "bearings": [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
@@ -513,6 +514,7 @@ ENDPOINTS_QUERIES = {
             "continue_straight": True,
         },
         "matrix": {
+            "profile": "",
             "locations": PARAM_LINE_MULTI,
             "radiuses": [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
             "bearings": [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,

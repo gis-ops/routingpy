@@ -106,6 +106,7 @@ class OSRMTest(_test.TestCase):
             content_type="application/json",
         )
 
+        print(query)
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertIsInstance(routes, Directions)
