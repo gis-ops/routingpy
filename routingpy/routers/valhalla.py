@@ -225,6 +225,10 @@ class Valhalla:
         date_time=None,
         id=None,
     ):
+        """
+        Builds and returns the router's route parameters. It's a separate function so that
+        bindings can use routingpy's functionality. See documentation of .matrix().
+        """
         params = dict(costing=profile)
 
         params["locations"] = Valhalla._build_locations(locations)
@@ -423,6 +427,10 @@ class Valhalla:
         show_locations=None,
         id=None,
     ):
+        """
+        Builds and returns the router's route parameters. It's a separate function so that
+        bindings can use routingpy's functionality. See documentation of .matrix().
+        """
         contours = []
         for idx, r in enumerate(intervals):
             key = "time"
@@ -602,6 +610,10 @@ class Valhalla:
         units=None,
         id=None,
     ):
+        """
+        Builds and returns the router's route parameters. It's a separate function so that
+        bindings can use routingpy's functionality. See documentation of .matrix().
+        """
         params = {
             "costing": profile,
         }
