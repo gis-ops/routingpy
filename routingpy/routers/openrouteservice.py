@@ -306,7 +306,7 @@ class ORS:
                     )
             params["options"] = options
 
-        return self._parse_direction_json(
+        return self.parse_direction_json(
             self.client._request(
                 "/v2/directions/" + profile + "/" + format,
                 get_params={},
@@ -319,7 +319,7 @@ class ORS:
         )
 
     @staticmethod
-    def _parse_direction_json(response, format, units, alternative_routes):
+    def parse_direction_json(response, format, units, alternative_routes):
         if response is None:  # pragma: no cover
             return Direction()
 
@@ -454,7 +454,7 @@ class ORS:
         if intersections:
             params["intersections"] = intersections
 
-        return self._parse_isochrone_json(
+        return self.parse_isochrone_json(
             self.client._request(
                 "/v2/isochrones/" + profile + "/geojson",
                 get_params={},
@@ -464,7 +464,7 @@ class ORS:
         )
 
     @staticmethod
-    def _parse_isochrone_json(response):
+    def parse_isochrone_json(response):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -548,14 +548,14 @@ class ORS:
         if units:
             params["units"] = units
 
-        return self._parse_matrix_json(
+        return self.parse_matrix_json(
             self.client._request(
                 "/v2/matrix/" + profile + "/json", get_params={}, post_params=params, dry_run=dry_run
             )
         )
 
     @staticmethod
-    def _parse_matrix_json(response):
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
         durations = response.get("durations")

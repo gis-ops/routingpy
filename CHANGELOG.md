@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
+### Changed
+- made all `parse_*` functions public so they can be used by super projects
+
 ### Fixed
 - OSRM wasn't requesting the right endpoints: profile is meaningless
 - GraphHopper parsing fails with not encoded points ([#54](https://github.com/gis-ops/routing-py/issues/54))

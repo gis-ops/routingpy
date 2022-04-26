@@ -206,7 +206,7 @@ class Valhalla:
 
         get_params = {"access_token": self.api_key} if self.api_key else {}
 
-        return self._parse_direction_json(
+        return self.parse_direction_json(
             self.client._request("/route", get_params=get_params, post_params=params, dry_run=dry_run),
             units,
         )
@@ -225,6 +225,10 @@ class Valhalla:
         date_time=None,
         id=None,
     ):
+        """
+        Builds and returns the router's route parameters. It's a separate function so that
+        bindings can use routingpy's functionality. See documentation of .matrix().
+        """
         params = dict(costing=profile)
 
         params["locations"] = Valhalla._build_locations(locations)
@@ -262,7 +266,7 @@ class Valhalla:
         return params
 
     @staticmethod
-    def _parse_direction_json(response, units):
+    def parse_direction_json(response, units):
         if response is None:  # pragma: no cover
             return Direction()
 
@@ -397,7 +401,7 @@ class Valhalla:
         )
 
         get_params = {"access_token": self.api_key} if self.api_key else {}
-        return self._parse_isochrone_json(
+        return self.parse_isochrone_json(
             self.client._request(
                 "/isochrone", get_params=get_params, post_params=params, dry_run=dry_run
             ),
@@ -423,6 +427,10 @@ class Valhalla:
         show_locations=None,
         id=None,
     ):
+        """
+        Builds and returns the router's route parameters. It's a separate function so that
+        bindings can use routingpy's functionality. See documentation of .matrix().
+        """
         contours = []
         for idx, r in enumerate(intervals):
             key = "time"
@@ -481,7 +489,7 @@ class Valhalla:
         return params
 
     @staticmethod
-    def _parse_isochrone_json(response, intervals, locations):
+    def parse_isochrone_json(response, intervals, locations):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -582,7 +590,7 @@ class Valhalla:
 
         get_params = {"access_token": self.api_key} if self.api_key else {}
 
-        return self._parse_matrix_json(
+        return self.parse_matrix_json(
             self.client._request(
                 "/sources_to_targets", get_params=get_params, post_params=params, dry_run=dry_run
             ),
@@ -602,6 +610,10 @@ class Valhalla:
         units=None,
         id=None,
     ):
+        """
+        Builds and returns the router's route parameters. It's a separate function so that
+        bindings can use routingpy's functionality. See documentation of .matrix().
+        """
         params = {
             "costing": profile,
         }
@@ -646,7 +658,7 @@ class Valhalla:
         return params
 
     @staticmethod
-    def _parse_matrix_json(response, units):
+    def parse_matrix_json(response, units):
         if response is None:  # pragma: no cover
             return Matrix()
 
@@ -722,7 +734,7 @@ class Valhalla:
             date_time,
             id,
         )
-        return self._parse_expansion_json(
+        return self.parse_expansion_json(
             self.client._request(
                 "/expansion", get_params=get_params, post_params=params, dry_run=dry_run
             ),
@@ -760,7 +772,7 @@ class Valhalla:
         return params
 
     @staticmethod
-    def _parse_expansion_json(response, locations, expansion_properties):
+    def parse_expansion_json(response, locations, expansion_properties):
         if response is None:  # pragma: no cover
             return Expansions()
 

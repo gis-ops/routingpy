@@ -772,7 +772,7 @@ class HereMaps:
 
         params.update(directions_kwargs)
 
-        return self._parse_direction_json(
+        return self.parse_direction_json(
             self.client._request(
                 convert.delimit_list(["/calculateroute", format], "."),
                 get_params=params,
@@ -782,7 +782,7 @@ class HereMaps:
         )
 
     @staticmethod
-    def _parse_direction_json(response, alternatives):
+    def parse_direction_json(response, alternatives):
         if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
@@ -1075,7 +1075,7 @@ class HereMaps:
 
         params.update(isochrones_kwargs)
 
-        return self._parse_isochrone_json(
+        return self.parse_isochrone_json(
             self.client._request(
                 convert.delimit_list(["/calculateisoline", format], "."),
                 get_params=params,
@@ -1085,7 +1085,7 @@ class HereMaps:
         )
 
     @staticmethod
-    def _parse_isochrone_json(response, intervals):
+    def parse_isochrone_json(response, intervals):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -1370,7 +1370,7 @@ class HereMaps:
 
         params.update(matrix_kwargs)
 
-        return self._parse_matrix_json(
+        return self.parse_matrix_json(
             self.client._request(
                 convert.delimit_list(["/calculatematrix", format], "."),
                 get_params=params,
@@ -1379,7 +1379,7 @@ class HereMaps:
         )
 
     @staticmethod
-    def _parse_matrix_json(response):
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
 

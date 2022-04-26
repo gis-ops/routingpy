@@ -90,6 +90,7 @@ class OSRM:
     def directions(
         self,
         locations,
+        profile,
         radiuses=None,
         bearings=None,
         alternatives=None,
@@ -107,6 +108,8 @@ class OSRM:
         Use ``direction_kwargs`` for any missing ``directions`` request options.
 
         For more information, visit http://project-osrm.org/docs/v5.5.1/api/#route-service.
+
+        :param profile: NOT USED, only for compatibility with other providers.
 
         :param locations: The coordinates tuple the route should be calculated
             from in order of visit.
@@ -162,6 +165,8 @@ class OSRM:
         )
 
         params = self.get_direction_params(
+            locations,
+            profile,
             radiuses,
             bearings,
             alternatives,
@@ -173,7 +178,7 @@ class OSRM:
             **direction_kwargs
         )
 
-        return self._parse_direction_json(
+        return self.parse_direction_json(
             self.client._request("/route/v1/driving/" + coords, get_params=params, dry_run=dry_run),
             alternatives,
             geometries,
@@ -181,6 +186,8 @@ class OSRM:
 
     @staticmethod
     def get_direction_params(
+        locations,
+        profile,
         radiuses=None,
         bearings=None,
         alternatives=None,
@@ -191,6 +198,12 @@ class OSRM:
         overview=None,
         **directions_kwargs
     ):
+        """
+        Builds and returns the router's route parameters. It's a separate function so that
+        bindings can use routingpy's functionality. See documentation of .directions().
+
+        :param locations: NOT USED, only for consistency reasons with other providers.
+        """
         params = dict()
 
         if radiuses:
@@ -224,7 +237,7 @@ class OSRM:
         return params
 
     @staticmethod
-    def _parse_direction_json(response, alternatives, geometry_format):
+    def parse_direction_json(response, alternatives, geometry_format):
         if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
@@ -270,6 +283,7 @@ class OSRM:
     def matrix(
         self,
         locations,
+        profile,
         radiuses=None,
         bearings=None,
         sources=None,
@@ -289,9 +303,7 @@ class OSRM:
             from.
         :type locations: list of list
 
-        :param profile: Specifies the mode of transport to use when calculating
-            directions. One of ["car", "bike", "foot"].
-        :type profile: str
+        :param profile: NOT USED. Only exists for consistency with other providers.
 
         :param radiuses: A list of maximum distances (measured in
             meters) that limit the search of nearby road segments to every given waypoint.
@@ -336,16 +348,30 @@ class OSRM:
             [convert.delimit_list([convert.format_float(f) for f in pair]) for pair in locations], ";"
         )
 
-        params = self.get_matrix_params(sources, destinations, annotations, **matrix_kwargs)
+        params = self.get_matrix_params(
+            locations, profile, sources, destinations, annotations, **matrix_kwargs
+        )
 
-        return self._parse_matrix_json(
+        return self.parse_matrix_json(
             self.client._request("/table/v1/driving/" + coords, get_params=params, dry_run=dry_run)
         )
 
     @staticmethod
     def get_matrix_params(
-        sources=None, destinations=None, annotations=("duration", "distance"), **matrix_kwargs
+        locations,
+        profile,
+        sources=None,
+        destinations=None,
+        annotations=("duration", "distance"),
+        **matrix_kwargs
     ):
+        """
+        Builds and returns the router's route parameters. It's a separate function so that
+        bindings can use routingpy's functionality. See documentation of .matrix().
+
+        :param locations: NOT USED, only for consistency reasons with other providers.
+        :param profile: NOT USED, only for consistency reasons with other providers.
+        """
         params = dict()
 
         if sources:
@@ -362,7 +388,7 @@ class OSRM:
         return params
 
     @staticmethod
-    def _parse_matrix_json(response):
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
 

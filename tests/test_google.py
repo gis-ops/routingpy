@@ -241,11 +241,11 @@ class GoogleTest(_test.TestCase):
 
         for alternatives in [True, False]:
             with self.assertRaises(RouterApiError):
-                self.client._parse_direction_json(
+                self.client.parse_direction_json(
                     error_responses["ZERO_RESULTS"], alternatives=alternatives
                 )
 
             with self.assertRaises(RouterServerError):
-                self.client._parse_direction_json(
+                self.client.parse_direction_json(
                     error_responses["UNKNOWN_ERROR"], alternatives=alternatives
                 )

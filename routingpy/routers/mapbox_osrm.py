@@ -288,7 +288,7 @@ class MapboxOSRM:
 
         get_params = {"access_token": self.api_key} if self.api_key else {}
 
-        return self._parse_direction_json(
+        return self.parse_direction_json(
             self.client._request(
                 "/directions/v5/mapbox/" + profile,
                 get_params=get_params,
@@ -300,7 +300,7 @@ class MapboxOSRM:
         )
 
     @staticmethod
-    def _parse_direction_json(response, alternatives, geometry_format):
+    def parse_direction_json(response, alternatives, geometry_format):
         if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
@@ -409,7 +409,7 @@ class MapboxOSRM:
 
         profile = profile.replace("mapbox/", "")
 
-        return self._parse_isochrone_json(
+        return self.parse_isochrone_json(
             self.client._request(
                 "/isochrone/v1/mapbox/" + profile + "/" + locations_string,
                 get_params=params,
@@ -420,7 +420,7 @@ class MapboxOSRM:
         )
 
     @staticmethod
-    def _parse_isochrone_json(response, intervals, locations):
+    def parse_isochrone_json(response, intervals, locations):
         if response is None:  # pragma: no cover
             return Isochrones()
         return Isochrones(
@@ -501,7 +501,7 @@ class MapboxOSRM:
         if fallback_speed:
             params["fallback_speed"] = str(fallback_speed)
 
-        return self._parse_matrix_json(
+        return self.parse_matrix_json(
             self.client._request(
                 "/directions-matrix/v1/mapbox/" + profile + "/" + coords,
                 get_params=params,
@@ -510,7 +510,7 @@ class MapboxOSRM:
         )
 
     @staticmethod
-    def _parse_matrix_json(response):
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
 

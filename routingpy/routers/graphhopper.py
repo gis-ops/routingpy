@@ -377,7 +377,7 @@ class Graphhopper:
 
         params.extend(direction_kwargs.items())
 
-        return self._parse_directions_json(
+        return self.parse_directions_json(
             self.client._request("/route", get_params=params, dry_run=dry_run),
             algorithm,
             elevation,
@@ -385,7 +385,7 @@ class Graphhopper:
         )
 
     @staticmethod
-    def _parse_directions_json(response, algorithm, elevation, points_encoded):
+    def parse_directions_json(response, algorithm, elevation, points_encoded):
         if response is None:  # pragma: no cover
             if algorithm == "alternative_route":
                 return Directions()
@@ -505,7 +505,7 @@ class Graphhopper:
 
         params.extend(isochrones_kwargs.items())
 
-        return self._parse_isochrone_json(
+        return self.parse_isochrone_json(
             self.client._request("/isochrone", get_params=params, dry_run=dry_run),
             type,
             intervals[0],
@@ -514,7 +514,7 @@ class Graphhopper:
         )
 
     @staticmethod
-    def _parse_isochrone_json(response, type, max_range, buckets, center):
+    def parse_isochrone_json(response, type, max_range, buckets, center):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -633,12 +633,12 @@ class Graphhopper:
 
         params.extend(matrix_kwargs.items())
 
-        return self._parse_matrix_json(
+        return self.parse_matrix_json(
             self.client._request("/matrix", get_params=params, dry_run=dry_run),
         )
 
     @staticmethod
-    def _parse_matrix_json(response):
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
         durations = response.get("times")
