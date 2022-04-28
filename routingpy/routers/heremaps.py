@@ -24,6 +24,8 @@ from ..matrix import Matrix
 
 from operator import itemgetter
 
+from ..utils import logger
+
 
 class HereMaps:
     """Performs requests to the HERE Maps API services."""
@@ -1394,6 +1396,13 @@ class HereMaps:
         for index, obj in enumerate(mtx_objects):
             if index < (length - 1):
                 next_ = mtx_objects[index + 1]
+            if "summary" not in obj:
+                logger.warn(
+                    "HERE matrix couldn't compute route for %s => %s",
+                    obj["startIndex"],
+                    obj["destinationIndex"],
+                )
+                obj["summary"] = {"travelTime": None, "distance": None}
 
             if "travelTime" in obj["summary"]:
                 index_durations.append(obj["summary"]["travelTime"])
