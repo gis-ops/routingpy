@@ -465,6 +465,7 @@ ENDPOINTS_RESPONSES = {
                         "destinationIndex": 0,
                         "summary": {"distance": 1188, "travelTime": 69, "costFactor": 69},
                     },
+                    {"startIndex": 1, "destinationIndex": 0, "status": "failed"},
                 ]
             }
         },
