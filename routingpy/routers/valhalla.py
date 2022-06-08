@@ -128,7 +128,7 @@ class Valhalla:
         preference=None,
         options=None,
         units=None,
-        instructions=None,
+        instructions=False,
         language=None,
         directions_type=None,
         avoid_locations=None,
