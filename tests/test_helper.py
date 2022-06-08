@@ -708,6 +708,7 @@ ENDPOINTS_QUERIES = {
             "avoid_polygons": PARAM_POLY,
             "date_time": {"type": 1, "value": "2021-03-03T08:06"},
             "language": "pirate",
+            "instructions": False,
             "id": "wacko",
             "somerandom": "option",
         },
@@ -810,6 +811,7 @@ ENDPOINTS_EXPECTED = {
             "avoid_polygons": PARAM_POLY,
             "date_time": {"type": 1, "value": "2021-03-03T08:06"},
             "id": "wacko",
+            "narrative": False,
         },
         "isochrones": {
             "locations": [{"lat": PARAM_POINT[1], "lon": PARAM_POINT[0]}],
