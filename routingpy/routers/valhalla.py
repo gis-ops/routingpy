@@ -128,6 +128,7 @@ class Valhalla:
         preference=None,
         options=None,
         units=None,
+        instructions=None,
         language=None,
         directions_type=None,
         avoid_locations=None,
@@ -161,6 +162,9 @@ class Valhalla:
             https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#costing-options
 
         :param str units: Distance units for output. One of ['mi', 'km']. Default km.
+
+        :param bool instructions: Whether to return turn-by-turn instructions. Named for compatibility with other
+            providers. Valhalla's parameter here is 'narrative'.
 
         :param str language: The language of the narration instructions based on the IETF BCP 47 language tag string.
             One of ['ca', 'cs', 'de', 'en', 'pirate', 'es', 'fr', 'hi', 'it', 'pt', 'ru', 'sl', 'sv']. Default 'en'.
@@ -196,6 +200,7 @@ class Valhalla:
             preference,
             options,
             units,
+            instructions,
             language,
             directions_type,
             avoid_locations,
@@ -218,6 +223,7 @@ class Valhalla:
         preference=None,
         options=None,
         units=None,
+        instructions=False,
         language=None,
         directions_type=None,
         avoid_locations=None,
@@ -229,7 +235,7 @@ class Valhalla:
         Builds and returns the router's route parameters. It's a separate function so that
         bindings can use routingpy's functionality. See documentation of .matrix().
         """
-        params = dict(costing=profile)
+        params = dict(costing=profile, narrative=instructions)
 
         params["locations"] = Valhalla._build_locations(locations)
 
