@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
+## [v1.0.0](https://pypi.org/project/routingpy/1.0.0/)
+
 ### Changed
 - made all `parse_*` functions public so they can be used by super projects
 
