@@ -23,6 +23,7 @@ from routingpy.isochrone import Isochrones, Isochrone
 from routingpy.matrix import Matrix
 from tests.test_helper import *
 import tests as _test
+from tests.utils import get_max_depth
 
 import responses
 from copy import deepcopy
@@ -132,11 +133,12 @@ class MapboxOSRMTest(_test.TestCase):
         )
         self.assertIsInstance(iso, Isochrones)
         self.assertEqual(2, len(iso))
-        for ischrone in iso:
-            self.assertIsInstance(ischrone, Isochrone)
-            self.assertIsInstance(ischrone.geometry, list)
-            self.assertIsInstance(ischrone.interval, int)
-            self.assertIsInstance(ischrone.center, list)
+        for isochrone in iso:
+            self.assertIsInstance(isochrone, Isochrone)
+            self.assertIsInstance(isochrone.geometry, list)
+            self.assertIsInstance(isochrone.interval, int)
+            self.assertIsInstance(isochrone.center, list)
+            self.assertEqual(get_max_depth(isochrone.geometry), 4)
 
     @responses.activate
     def test_full_matrix(self):

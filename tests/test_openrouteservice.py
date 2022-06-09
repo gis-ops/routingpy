@@ -24,6 +24,7 @@ from copy import deepcopy
 
 from tests.test_helper import *
 import tests as _test
+from tests.utils import get_max_depth
 
 import responses
 import json
@@ -122,6 +123,7 @@ class ORSTest(_test.TestCase):
             self.assertIsInstance(iso.geometry, list)
             self.assertIsInstance(iso.center, list)
             self.assertIsInstance(iso.interval, int)
+            self.assertEqual(get_max_depth(iso.geometry), 4)
 
     @responses.activate
     def test_full_matrix(self):

@@ -521,11 +521,14 @@ class Graphhopper:
         isochrones = []
         accessor = "polygons" if type == "json" else "features"
         for index, polygon in enumerate(response[accessor]):
+            geometry = (
+                [[polygon["geometry"]["coordinates"]]]
+                if polygon["geometry"]["type"] == "polygon"
+                else [polygon["geometry"]["coordinates"]]  # if MultiPolygon
+            )
             isochrones.append(
                 Isochrone(
-                    geometry=[
-                        l[:2] for l in polygon["geometry"]["coordinates"][0]  # noqa: E741
-                    ],  # takes in elevation for some reason
+                    geometry=geometry,  # noqa: E741
                     interval=int(max_range * ((polygon["properties"]["bucket"] + 1) / buckets)),
                     center=center,
                 )

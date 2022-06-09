@@ -426,7 +426,7 @@ class MapboxOSRM:
         return Isochrones(
             [
                 Isochrone(
-                    geometry=isochrone["geometry"]["coordinates"],
+                    geometry=[[isochrone["geometry"]["coordinates"]]],
                     interval=intervals[idx],
                     center=locations,
                 )

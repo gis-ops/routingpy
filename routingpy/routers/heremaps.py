@@ -1105,7 +1105,7 @@ class HereMaps:
 
             geometries.append(
                 Isochrone(
-                    geometry=range_polygons,
+                    geometry=[range_polygons],
                     interval=intervals[idx],
                     center=list(response["response"]["start"]["mappedPosition"].values()),
                 )

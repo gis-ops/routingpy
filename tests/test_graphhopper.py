@@ -22,8 +22,10 @@ from routingpy.isochrone import Isochrones, Isochrone
 from routingpy.matrix import Matrix
 from routingpy.utils import decode_polyline5
 
+
 from tests.test_helper import *
 import tests as _test
+from tests.utils import get_max_depth
 
 import responses
 from copy import deepcopy
@@ -165,6 +167,7 @@ class GraphhopperTest(_test.TestCase):
             self.assertIsInstance(iso.geometry, list)
             self.assertIsInstance(iso.interval, int)
             self.assertIsInstance(iso.center, list)
+            self.assertEqual(get_max_depth(iso.geometry), 4)
 
     @responses.activate
     def test_full_matrix(self):
