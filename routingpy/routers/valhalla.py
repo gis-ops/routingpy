@@ -670,14 +670,15 @@ class Valhalla:
 
         factor = 0.621371 if units == "mi" else 1
         durations = [
-            [
-                destination["time"] if not destination["time"] is not None else None
-                for destination in origin
-            ]
-            for origin in response["sources_to_targets"]
+            [destination["time"] for destination in origin] for origin in response["sources_to_targets"]
         ]
         distances = [
-            [int(destination["distance"] or 0 * 1000 * factor) or None for destination in origin]
+            [
+                int(destination["distance"] * 1000 * factor)
+                if destination["distance"] is not None
+                else None
+                for destination in origin
+            ]
             for origin in response["sources_to_targets"]
         ]
 

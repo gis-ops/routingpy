@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
+## [v1.0.2](https://pypi.org/project/routingpy/1.0.2/)
+
 ### Fixed
 - Valhalla's 'matrix' endpoint couldn't deal with NULL entries
 
