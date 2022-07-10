@@ -503,7 +503,7 @@ ENDPOINTS_QUERIES = {
     },
     "osrm": {
         "directions": {
-            "profile": "",
+            "profile": "driving",
             "locations": PARAM_LINE_MULTI,
             "radiuses": [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
             "bearings": [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
@@ -515,7 +515,7 @@ ENDPOINTS_QUERIES = {
             "continue_straight": True,
         },
         "matrix": {
-            "profile": "",
+            "profile": "walking",
             "locations": PARAM_LINE_MULTI,
             "radiuses": [PARAM_INT_BIG, PARAM_INT_BIG, PARAM_INT_BIG],
             "bearings": [[PARAM_INT_SMALL, PARAM_INT_SMALL]] * 3,
