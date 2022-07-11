@@ -165,6 +165,7 @@ class GraphhopperTest(_test.TestCase):
             self.assertIsInstance(iso.geometry, list)
             self.assertIsInstance(iso.interval, int)
             self.assertIsInstance(iso.center, list)
+            self.assertEqual(iso.interval_type, "time")
 
     @responses.activate
     def test_full_matrix(self):

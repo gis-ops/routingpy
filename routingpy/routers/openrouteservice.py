@@ -375,7 +375,7 @@ class ORS:
         locations,
         profile,
         intervals,
-        interval_type=None,
+        interval_type="time",
         units=None,
         location_type=None,
         smoothing=None,
@@ -460,11 +460,12 @@ class ORS:
                 get_params={},
                 post_params=params,
                 dry_run=dry_run,
-            )
+            ),
+            interval_type,
         )
 
     @staticmethod
-    def parse_isochrone_json(response):
+    def parse_isochrone_json(response, interval_type):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -475,6 +476,7 @@ class ORS:
                     geometry=isochrone["geometry"]["coordinates"][0],
                     interval=isochrone["properties"]["value"],
                     center=isochrone["properties"]["center"],
+                    interval_type=interval_type,
                 )
             )
 

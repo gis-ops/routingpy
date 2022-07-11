@@ -291,7 +291,7 @@ class Valhalla:
         locations,
         profile,
         intervals,
-        interval_type=None,
+        interval_type="time",
         colors=None,
         polygons=None,
         denoise=None,
@@ -413,6 +413,7 @@ class Valhalla:
             ),
             intervals,
             locations,
+            interval_type,
         )
 
     @staticmethod  # noqa: C901
@@ -420,7 +421,7 @@ class Valhalla:
         locations,
         profile,
         intervals,
-        interval_type=None,
+        interval_type="time",
         colors=None,
         polygons=None,
         denoise=None,
@@ -495,7 +496,7 @@ class Valhalla:
         return params
 
     @staticmethod
-    def parse_isochrone_json(response, intervals, locations):
+    def parse_isochrone_json(response, intervals, locations, interval_type):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -507,6 +508,7 @@ class Valhalla:
                         geometry=feature["geometry"]["coordinates"],
                         interval=intervals[idx],
                         center=locations,
+                        interval_type=interval_type,
                     )
                 )
 
