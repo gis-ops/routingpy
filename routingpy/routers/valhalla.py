@@ -693,7 +693,7 @@ class Valhalla:
         intervals: Sequence[int],
         skip_opposites: Optional[bool] = None,
         expansion_properties: Optional[Sequence[str]] = None,
-        interval_type: Optional[str] = None,
+        interval_type: Optional[str] = "time",
         options: Optional[dict] = None,
         date_time: Optional[dict] = None,
         id: Optional[str] = None,
@@ -753,6 +753,7 @@ class Valhalla:
             ),
             locations,
             expansion_properties,
+            interval_type,
         )
 
     @classmethod
@@ -785,7 +786,7 @@ class Valhalla:
         return params
 
     @staticmethod
-    def parse_expansion_json(response, locations, expansion_properties):
+    def parse_expansion_json(response, locations, expansion_properties, interval_type):
         if response is None:  # pragma: no cover
             return Expansions()
 
@@ -799,7 +800,7 @@ class Valhalla:
                     ]
             expansions.append(Edge(geometry=line, **properties))
 
-        return Expansions(expansions, locations, response)
+        return Expansions(expansions, locations, interval_type, response)
 
     @staticmethod
     def _build_locations(coordinates):

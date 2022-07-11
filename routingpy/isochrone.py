@@ -60,7 +60,7 @@ class Isochrone(object):
         self._geometry = geometry
         self._interval = int(interval)
         self._center = center
-        self._metric = interval_type
+        self._interval_type = interval_type
 
     @property
     def geometry(self):
@@ -98,7 +98,7 @@ class Isochrone(object):
 
         :return: str
         """
-        return self._metric
+        return self._interval_type
 
     def __repr__(self):  # pragma: no cover
         return "Isochrone({}, {})".format(self.geometry, self.interval)

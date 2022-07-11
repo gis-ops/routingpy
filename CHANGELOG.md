@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - OSRM does have a weird URL concept for profiles, so revert [#64](https://github.com/gis-ops/routing-py/issues/64))
 
 ### Added
-- `interval_type` to `Isochrone` objects
+- `interval_type` to `Isochrone` and `Expansions` objects
 
 ## [v1.0.2](https://pypi.org/project/routingpy/1.0.2/)
 

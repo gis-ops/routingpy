@@ -18,6 +18,7 @@
 
 from routingpy import Valhalla
 from routingpy.direction import Direction
+from routingpy.expansion import Expansions
 from routingpy.isochrone import Isochrones, Isochrone
 from routingpy.matrix import Matrix
 from tests.test_helper import *
@@ -199,7 +200,12 @@ class ValhallaTest(_test.TestCase):
             json=ENDPOINTS_RESPONSES[self.name]["expansion"],
             content_type="application/json",
         )
-        self.client.expansion(**query)
+        expansion = self.client.expansion(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
+
+        self.assertIsInstance(expansion, Expansions)
+        self.assertIsInstance(expansion.center, list)
+        self.assertEqual(expansion.interval_type, "time")
+        self.assertIsInstance(expansion.raw, dict)

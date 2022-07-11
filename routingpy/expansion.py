@@ -100,9 +100,10 @@ class Expansions:
     the complete raw response of the expansion request.
     """
 
-    def __init__(self, expansions=None, center=None, raw=None):
+    def __init__(self, expansions=None, center=None, interval_type=None, raw=None):
         self._expansions = expansions
         self._center = center
+        self._interval_type = interval_type
         self._raw = raw
 
     @property
@@ -123,6 +124,15 @@ class Expansions:
         :rtype: list of float
         """
         return self._center
+
+    @property
+    def interval_type(self):
+        """
+        Was is based on 'distance' or 'time'?
+
+        :return: str
+        """
+        return self._interval_type
 
     def __repr__(self):  # pragma: no cover
         if len(self._expansions) < 10:
