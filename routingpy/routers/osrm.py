@@ -27,7 +27,7 @@ from ..matrix import Matrix
 class OSRM:
     """Performs requests to the OSRM API services."""
 
-    _DEFAULT_BASE_URL = "https://router.project-osrm.org"
+    _DEFAULT_BASE_URL = "https://routing.openstreetmap.de/routed-bike"
 
     def __init__(
         self,
@@ -38,13 +38,13 @@ class OSRM:
         retry_over_query_limit=False,
         skip_api_error=None,
         client=Client,
-        **client_kwargs
+        **client_kwargs,
     ):
         """
         Initializes an OSRM client.
 
-        :param base_url: The base URL for the request. Defaults to the OSRM demo API
-            server. Should not have a trailing slash.
+        :param base_url: The base URL for the request. Defaults to the FOSSGIS OSRM
+            instance for "bike". Should not have a trailing slash.
         :type base_url: str
 
         :param user_agent: User Agent to be used when requesting.
@@ -84,13 +84,13 @@ class OSRM:
             retry_timeout,
             retry_over_query_limit,
             skip_api_error,
-            **client_kwargs
+            **client_kwargs,
         )
 
     def directions(
         self,
         locations,
-        profile,
+        profile="driving",
         radiuses=None,
         bearings=None,
         alternatives=None,
@@ -100,7 +100,7 @@ class OSRM:
         geometries=None,
         overview=None,
         dry_run=None,
-        **direction_kwargs
+        **direction_kwargs,
     ):
         """
         Get directions between an origin point and a destination point.
@@ -114,6 +114,13 @@ class OSRM:
         :param locations: The coordinates tuple the route should be calculated
             from in order of visit.
         :type locations: list of list
+
+        :param profile: Optionally specifies the mode of transport to use when calculating
+            directions. Note that this strongly depends on how the OSRM server works. E.g.
+            the public FOSSGIS instances ignore any profile parameter set this way and instead
+            chose to encode the 'profile' in the base URL, e.g.
+            https://routing.openstreetmap.de/routed-bike. Default "driving".
+        :type profile: str
 
         :param radiuses: A list of maximum distances (measured in
             meters) that limit the search of nearby road segments to every given waypoint.
@@ -175,11 +182,11 @@ class OSRM:
             annotations,
             geometries,
             overview,
-            **direction_kwargs
+            **direction_kwargs,
         )
 
         return self.parse_direction_json(
-            self.client._request("/route/v1/driving/" + coords, get_params=params, dry_run=dry_run),
+            self.client._request(f"/route/v1/{profile}/{coords}", get_params=params, dry_run=dry_run),
             alternatives,
             geometries,
         )
@@ -196,13 +203,14 @@ class OSRM:
         annotations=None,
         geometries=None,
         overview=None,
-        **directions_kwargs
+        **directions_kwargs,
     ):
         """
         Builds and returns the router's route parameters. It's a separate function so that
         bindings can use routingpy's functionality. See documentation of .directions().
 
         :param locations: NOT USED, only for consistency reasons with other providers.
+        :param profile: NOT USED, only for consistency reasons with other providers.
         """
         params = dict()
 
@@ -283,14 +291,14 @@ class OSRM:
     def matrix(
         self,
         locations,
-        profile,
+        profile="driving",
         radiuses=None,
         bearings=None,
         sources=None,
         destinations=None,
         dry_run=None,
         annotations=("duration", "distance"),
-        **matrix_kwargs
+        **matrix_kwargs,
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
@@ -303,7 +311,12 @@ class OSRM:
             from.
         :type locations: list of list
 
-        :param profile: NOT USED. Only exists for consistency with other providers.
+        :param profile: Optionally specifies the mode of transport to use when calculating
+            directions. Note that this strongly depends on how the OSRM server works. E.g.
+            the public FOSSGIS instances ignore any profile parameter set this way and instead
+            chose to encode the 'profile' in the base URL, e.g.
+            https://routing.openstreetmap.de/routed-bike. Default "driving".
+        :type profile: str
 
         :param radiuses: A list of maximum distances (measured in
             meters) that limit the search of nearby road segments to every given waypoint.
@@ -349,21 +362,23 @@ class OSRM:
         )
 
         params = self.get_matrix_params(
-            locations, profile, sources, destinations, annotations, **matrix_kwargs
+            locations, profile, radiuses, bearings, sources, destinations, annotations, **matrix_kwargs
         )
 
         return self.parse_matrix_json(
-            self.client._request("/table/v1/driving/" + coords, get_params=params, dry_run=dry_run)
+            self.client._request(f"/table/v1/{profile}/{coords}", get_params=params, dry_run=dry_run)
         )
 
     @staticmethod
     def get_matrix_params(
         locations,
         profile,
+        radiuses=None,
+        bearings=None,
         sources=None,
         destinations=None,
         annotations=("duration", "distance"),
-        **matrix_kwargs
+        **matrix_kwargs,
     ):
         """
         Builds and returns the router's route parameters. It's a separate function so that
@@ -373,6 +388,14 @@ class OSRM:
         :param profile: NOT USED, only for consistency reasons with other providers.
         """
         params = dict()
+
+        if radiuses:
+            params["radiuses"] = convert.delimit_list(radiuses, ";")
+
+        if bearings:
+            params["bearings"] = convert.delimit_list(
+                [convert.delimit_list(pair) for pair in bearings], ";"
+            )
 
         if sources:
             params["sources"] = convert.delimit_list(sources, ";")
