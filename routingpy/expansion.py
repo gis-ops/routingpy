@@ -128,7 +128,7 @@ class Expansions:
     @property
     def interval_type(self):
         """
-        Was is based on 'distance' or 'time'?
+        Was it based on 'distance' or 'time'?
 
         :return: str
         """
