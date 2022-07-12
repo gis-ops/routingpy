@@ -53,13 +53,14 @@ class Isochrones(object):
 
 class Isochrone(object):
     """
-    Contains a parsed single isochrone response. Access via properties ``geometry``, ``interval`` ``center``.
+    Contains a parsed single isochrone response. Access via properties ``geometry``, ``interval``, ``center``, ``interval_type``.
     """
 
-    def __init__(self, geometry=None, interval=None, center=None):
+    def __init__(self, geometry=None, interval=None, center=None, interval_type=None):
         self._geometry = geometry
         self._interval = int(interval)
         self._center = center
+        self._interval_type = interval_type
 
     @property
     def geometry(self):
@@ -89,6 +90,15 @@ class Isochrone(object):
         :return: int
         """
         return self._interval
+
+    @property
+    def interval_type(self):
+        """
+        Was it based on 'distance' or 'time'?
+
+        :return: str
+        """
+        return self._interval_type
 
     def __repr__(self):  # pragma: no cover
         return "Isochrone({}, {})".format(self.geometry, self.interval)

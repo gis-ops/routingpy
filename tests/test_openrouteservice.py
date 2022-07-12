@@ -122,6 +122,7 @@ class ORSTest(_test.TestCase):
             self.assertIsInstance(iso.geometry, list)
             self.assertIsInstance(iso.center, list)
             self.assertIsInstance(iso.interval, int)
+            self.assertEqual(iso.interval_type, "distance")
 
     @responses.activate
     def test_full_matrix(self):

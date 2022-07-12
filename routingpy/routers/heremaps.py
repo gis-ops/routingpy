@@ -1084,10 +1084,11 @@ class HereMaps:
                 dry_run=dry_run,
             ),
             intervals,
+            interval_type,
         )
 
     @staticmethod
-    def parse_isochrone_json(response, intervals):
+    def parse_isochrone_json(response, intervals, interval_type):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -1108,6 +1109,7 @@ class HereMaps:
                     geometry=range_polygons,
                     interval=intervals[idx],
                     center=list(response["response"]["start"]["mappedPosition"].values()),
+                    interval_type=interval_type,
                 )
             )
 

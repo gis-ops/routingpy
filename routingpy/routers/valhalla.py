@@ -291,7 +291,7 @@ class Valhalla:
         locations,
         profile,
         intervals,
-        interval_type=None,
+        interval_type="time",
         colors=None,
         polygons=None,
         denoise=None,
@@ -413,6 +413,7 @@ class Valhalla:
             ),
             intervals,
             locations,
+            interval_type,
         )
 
     @staticmethod  # noqa: C901
@@ -420,7 +421,7 @@ class Valhalla:
         locations,
         profile,
         intervals,
-        interval_type=None,
+        interval_type="time",
         colors=None,
         polygons=None,
         denoise=None,
@@ -495,7 +496,7 @@ class Valhalla:
         return params
 
     @staticmethod
-    def parse_isochrone_json(response, intervals, locations):
+    def parse_isochrone_json(response, intervals, locations, interval_type):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -507,6 +508,7 @@ class Valhalla:
                         geometry=feature["geometry"]["coordinates"],
                         interval=intervals[idx],
                         center=locations,
+                        interval_type=interval_type,
                     )
                 )
 
@@ -691,7 +693,7 @@ class Valhalla:
         intervals: Sequence[int],
         skip_opposites: Optional[bool] = None,
         expansion_properties: Optional[Sequence[str]] = None,
-        interval_type: Optional[str] = None,
+        interval_type: Optional[str] = "time",
         options: Optional[dict] = None,
         date_time: Optional[dict] = None,
         id: Optional[str] = None,
@@ -751,6 +753,7 @@ class Valhalla:
             ),
             locations,
             expansion_properties,
+            interval_type,
         )
 
     @classmethod
@@ -783,7 +786,7 @@ class Valhalla:
         return params
 
     @staticmethod
-    def parse_expansion_json(response, locations, expansion_properties):
+    def parse_expansion_json(response, locations, expansion_properties, interval_type):
         if response is None:  # pragma: no cover
             return Expansions()
 
@@ -797,7 +800,7 @@ class Valhalla:
                     ]
             expansions.append(Edge(geometry=line, **properties))
 
-        return Expansions(expansions, locations, response)
+        return Expansions(expansions, locations, interval_type, response)
 
     @staticmethod
     def _build_locations(coordinates):

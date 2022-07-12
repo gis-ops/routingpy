@@ -429,7 +429,7 @@ class Graphhopper:
         intervals,
         type="json",
         buckets=1,
-        interval_type=None,
+        interval_type="time",
         reverse_flow=None,
         debug=None,
         dry_run=None,
@@ -511,10 +511,11 @@ class Graphhopper:
             intervals[0],
             buckets,
             center,
+            interval_type,
         )
 
     @staticmethod
-    def parse_isochrone_json(response, type, max_range, buckets, center):
+    def parse_isochrone_json(response, type, max_range, buckets, center, interval_type):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -528,6 +529,7 @@ class Graphhopper:
                     ],  # takes in elevation for some reason
                     interval=int(max_range * ((polygon["properties"]["bucket"] + 1) / buckets)),
                     center=center,
+                    interval_type=interval_type,
                 )
             )
 

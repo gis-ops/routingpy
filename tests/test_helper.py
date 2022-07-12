@@ -686,7 +686,6 @@ ENDPOINTS_QUERIES = {
             "locations": PARAM_POINT,
             "profile": "car",
             "intervals": [1000],
-            "interval_type": None,
             "buckets": 5,
             "reverse_flow": True,
             "debug": False,
