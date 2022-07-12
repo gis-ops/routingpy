@@ -117,8 +117,9 @@ class OSRM:
 
         :param profile: Optionally specifies the mode of transport to use when calculating
             directions. Note that this strongly depends on how the OSRM server works. E.g.
-            the FOSSGIS instance expects 'driving' and chose to encode the 'profile' in the
-            base URL, e.g. https://routing.openstreetmap.de/routed-bike. Default "driving".
+            the public FOSSGIS instances ignore any profile parameter set this way and instead
+            chose to encode the 'profile' in the base URL, e.g.
+            https://routing.openstreetmap.de/routed-bike. Default "driving".
         :type profile: str
 
         :param radiuses: A list of maximum distances (measured in
@@ -312,8 +313,9 @@ class OSRM:
 
         :param profile: Optionally specifies the mode of transport to use when calculating
             directions. Note that this strongly depends on how the OSRM server works. E.g.
-            the FOSSGIS instance expects 'driving' and chose to encode the 'profile' in the
-            base URL, e.g. https://routing.openstreetmap.de/routed-bike. Default "driving".
+            the public FOSSGIS instances ignore any profile parameter set this way and instead
+            chose to encode the 'profile' in the base URL, e.g.
+            https://routing.openstreetmap.de/routed-bike. Default "driving".
         :type profile: str
 
         :param radiuses: A list of maximum distances (measured in
