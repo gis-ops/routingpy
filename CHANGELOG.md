@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
+## [v1.0.4](https://pypi.org/project/routingpy/1.0.4/)
+
+### Fixed
+- Passing a Valhalla.Waypoint to isochrones resulted in an unhandled exception
+
 ## [v1.0.3](https://pypi.org/project/routingpy/1.0.3/)
 
 ### Fixed

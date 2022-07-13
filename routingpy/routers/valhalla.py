@@ -809,7 +809,11 @@ class Valhalla:
         locations = []
 
         # Isochrones only support one coordinate tuple, so check for type of first element
-        if isinstance(coordinates[0], (list, tuple, Valhalla.Waypoint)):
+        if isinstance(coordinates, Valhalla.Waypoint):
+            locations.append(coordinates._make_waypoint())
+        elif isinstance(coordinates[0], float):
+            locations.append({"lon": coordinates[0], "lat": coordinates[1]})
+        elif isinstance(coordinates[0], (list, tuple, Valhalla.Waypoint)):
             for idx, coord in enumerate(coordinates):
                 if isinstance(coord, (list, tuple)):
                     locations.append({"lon": coord[0], "lat": coord[1]}),
@@ -821,7 +825,5 @@ class Valhalla:
                             type(coord), idx, coord
                         )
                     )
-        elif isinstance(coordinates[0], float):
-            locations.append({"lon": coordinates[0], "lat": coordinates[1]})
 
         return locations
