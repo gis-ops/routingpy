@@ -17,19 +17,48 @@
 """
 :class:`Expansion` returns expansion results.
 """
+from enum import Enum
 from typing import List, Union, Tuple, Optional
 
 
-class Edge:
+class MatchDiscontinuity(Enum):
+    NONE = ""
+    BEGIN = "begin"
+    END = "end"
+
+
+class MatchedPoint:
     """
-    Contains a parsed single line string of an edge and its attributes, if specified in the request.
+    A single matched point
+    """
+
+    def __init__(
+        self,
+        location: Union[Tuple[float, float], List[float]],
+        match_type: str,
+        edge_index: Optional[int],
+        dist_along_edge: Optional[int],
+        discontinuity: Optional[MatchDiscontinuity] = None,
+    ):
+        pass
+
+
+class MatchedEdge:
+    """
+    Contains a parsed single line string and its attributes, if specified in the request.
     Access via properties ``geometry``, ``distances`` ``durations``, ``costs``, ``edge_ids``, ``statuses``.
     """
 
     def __init__(
-        self, geometry=None, distances=None, durations=None, costs=None, edge_ids=None, statuses=None
+        self,
+        shape: List[List[float]],
+        distances=None,
+        durations=None,
+        costs=None,
+        edge_ids=None,
+        statuses=None,
     ):
-        self._geometry = geometry
+        self._shape = shape
         self._distance = distances
         self._duration = durations
         self._cost = costs
@@ -95,15 +124,17 @@ class Edge:
         return "Edge({})".format(", ".join([f"{k[1:]}: {v}" for k, v in vars(self).items() if v]))
 
 
-class Expansions:
+class MatchedEdges:
     """
-    Contains a list of :class:`Edge`, which can be iterated over or accessed by index. The property ¸`raw`` contains
+    Contains a list of :class:`Expansion`, which can be iterated over or accessed by index. The property ¸`raw`` contains
     the complete raw response of the expansion request.
     """
 
     def __init__(
         self,
-        edges: Optional[List[Edge]] = None,
+        shape: List[List[float]],
+        nodes: Optional[List[MatchedPoint]] = None,
+        edges: Optional[List[MatchedEdge]] = None,
         center: Optional[Union[List[float], Tuple[float]]] = None,
         interval_type: Optional[str] = None,
         raw: Optional[dict] = None,
