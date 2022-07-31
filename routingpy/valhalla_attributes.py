@@ -315,7 +315,7 @@ class MatchedPoint:
         self._discontinuity: Optional[MatchDiscontinuity] = None
         if point.get("begin_route_discontinuity"):
             self._discontinuity = MatchDiscontinuity("begin")
-        elif point.get("begin_route_discontinuity"):
+        elif point.get("end_route_discontinuity"):
             self._discontinuity = MatchDiscontinuity("end")
 
     @property

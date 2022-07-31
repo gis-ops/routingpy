@@ -836,9 +836,11 @@ class Valhalla:
         dry_run: Optional[bool] = None,
         **kwargs
     ) -> MatchedResults:
-        """Gets the expansion tree for a range of time or distance values around a given coordinate.
+        """
+        Map-matches the input locations to form a route on the Valhalla base network and
+        returns detailed attribution for encountered edges and nodes.
 
-        For more information, visit https://valhalla.readthedocs.io/en/latest/api/expansion/api-reference/.
+        For more information, visit https://valhalla.readthedocs.io/en/latest/api/map-matching/api-reference/.
 
         :param locations: One pair of lng/lat values or :class:`Waypoint`. Takes the form [Longitude, Latitude].
         :param profile: Specifies the mode of transport to use when calculating
