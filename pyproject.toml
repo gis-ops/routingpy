@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.poetry]
 name = "routingpy"
-version = "1.0.4"
+version = "1.1.0"
 description = "One lib to route them all."
 authors = ["Nils Nolde <nils@gis-ops.com>", "Tim Ellersiek <tim@gis-ops.com>"]
 license = "Apache2"
@@ -55,3 +55,13 @@ exclude = '''
   | build
 )/
 '''
+
+[tool.isort]
+profile = "black"
+line_length = 105
+src_paths = ["routingpy", "tests"]
+skip = [
+    ".venv",
+    "build",
+    "dist",
+]

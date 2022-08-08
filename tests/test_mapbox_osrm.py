@@ -16,17 +16,17 @@
 #
 """Tests for the Graphhopper module."""
 
-from routingpy import MapboxOSRM
-from routingpy import convert
-from routingpy.direction import Directions, Direction
-from routingpy.isochrone import Isochrones, Isochrone
-from routingpy.matrix import Matrix
-from tests.test_helper import *
-import tests as _test
+from collections import Counter
+from copy import deepcopy
 
 import responses
-from copy import deepcopy
-from collections import Counter
+
+import tests as _test
+from routingpy import MapboxOSRM, convert
+from routingpy.direction import Direction, Directions
+from routingpy.isochrone import Isochrone, Isochrones
+from routingpy.matrix import Matrix
+from tests.test_helper import *
 
 
 class MapboxOSRMTest(_test.TestCase):

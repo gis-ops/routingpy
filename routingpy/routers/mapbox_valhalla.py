@@ -14,9 +14,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from .valhalla import Valhalla
 from ..client_base import DEFAULT
 from ..client_default import Client
+from .valhalla import Valhalla
 
 
 class MapboxValhalla(Valhalla):

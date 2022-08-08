@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
+## [v1.1.0](https://pypi.org/project/routingpy/1.1.0/)
+
+### Added
+- Added Valhalla's trace_attributes endpoint
+
 ## [v1.0.4](https://pypi.org/project/routingpy/1.0.4/)
 
 ### Fixed

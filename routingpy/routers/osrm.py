@@ -17,10 +17,10 @@
 
 from typing import List  # noqa: F401
 
+from .. import convert, utils
 from ..client_base import DEFAULT
 from ..client_default import Client
-from .. import convert, utils
-from ..direction import Directions, Direction
+from ..direction import Direction, Directions
 from ..matrix import Matrix
 
 

@@ -17,11 +17,12 @@
 """
 :class:`Expansion` returns expansion results.
 """
+from typing import List, Optional, Tuple, Union
 
 
 class Edge:
     """
-    Contains a parsed single line string and its attributes, if specified in the request.
+    Contains a parsed single line string of an edge and its attributes, if specified in the request.
     Access via properties ``geometry``, ``distances`` ``durations``, ``costs``, ``edge_ids``, ``statuses``.
     """
 
@@ -96,18 +97,24 @@ class Edge:
 
 class Expansions:
     """
-    Contains a list of :class:`Expansion`, which can be iterated over or accessed by index. The property ¸`raw`` contains
+    Contains a list of :class:`Edge`, which can be iterated over or accessed by index. The property ¸`raw`` contains
     the complete raw response of the expansion request.
     """
 
-    def __init__(self, expansions=None, center=None, interval_type=None, raw=None):
-        self._expansions = expansions
+    def __init__(
+        self,
+        edges: Optional[List[Edge]] = None,
+        center: Optional[Union[List[float], Tuple[float]]] = None,
+        interval_type: Optional[str] = None,
+        raw: Optional[dict] = None,
+    ):
+        self._edges = edges
         self._center = center
         self._interval_type = interval_type
         self._raw = raw
 
     @property
-    def raw(self):
+    def raw(self) -> Optional[dict]:
         """
         Returns the expansion's raw, unparsed response. For details, consult the documentation
          at https://valhalla.readthedocs.io/en/latest/api/expansion/api-reference/.
@@ -117,7 +124,7 @@ class Expansions:
         return self._raw
 
     @property
-    def center(self):
+    def center(self) -> Optional[Union[List[float], Tuple[float]]]:
         """
         The center coordinate in [lon, lat] of the expansion, which is the location from the user input.
 
@@ -126,7 +133,7 @@ class Expansions:
         return self._center
 
     @property
-    def interval_type(self):
+    def interval_type(self) -> Optional[str]:
         """
         Was it based on 'distance' or 'time'?
 
@@ -135,19 +142,19 @@ class Expansions:
         return self._interval_type
 
     def __repr__(self):  # pragma: no cover
-        if len(self._expansions) < 10:
-            return "Expansions({}, {})".format(self._expansions, self.raw)
+        if len(self._edges) < 10:
+            return "Expansions({}, {})".format(self._edges, self.raw)
         else:
             return "Expansions({}, ..., {})".format(
-                ", ".join([str(e) for e in self._expansions[:3]]),
-                ", ".join(str(e) for e in self._expansions[-3:]),
+                ", ".join([str(e) for e in self._edges[:3]]),
+                ", ".join(str(e) for e in self._edges[-3:]),
             )
 
     def __getitem__(self, item):
-        return self._expansions[item]
+        return self._edges[item]
 
     def __iter__(self):
-        return iter(self._expansions)
+        return iter(self._edges)
 
     def __len__(self):
-        return len(self._expansions)
+        return len(self._edges)

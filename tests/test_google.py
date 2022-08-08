@@ -16,16 +16,16 @@
 #
 """Tests for the Google module."""
 
-from routingpy import Google
-from routingpy.direction import Direction, Directions
-from routingpy.matrix import Matrix
-from routingpy.exceptions import RouterApiError, RouterServerError
-
-from tests.test_helper import *
-import tests as _test
+from copy import deepcopy
 
 import responses
-from copy import deepcopy
+
+import tests as _test
+from routingpy import Google
+from routingpy.direction import Direction, Directions
+from routingpy.exceptions import RouterApiError, RouterServerError
+from routingpy.matrix import Matrix
+from tests.test_helper import *
 
 
 class GoogleTest(_test.TestCase):

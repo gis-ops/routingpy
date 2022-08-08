@@ -26,9 +26,9 @@ except (ModuleNotFoundError, ImportError):
 
 from abc import ABCMeta, abstractmethod
 from datetime import timedelta
-import requests
 from urllib.parse import urlencode
 
+import requests
 
 _DEFAULT_USER_AGENT = "routingpy/v{}".format(__version__)
 _RETRIABLE_STATUSES = set([503])

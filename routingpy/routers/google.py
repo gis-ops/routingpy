@@ -15,14 +15,14 @@
 # the License.
 #
 
+from operator import itemgetter
+
+from .. import convert, utils
 from ..client_base import DEFAULT
 from ..client_default import Client
-from .. import convert, utils
-from ..direction import Directions, Direction
+from ..direction import Direction, Directions
+from ..exceptions import OverQueryLimit, RouterApiError, RouterServerError
 from ..matrix import Matrix
-from ..exceptions import RouterApiError, RouterServerError, OverQueryLimit
-
-from operator import itemgetter
 
 STATUS_CODES = {
     "NOT_FOUND": {

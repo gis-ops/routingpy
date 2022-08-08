@@ -16,8 +16,8 @@
 #
 """Tests for the Mapbox Valhalla module."""
 
-from routingpy import MapboxValhalla
 import tests as _test
+from routingpy import MapboxValhalla
 
 
 class MapboxValhallaTest(_test.TestCase):

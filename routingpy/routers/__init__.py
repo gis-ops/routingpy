@@ -16,15 +16,14 @@ locations and profile (car, bike, pedestrian etc.), among others (full list here
 """
 from ..client_base import options  # noqa: F401
 from ..exceptions import RouterNotFound
-
+from .google import Google
+from .graphhopper import Graphhopper
+from .heremaps import HereMaps
+from .mapbox_osrm import MapboxOSRM
+from .mapbox_valhalla import MapboxValhalla
 from .openrouteservice import ORS
 from .osrm import OSRM
 from .valhalla import Valhalla
-from .graphhopper import Graphhopper
-from .mapbox_valhalla import MapboxValhalla
-from .mapbox_osrm import MapboxOSRM
-from .google import Google
-from .heremaps import HereMaps
 
 # Provide synonyms
 _SERVICE_TO_ROUTER = {

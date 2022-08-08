@@ -16,17 +16,17 @@
 #
 """Tests for the Graphhopper module."""
 
-from routingpy import Graphhopper
-from routingpy.direction import Direction, Directions
-from routingpy.isochrone import Isochrones, Isochrone
-from routingpy.matrix import Matrix
-from routingpy.utils import decode_polyline5
-
-from tests.test_helper import *
-import tests as _test
+from copy import deepcopy
 
 import responses
-from copy import deepcopy
+
+import tests as _test
+from routingpy import Graphhopper
+from routingpy.direction import Direction, Directions
+from routingpy.isochrone import Isochrone, Isochrones
+from routingpy.matrix import Matrix
+from routingpy.utils import decode_polyline5
+from tests.test_helper import *
 
 
 class GraphhopperTest(_test.TestCase):

@@ -15,17 +15,17 @@
 # the License.
 #
 
-from typing import List, Union, Sequence, Optional  # noqa: F401
+from operator import itemgetter
+from typing import List, Optional, Sequence, Union  # noqa: F401
 
+from .. import utils
 from ..client_base import DEFAULT
 from ..client_default import Client
-from .. import utils
 from ..direction import Direction
-from ..expansion import Expansions, Edge
+from ..expansion import Edge, Expansions
 from ..isochrone import Isochrone, Isochrones
 from ..matrix import Matrix
-
-from operator import itemgetter
+from ..valhalla_attributes import MatchedResults
 
 
 class Valhalla:
@@ -190,6 +190,8 @@ class Valhalla:
 
         :param bool dry_run: Print URL and parameters without sending the request.
 
+        :param kwargs: any additional keyword arguments which will override parameters.
+
         :returns: A route from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction`
         """
@@ -207,6 +209,7 @@ class Valhalla:
             avoid_polygons,
             date_time,
             id,
+            **kwargs
         )
 
         get_params = {"access_token": self.api_key} if self.api_key else {}
@@ -230,6 +233,7 @@ class Valhalla:
         avoid_polygons=None,
         date_time=None,
         id=None,
+        **kwargs
     ):
         """
         Builds and returns the router's route parameters. It's a separate function so that
@@ -269,6 +273,9 @@ class Valhalla:
         if id:
             params["id"] = id
 
+        # update with kw args
+        params.update(kwargs)
+
         return params
 
     @staticmethod
@@ -307,6 +314,7 @@ class Valhalla:
         show_locations=None,
         id=None,
         dry_run=None,
+        **kwargs
     ):
         """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
 
@@ -404,6 +412,7 @@ class Valhalla:
             date_time,
             show_locations,
             id,
+            **kwargs
         )
 
         get_params = {"access_token": self.api_key} if self.api_key else {}
@@ -433,6 +442,7 @@ class Valhalla:
         date_time=None,
         show_locations=None,
         id=None,
+        **kwargs
     ):
         """
         Builds and returns the router's route parameters. It's a separate function so that
@@ -493,6 +503,8 @@ class Valhalla:
         if id:
             params["id"] = id
 
+        params.update(kwargs)
+
         return params
 
     @staticmethod
@@ -527,6 +539,7 @@ class Valhalla:
         units=None,
         id=None,
         dry_run=None,
+        **kwargs
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
@@ -594,6 +607,7 @@ class Valhalla:
             avoid_polygons,
             units,
             id,
+            **kwargs
         )
 
         get_params = {"access_token": self.api_key} if self.api_key else {}
@@ -617,6 +631,7 @@ class Valhalla:
         avoid_polygons=None,
         units=None,
         id=None,
+        **kwargs
     ):
         """
         Builds and returns the router's route parameters. It's a separate function so that
@@ -698,6 +713,7 @@ class Valhalla:
         date_time: Optional[dict] = None,
         id: Optional[str] = None,
         dry_run: Optional[bool] = None,
+        **kwargs
     ) -> Expansions:
         """Gets the expansion tree for a range of time or distance values around a given coordinate.
 
@@ -746,6 +762,7 @@ class Valhalla:
             options,
             date_time,
             id,
+            **kwargs
         )
         return self.parse_expansion_json(
             self.client._request(
@@ -768,6 +785,7 @@ class Valhalla:
         options=None,
         date_time=None,
         id=None,
+        **kwargs
     ):
         params = cls.get_isochrone_params(
             locations,
@@ -783,6 +801,9 @@ class Valhalla:
             params["skip_opposites"] = skip_opposites
         if expansion_properties:
             params["expansion_properties"] = expansion_properties
+
+        params.update(kwargs)
+
         return params
 
     @staticmethod
@@ -801,6 +822,104 @@ class Valhalla:
             expansions.append(Edge(geometry=line, **properties))
 
         return Expansions(expansions, locations, interval_type, response)
+
+    def trace_attributes(
+        self,
+        locations: Optional[Sequence[Union[Sequence[float], Waypoint]]] = None,
+        profile: str = "bicycle",
+        shape_match: str = "walk_or_snap",
+        encoded_polyline: Optional[str] = None,
+        filters: Optional[List[str]] = None,
+        filters_action: Optional[str] = None,
+        options: Optional[dict] = None,
+        dry_run: Optional[bool] = None,
+        **kwargs
+    ) -> MatchedResults:
+        """
+        Map-matches the input locations to form a route on the Valhalla base network and
+        returns detailed attribution for encountered edges and nodes.
+
+        For more information, visit https://valhalla.readthedocs.io/en/latest/api/map-matching/api-reference/.
+
+        :param locations: One pair of lng/lat values or :class:`Waypoint`. Takes the form [Longitude, Latitude].
+        :param profile: Specifies the mode of transport to use when calculating
+            directions. One of ["auto", "bicycle", "multimodal", "pedestrian".
+        :param shape_match: It allows some control of the matching algorithm based on the type of input. One of
+            ["edge_walk", "map_snap", "walk_or_snap"]. See for full reference:
+            https://github.com/valhalla/valhalla/blob/master/docs/api/map-matching/api-reference.md#shape-matching-parameters
+        :param encoded_polyline: The encoded polyline string with precision 6.
+        :param filters: A list of response object to either include or exclude, depending on the filter_action
+            attribute
+        :param filters_action: Whether to include or exclude the filters. One of ["include", "exclude"].
+        :param options: Profiles can have several options that can be adjusted to develop the route path,
+            as well as for estimating time along the path. Only specify the actual options dict, the profile
+            will be filled automatically. For more information, visit:
+            https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#costing-options
+        :param dry_run: Print URL and parameters without sending the request.
+
+        :raises: ValueError if 'locations' and 'encoded_polyline' was specified
+        :returns: A :class:`MatchedResults` object with matched edges and points set.
+        """
+
+        get_params = {"access_token": self.api_key} if self.api_key else {}
+        if locations and encoded_polyline:
+            raise ValueError
+
+        params = self.get_trace_attributes_params(
+            locations, profile, shape_match, encoded_polyline, filters, filters_action, options, **kwargs
+        )
+
+        return self.parse_trace_attributes_json(
+            self.client._request(
+                "/trace_attributes", get_params=get_params, post_params=params, dry_run=dry_run
+            )
+        )
+
+    @classmethod
+    def get_trace_attributes_params(
+        cls,
+        locations: Optional[Sequence[Union[Sequence[float], Waypoint]]] = None,
+        profile: str = "bicycle",
+        shape_match: str = "walk_or_snap",
+        encoded_polyline: Optional[str] = None,
+        filters: Optional[List[str]] = None,
+        filters_action: Optional[str] = None,
+        options: Optional[dict] = None,
+        **kwargs
+    ):
+        params = dict()
+        if locations:
+            params["shape"] = cls._build_locations(locations)
+        elif encoded_polyline:
+            params["encoded_polyline"] = encoded_polyline
+        else:
+            raise ValueError("Need to specify 'shape' or 'encoded_polyline")
+
+        if filters and filters_action:
+            params["filters"] = dict()
+            params["filters"]["attributes"] = filters
+            params["action"] = filters_action
+
+        params["costing"] = profile
+        params["shape_match"] = shape_match
+
+        if options:
+            params["costing_options"] = dict()
+            profile = profile if profile != "multimodal" else "transit"
+            params["costing_options"][profile] = dict()
+            if options:
+                params["costing_options"][profile] = options
+
+        params.update(kwargs)
+
+        return params
+
+    @staticmethod
+    def parse_trace_attributes_json(response):
+        if response is None:  # pragma: no cover
+            return MatchedResults()
+
+        return MatchedResults(response)
 
     @staticmethod
     def _build_locations(coordinates):
