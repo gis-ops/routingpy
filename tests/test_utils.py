@@ -16,8 +16,8 @@
 #
 """Tests for utils module."""
 
-from routingpy import utils
 import tests as _test
+from routingpy import utils
 
 
 class UtilsTest(_test.TestCase):

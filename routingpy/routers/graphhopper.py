@@ -17,9 +17,9 @@
 
 from typing import List, Tuple  # noqa: F401
 
+from .. import convert, utils
 from ..client_base import DEFAULT
 from ..client_default import Client
-from .. import convert, utils
 from ..direction import Direction, Directions
 from ..isochrone import Isochrone, Isochrones
 from ..matrix import Matrix

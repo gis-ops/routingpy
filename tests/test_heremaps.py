@@ -16,16 +16,16 @@
 #
 """Tests for the HereMaps module."""
 
-from routingpy import HereMaps
-from routingpy.direction import Direction, Directions
-from routingpy.isochrone import Isochrones, Isochrone
-from routingpy.matrix import Matrix
-
-from tests.test_helper import *
-import tests as _test
+from copy import deepcopy
 
 import responses
-from copy import deepcopy
+
+import tests as _test
+from routingpy import HereMaps
+from routingpy.direction import Direction, Directions
+from routingpy.isochrone import Isochrone, Isochrones
+from routingpy.matrix import Matrix
+from tests.test_helper import *
 
 
 class HereMapsTest(_test.TestCase):

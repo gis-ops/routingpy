@@ -18,7 +18,7 @@
 :class:`Expansion` returns expansion results.
 """
 from enum import Enum
-from typing import List, Union, Tuple, Optional
+from typing import List, Optional, Tuple, Union
 
 from routingpy.utils import decode_polyline6
 

@@ -14,8 +14,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-import random
 import datetime
+import random
 
 PARAM_POINT = [8.34234, 48.23424]
 PARAM_LINE = [[8.688641, 49.420577], [8.680916, 49.415776]]

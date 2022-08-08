@@ -15,9 +15,9 @@
 # the License.
 #
 
+from .. import utils
 from ..client_base import DEFAULT
 from ..client_default import Client
-from .. import utils
 from ..direction import Direction, Directions
 from ..isochrone import Isochrone, Isochrones
 from ..matrix import Matrix

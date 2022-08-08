@@ -15,18 +15,17 @@
 # the License.
 #
 
-from typing import List, Union, Sequence, Optional  # noqa: F401
+from operator import itemgetter
+from typing import List, Optional, Sequence, Union  # noqa: F401
 
-from ..valhalla_attributes import MatchedResults
+from .. import utils
 from ..client_base import DEFAULT
 from ..client_default import Client
-from .. import utils
 from ..direction import Direction
-from ..expansion import Expansions, Edge
+from ..expansion import Edge, Expansions
 from ..isochrone import Isochrone, Isochrones
 from ..matrix import Matrix
-
-from operator import itemgetter
+from ..valhalla_attributes import MatchedResults
 
 
 class Valhalla:

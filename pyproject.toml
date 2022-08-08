@@ -55,3 +55,13 @@ exclude = '''
   | build
 )/
 '''
+
+[tool.isort]
+profile = "black"
+line_length = 105
+src_paths = ["routingpy", "tests"]
+skip = [
+    ".venv",
+    "build",
+    "dist",
+]

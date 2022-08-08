@@ -15,16 +15,17 @@
 # the License.
 #
 
-from .client_base import BaseClient, DEFAULT, _RETRIABLE_STATUSES, options
-from . import exceptions
-from .utils import get_ordinal
-
-from datetime import datetime
 import json
 import random
-import requests
 import time
 import warnings
+from datetime import datetime
+
+import requests
+
+from . import exceptions
+from .client_base import _RETRIABLE_STATUSES, DEFAULT, BaseClient, options
+from .utils import get_ordinal
 
 
 class Client(BaseClient):

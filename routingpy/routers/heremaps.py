@@ -15,15 +15,14 @@
 # the License.
 #
 
-from ..client_base import DEFAULT
-from ..client_default import Client
-from .. import convert
-from ..direction import Direction, Directions
-from ..isochrone import Isochrones, Isochrone
-from ..matrix import Matrix
-
 from operator import itemgetter
 
+from .. import convert
+from ..client_base import DEFAULT
+from ..client_default import Client
+from ..direction import Direction, Directions
+from ..isochrone import Isochrone, Isochrones
+from ..matrix import Matrix
 from ..utils import logger
 
 

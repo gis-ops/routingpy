@@ -16,25 +16,26 @@
 #
 """Tests for the Valhalla module."""
 
+import json
+from copy import deepcopy
+
+import responses
+
+import tests as _test
 from routingpy import Valhalla
-from routingpy.valhalla_attributes import (
-    MatchedResults,
-    MatchedEdge,
-    MatchedPoint,
-    Surface,
-    RoadClass,
-    Sidewalk,
-)
 from routingpy.direction import Direction
 from routingpy.expansion import Expansions
-from routingpy.isochrone import Isochrones, Isochrone
+from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
+from routingpy.valhalla_attributes import (
+    MatchedEdge,
+    MatchedPoint,
+    MatchedResults,
+    RoadClass,
+    Sidewalk,
+    Surface,
+)
 from tests.test_helper import *
-import tests as _test
-
-import json
-import responses
-from copy import deepcopy
 
 
 class ValhallaTest(_test.TestCase):

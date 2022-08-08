@@ -17,7 +17,7 @@
 """
 :class:`Expansion` returns expansion results.
 """
-from typing import List, Union, Tuple, Optional
+from typing import List, Optional, Tuple, Union
 
 
 class Edge:
