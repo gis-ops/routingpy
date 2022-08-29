@@ -38,11 +38,9 @@ or **time-distance matrices**.
 This list is hopefully growing with time and contributions by other developers. An up-to-date list is always available
 in our documentation_.
 
-**routing-py** is tested against CPython versions 3.7, 3.8, 3.9 and against PyPy3. As other major libraries like ``numpy``
-and ``pandas`` decided to drop Python 2 support, we did not see any reason to burden the project with the compatibility
-weight.
+**routing-py** is tested against CPython versions 3.7, 3.8, 3.9, 3.10 ~~and against PyPy3~~ ([#60](https://github.com/gis-ops/routing-py/issues/60).
 
-© routing-py contributors 2021 under the `Apache 2.0 License`_.
+© routing-py contributors 2022 under the `Apache 2.0 License`_.
 
 .. image:: https://user-images.githubusercontent.com/10322094/57357720-e180c080-7173-11e9-97a4-cecb4670065d.jpg
     :alt: routing-py-image
@@ -74,10 +72,6 @@ Installation
     :target: https://badge.fury.io/py/routingpy
     :alt: PyPI version
 
-.. image:: https://anaconda.org/nilsnolde/routingpy/badges/version.svg
-    :target: https://anaconda.org/nilsnolde/routingpy
-    :alt: Conda install
-
 **Recommended**: Install via poetry_:
 
 .. code:: bash
@@ -90,18 +84,11 @@ Install using ``pip`` with
 
    pip install routingpy
 
-Or with conda (**deprecated**)
-
-.. code:: bash
-
-   conda install -c nilsnolde routingpy
-
 Or the lastest from source
 
 .. code:: bash
 
    pip install git+git://github.com/gis-ops/routing-py
-
 
 
 API
@@ -155,7 +142,7 @@ The following table gives you an overview which basic arguments are abstracted:
 |                       |                   | | take as sources for the matrix calculation. If not         |
 |                       |                   | | specified all ``locations`` are considered to be sources.  |
 |                       +-------------------+--------------------------------------------------------------+
-|                       | sources           | | The indices of the ``locations`` parameter iterable to     |
+|                       | destinations      | | The indices of the ``locations`` parameter iterable to     |
 |                       |                   | | take as destinations for the matrix calculation. If not    |
 |                       |                   | | specified all ``locations`` are considered to be           |
 |                       |                   | | destinations.                                              |

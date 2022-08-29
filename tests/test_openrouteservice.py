@@ -16,17 +16,17 @@
 #
 """Tests for the openrouteservice module."""
 
-from routingpy import ORS
-from routingpy.direction import Direction
-from routingpy.isochrone import Isochrones, Isochrone
-from routingpy.matrix import Matrix
+import json
 from copy import deepcopy
 
-from tests.test_helper import *
-import tests as _test
-
 import responses
-import json
+
+import tests as _test
+from routingpy import ORS
+from routingpy.direction import Direction
+from routingpy.isochrone import Isochrone, Isochrones
+from routingpy.matrix import Matrix
+from tests.test_helper import *
 
 
 class ORSTest(_test.TestCase):
@@ -122,6 +122,7 @@ class ORSTest(_test.TestCase):
             self.assertIsInstance(iso.geometry, list)
             self.assertIsInstance(iso.center, list)
             self.assertIsInstance(iso.interval, int)
+            self.assertEqual(iso.interval_type, "distance")
 
     @responses.activate
     def test_full_matrix(self):

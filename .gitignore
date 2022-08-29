@@ -1,3 +1,4 @@
+routingpy/__version__.py
 examples/*with_keys*
 **/.ipynb*
 conda/

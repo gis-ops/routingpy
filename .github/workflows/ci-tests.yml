@@ -2,76 +2,54 @@ name: tests
 
 on:
   push:
-    paths:
-      - "routingpy/**"
-      - "tests/**"
-      - ".github/workflows/ci-tests.yml"
-      - "setup.py"
-      - "pyproject.toml"
-      - ".coveragerc"
     branches:
       - master
+    paths-ignore:
+      - '*.md'
   pull_request:
     branches:
       - master
-    paths:
-      - "routingpy/**"
-      - "tests/**"
-      - ".github/workflows/ci-tests.yml"
-      - "setup.py"
-      - "pyproject.toml"
-      - ".coveragerc"
+    paths-ignore:
+      - '*.md'
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        os: [ubuntu-20.04]
         python_version: [
             3.7,
             3.8,
             3.9,
-            #3.10.0-beta.1,
-            pypy3
+            '3.10',
+            # pypy3  # didn't build on CI anymore, happy for help: https://github.com/gis-ops/routing-py/issues/60
         ]
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Python ${{ matrix.python_version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python_version }}
-#     From https://github.com/python-poetry/poetry/actions
-    - name: Get full python version
-      id: full-python-version
-      run: |
-        echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
-        echo ::set-output name=versionshort::$(python -c "import sys; print(''.join(str(v) for v in sys.version_info[:2]))")
-    - name: Install and set up Poetry
-      run: |
-        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-        source $HOME/.poetry/env
-        poetry config virtualenvs.in-project true
-    - name: Cache dependencies
-      uses: actions/cache@v2
-      with:
-        path: .venv
-        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+
     - name: Install dependencies
       run: |
-        source $HOME/.poetry/env
-        poetry install
+        pip install -r requirements_dev.txt
+
     - name: style & lint checks
       run: |
-        source .venv/bin/activate
-        pre-commit run
-    - name: nosetests
+        pre-commit run --all-files
+
+    - name: pytest and coverage
       run: |
-        source .venv/bin/activate
-        nosetests -v --with-coverage --cover-package=routingpy
-    - name: coveralls
-      run: |
-        source .venv/bin/activate
-        coveralls
+        pip install -e .
+        coverage run --source=routingpy --module pytest
+        coverage lcov --include "routingpy/*"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./coverage.lcov

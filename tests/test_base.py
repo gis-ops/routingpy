@@ -16,14 +16,15 @@
 #
 """Tests for client module."""
 
-import responses
-import requests
 import time
 
+import requests
+import responses
+
 import routingpy
-from routingpy.routers import options
-from routingpy import client_default
 import tests as _test
+from routingpy import client_default
+from routingpy.routers import options
 
 
 class ClientMock(client_default.Client):

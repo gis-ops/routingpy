@@ -19,13 +19,16 @@ Core client functionality, common across all routers.
 """
 
 
-from .__version__ import __version__
+try:
+    from .__version__ import __version__
+except (ModuleNotFoundError, ImportError):
+    __version__ = "None"
 
 from abc import ABCMeta, abstractmethod
 from datetime import timedelta
-import requests
 from urllib.parse import urlencode
 
+import requests
 
 _DEFAULT_USER_AGENT = "routingpy/v{}".format(__version__)
 _RETRIABLE_STATUSES = set([503])

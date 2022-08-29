@@ -106,7 +106,7 @@ Valhalla
    .. automethod:: __init__
 
 Client
-~~~~
+~~~~~~~
 .. autoclass:: routingpy.client_default.Client
     :members:
 
@@ -129,6 +129,12 @@ Data
 
 .. autoclass:: routingpy.matrix.Matrix
     :members: durations, distances, raw
+
+.. autoclass:: routingpy.expansion.Expansions
+    :members: expansions, center, raw
+
+.. autoclass:: routingpy.expansion.Edge
+    :members: geometry, distance, duration, cost, edge_id, status
 
 .. autofunction:: routingpy.utils.decode_polyline5
 

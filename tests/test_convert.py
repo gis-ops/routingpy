@@ -16,8 +16,8 @@
 #
 """Tests for convert module."""
 
-from routingpy import convert
 import tests as _test
+from routingpy import convert
 
 
 class UtilsTest(_test.TestCase):  # noqa: E741

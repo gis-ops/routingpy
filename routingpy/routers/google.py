@@ -15,14 +15,14 @@
 # the License.
 #
 
+from operator import itemgetter
+
+from .. import convert, utils
 from ..client_base import DEFAULT
 from ..client_default import Client
-from .. import convert, utils
-from ..direction import Directions, Direction
+from ..direction import Direction, Directions
+from ..exceptions import OverQueryLimit, RouterApiError, RouterServerError
 from ..matrix import Matrix
-from ..exceptions import RouterApiError, RouterServerError, OverQueryLimit
-
-from operator import itemgetter
 
 STATUS_CODES = {
     "NOT_FOUND": {
@@ -109,11 +109,11 @@ class Google:
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
 
-        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.client_base.BaseClient`
         :type client: abc.ABCMeta
 
-        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
-        :type **client_kwargs: dict
+        :param client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type client_kwargs: dict
         """
 
         self.key = api_key
@@ -319,12 +319,12 @@ class Google:
         if transit_routing_preference:
             params["transit_routing_preference"] = transit_routing_preference
 
-        return self._parse_direction_json(
+        return self.parse_direction_json(
             self.client._request("/directions/json", get_params=params, dry_run=dry_run), alternatives
         )
 
     @staticmethod
-    def _parse_direction_json(response, alternatives):
+    def parse_direction_json(response, alternatives):
         if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
@@ -510,12 +510,12 @@ class Google:
         if transit_routing_preference:
             params["transit_routing_preference"] = transit_routing_preference
 
-        return self._parse_matrix_json(
+        return self.parse_matrix_json(
             self.client._request("/distancematrix/json", get_params=params, dry_run=dry_run)
         )
 
     @staticmethod
-    def _parse_matrix_json(response):
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
 

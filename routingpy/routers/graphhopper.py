@@ -17,9 +17,9 @@
 
 from typing import List, Tuple  # noqa: F401
 
+from .. import convert, utils
 from ..client_base import DEFAULT
 from ..client_default import Client
-from .. import convert, utils
 from ..direction import Direction, Directions
 from ..isochrone import Isochrone, Isochrones
 from ..matrix import Matrix
@@ -75,11 +75,11 @@ class Graphhopper:
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
 
-        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.client_base.BaseClient`
         :type client: abc.ABCMeta
 
-        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
-        :type **client_kwargs: dict
+        :param client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type client_kwargs: dict
 
         """
 
@@ -106,7 +106,7 @@ class Graphhopper:
         instructions=None,
         locale=None,
         elevation=None,
-        points_encoded=None,
+        points_encoded=True,
         calc_points=None,
         debug=None,
         point_hint=None,
@@ -128,8 +128,11 @@ class Graphhopper:
         snap_prevention=None,
         curb_side=None,
         turn_costs=None,
+        **direction_kwargs
     ):
         """Get directions between an origin point and a destination point.
+
+        Use ``direction_kwargs`` for any missing ``directions`` request options.
 
         For more information, visit https://docs.graphhopper.com/#tag/Routing-API/paths/~1route/get.
 
@@ -372,12 +375,17 @@ class Graphhopper:
                         ("alternative_route_max_share_factor", alternative_route_max_share_factor)
                     )
 
-        return self._parse_directions_json(
-            self.client._request("/route", get_params=params, dry_run=dry_run), algorithm, elevation
+        params.extend(direction_kwargs.items())
+
+        return self.parse_directions_json(
+            self.client._request("/route", get_params=params, dry_run=dry_run),
+            algorithm,
+            elevation,
+            points_encoded,
         )
 
     @staticmethod
-    def _parse_directions_json(response, algorithm, elevation):
+    def parse_directions_json(response, algorithm, elevation, points_encoded):
         if response is None:  # pragma: no cover
             if algorithm == "alternative_route":
                 return Directions()
@@ -387,7 +395,11 @@ class Graphhopper:
         if algorithm == "alternative_route":
             routes = []
             for route in response["paths"]:
-                geometry = utils.decode_polyline5(route["points"], elevation)
+                geometry = (
+                    utils.decode_polyline5(route["points"], elevation)
+                    if points_encoded
+                    else route["points"]["coordinates"]
+                )
                 routes.append(
                     Direction(
                         geometry=geometry,
@@ -398,7 +410,11 @@ class Graphhopper:
                 )
             return Directions(routes, response)
         else:
-            geometry = utils.decode_polyline5(response["paths"][0]["points"], elevation)
+            geometry = (
+                utils.decode_polyline5(response["paths"][0]["points"], elevation)
+                if points_encoded
+                else response["paths"][0]["points"]["coordinates"]
+            )
             return Direction(
                 geometry=geometry,
                 duration=int(response["paths"][0]["time"] / 1000),
@@ -413,14 +429,17 @@ class Graphhopper:
         intervals,
         type="json",
         buckets=1,
-        interval_type=None,
+        interval_type="time",
         reverse_flow=None,
         debug=None,
         dry_run=None,
+        **isochrones_kwargs
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
-        For mroe details visit https://docs.graphhopper.com/#tag/Isochrone-API.
+        Use ``isochrones_kwargs`` for missing ``isochrones`` request options.
+
+        For more details visit https://docs.graphhopper.com/#tag/Isochrone-API.
 
         :param locations: One coordinate pair denoting the location.
         :type locations: tuple of float or list of float
@@ -484,16 +503,19 @@ class Graphhopper:
         if debug is not None:
             params.append(("debug", convert.convert_bool(debug)))
 
-        return self._parse_isochrone_json(
+        params.extend(isochrones_kwargs.items())
+
+        return self.parse_isochrone_json(
             self.client._request("/isochrone", get_params=params, dry_run=dry_run),
             type,
             intervals[0],
             buckets,
             center,
+            interval_type,
         )
 
     @staticmethod
-    def _parse_isochrone_json(response, type, max_range, buckets, center):
+    def parse_isochrone_json(response, type, max_range, buckets, center, interval_type):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -507,6 +529,7 @@ class Graphhopper:
                     ],  # takes in elevation for some reason
                     interval=int(max_range * ((polygon["properties"]["bucket"] + 1) / buckets)),
                     center=center,
+                    interval_type=interval_type,
                 )
             )
 
@@ -521,12 +544,15 @@ class Graphhopper:
         out_array=["times", "distances"],
         debug=None,
         dry_run=None,
+        **matrix_kwargs
     ):
         """Gets travel distance and time for a matrix of origins and destinations.
 
+        Use ``matrix_kwargs`` for any missing ``matrix`` request options.
+
         For more details visit https://docs.graphhopper.com/#tag/Matrix-API.
 
-        :param locations: Specifiy multiple points for which the weight-, route-, time- or distance-matrix should be calculated.
+        :param locations: Specify multiple points for which the weight-, route-, time- or distance-matrix should be calculated.
             In this case the starts are identical to the destinations.
             If there are N points, then NxN entries will be calculated.
             The order of the point parameter is important. Specify at least three points.
@@ -607,12 +633,14 @@ class Graphhopper:
         if debug is not None:
             params.append(("debug", convert.convert_bool(debug)))
 
-        return self._parse_matrix_json(
+        params.extend(matrix_kwargs.items())
+
+        return self.parse_matrix_json(
             self.client._request("/matrix", get_params=params, dry_run=dry_run),
         )
 
     @staticmethod
-    def _parse_matrix_json(response):
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
         durations = response.get("times")

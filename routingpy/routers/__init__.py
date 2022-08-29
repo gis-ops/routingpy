@@ -4,7 +4,7 @@ API. Each router has at least a ``directions`` method, many offer additionally `
 Other available provider endpoints are allowed and generally encouraged. However, please refer
 to our `contribution guidelines`_ for general instructions.
 
-The requests are handled via a client class derived from `:class: routingpy.base.BaseClient`.
+The requests are handled via a client class derived from :class:`routingpy.client_base.BaseClient`.
 
 **routingpy**'s dogma is, that all routers expose the same mandatory arguments for common methods in an
 attempt to be consistent for the same method across different routers. Unlike other collective libraries,
@@ -16,15 +16,14 @@ locations and profile (car, bike, pedestrian etc.), among others (full list here
 """
 from ..client_base import options  # noqa: F401
 from ..exceptions import RouterNotFound
-
+from .google import Google
+from .graphhopper import Graphhopper
+from .heremaps import HereMaps
+from .mapbox_osrm import MapboxOSRM
+from .mapbox_valhalla import MapboxValhalla
 from .openrouteservice import ORS
 from .osrm import OSRM
 from .valhalla import Valhalla
-from .graphhopper import Graphhopper
-from .mapbox_valhalla import MapboxValhalla
-from .mapbox_osrm import MapboxOSRM
-from .google import Google
-from .heremaps import HereMaps
 from .vroom import Vroom
 
 # Provide synonyms

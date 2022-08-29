@@ -15,9 +15,9 @@
 # the License.
 #
 
+from .. import utils
 from ..client_base import DEFAULT
 from ..client_default import Client
-from .. import utils
 from ..direction import Direction, Directions
 from ..isochrone import Isochrone, Isochrones
 from ..matrix import Matrix
@@ -73,11 +73,11 @@ class ORS:
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
 
-        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.client_base.BaseClient`
         :type client: abc.ABCMeta
 
-        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
-        :type **client_kwargs: dict
+        :param client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type client_kwargs: dict
         """
 
         if base_url == self._DEFAULT_BASE_URL and api_key is None:
@@ -306,7 +306,7 @@ class ORS:
                     )
             params["options"] = options
 
-        return self._parse_direction_json(
+        return self.parse_direction_json(
             self.client._request(
                 "/v2/directions/" + profile + "/" + format,
                 get_params={},
@@ -319,7 +319,7 @@ class ORS:
         )
 
     @staticmethod
-    def _parse_direction_json(response, format, units, alternative_routes):
+    def parse_direction_json(response, format, units, alternative_routes):
         if response is None:  # pragma: no cover
             return Direction()
 
@@ -375,7 +375,7 @@ class ORS:
         locations,
         profile,
         intervals,
-        interval_type=None,
+        interval_type="time",
         units=None,
         location_type=None,
         smoothing=None,
@@ -454,17 +454,18 @@ class ORS:
         if intersections:
             params["intersections"] = intersections
 
-        return self._parse_isochrone_json(
+        return self.parse_isochrone_json(
             self.client._request(
                 "/v2/isochrones/" + profile + "/geojson",
                 get_params={},
                 post_params=params,
                 dry_run=dry_run,
-            )
+            ),
+            interval_type,
         )
 
     @staticmethod
-    def _parse_isochrone_json(response):
+    def parse_isochrone_json(response, interval_type):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -475,6 +476,7 @@ class ORS:
                     geometry=isochrone["geometry"]["coordinates"][0],
                     interval=isochrone["properties"]["value"],
                     center=isochrone["properties"]["center"],
+                    interval_type=interval_type,
                 )
             )
 
@@ -548,14 +550,14 @@ class ORS:
         if units:
             params["units"] = units
 
-        return self._parse_matrix_json(
+        return self.parse_matrix_json(
             self.client._request(
                 "/v2/matrix/" + profile + "/json", get_params={}, post_params=params, dry_run=dry_run
             )
         )
 
     @staticmethod
-    def _parse_matrix_json(response):
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
         durations = response.get("durations")

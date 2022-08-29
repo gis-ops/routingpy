@@ -16,16 +16,26 @@
 #
 """Tests for the Valhalla module."""
 
+import json
+from copy import deepcopy
+
+import responses
+
+import tests as _test
 from routingpy import Valhalla
 from routingpy.direction import Direction
-from routingpy.isochrone import Isochrones, Isochrone
+from routingpy.expansion import Expansions
+from routingpy.isochrone import Isochrone, Isochrones
 from routingpy.matrix import Matrix
+from routingpy.valhalla_attributes import (
+    MatchedEdge,
+    MatchedPoint,
+    MatchedResults,
+    RoadClass,
+    Sidewalk,
+    Surface,
+)
 from tests.test_helper import *
-import tests as _test
-
-import json
-import responses
-from copy import deepcopy
 
 
 class ValhallaTest(_test.TestCase):
@@ -111,6 +121,7 @@ class ValhallaTest(_test.TestCase):
             self.assertIsInstance(i.geometry, list)
             self.assertIsInstance(i.interval, int)
             self.assertIsInstance(i.center, list)
+            self.assertEqual(i.interval_type, "time")
 
     @responses.activate
     def test_isodistances(self):
@@ -131,10 +142,13 @@ class ValhallaTest(_test.TestCase):
             content_type="application/json",
         )
 
-        self.client.isochrones(**query)
+        iso = self.client.isochrones(**query)
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
+        for i in iso:
+            self.assertIsInstance(i, Isochrone)
+            self.assertEqual(i.interval_type, "distance")
 
     # TODO: test colors having less items than range
     @responses.activate
@@ -183,3 +197,52 @@ class ValhallaTest(_test.TestCase):
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
+
+    @responses.activate
+    def test_expansion(self):
+        query = ENDPOINTS_QUERIES[self.name]["expansion"]
+        expected = ENDPOINTS_EXPECTED[self.name]["expansion"]
+        responses.add(
+            responses.POST,
+            "https://api.mapbox.com/valhalla/v1/expansion",
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]["expansion"],
+            content_type="application/json",
+        )
+        expansion = self.client.expansion(**query)
+
+        self.assertEqual(1, len(responses.calls))
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
+
+        self.assertIsInstance(expansion, Expansions)
+        self.assertIsInstance(expansion.center, list)
+        self.assertEqual(expansion.interval_type, "time")
+        self.assertIsInstance(expansion.raw, dict)
+
+    @responses.activate
+    def test_trace_attributes(self):
+        query = ENDPOINTS_QUERIES[self.name]["trace_attributes"]
+        expected = ENDPOINTS_EXPECTED[self.name]["trace_attributes"]
+        responses.add(
+            responses.POST,
+            "https://api.mapbox.com/valhalla/v1/trace_attributes",
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]["trace_attributes"],
+            content_type="application/json",
+        )
+        matched = self.client.trace_attributes(**query)
+
+        self.assertEqual(1, len(responses.calls))
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
+
+        self.assertIsInstance(matched, MatchedResults)
+        self.assertIsInstance(matched.matched_edges, list)
+        for edge in matched.matched_edges:
+            self.assertIsInstance(edge, MatchedEdge)
+            self.assertIsInstance(edge.surface, Surface)
+            self.assertIsInstance(edge.sidewalk, Sidewalk)
+            self.assertIsInstance(edge.road_class, RoadClass)
+        for pt in matched.matched_points:
+            self.assertIsInstance(pt, MatchedPoint)
+            self.assertEqual(pt.match_type, "matched")
+            self.assertGreaterEqual(pt.edge_index, 0)

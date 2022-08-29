@@ -15,14 +15,15 @@
 # the License.
 #
 
+from operator import itemgetter
+
+from .. import convert
 from ..client_base import DEFAULT
 from ..client_default import Client
-from .. import convert
 from ..direction import Direction, Directions
-from ..isochrone import Isochrones, Isochrone
+from ..isochrone import Isochrone, Isochrones
 from ..matrix import Matrix
-
-from operator import itemgetter
+from ..utils import logger
 
 
 class HereMaps:
@@ -73,11 +74,11 @@ class HereMaps:
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
 
-        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.client_base.BaseClient`
         :type client: abc.ABCMeta
 
-        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
-        :type **client_kwargs: dict
+        :param client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type client_kwargs: dict
         """
 
         if app_id is None and app_code is None and api_key is None:
@@ -288,8 +289,11 @@ class HereMaps:
         custom_consumption_details=None,
         speed_profile=None,
         dry_run=None,
+        **directions_kwargs
     ):
         """Get directions between an origin point and a destination point.
+
+        Use ``direction_kwargs`` for any missing ``directions`` request options.
 
         For more information, https://developer.here.com/documentation/routing/topics/resource-calculate-route.html.
 
@@ -767,7 +771,9 @@ class HereMaps:
         if speed_profile is not None:
             params["speedProfile"] = speed_profile
 
-        return self._parse_direction_json(
+        params.update(directions_kwargs)
+
+        return self.parse_direction_json(
             self.client._request(
                 convert.delimit_list(["/calculateroute", format], "."),
                 get_params=params,
@@ -777,7 +783,7 @@ class HereMaps:
         )
 
     @staticmethod
-    def _parse_direction_json(response, alternatives):
+    def parse_direction_json(response, alternatives):
         if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
@@ -842,8 +848,11 @@ class HereMaps:
         custom_consumption_details=None,
         speed_profile=None,
         dry_run=None,
+        **isochrones_kwargs
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
+
+        Use ``isochrones_kwargs`` for any missing ``isochrones`` request options.
 
         For more information, https://developer.here.com/documentation/routing/topics/resource-calculate-isoline.html.
 
@@ -1065,17 +1074,20 @@ class HereMaps:
         if speed_profile is not None:
             params["speedProfile"] = speed_profile
 
-        return self._parse_isochrone_json(
+        params.update(isochrones_kwargs)
+
+        return self.parse_isochrone_json(
             self.client._request(
                 convert.delimit_list(["/calculateisoline", format], "."),
                 get_params=params,
                 dry_run=dry_run,
             ),
             intervals,
+            interval_type,
         )
 
     @staticmethod
-    def _parse_isochrone_json(response, intervals):
+    def parse_isochrone_json(response, intervals, interval_type):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -1096,6 +1108,7 @@ class HereMaps:
                     geometry=range_polygons,
                     interval=intervals[idx],
                     center=list(response["response"]["start"]["mappedPosition"].values()),
+                    interval_type=interval_type,
                 )
             )
 
@@ -1128,8 +1141,11 @@ class HereMaps:
         tunnel_category=None,
         speed_profile=None,
         dry_run=None,
+        **matrix_kwargs
     ):
         """Gets travel distance and time for a matrix of origins and destinations.
+
+        Use ``matrix_kwargs`` for any missing ``matrix`` request options.
 
         :param locations: The coordinates tuple the route should be calculated
             from in order of visit. Can be a list/tuple of [lon, lat] or :class:`HereMaps.Waypoint` instance or a
@@ -1355,7 +1371,9 @@ class HereMaps:
         if speed_profile is not None:
             params["speedProfile"] = speed_profile
 
-        return self._parse_matrix_json(
+        params.update(matrix_kwargs)
+
+        return self.parse_matrix_json(
             self.client._request(
                 convert.delimit_list(["/calculatematrix", format], "."),
                 get_params=params,
@@ -1364,7 +1382,7 @@ class HereMaps:
         )
 
     @staticmethod
-    def _parse_matrix_json(response):
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
 
@@ -1379,6 +1397,13 @@ class HereMaps:
         for index, obj in enumerate(mtx_objects):
             if index < (length - 1):
                 next_ = mtx_objects[index + 1]
+            if "summary" not in obj:
+                logger.warn(
+                    "HERE matrix couldn't compute route for %s => %s",
+                    obj["startIndex"],
+                    obj["destinationIndex"],
+                )
+                obj["summary"] = {"travelTime": None, "distance": None}
 
             if "travelTime" in obj["summary"]:
                 index_durations.append(obj["summary"]["travelTime"])

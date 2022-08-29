@@ -1,11 +1,9 @@
-requests>=2.0
-sphinx>=3.0.0
-sphinx-rtd-theme>=0.5.0
-coveralls>=2.0.0
-nose>=1.3.0
-setuptools>=39.0.0
-yapf>=0.30.0
+requests>=2.20.0; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.6.0")
+sphinx>=4.4.0
+sphinx-rtd-theme>=1.0.0
 responses>=0.10.0
-coverage>=5.0.4
-pre-commit>=2.7.1
-flake8>=3.0.0
+coverage>=6.3.0
+pre-commit>=2.13.0
+build>=0.7.0
+setuptools-scm>=6.4.2
+pytest>=6.2.5

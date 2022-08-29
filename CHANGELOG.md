@@ -7,8 +7,46 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 **Unreleased** is available in Github's `master` branch, but not on PyPI.
 
 ## **Unreleased**
+
+## [v1.1.0](https://pypi.org/project/routingpy/1.1.0/)
+
 ### Added
--
+- Added Valhalla's trace_attributes endpoint
+
+## [v1.0.4](https://pypi.org/project/routingpy/1.0.4/)
+
+### Fixed
+- Passing a Valhalla.Waypoint to isochrones resulted in an unhandled exception
+
+## [v1.0.3](https://pypi.org/project/routingpy/1.0.3/)
+
+### Fixed
+- OSRM does have a weird URL concept for profiles, so revert [#64](https://github.com/gis-ops/routing-py/issues/64))
+
+### Added
+- `interval_type` to `Isochrone` and `Expansions` objects
+
+## [v1.0.2](https://pypi.org/project/routingpy/1.0.2/)
+
+### Fixed
+- Valhalla's 'matrix' endpoint couldn't deal with NULL entries
+
+## [v1.0.0](https://pypi.org/project/routingpy/1.0.0/)
+
+### Changed
+- made all `parse_*` functions public so they can be used by super projects
+
+### Fixed
+- OSRM wasn't requesting the right endpoints: profile is meaningless
+- GraphHopper parsing fails with not encoded points ([#54](https://github.com/gis-ops/routing-py/issues/54))
+- Allow "narrative" argument for Valhalla's directions endpoint
+
+## [0.4.0](https://pypi.org/project/routingpy/0.4.0/)
+
+### Added
+- support for Valhalla's `/expansion` endpoint
+- support for HereMaps kwargs arguments
+
 ### Fixed
 - enhanced error handling for directions with Google [#15](https://github.com/gis-ops/routing-py/issues/15)
 - fixed MapboxOSRM client, removing unused parameters and unifying Isochrones interface [#21](https://github.com/gis-ops/routing-py/issues/21)
@@ -22,26 +60,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - BREAKING: pulled client stuff into a separate Client class which gets passed to the individual router instances with the default being the same as before [#24](https://github.com/gis-ops/routing-py/pull/24)
 
-### Deprecated
--
 
 ## [0.3.3](https://github.com/gis-ops/routing-py/releases/tag/0.3.3)
 ### Added
 - 2020/2021 Valhalla HTTP API improvements
 ### Fixed
 - README local OSRM description
-### Changed
-- 
-### Deprecated
--
 
 ## [0.3.2](https://github.com/gis-ops/routing-py/releases/tag/0.3.2)
 ### Fixed
 - HERE isochrones had lat, lon instead of lon, lat ([#14](https://github.com/gis-ops/routing-py/issues/14))
 
 ## [0.3.1](https://github.com/gis-ops/routing-py/releases/tag/0.3.2)
-### Added
-- 
 ### Fixed
 - HERE routers can now also be used with api key
 - HERE isochrones had lat, lon instead of lon, lat ([#14](https://github.com/gis-ops/routing-py/issues/14))

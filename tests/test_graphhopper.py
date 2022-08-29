@@ -16,16 +16,17 @@
 #
 """Tests for the Graphhopper module."""
 
-from routingpy import Graphhopper
-from routingpy.direction import Direction, Directions
-from routingpy.isochrone import Isochrones, Isochrone
-from routingpy.matrix import Matrix
-
-from tests.test_helper import *
-import tests as _test
+from copy import deepcopy
 
 import responses
-from copy import deepcopy
+
+import tests as _test
+from routingpy import Graphhopper
+from routingpy.direction import Direction, Directions
+from routingpy.isochrone import Isochrone, Isochrones
+from routingpy.matrix import Matrix
+from routingpy.utils import decode_polyline5
+from tests.test_helper import *
 
 
 class GraphhopperTest(_test.TestCase):
@@ -39,6 +40,7 @@ class GraphhopperTest(_test.TestCase):
     def test_full_directions(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
         query["algorithm"] = None
+        query["fake_option"] = 42
 
         responses.add(
             responses.GET,
@@ -56,7 +58,7 @@ class GraphhopperTest(_test.TestCase):
             "elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&"
             "optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&"
             "point=49.445776%2C8.780916&point_hint=Graphhopper%20Lane&point_hint=OSM%20Street&point_hint=Routing%20Broadway&"
-            "&points_encoded=true&vehicle=car&type=json&weighting=short_fastest&snap_prevention=trunk%2Cferry&curb_side=any%2Cright&turn_costs=true",
+            "&points_encoded=true&vehicle=car&type=json&weighting=short_fastest&snap_prevention=trunk%2Cferry&curb_side=any%2Cright&turn_costs=true&fake_option=42",
             responses.calls[0].request.url,
         )
 
@@ -90,7 +92,6 @@ class GraphhopperTest(_test.TestCase):
             "&points_encoded=true&vehicle=car&type=json&weighting=short_fastest&snap_prevention=trunk%2Cferry&curb_side=any%2Cright&turn_costs=true",
             responses.calls[0].request.url,
         )
-
         self.assertIsInstance(routes, Directions)
         self.assertEqual(3, len(routes))
         self.assertIsInstance(routes[0], Direction)
@@ -100,9 +101,45 @@ class GraphhopperTest(_test.TestCase):
         self.assertIsInstance(routes[0].raw, dict)
 
     @responses.activate
+    def test_full_directions_not_encoded(self):
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
+        query["points_encoded"] = False
+        query["algorithm"] = None
+
+        res = ENDPOINTS_RESPONSES[self.name]["directions"]
+        res["paths"][0]["points"] = dict(coordinates=decode_polyline5(res["paths"][0]["points"]))
+
+        responses.add(
+            responses.GET,
+            "https://graphhopper.com/api/1/route",
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]["directions"],
+            content_type="application/json",
+        )
+
+        route = self.client.directions(**query)
+        self.assertEqual(1, len(responses.calls))
+        self.assertURLEqual(
+            "https://graphhopper.com/api/1/route?avoid=tunnel%3Bford&"
+            "block_area=48.23424%2C8.34234&calc_points=false&ch.disable=true&debug=true&details=time&details=tolls&"
+            "elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&"
+            "optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&"
+            "point=49.445776%2C8.780916&point_hint=Graphhopper%20Lane&point_hint=OSM%20Street&point_hint=Routing%20Broadway"
+            "&points_encoded=false&vehicle=car&type=json&weighting=short_fastest&snap_prevention=trunk%2Cferry&curb_side=any%2Cright&turn_costs=true",
+            responses.calls[0].request.url,
+        )
+
+        self.assertIsInstance(route, Direction)
+        self.assertIsInstance(route.geometry, list)
+        self.assertIsInstance(route.duration, int)
+        self.assertIsInstance(route.distance, int)
+        self.assertIsInstance(route.raw, dict)
+
+    @responses.activate
     def test_full_isochrones(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["isochrones"])
         query["buckets"] = 3
+        query["fake_option"] = 42
 
         responses.add(
             responses.GET,
@@ -116,7 +153,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "https://graphhopper.com/api/1/isochrone?buckets=3&debug=false&key=sample_key&"
-            "point=48.23424%2C8.34234&vehicle=car&reverse_flow=true&time_limit=1000&type=json",
+            "point=48.23424%2C8.34234&vehicle=car&reverse_flow=true&time_limit=1000&type=json&fake_option=42",
             responses.calls[0].request.url,
         )
 
@@ -128,10 +165,12 @@ class GraphhopperTest(_test.TestCase):
             self.assertIsInstance(iso.geometry, list)
             self.assertIsInstance(iso.interval, int)
             self.assertIsInstance(iso.center, list)
+            self.assertEqual(iso.interval_type, "time")
 
     @responses.activate
     def test_full_matrix(self):
         query = ENDPOINTS_QUERIES[self.name]["matrix"]
+        query["fake_option"] = 42
 
         responses.add(
             responses.GET,
@@ -145,7 +184,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "https://graphhopper.com/api/1/matrix?key=sample_key&out_array=distances&out_array=times&out_array=weights&"
-            "point=49.415776%2C8.680916&point=49.420577%2C8.688641&point=49.445776%2C8.780916&vehicle=car&debug=true",
+            "point=49.415776%2C8.680916&point=49.420577%2C8.688641&point=49.445776%2C8.780916&vehicle=car&debug=true&fake_option=42",
             responses.calls[0].request.url,
         )
 

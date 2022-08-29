@@ -17,17 +17,17 @@
 
 from typing import List  # noqa: F401
 
+from .. import convert, utils
 from ..client_base import DEFAULT
 from ..client_default import Client
-from .. import convert, utils
-from ..direction import Directions, Direction
+from ..direction import Direction, Directions
 from ..matrix import Matrix
 
 
 class OSRM:
     """Performs requests to the OSRM API services."""
 
-    _DEFAULT_BASE_URL = "https://router.project-osrm.org"
+    _DEFAULT_BASE_URL = "https://routing.openstreetmap.de/routed-bike"
 
     def __init__(
         self,
@@ -38,13 +38,13 @@ class OSRM:
         retry_over_query_limit=False,
         skip_api_error=None,
         client=Client,
-        **client_kwargs
+        **client_kwargs,
     ):
         """
         Initializes an OSRM client.
 
-        :param base_url: The base URL for the request. Defaults to the OSRM demo API
-            server. Should not have a trailing slash.
+        :param base_url: The base URL for the request. Defaults to the FOSSGIS OSRM
+            instance for "bike". Should not have a trailing slash.
         :type base_url: str
 
         :param user_agent: User Agent to be used when requesting.
@@ -70,11 +70,11 @@ class OSRM:
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
         :type skip_api_error: bool
 
-        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.base.BaseClient`
+        :param client: A client class for request handling. Needs to be derived from :class:`routingpy.client_base.BaseClient`
         :type client: abc.ABCMeta
 
-        :param **client_kwargs: Additional arguments passed to the client, such as headers or proxies.
-        :type **client_kwargs: dict
+        :param client_kwargs: Additional arguments passed to the client, such as headers or proxies.
+        :type client_kwargs: dict
         """
 
         self.client = client(
@@ -84,13 +84,13 @@ class OSRM:
             retry_timeout,
             retry_over_query_limit,
             skip_api_error,
-            **client_kwargs
+            **client_kwargs,
         )
 
     def directions(
         self,
         locations,
-        profile,
+        profile="driving",
         radiuses=None,
         bearings=None,
         alternatives=None,
@@ -100,17 +100,26 @@ class OSRM:
         geometries=None,
         overview=None,
         dry_run=None,
+        **direction_kwargs,
     ):
-        """Get directions between an origin point and a destination point.
+        """
+        Get directions between an origin point and a destination point.
+
+        Use ``direction_kwargs`` for any missing ``directions`` request options.
 
         For more information, visit http://project-osrm.org/docs/v5.5.1/api/#route-service.
+
+        :param profile: NOT USED, only for compatibility with other providers.
 
         :param locations: The coordinates tuple the route should be calculated
             from in order of visit.
         :type locations: list of list
 
-        :param profile: Specifies the mode of transport to use when calculating
-            directions. One of ["car", "bike", "foot"].
+        :param profile: Optionally specifies the mode of transport to use when calculating
+            directions. Note that this strongly depends on how the OSRM server works. E.g.
+            the public FOSSGIS instances ignore any profile parameter set this way and instead
+            chose to encode the 'profile' in the base URL, e.g.
+            https://routing.openstreetmap.de/routed-bike. Default "driving".
         :type profile: str
 
         :param radiuses: A list of maximum distances (measured in
@@ -163,19 +172,29 @@ class OSRM:
         )
 
         params = self.get_direction_params(
-            radiuses, bearings, alternatives, steps, continue_straight, annotations, geometries, overview
+            locations,
+            profile,
+            radiuses,
+            bearings,
+            alternatives,
+            steps,
+            continue_straight,
+            annotations,
+            geometries,
+            overview,
+            **direction_kwargs,
         )
 
-        return self._parse_direction_json(
-            self.client._request(
-                "/route/v1/" + profile + "/" + coords, get_params=params, dry_run=dry_run
-            ),
+        return self.parse_direction_json(
+            self.client._request(f"/route/v1/{profile}/{coords}", get_params=params, dry_run=dry_run),
             alternatives,
             geometries,
         )
 
     @staticmethod
     def get_direction_params(
+        locations,
+        profile,
         radiuses=None,
         bearings=None,
         alternatives=None,
@@ -184,7 +203,15 @@ class OSRM:
         annotations=None,
         geometries=None,
         overview=None,
+        **directions_kwargs,
     ):
+        """
+        Builds and returns the router's route parameters. It's a separate function so that
+        bindings can use routingpy's functionality. See documentation of .directions().
+
+        :param locations: NOT USED, only for consistency reasons with other providers.
+        :param profile: NOT USED, only for consistency reasons with other providers.
+        """
         params = dict()
 
         if radiuses:
@@ -213,10 +240,12 @@ class OSRM:
         if overview is not None:
             params["overview"] = convert.convert_bool(overview)
 
+        params.update(directions_kwargs)
+
         return params
 
     @staticmethod
-    def _parse_direction_json(response, alternatives, geometry_format):
+    def parse_direction_json(response, alternatives, geometry_format):
         if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
@@ -262,16 +291,19 @@ class OSRM:
     def matrix(
         self,
         locations,
-        profile,
+        profile="driving",
         radiuses=None,
         bearings=None,
         sources=None,
         destinations=None,
         dry_run=None,
         annotations=("duration", "distance"),
+        **matrix_kwargs,
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
+
+        Use ``matrix_kwargs`` for any missing ``matrix`` request options.
 
         For more information visit http://project-osrm.org/docs/v5.5.1/api/#table-service.
 
@@ -279,8 +311,11 @@ class OSRM:
             from.
         :type locations: list of list
 
-        :param profile: Specifies the mode of transport to use when calculating
-            directions. One of ["car", "bike", "foot"].
+        :param profile: Optionally specifies the mode of transport to use when calculating
+            directions. Note that this strongly depends on how the OSRM server works. E.g.
+            the public FOSSGIS instances ignore any profile parameter set this way and instead
+            chose to encode the 'profile' in the base URL, e.g.
+            https://routing.openstreetmap.de/routed-bike. Default "driving".
         :type profile: str
 
         :param radiuses: A list of maximum distances (measured in
@@ -326,17 +361,41 @@ class OSRM:
             [convert.delimit_list([convert.format_float(f) for f in pair]) for pair in locations], ";"
         )
 
-        params = self.get_matrix_params(sources, destinations, annotations)
+        params = self.get_matrix_params(
+            locations, profile, radiuses, bearings, sources, destinations, annotations, **matrix_kwargs
+        )
 
-        return self._parse_matrix_json(
-            self.client._request(
-                "/table/v1/" + profile + "/" + coords, get_params=params, dry_run=dry_run
-            )
+        return self.parse_matrix_json(
+            self.client._request(f"/table/v1/{profile}/{coords}", get_params=params, dry_run=dry_run)
         )
 
     @staticmethod
-    def get_matrix_params(sources=None, destinations=None, annotations=("duration", "distance")):
+    def get_matrix_params(
+        locations,
+        profile,
+        radiuses=None,
+        bearings=None,
+        sources=None,
+        destinations=None,
+        annotations=("duration", "distance"),
+        **matrix_kwargs,
+    ):
+        """
+        Builds and returns the router's route parameters. It's a separate function so that
+        bindings can use routingpy's functionality. See documentation of .matrix().
+
+        :param locations: NOT USED, only for consistency reasons with other providers.
+        :param profile: NOT USED, only for consistency reasons with other providers.
+        """
         params = dict()
+
+        if radiuses:
+            params["radiuses"] = convert.delimit_list(radiuses, ";")
+
+        if bearings:
+            params["bearings"] = convert.delimit_list(
+                [convert.delimit_list(pair) for pair in bearings], ";"
+            )
 
         if sources:
             params["sources"] = convert.delimit_list(sources, ";")
@@ -347,10 +406,12 @@ class OSRM:
         if annotations:
             params["annotations"] = convert.delimit_list(annotations)
 
+        params.update(matrix_kwargs)
+
         return params
 
     @staticmethod
-    def _parse_matrix_json(response):
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
 
