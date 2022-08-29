@@ -14,11 +14,11 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-from typing import Optional, Union, Type, List
+from typing import List, Optional, Type, Union
 
 from routingpy.client_base import DEFAULT, BaseClient
 from routingpy.client_default import Client
-from routingpy.optimization import Optimization, Vehicle, Summary, Route, Unassigned, Job, Shipment
+from routingpy.optimization import Job, Optimization, Route, Shipment, Summary, Unassigned, Vehicle
 
 
 class Vroom:
