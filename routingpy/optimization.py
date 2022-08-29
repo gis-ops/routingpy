@@ -14,12 +14,12 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-from typing import Optional, List
+from typing import List, Optional
 
-from routingpy.utils import decode_polyline5
+from routingpy.utils import _ReprMixin, _short_list_repr, decode_polyline5
 
 
-class Job:
+class Job(_ReprMixin):
     def __init__(
         self,
         id: int,
@@ -80,7 +80,7 @@ class Job:
             self.time_windows = time_windows
 
 
-class ShipmentStep:
+class ShipmentStep(_ReprMixin):
     def __init__(
         self,
         id,
@@ -128,7 +128,7 @@ class ShipmentStep:
             self.time_windows = time_windows
 
 
-class Shipment:
+class Shipment(_ReprMixin):
     def __init__(
         self,
         pickup: Optional[ShipmentStep] = None,
@@ -161,7 +161,7 @@ class Shipment:
             self.priority = priority
 
 
-class Break:
+class Break(_ReprMixin):
     def __init__(self, id, time_windows, service=None, description=None):
         """
         :param id: The break id.
@@ -183,7 +183,7 @@ class Break:
             self.description = description
 
 
-class Vehicle:
+class Vehicle(_ReprMixin):
     def __init__(
         self,
         id: int,
@@ -254,7 +254,7 @@ class Vehicle:
             self.max_tasks = max_tasks
 
 
-class Summary:
+class Summary(_ReprMixin):
     def __init__(
         self,
         cost,
@@ -320,7 +320,7 @@ class Summary:
             self.distance = distance
 
 
-class Unassigned:
+class Unassigned(_ReprMixin):
     def __init__(self, id, type, location=None):
         """
         :param id: id of the unassigned task
@@ -412,6 +412,19 @@ class Route:
         if distance is not None:
             self.distance = distance
 
+    def __repr__(self):
+        return "{}({})".format(
+            type(self).__name__,
+            ", ".join(
+                [
+                    f"{k}: {v}"
+                    if not k == "geometry" and v is not None
+                    else f"{k}: {_short_list_repr(v)}"
+                    for k, v in self.__dict__.items()
+                ]
+            ),
+        )
+
 
 class Optimization:
     def __init__(
@@ -435,8 +448,11 @@ class Optimization:
         self.unassigned = unassigned
         self.routes = routes
 
+    def __repr__(self):
+        return f"Optimization(code: {self.code}, error: {self.error}, cost: {self.summary.cost if self.summary else None})"
 
-class Step:
+
+class Step(_ReprMixin):
     def __init__(
         self,
         type: str,
