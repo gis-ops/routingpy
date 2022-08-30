@@ -134,8 +134,7 @@ class Vroom:
 
                 params["shipments"].append(shipment_dict)
 
-        if geometry:
-            params.update({"options": {"g": geometry}})
+        params.update({"options": {"g": geometry}})
 
         if matrices:
             params["matrices"] = matrices

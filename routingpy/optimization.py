@@ -464,6 +464,7 @@ class Step(_ReprMixin):
         setup: Optional[int] = None,
         description: Optional[str] = None,
         location: Optional[List[float]] = None,
+        location_index: Optional[int] = None,
         id: Optional[int] = None,
         load: Optional[int] = None,
         distance: Optional[int] = None,
@@ -499,6 +500,9 @@ class Step(_ReprMixin):
 
         if location is not None:
             self.location = location
+
+        if location_index is not None:
+            self.location_index = location_index
 
         if id is not None:
             self.id = id
