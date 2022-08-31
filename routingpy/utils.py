@@ -148,6 +148,6 @@ def _short_list_repr(list_, threshold=5):
     :param threshold: The maximum list length below which the full stringified list is returned.
     """
     if len(list_) >= threshold and len(list_) > 2:
-        return f"{list_[0]}..-.{list_[-1]}"
+        return f"{list_[0]}...{list_[-1]}"
     else:
         return str(list_)
