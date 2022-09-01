@@ -16,9 +16,9 @@
 #
 from typing import List, Optional, Type, Union
 
-from routingpy.client_base import DEFAULT, BaseClient
-from routingpy.client_default import Client
-from routingpy.optimization import Job, Optimization, Route, Shipment, Summary, Unassigned, Vehicle
+from ..client_base import DEFAULT, BaseClient
+from ..client_default import Client
+from ..optimization import Job, Optimization, Route, Shipment, Summary, Unassigned, Vehicle
 
 
 class Vroom:

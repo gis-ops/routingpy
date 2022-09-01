@@ -16,7 +16,7 @@
 #
 from typing import List, Optional
 
-from routingpy.utils import _ReprMixin, _short_list_repr, decode_polyline5
+from .utils import _ReprMixin, _short_list_repr, decode_polyline5
 
 
 class Job(_ReprMixin):
