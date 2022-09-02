@@ -130,3 +130,24 @@ def _get_coords(lat, lng, factor, order="lnglat"):
     if order not in ("lnglat", "latlng"):
         raise ValueError(f"order must be either 'latlng' or 'lnglat', not {order}.")
     return (lat / factor, lng / factor) if order == "latlng" else (lng / factor, lat / factor)
+
+
+class _ReprMixin:
+    """A mixin class for nicer representation strings."""
+
+    def __repr__(self):
+        return "{}({})".format(
+            type(self).__name__, ", ".join([f"{k}: {v}" for k, v in self.__dict__.items()])
+        )
+
+
+def _short_list_repr(list_, threshold=5):
+    """
+    Returns a shortened representation string of a list.
+
+    :param threshold: The maximum list length below which the full stringified list is returned.
+    """
+    if len(list_) >= threshold and len(list_) > 2:
+        return f"{list_[0]}...{list_[-1]}"
+    else:
+        return str(list_)

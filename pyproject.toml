@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 name = "routingpy"
 version = "1.1.0"
 description = "One lib to route them all."
-authors = ["Nils Nolde <nils@gis-ops.com>", "Tim Ellersiek <tim@gis-ops.com>"]
+authors = ["Nils Nolde <nils@gis-ops.com>", "Tim Ellersiek <tim@gis-ops.com>", "Christian Beiwinkel <christian@gis-ops.com>"]
 license = "Apache2"
 readme = 'README.rst'
 
