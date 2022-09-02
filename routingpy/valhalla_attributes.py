@@ -20,7 +20,7 @@
 from enum import Enum
 from typing import List, Optional, Tuple, Union
 
-from routingpy.utils import decode_polyline6
+from .utils import decode_polyline6
 
 
 class MatchDiscontinuity(str, Enum):
