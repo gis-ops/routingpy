@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
+### Fixed
+- Unit conversion did not work properly in ors' directions method
+- Docstring for `intersections` parameter in ors' isochrones method was missing
+- `profile` parameter was unnecessarily passed to POST params in ors' isochrones and matrix methods
+
 ## [v1.1.0](https://pypi.org/project/routingpy/1.1.0/)
 
 ### Added

@@ -345,7 +345,9 @@ class ORS:
             else:
                 geometry = response["features"][0]["geometry"]["coordinates"]
                 duration = int(response["features"][0]["properties"]["summary"]["duration"])
-                distance = int(response["features"][0]["properties"]["summary"]["distance"])
+                distance = int(
+                    response["features"][0]["properties"]["summary"]["distance"] * units_factor
+                )
                 return Direction(geometry=geometry, duration=duration, distance=distance, raw=response)
         elif format == "json":
             if alternative_routes:
@@ -357,8 +359,8 @@ class ORS:
                     routes.append(
                         Direction(
                             geometry=geometry,
-                            distance=int(route["summary"]["distance"]),
-                            duration=int(route["summary"]["duration"] * units_factor),
+                            distance=int(route["summary"]["distance"] * units_factor),
+                            duration=int(route["summary"]["duration"]),
                             raw=route,
                         )
                     )
@@ -420,7 +422,7 @@ class ORS:
             One or more of ['area', 'reachfactor', 'total_pop']. Default 'area'.
         :type attributes: list of str
 
-        :param intersections: Write smth.
+        :param intersections: Specifies whether to return intersecting polygons.
         :type intersections: bool
 
         :param dry_run: Print URL and parameters without sending the request.
@@ -432,7 +434,6 @@ class ORS:
 
         params = {
             "locations": [locations],
-            "profile": profile,
             "range": intervals,
         }
 
@@ -533,7 +534,7 @@ class ORS:
         :rtype: :class:`routingpy.matrix.Matrix`
         """
 
-        params = {"locations": locations, "profile": profile}
+        params = {"locations": locations}
 
         if sources:
             params["sources"] = sources
