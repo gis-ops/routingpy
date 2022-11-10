@@ -422,7 +422,7 @@ class ORS:
             One or more of ['area', 'reachfactor', 'total_pop']. Default 'area'.
         :type attributes: list of str
 
-        :param intersections: Write smth.
+        :param intersections: Specifies whether to return intersecting polygons.
         :type intersections: bool
 
         :param dry_run: Print URL and parameters without sending the request.
