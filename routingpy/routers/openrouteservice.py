@@ -345,7 +345,9 @@ class ORS:
             else:
                 geometry = response["features"][0]["geometry"]["coordinates"]
                 duration = int(response["features"][0]["properties"]["summary"]["duration"])
-                distance = int(response["features"][0]["properties"]["summary"]["distance"])
+                distance = int(
+                    response["features"][0]["properties"]["summary"]["distance"] * units_factor
+                )
                 return Direction(geometry=geometry, duration=duration, distance=distance, raw=response)
         elif format == "json":
             if alternative_routes:
@@ -357,8 +359,8 @@ class ORS:
                     routes.append(
                         Direction(
                             geometry=geometry,
-                            distance=int(route["summary"]["distance"]),
-                            duration=int(route["summary"]["duration"] * units_factor),
+                            distance=int(route["summary"]["distance"] * units_factor),
+                            duration=int(route["summary"]["duration"]),
                             raw=route,
                         )
                     )
