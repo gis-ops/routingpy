@@ -434,7 +434,6 @@ class ORS:
 
         params = {
             "locations": [locations],
-            "profile": profile,
             "range": intervals,
         }
 
@@ -535,7 +534,7 @@ class ORS:
         :rtype: :class:`routingpy.matrix.Matrix`
         """
 
-        params = {"locations": locations, "profile": profile}
+        params = {"locations": locations}
 
         if sources:
             params["sources"] = sources
