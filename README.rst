@@ -38,7 +38,7 @@ or **time-distance matrices**.
 This list is hopefully growing with time and contributions by other developers. An up-to-date list is always available
 in our documentation_.
 
-**routing-py** is tested against CPython versions 3.7, 3.8, 3.9, 3.10 :strike:`and against PyPy3` (`#60 <https://github.com/gis-ops/routing-py/issues/60>`_).
+**routing-py** is tested against CPython versions 3.7, 3.8, 3.9, 3.10, 3.11 :strike:`and against PyPy3` (`#60 <https://github.com/gis-ops/routing-py/issues/60>`_).
 
 © routing-py contributors 2022 under the `Apache 2.0 License`_.
 
