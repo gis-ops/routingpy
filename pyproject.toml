@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 name = "routingpy"
 version = "1.1.0"
 description = "One lib to route them all."
-authors = ["Nils Nolde <nils@gis-ops.com>", "Tim Ellersiek <tim@gis-ops.com>"]
+authors = ["Nils Nolde <nils@gis-ops.com>", "Tim Ellersiek <tim@gis-ops.com>", "Christian Beiwinkel <christian@gis-ops.com>"]
 license = "Apache2"
 readme = 'README.rst'
 
@@ -24,6 +24,7 @@ matplotlib = {version = "^3.4.1", optional = true}
 contextily = {version = "^1.1.0", optional = true}
 geopandas = {version = "^0.8.2", optional = true}
 descartes = {version = "^1.0.0", optional = true}
+sphinxnotes-strike = "^1.2"
 
 [tool.poetry.dev-dependencies]
 sphinx = "^4.4.0"
