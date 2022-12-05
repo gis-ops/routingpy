@@ -1,4 +1,4 @@
-routing-py
+routingpy
 ==========
 
 .. image:: https://github.com/gis-ops/routing-py/workflows/tests/badge.svg
