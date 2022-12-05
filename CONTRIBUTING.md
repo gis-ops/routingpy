@@ -49,6 +49,9 @@ poetry install
 ```
 
 3. Run tests to check if all goes well:
+
+(In order to run the e2e tests, run the router instances with `docker-compose up` from the project root)
+
 ```bash
 # From the root of your git project
 nosetests -v
@@ -62,10 +65,9 @@ pre-commit install
 
 ### Tests
 
-We only do mocked tests as routing results heavily depend on underlying data, which, at least in the case of the FOSS routing
-engines, changes on a very regular basis due to OpenStreetMap updates. All queries and most mocked responses are located in
-`test/test_helper.py` in `dict`s. This unfortunately also means, that our tests are less API tests and more unit tests and can't catch
-updates on providers' API changes.
+~~We only do mocked tests as routing results heavily depend on underlying data, which, at least in the case of the FOSS routing
+engines, changes on a very regular basis due to OpenStreetMap updates.~~ We also do end-to-end testing now! Run `docker-compose up` from
+the project root to set up local instances of Valhalla, OSRM, ORS and GraphHopper!
 
 Run `nosetests` with a `coverage` flag, which shouldn't report < 90% coverage overall (the starting point at the
 beginning of the project). A [`coveralls.io`](https://coveralls.io) instance will check for coverage when you submit a PR.

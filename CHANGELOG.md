@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
+### Added
+- Added e2e tests using dockerized instances of Valhalla, OSRM, ORS and GraphHopper
+
+### Fixed
+- Valhalla's Isochrones center property was unnecessarily wrapped in a list
+- GraphHopper Isochrones center coordinates were strings, not floats
+
 ## [v1.1.0](https://pypi.org/project/routingpy/1.1.0/)
 
 ### Added
