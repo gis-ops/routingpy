@@ -5,10 +5,6 @@ routingpy
     :target: https://github.com/gis-ops/routing-py/actions/workflows/ci-tests.yml
     :alt: tests
 
-.. image:: https://coveralls.io/repos/github/gis-ops/routingpy/badge.svg?branch=master
-    :target: https://coveralls.io/github/gis-ops/routingpy?branch=master
-    :alt: coveralls
-
 .. image:: https://readthedocs.org/projects/routingpy/badge/?version=latest
     :target: https://routingpy.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
