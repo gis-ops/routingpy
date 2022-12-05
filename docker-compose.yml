@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+    ors:
+        container_name: ors-tests
+        ports:
+            - "8080:8080"
+        image: ghcr.io/gis-ops/openrouteservice:latest
+        volumes:
+            - ./test_data/andorra-latest.osm.pbf:/ors-core/data/osm_file.pbf
+        environment:
+            - "JAVA_OPTS=-Djava.awt.headless=true -server -XX:TargetSurvivorRatio=75 -XX:SurvivorRatio=64 -XX:MaxTenuringThreshold=3 -XX:+UseG1GC -XX:+ScavengeBeforeFullGC -XX:ParallelGCThreads=4 -Xms1g -Xmx2g"
+            - "CATALINA_OPTS=-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9001 -Dcom.sun.management.jmxremote.rmi.port=9001 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost"
+    valhalla:
+        container_name: valhalla-tests
+        image: gisops/valhalla:latest
+        ports:
+            - "8002:8002"
+        volumes:
+            - ./test_data/:/custom_files
+    osrm:
+        container_name: osrm-tests
+        image: osrm/osrm-backend:latest
+        ports:
+            - "5000:5000"
+        volumes:
+            - ./test_data/:/data
+        command: '/bin/bash -c "osrm-extract -p /opt/car.lua /data/andorra-latest.osm.pbf && osrm-partition /data/andorra-latest.osrm && osrm-customize /data/andorra-latest.osrm && osrm-routed --algorithm=MLD /data/andorra-latest.osrm"'
+    graphhopper:
+        container_name: graphhopper-tests
+        image: israelhikingmap/graphhopper:latest
+        ports:
+            - "8989:8989"
+        volumes:
+            - ./test_data/:/graphhopper/data
+        command: "-i data/andorra-latest.osm.pbf --host 0.0.0.0"

@@ -510,7 +510,7 @@ class Graphhopper:
             type,
             intervals[0],
             buckets,
-            center,
+            locations,
             interval_type,
         )
 
