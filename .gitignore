@@ -13,5 +13,5 @@ test.py
 *.pyc
 *.idea/
 .DS_Store
-test_data
+/test_data/*
 !test_data/andorra-latest.osm.pbf
