@@ -140,6 +140,5 @@ class TestRoutingpyE2e(_test.TestCase):
 
         self.assertIsInstance(isochrones[0].geometry, list)
         self.assertEqual(isochrones[0].interval, 50)
-        print(isochrones[0].center)
         self.assertAlmostEqual(isochrones[0].center[0], 1.51886, 1)
         self.assertAlmostEqual(isochrones[0].center[1], 42.5063, 1)
