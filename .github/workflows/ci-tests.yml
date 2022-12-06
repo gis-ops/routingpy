@@ -18,16 +18,17 @@ jobs:
       matrix:
         python_version: [
             3.7,
-            3.8,
-            3.9,
-            '3.10',
+#            3.8,  # only lowest & highest version should be enough, :cross_fingers:
+#            3.9,
+#            '3.10',
+            '3.11'
             # pypy3  # didn't build on CI anymore, happy for help: https://github.com/gis-ops/routing-py/issues/60
         ]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python_version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python_version }}
 
@@ -48,9 +49,3 @@ jobs:
         docker-compose -f docker-compose.yml down
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./coverage.lcov

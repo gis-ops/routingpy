@@ -12,8 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added e2e tests using dockerized instances of Valhalla, OSRM, ORS and GraphHopper
 
 ### Fixed
+- Unit conversion did not work properly in ors' directions method
+- Docstring for `intersections` parameter in ors' isochrones method was missing
+- `profile` parameter was unnecessarily passed to POST params in ors' isochrones and matrix methods
 - Valhalla's Isochrones center property was unnecessarily wrapped in a list
 - GraphHopper Isochrones center coordinates were strings, not floats
+
 
 ## [v1.1.0](https://pypi.org/project/routingpy/1.1.0/)
 

@@ -110,6 +110,7 @@ class ORSTest(_test.TestCase):
         expected["range_type"] = expected["interval_type"]
         del expected["intervals"]
         del expected["interval_type"]
+        del expected["profile"]
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(expected, json.loads(responses.calls[0].request.body.decode("utf-8")))
@@ -139,6 +140,7 @@ class ORSTest(_test.TestCase):
         matrix = self.client.matrix(**query)
 
         expected = query
+        del expected["profile"]
 
         self.assertEqual(1, len(responses.calls))
         self.assertEqual(expected, json.loads(responses.calls[0].request.body.decode("utf-8")))

@@ -1,13 +1,9 @@
-routing-py
+routingpy
 ==========
 
 .. image:: https://github.com/gis-ops/routing-py/workflows/tests/badge.svg
     :target: https://github.com/gis-ops/routing-py/actions/workflows/ci-tests.yml
     :alt: tests
-
-.. image:: https://coveralls.io/repos/github/gis-ops/routing-py/badge.svg?branch=master
-    :target: https://coveralls.io/github/gis-ops/routing-py?branch=master
-    :alt: Coveralls coverage
 
 .. image:: https://readthedocs.org/projects/routingpy/badge/?version=latest
     :target: https://routingpy.readthedocs.io/en/latest/?badge=latest
@@ -38,15 +34,15 @@ or **time-distance matrices**.
 This list is hopefully growing with time and contributions by other developers. An up-to-date list is always available
 in our documentation_.
 
-**routing-py** is tested against CPython versions 3.7, 3.8, 3.9, 3.10 ~~and against PyPy3~~ ([#60](https://github.com/gis-ops/routing-py/issues/60).
+**routing-py** is tested against CPython versions 3.7, 3.8, 3.9, 3.10, 3.11 :strike:`and against PyPy3` (`#60 <https://github.com/gis-ops/routingpy/issues/60>`_).
 
-© routing-py contributors 2022 under the `Apache 2.0 License`_.
+© routingpy contributors 2022 under the `Apache 2.0 License`_.
 
 .. image:: https://user-images.githubusercontent.com/10322094/57357720-e180c080-7173-11e9-97a4-cecb4670065d.jpg
     :alt: routing-py-image
 
 
-Why routing-py?
+Why routingpy?
 ---------------
 
 You want to
@@ -88,7 +84,7 @@ Or the lastest from source
 
 .. code:: bash
 
-   pip install git+git://github.com/gis-ops/routing-py
+   pip install git+git://github.com/gis-ops/routingpy
 
 
 API
