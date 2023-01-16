@@ -42,10 +42,10 @@ jobs:
 
     - name: pytest and coverage
       run: |
-        docker-compose -f docker-compose.yml up -d
+        docker-compose -f tests/docker-compose.yml up -d
         pip install -e .
         coverage run --source=routingpy --module pytest
         coverage lcov --include "routingpy/*"
-        docker-compose -f docker-compose.yml down
+        docker-compose -f tests/docker-compose.yml down
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

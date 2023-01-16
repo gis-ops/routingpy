@@ -2,7 +2,7 @@ import tests as _test
 from routingpy import ORS, OSRM, Graphhopper, Valhalla
 
 
-class TestRoutingpyE2e(_test.TestCase):
+class TestRoutingpyIntegration(_test.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.valhalla = Valhalla("http://localhost:8002")
