@@ -519,7 +519,7 @@ class Valhalla:
                     Isochrone(
                         geometry=feature["geometry"]["coordinates"],
                         interval=intervals[idx],
-                        center=locations[0],
+                        center=locations[0] if isinstance(locations[0], list) else locations,
                         interval_type=interval_type,
                     )
                 )
