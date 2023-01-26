@@ -276,7 +276,7 @@ class Graphhopper:
            ``snap_prevention``, ``curb_side``, ``turn_costs`` parameters
         """
 
-        params = [("vehicle", profile)]
+        params = [("profile", profile)]
 
         for coordinate in locations:
             coord_latlng = reversed([convert.format_float(f) for f in coordinate])
@@ -477,7 +477,7 @@ class Graphhopper:
         :rtype: :class:`routingpy.isochrone.Isochrones`
         """
 
-        params = [("vehicle", profile), ("type", type)]
+        params = [("profile", profile), ("type", type)]
 
         if convert.is_list(intervals):
             if interval_type in (None, "time"):
@@ -585,7 +585,7 @@ class Graphhopper:
         :returns: A matrix from the specified sources and destinations.
         :rtype: :class:`routingpy.matrix.Matrix`
         """
-        params = [("vehicle", profile)]
+        params = [("profile", profile)]
 
         if self.key is not None:
             params.append(("key", self.key))
