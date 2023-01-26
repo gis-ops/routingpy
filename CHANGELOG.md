@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## **Unreleased**
 
 ### Added
-- Added e2e tests using dockerized instances of Valhalla, OSRM, ORS and GraphHopper
+- Added integration tests using dockerized instances of Valhalla, OSRM, ORS and GraphHopper
 
 ### Fixed
 - Unit conversion did not work properly in ors' directions method
