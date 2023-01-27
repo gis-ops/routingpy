@@ -7,7 +7,7 @@ class TestRoutingpyIntegration(_test.TestCase):
     def setUpClass(cls) -> None:
         cls.valhalla = Valhalla("http://localhost:8002")
         cls.osrm = OSRM("http://localhost:5000")
-        cls.ors = ORS(base_url="http://localhost:8080/ors")
+        cls.ors = ORS(base_url="http://localhost:8005/ors")
         cls.gh = Graphhopper(base_url="http://localhost:8989")
 
     def test_valhalla_directions(self):

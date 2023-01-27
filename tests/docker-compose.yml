@@ -3,7 +3,7 @@ services:
     ors:
         container_name: ors-tests
         ports:
-            - "8080:8080"
+            - "8005:8080"
         image: ghcr.io/gis-ops/openrouteservice:latest
         volumes:
             - ../test_data/andorra-latest.osm.pbf:/ors-core/data/osm_file.pbf
