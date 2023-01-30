@@ -44,11 +44,6 @@ jobs:
       run: |
         docker-compose -f tests/docker-compose.yml up -d
         pip install -e .
-        curl --request POST \
-        --url http://localhost:8005/ors/v2/directions/driving-car \
-        --header 'Authorization: 5b3ce3597851110001cf6248d07a51fd10134409b8e747119cb1c294' \
-        --header 'Content-Type: application/json' \
-        --data '{"coordinates": [[1.51886, 42.5063], [1.53789, 42.51007]]}'
         coverage run --source=routingpy --module pytest
         coverage lcov --include "routingpy/*"
         docker-compose -f tests/docker-compose.yml down
