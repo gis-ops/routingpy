@@ -83,18 +83,18 @@ class TestRoutingpyIntegration(_test.TestCase):
         self.assertEqual(len(matrix.durations[0]), 4)
         self.assertEqual(len(matrix.distances[0]), 4)
 
-    # def test_ors_directions(self):
-    #     directions = self.ors.directions(
-    #         [
-    #             [1.51886, 42.5063],
-    #             [1.53789, 42.51007],
-    #         ],
-    #         "driving-car",
-    #     )
-    #
-    #     self.assertIsInstance(directions.geometry, list)
-    #     self.assertIsInstance(directions.duration, int)
-    #     self.assertIsInstance(directions.distance, int)
+    def test_ors_directions(self):
+        directions = self.ors.directions(
+            [
+                [1.51886, 42.5063],
+                [1.53789, 42.51007],
+            ],
+            "driving-car",
+        )
+
+        self.assertIsInstance(directions.geometry, list)
+        self.assertIsInstance(directions.duration, int)
+        self.assertIsInstance(directions.distance, int)
 
     def test_ors_isochrones(self):
         isochrones = self.ors.isochrones([1.51886, 42.5063], "driving-car", [20, 50])
