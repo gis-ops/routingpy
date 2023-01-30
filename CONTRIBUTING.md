@@ -48,11 +48,7 @@ pip install -r requirements_dev.txt
 poetry install
 ```
 
-3. Run tests to check if all goes well:
-```bash
-# From the root of your git project
-nosetests -v
-```
+3. Run tests to check if all goes well (see test section below)
 
 4. Please install the pre-commit hook, so your code gets auto-formatted and linted before committing it:
 ```bash
@@ -62,10 +58,8 @@ pre-commit install
 
 ### Tests
 
-We only do mocked tests as routing results heavily depend on underlying data, which, at least in the case of the FOSS routing
-engines, changes on a very regular basis due to OpenStreetMap updates. All queries and most mocked responses are located in
-`test/test_helper.py` in `dict`s. This unfortunately also means, that our tests are less API tests and more unit tests and can't catch
-updates on providers' API changes.
+Run `docker-compose -f tests/docker-compose-yml up` from
+the project root to set up local instances of Valhalla, OSRM, ORS and GraphHopper.
 
 Run `nosetests` with a `coverage` flag, which shouldn't report < 90% coverage overall (the starting point at the
 beginning of the project). A [`coveralls.io`](https://coveralls.io) instance will check for coverage when you submit a PR.
