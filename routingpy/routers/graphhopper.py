@@ -378,7 +378,7 @@ class Graphhopper:
         params.extend(direction_kwargs.items())
 
         return self.parse_directions_json(
-            self.client._request("/route", get_params=params, dry_run=dry_run),
+            self.client._request("/route", post_params=params, dry_run=dry_run),
             algorithm,
             elevation,
             points_encoded,
