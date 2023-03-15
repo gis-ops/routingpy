@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
+### Added
+- `alternates` for Valhalla
+
 ### Fixed
 - Unit conversion did not work properly in ors' directions method
 - Docstring for `intersections` parameter in ors' isochrones method was missing
