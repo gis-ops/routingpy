@@ -276,106 +276,101 @@ class Graphhopper:
            ``snap_prevention``, ``curb_side``, ``turn_costs`` parameters
         """
 
-        params = [("vehicle", profile)]
+        params = {"vehicle": profile}
 
         for coordinate in locations:
             coord_lnglat = ([convert.format_float(f) for f in coordinate])
-            params.append(("points", ",".join(coord_lnglat)))
+            params["points"] = ",".join(coord_lnglat)
 
         if self.key is not None:
-            params.append(("key", self.key))
+            params["key"] = self.key
 
         if format is not None:
-            params.append(("type", format))
+            params["type"] = format
 
         if optimize is not None:
-            params.append(("optimize", convert.convert_bool(optimize)))
+            params["optimize"] = optimize
 
         if instructions is not None:
-            params.append(("instructions", convert.convert_bool(instructions)))
+            params["instructions"] = instructions
 
         if locale is not None:
-            params.append(("locale", locale))
+            params["locale"] = locale
 
         if elevation is not None:
-            params.append(("elevation", convert.convert_bool(elevation)))
+            params["elevation"] = elevation
 
         if points_encoded is not None:
-            params.append(("points_encoded", convert.convert_bool(points_encoded)))
+            params["points_encoded"] = points_encoded
 
         if calc_points is not None:
-            params.append(("calc_points", convert.convert_bool(calc_points)))
+            params["calc_points"] = calc_points
 
         if debug is not None:
-            params.append(("debug", convert.convert_bool(debug)))
+            params["debug"] = debug
 
         if point_hint is not None:
-            for hint in point_hint:
-                params.append(("points_hint", hint))
+            params["point_hints"] = point_hint
 
         if snap_prevention:
-            params.append(("snap_preventions", convert.delimit_list(snap_prevention)))
+            params["snap_preventions"] = snap_prevention
 
         if turn_costs:
-            params.append(("turn_costs", convert.convert_bool(turn_costs)))
+            params["turn_costs"] = turn_costs
 
         if curb_side:
-            params.append(("curbsides", convert.delimit_list(curb_side)))
+            params["curbsides"] = convert.delimit_list(curb_side)
 
         ### all below params will only work if ch is disabled
 
         if details is not None:
-            params.extend([("details", detail) for detail in details])
+            params["details"] = details
 
         if ch_disable is not None:
-            params.append(("ch.disable", convert.convert_bool(ch_disable)))
+            params["ch.disable"] = ch_disable
 
         if weighting is not None:
-            params.append(("weighting", weighting))
+            params["weighting"] = weighting
 
         if heading is not None:
-            params.append(("heading", convert.delimit_list(heading)))
+            params["heading"] = heading
 
         if heading_penalty is not None:
-            params.append(("heading_penalty", heading_penalty))
+            params["heading_penalty"] = heading_penalty
 
         if pass_through is not None:
-            params.append(("pass_through", convert.convert_bool(pass_through)))
+            params["pass_through"] = pass_through
 
         if block_area is not None:
-            params.append(("block_area", block_area))
+            params["block_area"] = block_area
 
         if avoid is not None:
-            params.append(("avoid", convert.delimit_list(avoid, ";")))
+            params["avoid"] = avoid
 
         if algorithm is not None:
 
-            params.append(("algorithm", algorithm))
+            params["algorithm"] = algorithm
 
             if algorithm == "round_trip":
 
                 if round_trip_distance is not None:
-                    params.append(("round_trip.distance", round_trip_distance))
+                    params["round_trip.distance"] = round_trip_distance
 
                 if round_trip_seed is not None:
-                    params.append(("round_trip.seed", round_trip_seed))
+                    params["round_trip.seed"] = round_trip_seed
 
             if algorithm == "alternative_route":
 
                 if alternative_route_max_paths is not None:
-                    params.append(("alternative_route.max_paths", alternative_route_max_paths))
+                    params["alternative_route.max_paths"] = alternative_route_max_paths
 
                 if alternative_route_max_weight_factor is not None:
-                    params.append(
-                        ("alternative_route.max_weight_factor", alternative_route_max_weight_factor)
-                    )
+                    params["alternative_route.max_weight_factor"] = alternative_route_max_weight_factor
 
                 if alternative_route_max_share_factor:
-                    params.append(
-                        ("alternative_route_max_share_factor", alternative_route_max_share_factor)
-                    )
+                    params["alternative_route_max_share_factor"] = alternative_route_max_share_factor
 
-        params.extend(direction_kwargs.items())
+        params.update(direction_kwargs)
 
         return self.parse_directions_json(
             self.client._request("/route", post_params=params, dry_run=dry_run),
