@@ -134,7 +134,7 @@ class Graphhopper:
 
         Use ``direction_kwargs`` for any missing ``directions`` request options.
 
-        For more information, visit https://docs.graphhopper.com/#tag/Routing-API/paths/~1route/get.
+        For more information, visit https://docs.graphhopper.com/#operation/postRoute.
 
         :param locations: The coordinates tuple the route should be calculated
             from in order of visit.
@@ -279,8 +279,8 @@ class Graphhopper:
         params = [("vehicle", profile)]
 
         for coordinate in locations:
-            coord_latlng = reversed([convert.format_float(f) for f in coordinate])
-            params.append(("point", ",".join(coord_latlng)))
+            coord_lnglat = ([convert.format_float(f) for f in coordinate])
+            params.append(("points", ",".join(coord_lnglat)))
 
         if self.key is not None:
             params.append(("key", self.key))
@@ -311,16 +311,16 @@ class Graphhopper:
 
         if point_hint is not None:
             for hint in point_hint:
-                params.append(("point_hint", hint))
+                params.append(("points_hint", hint))
 
         if snap_prevention:
-            params.append(("snap_prevention", convert.delimit_list(snap_prevention)))
+            params.append(("snap_preventions", convert.delimit_list(snap_prevention)))
 
         if turn_costs:
             params.append(("turn_costs", convert.convert_bool(turn_costs)))
 
         if curb_side:
-            params.append(("curb_side", convert.delimit_list(curb_side)))
+            params.append(("curbsides", convert.delimit_list(curb_side)))
 
         ### all below params will only work if ch is disabled
 
