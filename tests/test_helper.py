@@ -849,18 +849,30 @@ ENDPOINTS_QUERIES = {
             "calc_points": False,
             "optimize": True,
             "debug": True,
-            "point_hint": ["OSM Street", "Graphhopper Lane", "Routing Broadway"],
-            "snap_prevention": ["trunk", "ferry"],
-            "curb_side": ["any", "right"],
+            "point_hints": ["OSM Street", "Graphhopper Lane", "Routing Broadway"],
+            "snap_preventions": ["trunk", "ferry"],
+            "curbsides": ["any", "right"],
             "turn_costs": True,
             "details": ["tolls", "time"],
             "ch_disable": True,
-            "weighting": "short_fastest",
+            "custom_model": {
+                "speed": [
+                    {
+                        "if": "true",
+                        "limit_to": "100",
+                    },
+                ],
+                "priority": [
+                    {
+                        "if": "road_class == MOTORWAY",
+                        "multiply_by": "0",
+                    },
+                ],
+                "distance_influence": 100,
+            },
             "heading": [PARAM_INT_SMALL, PARAM_INT_SMALL, PARAM_INT_SMALL],
             "heading_penalty": 100,
             "pass_through": True,
-            "block_area": ",".join(list(map(str, reversed(PARAM_POINT)))),
-            "avoid": ["tunnel", "ford"],
             "algorithm": "alternative_route",
             "round_trip_distance": 10000,
             "round_trip_seed": 3,
@@ -1076,32 +1088,57 @@ ENDPOINTS_EXPECTED = {
             },
         },
     },
-    'graphhopper': {
-        'directions': {
-            'vehicle': 'car',
-            'points': '8.780916,49.445776',
-            'key': 'sample_key',
-            'type': 'json',
-            'optimize': True,
-            'instructions': False,
-            'locale': 'en',
-            'elevation': True,
-            'points_encoded': True,
-            'calc_points': False,
-            'debug': True,
-            'point_hints': ['OSM Street', 'Graphhopper Lane', 'Routing Broadway'],
-            'snap_preventions': ['trunk', 'ferry'],
-            'turn_costs': True,
-            'curbsides': 'any,right',
-            'details': ['tolls', 'time'],
-            'ch.disable': True,
-            'weighting': 'short_fastest',
-            'heading': [50, 50, 50],
-            'heading_penalty': 100,
-            'pass_through': True,
-            'block_area': '48.23424,8.34234',
-            'avoid': ['tunnel', 'ford'],
-            'fake_option': 42
+    "graphhopper": {
+        "directions": {
+            "vehicle": "car",
+            "points": "8.780916,49.445776",
+            "key": "sample_key",
+            "type": "json",
+            "optimize": True,
+            "instructions": False,
+            "locale": "en",
+            "elevation": True,
+            "points_encoded": True,
+            "calc_points": False,
+            "debug": True,
+            "point_hints": [
+                "OSM Street",
+                "Graphhopper Lane",
+                "Routing Broadway"
+            ],
+            "snap_preventions": [
+                "trunk",
+                "ferry"
+            ],
+            "curbsides": [
+                "any",
+                "right"
+            ],
+            "details": [
+                "tolls",
+                "time"
+            ],
+            "ch.disable": True,
+            "custom_model": {
+                "speed": [
+                    {
+                        "if": "true",
+                        "limit_to": "100"
+                    }
+                ],
+                "priority": [
+                    {
+                        "if": "road_class == MOTORWAY",
+                        "multiply_by": "0"
+                    }
+                ],
+                "distance_influence": 100
+            },
+            "heading_penalty": 100,
+            "pass_through": True,
+            "turn_costs": True,
+            "heading": [50, 50, 50],
+            "fake_option": 42
         },
     },
 }
