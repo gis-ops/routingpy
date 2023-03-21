@@ -264,7 +264,7 @@ class Graphhopper:
            `snap_prevention` to `snap_preventions`, `curb_side` to `curbsides`,
 
         .. versionadded:: 1.2.0
-           `custom_model` parameters
+           Added `custom_model` parameter
 
         .. deprecated:: 1.2.0
            Removed `weighting`, `block_area`, `avoid`, `turn_costs` parameters
