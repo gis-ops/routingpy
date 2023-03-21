@@ -109,15 +109,13 @@ class Graphhopper:
         points_encoded=True,
         calc_points=None,
         debug=None,
-        point_hint=None,
+        point_hints=None,
         details=None,
         ch_disable=None,
-        weighting=None,
-        heading=None,
+        custom_model=None,
+        headings=None,
         heading_penalty=None,
         pass_through=None,
-        block_area=None,
-        avoid=None,
         algorithm=None,
         round_trip_distance=None,
         round_trip_seed=None,
@@ -125,16 +123,15 @@ class Graphhopper:
         alternative_route_max_weight_factor=None,
         alternative_route_max_share_factor=None,
         dry_run=None,
-        snap_prevention=None,
-        curb_side=None,
-        turn_costs=None,
+        snap_preventions=None,
+        curbsides=None,
         **direction_kwargs
     ):
         """Get directions between an origin point and a destination point.
 
         Use ``direction_kwargs`` for any missing ``directions`` request options.
 
-        For more information, visit https://docs.graphhopper.com/#tag/Routing-API/paths/~1route/get.
+        For more information, visit https://docs.graphhopper.com/#operation/postRoute.
 
         :param locations: The coordinates tuple the route should be calculated
             from in order of visit.
@@ -184,9 +181,9 @@ class Graphhopper:
             Default False.
         :type debug: bool
 
-        :param point_hint: The point_hint is typically a road name to which the associated point parameter should be
+        :param point_hints: The point_hints is typically a road name to which the associated point parameter should be
             snapped to. Specify no point_hint parameter or the same number as you have locations. Optional.
-        :type point_hint: list of str
+        :type point_hints: list of str
 
         :param details: Optional parameter to retrieve path details. You can request additional details for the route:
             street_name, time, distance, max_speed, toll, road_class, road_class_link, road_access, road_environment,
@@ -197,15 +194,14 @@ class Graphhopper:
             Default False.
         :type ch_disable: bool
 
-        :param weighting: Which kind of 'best' route calculation you need. Other options are shortest
-            (e.g. for vehicle=foot or bike) and short_fastest if not only time but also distance is expensive.
-            Default "fastest".
-        :type weighting: str
+        :param custom_model: The custom_model modifies the routing behaviour of the specified profile.
+            See https://docs.graphhopper.com/#section/Custom-Model
+        :type custom_model: dict
 
-        :param heading: Optional parameter. Favour a heading direction for a certain point. Specify either one heading for the start point or as
+        :param headings: Optional parameter. Favour a heading direction for a certain point. Specify either one heading for the start point or as
             many as there are points. In this case headings are associated by their order to the specific points.
             Headings are given as north based clockwise angle between 0 and 360 degree.
-        :type heading: list of int
+        :type headings: list of int
 
         :param heading_penalty: Optional parameter. Penalty for omitting a specified heading. The penalty corresponds to the accepted time
             delay in seconds in comparison to the route without a heading.
@@ -215,14 +211,6 @@ class Graphhopper:
         :param pass_through: Optional parameter. If true u-turns are avoided at via-points with regard to the heading_penalty.
             Default False.
         :type pass_through: bool
-
-        :param block_area: Optional parameter. Block road access via a point with the format
-            latitude,longitude or an area defined by a circle lat,lon,radius or a rectangle lat1,lon1,lat2,lon2.
-        :type block_area: str
-
-        :param avoid: Optional semicolon separated parameter. Specify which road classes you would like to avoid
-            (currently only supported for motor vehicles like car). Possible values are ferry, motorway, toll, tunnel and ford.
-        :type avoid: list of str
 
         :param algorithm: Optional parameter. round_trip or alternative_route.
         :type algorithm: str
@@ -253,18 +241,14 @@ class Graphhopper:
         :param dry_run: Print URL and parameters without sending the request.
         :type dry_run: bool
 
-        :param snap_prevention: Optional parameter to avoid snapping to a certain road class or road environment.
+        :param snap_preventions: Optional parameter to avoid snapping to a certain road class or road environment.
             Currently supported values are motorway, trunk, ferry, tunnel, bridge and ford. Optional.
-        :type snap_prevention: list of str
+        :type snap_preventions: list of str
 
-        :param curb_side: One of "any", "right", "left". It specifies on which side a point should be relative to the driver
+        :param curbsides: One of "any", "right", "left". It specifies on which side a point should be relative to the driver
             when she leaves/arrives at a start/target/via point. You need to specify this parameter for either none
             or all points. Only supported for motor vehicles and OpenStreetMap.
-        :type curb_side: list of str
-
-        :param turn_costs: Specifies if turn restrictions should be considered. Enabling this option increases the
-            route computation time. Only supported for motor vehicles and OpenStreetMap.
-        :type turn_costs: bool
+        :type curbsides: list of str
 
         :returns: One or multiple route(s) from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
@@ -274,111 +258,107 @@ class Graphhopper:
 
         .. versionadded:: 0.3.0
            ``snap_prevention``, ``curb_side``, ``turn_costs`` parameters
+
+        .. versionchanged:: 1.2.0
+           Renamed `point_hint` to `point_hints`, `heading` to `headings`,
+           `snap_prevention` to `snap_preventions`, `curb_side` to `curbsides`,
+
+        .. versionadded:: 1.2.0
+           Added `custom_model` parameter
+
+        .. deprecated:: 1.2.0
+           Removed `weighting`, `block_area`, `avoid`, `turn_costs` parameters
         """
 
-        params = [("vehicle", profile)]
+        params = {"vehicle": profile}
 
         for coordinate in locations:
-            coord_latlng = reversed([convert.format_float(f) for f in coordinate])
-            params.append(("point", ",".join(coord_latlng)))
+            coord_lnglat = ([convert.format_float(f) for f in coordinate])
+            params["points"] = ",".join(coord_lnglat)
 
         if self.key is not None:
-            params.append(("key", self.key))
+            params["key"] = self.key
 
         if format is not None:
-            params.append(("type", format))
+            params["type"] = format
 
         if optimize is not None:
-            params.append(("optimize", convert.convert_bool(optimize)))
+            params["optimize"] = optimize
 
         if instructions is not None:
-            params.append(("instructions", convert.convert_bool(instructions)))
+            params["instructions"] = instructions
 
         if locale is not None:
-            params.append(("locale", locale))
+            params["locale"] = locale
 
         if elevation is not None:
-            params.append(("elevation", convert.convert_bool(elevation)))
+            params["elevation"] = elevation
 
         if points_encoded is not None:
-            params.append(("points_encoded", convert.convert_bool(points_encoded)))
+            params["points_encoded"] = points_encoded
 
         if calc_points is not None:
-            params.append(("calc_points", convert.convert_bool(calc_points)))
+            params["calc_points"] = calc_points
 
         if debug is not None:
-            params.append(("debug", convert.convert_bool(debug)))
+            params["debug"] = debug
 
-        if point_hint is not None:
-            for hint in point_hint:
-                params.append(("point_hint", hint))
+        if point_hints is not None:
+            params["point_hints"] = point_hints
 
-        if snap_prevention:
-            params.append(("snap_prevention", convert.delimit_list(snap_prevention)))
+        if snap_preventions:
+            params["snap_preventions"] = snap_preventions
 
-        if turn_costs:
-            params.append(("turn_costs", convert.convert_bool(turn_costs)))
-
-        if curb_side:
-            params.append(("curb_side", convert.delimit_list(curb_side)))
+        if curbsides:
+            params["curbsides"] = curbsides
 
         ### all below params will only work if ch is disabled
 
         if details is not None:
-            params.extend([("details", detail) for detail in details])
+            params["details"] = details
 
         if ch_disable is not None:
-            params.append(("ch.disable", convert.convert_bool(ch_disable)))
+            params["ch.disable"] = ch_disable
 
-        if weighting is not None:
-            params.append(("weighting", weighting))
+        if custom_model is not None:
+            params["custom_model"] = custom_model
 
-        if heading is not None:
-            params.append(("heading", convert.delimit_list(heading)))
+        if headings is not None:
+            params["headings"] = headings
 
         if heading_penalty is not None:
-            params.append(("heading_penalty", heading_penalty))
+            params["heading_penalty"] = heading_penalty
 
         if pass_through is not None:
-            params.append(("pass_through", convert.convert_bool(pass_through)))
-
-        if block_area is not None:
-            params.append(("block_area", block_area))
-
-        if avoid is not None:
-            params.append(("avoid", convert.delimit_list(avoid, ";")))
+            params["pass_through"] = pass_through
 
         if algorithm is not None:
 
-            params.append(("algorithm", algorithm))
+            params["algorithm"] = algorithm
 
             if algorithm == "round_trip":
 
                 if round_trip_distance is not None:
-                    params.append(("round_trip.distance", round_trip_distance))
+                    params["round_trip.distance"] = round_trip_distance
 
                 if round_trip_seed is not None:
-                    params.append(("round_trip.seed", round_trip_seed))
+                    params["round_trip.seed"] = round_trip_seed
 
             if algorithm == "alternative_route":
 
                 if alternative_route_max_paths is not None:
-                    params.append(("alternative_route.max_paths", alternative_route_max_paths))
+                    params["alternative_route.max_paths"] = alternative_route_max_paths
 
                 if alternative_route_max_weight_factor is not None:
-                    params.append(
-                        ("alternative_route.max_weight_factor", alternative_route_max_weight_factor)
-                    )
+                    params["alternative_route.max_weight_factor"] = alternative_route_max_weight_factor
 
                 if alternative_route_max_share_factor:
-                    params.append(
-                        ("alternative_route_max_share_factor", alternative_route_max_share_factor)
-                    )
+                    params["alternative_route_max_share_factor"] = alternative_route_max_share_factor
 
-        params.extend(direction_kwargs.items())
+        params.update(direction_kwargs)
 
         return self.parse_directions_json(
-            self.client._request("/route", get_params=params, dry_run=dry_run),
+            self.client._request("/route", post_params=params, dry_run=dry_run),
             algorithm,
             elevation,
             points_encoded,
