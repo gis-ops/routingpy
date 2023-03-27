@@ -1091,11 +1091,7 @@ ENDPOINTS_EXPECTED = {
     "graphhopper": {
         "directions": {
             "vehicle": "car",
-            "points": [
-                [8.688641, 49.420577],
-                [8.680916, 49.415776],
-                [8.780916, 49.445776]
-            ],
+            "points": [[8.688641, 49.420577], [8.680916, 49.415776], [8.780916, 49.445776]],
             "type": "json",
             "optimize": True,
             "instructions": False,
@@ -1110,21 +1106,15 @@ ENDPOINTS_EXPECTED = {
             "details": ["tolls", "time"],
             "ch.disable": True,
             "custom_model": {
-                "speed": [{
-                    "if": "true",
-                    "limit_to": "100"
-                }],
-                "priority": [{
-                    "if": "road_class == MOTORWAY",
-                    "multiply_by": "0"
-                }],
-                "distance_influence": 100
+                "speed": [{"if": "true", "limit_to": "100"}],
+                "priority": [{"if": "road_class == MOTORWAY", "multiply_by": "0"}],
+                "distance_influence": 100,
             },
             "heading_penalty": 100,
             "pass_through": True,
             "turn_costs": True,
             "heading": [50, 50, 50],
-            "fake_option": 42
+            "fake_option": 42,
         },
     },
 }
