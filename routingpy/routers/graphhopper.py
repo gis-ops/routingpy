@@ -272,9 +272,8 @@ class Graphhopper:
 
         params = {"vehicle": profile}
 
-        for coordinate in locations:
-            coord_lnglat = ([convert.format_float(f) for f in coordinate])
-            params["points"] = ",".join(coord_lnglat)
+        if locations is not None:
+            params["points"] = locations
 
         get_params = {}
 
