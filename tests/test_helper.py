@@ -1091,8 +1091,11 @@ ENDPOINTS_EXPECTED = {
     "graphhopper": {
         "directions": {
             "vehicle": "car",
-            "points": "8.780916,49.445776",
-            "key": "sample_key",
+            "points": [
+                [8.688641, 49.420577],
+                [8.680916, 49.415776],
+                [8.780916, 49.445776]
+            ],
             "type": "json",
             "optimize": True,
             "instructions": False,
@@ -1101,37 +1104,20 @@ ENDPOINTS_EXPECTED = {
             "points_encoded": True,
             "calc_points": False,
             "debug": True,
-            "point_hints": [
-                "OSM Street",
-                "Graphhopper Lane",
-                "Routing Broadway"
-            ],
-            "snap_preventions": [
-                "trunk",
-                "ferry"
-            ],
-            "curbsides": [
-                "any",
-                "right"
-            ],
-            "details": [
-                "tolls",
-                "time"
-            ],
+            "point_hints": ["OSM Street", "Graphhopper Lane", "Routing Broadway"],
+            "snap_preventions": ["trunk", "ferry"],
+            "curbsides": ["any", "right"],
+            "details": ["tolls", "time"],
             "ch.disable": True,
             "custom_model": {
-                "speed": [
-                    {
-                        "if": "true",
-                        "limit_to": "100"
-                    }
-                ],
-                "priority": [
-                    {
-                        "if": "road_class == MOTORWAY",
-                        "multiply_by": "0"
-                    }
-                ],
+                "speed": [{
+                    "if": "true",
+                    "limit_to": "100"
+                }],
+                "priority": [{
+                    "if": "road_class == MOTORWAY",
+                    "multiply_by": "0"
+                }],
                 "distance_influence": 100
             },
             "heading_penalty": 100,
