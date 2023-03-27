@@ -276,8 +276,10 @@ class Graphhopper:
             coord_lnglat = ([convert.format_float(f) for f in coordinate])
             params["points"] = ",".join(coord_lnglat)
 
+        get_params = {}
+
         if self.key is not None:
-            params["key"] = self.key
+            get_params["key"] = self.key
 
         if format is not None:
             params["type"] = format
@@ -358,7 +360,7 @@ class Graphhopper:
         params.update(direction_kwargs)
 
         return self.parse_directions_json(
-            self.client._request("/route", post_params=params, dry_run=dry_run),
+            self.client._request("/route", get_params=get_params, post_params=params, dry_run=dry_run),
             algorithm,
             elevation,
             points_encoded,
