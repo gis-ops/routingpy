@@ -16,6 +16,8 @@
 #
 """Tests for the Graphhopper module."""
 
+import json
+
 from copy import deepcopy
 
 import responses
@@ -41,9 +43,10 @@ class GraphhopperTest(_test.TestCase):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
         query["algorithm"] = None
         query["fake_option"] = 42
+        expected = deepcopy(ENDPOINTS_EXPECTED[self.name]["directions"])
 
         responses.add(
-            responses.GET,
+            responses.POST,
             "https://graphhopper.com/api/1/route",
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]["directions"],
@@ -52,16 +55,7 @@ class GraphhopperTest(_test.TestCase):
 
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
-        self.assertURLEqual(
-            "https://graphhopper.com/api/1/route?avoid=tunnel%3Bford&"
-            "block_area=48.23424%2C8.34234&calc_points=false&ch.disable=true&debug=true&details=time&details=tolls&"
-            "elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&"
-            "optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&"
-            "point=49.445776%2C8.780916&point_hint=Graphhopper%20Lane&point_hint=OSM%20Street&point_hint=Routing%20Broadway&"
-            "&points_encoded=true&vehicle=car&type=json&weighting=short_fastest&snap_prevention=trunk%2Cferry&curb_side=any%2Cright&turn_costs=true&fake_option=42",
-            responses.calls[0].request.url,
-        )
-
+        self.assertEqual(json.loads(responses.calls[0].request.body.decode("utf-8")), expected)
         self.assertIsInstance(routes, Direction)
         self.assertIsInstance(routes.geometry, list)
         self.assertIsInstance(routes.duration, int)
@@ -73,7 +67,7 @@ class GraphhopperTest(_test.TestCase):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
 
         responses.add(
-            responses.GET,
+            responses.POST,
             "https://graphhopper.com/api/1/route",
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]["directions"],
@@ -82,16 +76,6 @@ class GraphhopperTest(_test.TestCase):
 
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
-        self.assertURLEqual(
-            "https://graphhopper.com/api/1/route?algorithm=alternative_route&alternative_route.max_paths=2&"
-            "alternative_route.max_weight_factor=1.7&alternative_route_max_share_factor=0.7&avoid=tunnel%3Bford&"
-            "block_area=48.23424%2C8.34234&calc_points=false&ch.disable=true&debug=true&details=time&details=tolls&"
-            "elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&"
-            "optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&"
-            "point=49.445776%2C8.780916&point_hint=Graphhopper%20Lane&point_hint=OSM%20Street&point_hint=Routing%20Broadway"
-            "&points_encoded=true&vehicle=car&type=json&weighting=short_fastest&snap_prevention=trunk%2Cferry&curb_side=any%2Cright&turn_costs=true",
-            responses.calls[0].request.url,
-        )
         self.assertIsInstance(routes, Directions)
         self.assertEqual(3, len(routes))
         self.assertIsInstance(routes[0], Direction)
@@ -110,7 +94,7 @@ class GraphhopperTest(_test.TestCase):
         res["paths"][0]["points"] = dict(coordinates=decode_polyline5(res["paths"][0]["points"]))
 
         responses.add(
-            responses.GET,
+            responses.POST,
             "https://graphhopper.com/api/1/route",
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]["directions"],
@@ -119,15 +103,6 @@ class GraphhopperTest(_test.TestCase):
 
         route = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
-        self.assertURLEqual(
-            "https://graphhopper.com/api/1/route?avoid=tunnel%3Bford&"
-            "block_area=48.23424%2C8.34234&calc_points=false&ch.disable=true&debug=true&details=time&details=tolls&"
-            "elevation=true&heading=50%2C50%2C50&heading_penalty=100&instructions=false&key=sample_key&locale=en&"
-            "optimize=true&pass_through=true&point=49.415776%2C8.680916&point=49.420577%2C8.688641&"
-            "point=49.445776%2C8.780916&point_hint=Graphhopper%20Lane&point_hint=OSM%20Street&point_hint=Routing%20Broadway"
-            "&points_encoded=false&vehicle=car&type=json&weighting=short_fastest&snap_prevention=trunk%2Cferry&curb_side=any%2Cright&turn_costs=true",
-            responses.calls[0].request.url,
-        )
 
         self.assertIsInstance(route, Direction)
         self.assertIsInstance(route.geometry, list)
