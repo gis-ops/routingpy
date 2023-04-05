@@ -334,11 +334,9 @@ class Graphhopper:
             params["pass_through"] = pass_through
 
         if algorithm is not None:
-
             params["algorithm"] = algorithm
 
             if algorithm == "round_trip":
-
                 if round_trip_distance is not None:
                     params["round_trip.distance"] = round_trip_distance
 
@@ -346,7 +344,6 @@ class Graphhopper:
                     params["round_trip.seed"] = round_trip_seed
 
             if algorithm == "alternative_route":
-
                 if alternative_route_max_paths is not None:
                     params["alternative_route.max_paths"] = alternative_route_max_paths
 

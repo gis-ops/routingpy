@@ -38,7 +38,6 @@ class HereMapsTest(_test.TestCase):
 
     @responses.activate
     def test_full_directions(self):
-
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
         query["foo"] = "bar"
 

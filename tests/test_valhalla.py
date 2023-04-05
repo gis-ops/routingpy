@@ -39,7 +39,6 @@ from tests.test_helper import *
 
 
 class ValhallaTest(_test.TestCase):
-
     name = "valhalla"
 
     def setUp(self):

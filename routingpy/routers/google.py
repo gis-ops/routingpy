@@ -160,7 +160,6 @@ class Google:
             self.stopover = stopover
 
         def make_waypoint(self):
-
             waypoint = ""
             if self.waypoint_type == "coords":
                 waypoint += convert.delimit_list(list(reversed(self.position)))

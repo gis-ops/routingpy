@@ -114,7 +114,6 @@ class Valhalla:
             self._kwargs = kwargs
 
         def _make_waypoint(self):
-
             waypoint = {"lon": self._position[0], "lat": self._position[1]}
             for k, v in self._kwargs.items():
                 waypoint[k] = v

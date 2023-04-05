@@ -17,7 +17,6 @@
 """Tests for the Graphhopper module."""
 
 import json
-
 from copy import deepcopy
 
 import responses

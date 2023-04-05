@@ -236,7 +236,6 @@ class GoogleTest(_test.TestCase):
         )
 
     def test_status_codes(self):
-
         error_responses = ENDPOINTS_ERROR_RESPONSES[self.name]
 
         for alternatives in [True, False]:

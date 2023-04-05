@@ -165,7 +165,6 @@ class HereMaps:
             self.heading = str(heading)
 
         def _make_waypoint(self):
-
             here_waypoint = ["geo"]
             if self.waypoint_type is not None and self.stopover_duration is not None:
                 here_waypoint.append(
@@ -219,7 +218,6 @@ class HereMaps:
             self.features = features
 
         def make_routing_mode(self):
-
             routing_mode = []
             routing_mode.append(self.mode_type)
             routing_mode.append(self.mode_transport_type)
@@ -1431,7 +1429,6 @@ class HereMaps:
 
         # Directions and matrix calls which are lists of list
         if isinstance(coordinates[0], (list, tuple, self.Waypoint)):
-
             for idx, coord in enumerate(coordinates):
                 if isinstance(locations, self.Waypoint):
                     locations.append(locations._make_waypoint())
