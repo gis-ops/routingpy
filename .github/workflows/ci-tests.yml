@@ -6,13 +6,15 @@ on:
       - master
     paths-ignore:
       - '.gitignore'
-      - '*.md'
+      - '**.md'
+      - '**.rst'
   pull_request:
     branches:
       - master
     paths-ignore:
       - '.gitignore'
       - '**.md'
+      - '**.rst'
 
 jobs:
   build:
