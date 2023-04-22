@@ -127,7 +127,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "https://graphhopper.com/api/1/isochrone?buckets=3&debug=false&key=sample_key&"
-            "point=48.23424%2C8.34234&vehicle=car&reverse_flow=true&time_limit=1000&type=json&fake_option=42",
+            "point=48.23424%2C8.34234&profile=car&reverse_flow=true&time_limit=1000&type=json&fake_option=42",
             responses.calls[0].request.url,
         )
 
@@ -158,7 +158,7 @@ class GraphhopperTest(_test.TestCase):
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "https://graphhopper.com/api/1/matrix?key=sample_key&out_array=distances&out_array=times&out_array=weights&"
-            "point=49.415776%2C8.680916&point=49.420577%2C8.688641&point=49.445776%2C8.780916&vehicle=car&debug=true&fake_option=42",
+            "point=49.415776%2C8.680916&point=49.420577%2C8.688641&point=49.445776%2C8.780916&profile=car&debug=true&fake_option=42",
             responses.calls[0].request.url,
         )
 
@@ -199,14 +199,14 @@ class GraphhopperTest(_test.TestCase):
         self.assertURLEqual(
             "https://graphhopper.com/api/1/matrix?from_point=49.415776%2C8.680916&from_point=49.420577%2C8.688641&"
             "from_point=49.445776%2C8.780916&key=sample_key&out_array=distances"
-            "&out_array=times&out_array=weights&vehicle=car&to_point=49.415776%2C8.680916&to_point=49.420577%2C8.688641&"
+            "&out_array=times&out_array=weights&profile=car&to_point=49.415776%2C8.680916&to_point=49.420577%2C8.688641&"
             "&to_point=49.445776%2C8.780916&debug=true",
             responses.calls[0].request.url,
         )
         self.assertURLEqual(
             "https://graphhopper.com/api/1/matrix?point=49.415776%2C8.680916&point=49.420577%2C8.688641&"
             "point=49.445776%2C8.780916&key=sample_key&out_array=distances"
-            "&out_array=times&out_array=weights&vehicle=car"
+            "&out_array=times&out_array=weights&profile=car"
             "&debug=true",
             responses.calls[1].request.url,
         )

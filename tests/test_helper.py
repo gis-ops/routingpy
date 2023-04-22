@@ -1090,7 +1090,7 @@ ENDPOINTS_EXPECTED = {
     },
     "graphhopper": {
         "directions": {
-            "vehicle": "car",
+            "profile": "car",
             "points": [[8.688641, 49.420577], [8.680916, 49.415776], [8.780916, 49.445776]],
             "type": "json",
             "optimize": True,
