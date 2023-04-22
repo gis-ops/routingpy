@@ -270,7 +270,7 @@ class Graphhopper:
            Removed `weighting`, `block_area`, `avoid`, `turn_costs` parameters
         """
 
-        params = {"vehicle": profile}
+        params = {"profile": profile}
 
         if locations is not None:
             params["points"] = locations
