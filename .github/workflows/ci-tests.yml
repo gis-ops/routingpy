@@ -6,17 +6,18 @@ on:
       - master
     paths-ignore:
       - '.gitignore'
-      - '*.md'
+      - '**.md'
+      - '**.rst'
   pull_request:
     branches:
       - master
     paths-ignore:
       - '.gitignore'
       - '**.md'
+      - '**.rst'
 
 jobs:
   build:
-    if: github.event.review.state == 'approved' ||  github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-20.04
     strategy:
       matrix:

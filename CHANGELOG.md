@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 **Unreleased** is available in Github's `master` branch, but not on PyPI.
 
 ## **Unreleased**
+### Fixed
+- Graphhopper 7.0 deprecated the "vehicle" parameter for the new "profile" parammeter
 
 ## [v1.2.0](https://pypi.org/project/routingpy/1.2.0/)
 ### Fixed
