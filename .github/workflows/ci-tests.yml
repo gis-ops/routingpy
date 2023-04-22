@@ -5,10 +5,14 @@ on:
     branches:
       - master
     paths-ignore:
+      - '.gitignore'
       - '*.md'
-  workflow_dispatch:
-  pull_request_review:
-    types: [submitted]
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - '.gitignore'
+      - '**.md'
 
 jobs:
   build:
