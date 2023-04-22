@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.poetry]
 name = "routingpy"
-version = "1.2.0"
+version = "1.2.1"
 description = "One lib to route them all."
 authors = ["Nils Nolde <nils@gis-ops.com>", "Tim Ellersiek <tim@gis-ops.com>", "Christian Beiwinkel <christian@gis-ops.com>"]
 license = "Apache2"
