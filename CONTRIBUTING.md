@@ -56,7 +56,7 @@ poetry install
 3. Run tests to check if all goes well:
 ```bash
 # From the root of your git project
-coverage run --source=routingpy --module pytest
+pytest -v
 ```
 
 4. Please install the pre-commit hook, so your code gets auto-formatted and linted before committing it:
