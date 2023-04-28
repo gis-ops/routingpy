@@ -38,7 +38,12 @@ When contributing, we expect you to:
 
 ### Setup
 
-1. Create and activate a new virtual environment
+1. Create and activate a new virtual environment (optional, but recommended):
+```bash
+# From the root of your git project
+python -m venv .venv
+source .venv/bin/activate
+```
 
 2. Install development dependencies:
 ```bash
@@ -51,7 +56,7 @@ poetry install
 3. Run tests to check if all goes well:
 ```bash
 # From the root of your git project
-nosetests -v
+pytest -v
 ```
 
 4. Please install the pre-commit hook, so your code gets auto-formatted and linted before committing it:
@@ -67,12 +72,9 @@ engines, changes on a very regular basis due to OpenStreetMap updates. All queri
 `test/test_helper.py` in `dict`s. This unfortunately also means, that our tests are less API tests and more unit tests and can't catch
 updates on providers' API changes.
 
-Run `nosetests` with a `coverage` flag, which shouldn't report < 90% coverage overall (the starting point at the
-beginning of the project). A [`coveralls.io`](https://coveralls.io) instance will check for coverage when you submit a PR.
-
 ```bash
 # From the root of your git project
-nosetests  --with-coverage --cover-package=routingpy
+coverage run --source=routingpy --module pytest
 ```
 
 ### Documentation
