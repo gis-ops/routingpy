@@ -8,9 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
+### Added
+- Valhalla `/expansion` examples in the Jupyter Notebook
+
 ## [v1.2.1](https://pypi.org/project/routingpy/1.2.1/)
 ### Fixed
 - Graphhopper 7.0 deprecated the "vehicle" parameter for the new "profile" parammeter
+
 
 ## [v1.2.0](https://pypi.org/project/routingpy/1.2.0/)
 ### Fixed
