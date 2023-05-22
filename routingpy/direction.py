@@ -17,6 +17,7 @@
 """
 :class:`.Direction` returns directions results.
 """
+from typing import List, Optional
 
 
 class Directions(object):
@@ -39,7 +40,7 @@ class Directions(object):
         self._raw = raw
 
     @property
-    def raw(self):
+    def raw(self) -> Optional[dict]:
         """
         Returns the directions raw, unparsed response. For details, consult the routing engine's API documentation.
         :rtype: dict or None
@@ -61,7 +62,7 @@ class Directions(object):
 
 class Direction(object):
     """
-    Contains a parsed directions response. Access via properties ``geometry``, ``duration`` and ``distance``.
+    Contains a parsed directions' response. Access via properties ``geometry``, ``duration`` and ``distance``.
     """
 
     def __init__(self, geometry=None, duration=None, distance=None, raw=None):
@@ -87,7 +88,7 @@ class Direction(object):
         self._raw = raw
 
     @property
-    def geometry(self):
+    def geometry(self) -> Optional[List[List[float]]]:
         """
         The geometry of the route as [[lon1, lat1], [lon2, lat2], ...] list.
 
@@ -96,7 +97,7 @@ class Direction(object):
         return self._geometry
 
     @property
-    def duration(self):
+    def duration(self) -> int:
         """
         The duration of the entire trip in seconds.
 
@@ -105,7 +106,7 @@ class Direction(object):
         return self._duration
 
     @property
-    def distance(self):
+    def distance(self) -> int:
         """
         The distance of the entire trip in meters.
 
@@ -114,7 +115,7 @@ class Direction(object):
         return self._distance
 
     @property
-    def raw(self):
+    def raw(self) -> Optional[dict]:
         """
         Returns the route's raw, unparsed response. For details, consult the routing engine's API documentation.
 

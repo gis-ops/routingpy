@@ -15,7 +15,7 @@
 # the License.
 #
 """
-Defines exceptions that are thrown by the ORS client.
+Defines exceptions that are thrown by the various routing clients.
 """
 
 
