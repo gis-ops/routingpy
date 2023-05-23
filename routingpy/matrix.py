@@ -15,8 +15,9 @@
 # the License.
 #
 """
-:class:`Matrix` returns directions results.
+:class:`Matrix` returns matrix results.
 """
+from typing import List, Optional
 
 
 class Matrix(object):
@@ -30,7 +31,7 @@ class Matrix(object):
         self._raw = raw
 
     @property
-    def durations(self):
+    def durations(self) -> Optional[List[List[float]]]:
         """
         The durations matrix as list akin to::
 
@@ -46,7 +47,7 @@ class Matrix(object):
                     duration(origin2-destination2),
                     duration[origin3-destination3),
                     ...
-                },
+                ],
                 ...
             ]
 
@@ -55,7 +56,7 @@ class Matrix(object):
         return self._durations
 
     @property
-    def distances(self):
+    def distances(self) -> Optional[List[List[float]]]:
         """
         The distance matrix as list akin to::
 
@@ -71,7 +72,7 @@ class Matrix(object):
                     duration(origin2-destination2),
                     duration[origin3-destination3),
                     ...
-                },
+                ],
                 ...
             ]
 
@@ -80,7 +81,7 @@ class Matrix(object):
         return self._distances
 
     @property
-    def raw(self):
+    def raw(self) -> Optional[dict]:
         """
         Returns the matrices raw, unparsed response. For details, consult the routing engine's API documentation.
 

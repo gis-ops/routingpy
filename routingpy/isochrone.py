@@ -15,8 +15,9 @@
 # the License.
 #
 """
-:class:`Isochrone` returns directions results.
+:class:`Isochrone` returns isochrones results.
 """
+from typing import List, Optional, Tuple, Union
 
 
 class Isochrones(object):
@@ -30,9 +31,9 @@ class Isochrones(object):
         self._raw = raw
 
     @property
-    def raw(self):
+    def raw(self) -> Optional[dict]:
         """
-        Returns the isochrones's raw, unparsed response. For details, consult the routing engine's API documentation.
+        Returns the isochrones' raw, unparsed response. For details, consult the routing engine's API documentation.
 
         :rtype: dict or None
         """
@@ -63,7 +64,7 @@ class Isochrone(object):
         self._interval_type = interval_type
 
     @property
-    def geometry(self):
+    def geometry(self) -> Optional[List[List[float]]]:
         """
         The geometry of the isochrone as [[lon1, lat1], [lon2, lat2], ...] list.
 
@@ -72,18 +73,18 @@ class Isochrone(object):
         return self._geometry
 
     @property
-    def center(self):
+    def center(self) -> Optional[Union[List[float], Tuple[float]]]:
         """
         The center coordinate in [lon, lat] of the isochrone. Might deviate from the input coordinate.
         Not available for all routing engines (e.g. GraphHopper, Mapbox OSRM or Valhalla).
         In this case, it will use the location from the user input.
 
-        :rtype: list of float
+        :rtype: list of float or None
         """
         return self._center
 
     @property
-    def interval(self):
+    def interval(self) -> int:
         """
         The interval of the isochrone in seconds or in meters.
 
@@ -92,11 +93,11 @@ class Isochrone(object):
         return self._interval
 
     @property
-    def interval_type(self):
+    def interval_type(self) -> Optional[str]:
         """
         Was it based on 'distance' or 'time'?
 
-        :return: str
+        :return: str or None
         """
         return self._interval_type
 

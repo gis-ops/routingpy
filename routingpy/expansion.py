@@ -37,7 +37,7 @@ class Edge:
         self._status = statuses
 
     @property
-    def geometry(self):
+    def geometry(self) -> Optional[List[List[float]]]:
         """
         The geometry of the edge as [[lon1, lat1], [lon2, lat2]] list.
 
@@ -46,7 +46,7 @@ class Edge:
         return self._geometry
 
     @property
-    def distance(self):
+    def distance(self) -> Optional[int]:
         """
         The accumulated distance in meters for the edge in order of graph traversal.
 
@@ -55,7 +55,7 @@ class Edge:
         return self._distance
 
     @property
-    def duration(self):
+    def duration(self) -> Optional[int]:
         """
         The accumulated duration in seconds for the edge in order of graph traversal.
 
@@ -64,7 +64,7 @@ class Edge:
         return self._duration
 
     @property
-    def cost(self):
+    def cost(self) -> Optional[int]:
         """
         The accumulated cost for the edge in order of graph traversal.
 
@@ -73,7 +73,7 @@ class Edge:
         return self._cost
 
     @property
-    def edge_id(self):
+    def edge_id(self) -> Optional[int]:
         """
         The internal edge IDs for each edge in order of graph traversal.
 
@@ -82,7 +82,7 @@ class Edge:
         return self._edge_id
 
     @property
-    def status(self):
+    def status(self) -> Optional[str]:
         """
         The edge states for each edge in order of graph traversal.
         Can be one of "r" (reached), "s" (settled), "c" (connected).
@@ -128,7 +128,7 @@ class Expansions:
         """
         The center coordinate in [lon, lat] of the expansion, which is the location from the user input.
 
-        :rtype: list of float
+        :rtype: list of float or None
         """
         return self._center
 
@@ -137,7 +137,7 @@ class Expansions:
         """
         Was it based on 'distance' or 'time'?
 
-        :return: str
+        :return: str or None
         """
         return self._interval_type
 
