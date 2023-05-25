@@ -15,7 +15,7 @@
 # the License.
 #
 
-from typing import List  # noqa: F401
+from typing import List, Optional, Union  # noqa: F401
 
 from .. import convert, utils
 from ..client_base import DEFAULT
@@ -31,12 +31,12 @@ class OSRM:
 
     def __init__(
         self,
-        base_url=_DEFAULT_BASE_URL,
-        user_agent=None,
-        timeout=DEFAULT,
-        retry_timeout=None,
-        retry_over_query_limit=False,
-        skip_api_error=None,
+        base_url: Optional[str] = _DEFAULT_BASE_URL,
+        user_agent: Optional[str] = None,
+        timeout: Optional[int] = DEFAULT,
+        retry_timeout: Optional[int] = None,
+        retry_over_query_limit: Optional[bool] = False,
+        skip_api_error: Optional[bool] = None,
         client=Client,
         **client_kwargs,
     ):
@@ -89,17 +89,17 @@ class OSRM:
 
     def directions(
         self,
-        locations,
-        profile="driving",
-        radiuses=None,
-        bearings=None,
-        alternatives=None,
-        steps=None,
-        continue_straight=None,
-        annotations=None,
-        geometries=None,
-        overview=None,
-        dry_run=None,
+        locations: List[List[float]],
+        profile: Optional[str] = "driving",
+        radiuses: Optional[List[int]] = None,
+        bearings: Optional[List[List[float]]] = None,
+        alternatives: Optional[Union[bool, int]] = None,
+        steps: Optional[bool] = None,
+        continue_straight: Optional[bool] = None,
+        annotations: Optional[bool] = None,
+        geometries: Optional[str] = None,
+        overview: Optional[str] = None,
+        dry_run: Optional[bool] = None,
         **direction_kwargs,
     ):
         """
@@ -147,7 +147,7 @@ class OSRM:
         :type steps: bool
 
         :param continue_straight: Forces the route to keep going straight at waypoints constraining
-            uturns there even if it would be faster. Default value depends on the profile.
+            U-turns there even if it would be faster. Default value depends on the profile.
         :type continue_straight: bool
 
         :param annotations: Returns additional metadata for each coordinate along the route geometry. Default false.
@@ -157,7 +157,7 @@ class OSRM:
             "polyline6", "geojson". Default polyline.
         :type geometries: str
 
-        :param overview: Add overview geometry either full, simplified according to highest zoom level
+        :param overview: Add overview geometry either full, simplified according to the highest zoom level
             it could be display on, or not at all. One of ["simplified", "full", "false", False]. Default simplified.
         :type overview: str
 
@@ -290,14 +290,14 @@ class OSRM:
 
     def matrix(
         self,
-        locations,
-        profile="driving",
-        radiuses=None,
-        bearings=None,
-        sources=None,
-        destinations=None,
-        dry_run=None,
-        annotations=("duration", "distance"),
+        locations: List[List[float]],
+        profile: Optional[str] = "driving",
+        radiuses: Optional[List[int]] = None,
+        bearings: Optional[List[List[float]]] = None,
+        sources: Optional[List[int]] = None,
+        destinations: Optional[List[int]] = None,
+        dry_run: Optional[bool] = None,
+        annotations: Optional[List[str]] = ("duration", "distance"),
         **matrix_kwargs,
     ):
         """

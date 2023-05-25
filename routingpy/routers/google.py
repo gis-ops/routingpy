@@ -16,6 +16,7 @@
 #
 
 from operator import itemgetter
+from typing import List, Optional, Tuple, Union
 
 from .. import convert, utils
 from ..client_base import DEFAULT
@@ -71,12 +72,12 @@ class Google:
 
     def __init__(
         self,
-        api_key,
-        user_agent=None,
-        timeout=DEFAULT,
-        retry_timeout=None,
+        api_key: str,
+        user_agent: Optional[str] = None,
+        timeout: Optional[int] = DEFAULT,
+        retry_timeout: Optional[int] = None,
         retry_over_query_limit=True,
-        skip_api_error=None,
+        skip_api_error: Optional[bool] = None,
         client=Client,
         **client_kwargs
     ):
@@ -177,20 +178,20 @@ class Google:
 
     def directions(  # noqa: C901
         self,
-        locations,
-        profile,
-        alternatives=None,
-        avoid=None,
-        optimize=None,
-        language=None,
-        region=None,
-        units=None,
-        arrival_time=None,
-        departure_time=None,
-        traffic_model=None,
-        transit_mode=None,
-        transit_routing_preference=None,
-        dry_run=None,
+        locations: List[List[float]],
+        profile: str,
+        alternatives: Optional[bool] = None,
+        avoid: Optional[List[str]] = None,
+        optimize: Optional[bool] = None,
+        language: Optional[str] = None,
+        region: Optional[str] = None,
+        units: Optional[str] = None,
+        arrival_time: Optional[int] = None,
+        departure_time: Optional[int] = None,
+        traffic_model: Optional[str] = None,
+        transit_mode: Optional[Union[List[str], Tuple[str]]] = None,
+        transit_routing_preference: Optional[str] = None,
+        dry_run: Optional[bool] = None,
     ):
         """Get directions between an origin point and a destination point.
 
@@ -381,20 +382,20 @@ class Google:
 
     def matrix(  # noqa: C901
         self,
-        locations,
-        profile,
-        sources=None,
-        destinations=None,
-        avoid=None,
-        language=None,
-        region=None,
-        units=None,
-        arrival_time=None,
-        departure_time=None,
-        traffic_model=None,
-        transit_mode=None,
-        transit_routing_preference=None,
-        dry_run=None,
+        locations: List[List[float]],
+        profile: str,
+        sources: Optional[Union[List[int], Tuple[int]]] = None,
+        destinations: Optional[Union[List[int], Tuple[int]]] = None,
+        avoid: Optional[List[str]] = None,
+        language: Optional[str] = None,
+        region: Optional[str] = None,
+        units: Optional[str] = None,
+        arrival_time: Optional[int] = None,
+        departure_time: Optional[int] = None,
+        traffic_model: Optional[str] = None,
+        transit_mode: Optional[Union[List[str], Tuple[str]]] = None,
+        transit_routing_preference: Optional[str] = None,
+        dry_run: Optional[bool] = None,
     ):
         """Gets travel distance and time for a matrix of origins and destinations.
 

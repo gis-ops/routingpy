@@ -16,6 +16,7 @@
 #
 
 from operator import itemgetter
+from typing import List, Optional, Tuple, Union
 
 from .. import convert
 from ..client_base import DEFAULT
@@ -31,14 +32,14 @@ class HereMaps:
 
     def __init__(
         self,
-        app_id=None,
-        app_code=None,
-        user_agent=None,
-        timeout=DEFAULT,
-        retry_timeout=None,
-        retry_over_query_limit=False,
-        skip_api_error=None,
-        api_key=None,
+        app_id: Optional[str] = None,
+        app_code: Optional[str] = None,
+        user_agent: Optional[str] = None,
+        timeout: Optional[int] = DEFAULT,
+        retry_timeout: Optional[int] = None,
+        retry_over_query_limit: Optional[bool] = False,
+        skip_api_error: Optional[bool] = None,
+        api_key: Optional[str] = None,
         client=Client,
         **client_kwargs
     ):
@@ -234,59 +235,59 @@ class HereMaps:
 
     def directions(  # noqa: C901
         self,
-        locations,
-        profile,
-        mode_type="fastest",
-        format="json",
-        request_id=None,
-        avoid_areas=None,
-        avoid_links=None,
-        avoid_seasonal_closures=None,
-        avoid_turns=None,
-        allowed_zones=None,
-        exclude_zones=None,
-        exclude_zone_types=None,
-        exclude_countries=None,
-        arrival=None,
-        departure=None,
-        alternatives=None,
-        metric_system=None,
-        view_bounds=None,
-        resolution=None,
-        instruction_format=None,
-        language=None,
-        json_attributes=None,
-        json_callback=None,
-        representation=None,
-        route_attributes=["waypoints", "summary", "shape", "boundingBox", "legs"],
-        leg_attributes=None,
-        maneuver_attributes=None,
-        link_attributes=None,
-        line_attributes=None,
-        generalization_tolerances=None,
-        vehicle_type=None,
-        license_plate=None,
-        max_number_of_changes=None,
-        avoid_transport_types=None,
-        walk_time_multiplier=None,
-        walk_speed=None,
-        walk_radius=None,
-        combine_change=None,
-        truck_type=None,
-        trailers_count=None,
-        shipped_hazardous_goods=None,
-        limited_weight=None,
-        weight_per_axle=None,
-        height=None,
-        width=None,
-        length=None,
-        tunnel_category=None,
-        truck_restriction_penalty=None,
-        return_elevation=None,
-        consumption_model=None,
-        custom_consumption_details=None,
-        speed_profile=None,
-        dry_run=None,
+        locations: List[List[float]],
+        profile: str,
+        mode_type: Optional[str] = "fastest",
+        format: Optional[str] = "json",
+        request_id: Optional[str] = None,
+        avoid_areas: Optional[List[List[List[float]]]] = None,
+        avoid_links: Optional[List[str]] = None,
+        avoid_seasonal_closures: Optional[bool] = None,
+        avoid_turns: Optional[str] = None,
+        allowed_zones: Optional[List[int]] = None,
+        exclude_zones: Optional[List[int]] = None,
+        exclude_zone_types: Optional[List[str]] = None,
+        exclude_countries: Optional[List[str]] = None,
+        arrival: Optional[str] = None,
+        departure: Optional[str] = None,
+        alternatives: Optional[int] = None,
+        metric_system: Optional[str] = None,
+        view_bounds: Optional[Union[List[float], Tuple[float]]] = None,
+        resolution: Optional[dict] = None,
+        instruction_format: Optional[str] = None,
+        language: Optional[str] = None,
+        json_attributes: Optional[int] = None,
+        json_callback: Optional[str] = None,
+        representation: Optional[List[str]] = None,
+        route_attributes: Optional[List[str]] = ["waypoints", "summary", "shape", "boundingBox", "legs"],
+        leg_attributes: Optional[List[str]] = None,
+        maneuver_attributes: Optional[List[str]] = None,
+        link_attributes: Optional[List[str]] = None,
+        line_attributes: Optional[List[str]] = None,
+        generalization_tolerances: Optional[List[float]] = None,
+        vehicle_type: Optional[str] = None,
+        license_plate: Optional[str] = None,
+        max_number_of_changes: Optional[int] = None,
+        avoid_transport_types: Optional[List[str]] = None,
+        walk_time_multiplier: Optional[float] = None,
+        walk_speed: Optional[float] = None,
+        walk_radius: Optional[int] = None,
+        combine_change: Optional[bool] = None,
+        truck_type: Optional[str] = None,
+        trailers_count: Optional[int] = None,
+        shipped_hazardous_goods: Optional[List[str]] = None,
+        limited_weight: Optional[int] = None,
+        weight_per_axle: Optional[int] = None,
+        height: Optional[int] = None,
+        width: Optional[int] = None,
+        length: Optional[int] = None,
+        tunnel_category: Optional[List[str]] = None,
+        truck_restriction_penalty: Optional[str] = None,
+        return_elevation: Optional[bool] = None,
+        consumption_model: Optional[str] = None,
+        custom_consumption_details: Optional[str] = None,
+        speed_profile: Optional[str] = None,
+        dry_run: Optional[bool] = None,
         **directions_kwargs
     ):
         """Get directions between an origin point and a destination point.
@@ -325,7 +326,7 @@ class HereMaps:
         :type avoid_areas: list of list of list
 
         :param avoid_links: Links which the route must not cross. The list of LinkIdTypes.
-        :type avoid_areas: list of str
+        :type avoid_links: list of str
 
         :param avoid_seasonal_closures: The optional avoid seasonal closures boolean
             flag can be specified to avoid usage of seasonally closed links.
@@ -357,7 +358,7 @@ class HereMaps:
         :type exclude_zone_types: list of str
 
         :param exclude_countries: Countries that must be excluded from route calculation.
-        :type exclude_zone_types: list of str
+        :type exclude_countries: list of str
 
         :param departure: Time when travel is expected to start. Traffic speed and
             incidents are taken into account
@@ -466,7 +467,7 @@ class HereMaps:
         :type vehicle_type: str
 
         :param param license_plate: Specifies fragments of vehicle's license plate number.
-            The lastcharacter is currently the only supported fragment type.
+            The last character is currently the only supported fragment type.
             The license plate parameter enables evaluation of license plate
             based vehicle restrictions like odd/even scheme in Indonesia.
         :type license_plate: str
@@ -529,7 +530,7 @@ class HereMaps:
 
         :param weight_per_axle: Truck routing only, vehicle weight per axle in
             tons. The provided value must be between 0 and 1000.
-        :type limited_weight: int
+        :type weight_per_axle: int
 
         :param height: Truck routing only, vehicle height in meters.
             The provided value must be between 0 and 50.
@@ -817,35 +818,35 @@ class HereMaps:
 
     def isochrones(  # noqa: C901
         self,
-        locations,
-        profile,
-        intervals,
-        mode_type="fastest",
-        interval_type="time",
-        format="json",
-        center_type="start",
-        request_id=None,
-        arrival=None,
-        departure=None,
-        single_component=None,
-        resolution=None,
-        max_points=None,
-        quality=None,
-        json_attributes=None,
+        locations: List[float],
+        profile: str,
+        intervals: List[int],
+        mode_type: Optional[str] = "fastest",
+        interval_type: Optional[str] = "time",
+        format: Optional[str] = "json",
+        center_type: Optional[str] = "start",
+        request_id: Optional[str] = None,
+        arrival: Optional[str] = None,
+        departure: Optional[str] = None,
+        single_component: Optional[bool] = None,
+        resolution: Optional[int] = None,
+        max_points: Optional[int] = None,
+        quality: Optional[int] = None,
+        json_attributes: Optional[int] = None,
         json_callback=None,
-        truck_type=None,
-        trailers_count=None,
-        shipped_hazardous_goods=None,
-        limited_weight=None,
-        weight_per_axle=None,
-        height=None,
-        width=None,
-        length=None,
-        tunnel_category=None,
-        consumption_model=None,
-        custom_consumption_details=None,
-        speed_profile=None,
-        dry_run=None,
+        truck_type: Optional[str] = None,
+        trailers_count: Optional[int] = None,
+        shipped_hazardous_goods: Optional[List[str]] = None,
+        limited_weight: Optional[int] = None,
+        weight_per_axle: Optional[int] = None,
+        height: Optional[int] = None,
+        width: Optional[int] = None,
+        length: Optional[int] = None,
+        tunnel_category: Optional[List[str]] = None,
+        consumption_model: Optional[str] = None,
+        custom_consumption_details: Optional[str] = None,
+        speed_profile: Optional[str] = None,
+        dry_run: Optional[bool] = None,
         **isochrones_kwargs
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
@@ -864,7 +865,7 @@ class HereMaps:
 
         :param intervals: Range of isoline. Several comma separated values can be specified.
             The unit is defined by parameter rangetype.
-        :type ranges: list of int
+        :type intervals: list of int
 
         :param mode_type: RoutingType relevant to calculation. One of [fastest, shortest, balanced]. Default fastest.
             https://developer.here.com/documentation/routing/topics/resource-param-type-routing-mode.html#ariaid-title2
@@ -872,8 +873,8 @@ class HereMaps:
 
         :param interval_type: Specifies type of range. Possible values are distance,
             time, consumption. For distance the unit is meters. For time the unit is seconds.
-            For consumption it is defined by consumption model
-        :type range_type: str
+            For consumption, it is defined by consumption model
+        :type interval_type: str
 
         :param format: Currently only "json" supported.
         :type format: str
@@ -923,7 +924,7 @@ class HereMaps:
 
         :param quality: Allows to reduce the quality of the isoline in favor
             of the response time. Allowed values are 1, 2, 3.
-            Default value is 1 and it is the best quality.
+            Default value is 1, and it is the best quality.
         :type quality: int
 
         :param json_attributes: Flag to control JSON output.
@@ -951,7 +952,7 @@ class HereMaps:
 
         :param weight_per_axle: Truck routing only, vehicle weight per axle in tons.
             The provided value must be between 0 and 1000.
-        :type limited_weight: int
+        :type weight_per_axle: int
 
         :param height: Truck routing only, vehicle height in meters.
             The provided value must be between 0 and 50.
@@ -1114,31 +1115,31 @@ class HereMaps:
 
     def matrix(  # noqa: C901
         self,
-        locations,
-        profile,
-        format="json",
-        mode_type="fastest",
-        sources=None,
-        destinations=None,
-        search_range=None,
-        avoid_areas=None,
-        avoid_links=None,
-        avoid_turns=None,
-        exclude_countries=None,
-        departure=None,
-        matrix_attributes=None,
-        summary_attributes=["traveltime", "costfactor", "distance"],
-        truck_type=None,
-        trailers_count=None,
-        shipped_hazardous_goods=None,
-        limited_weight=None,
-        weight_per_axle=None,
-        height=None,
-        width=None,
-        length=None,
-        tunnel_category=None,
-        speed_profile=None,
-        dry_run=None,
+        locations: List[List[float]],
+        profile: str,
+        format: Optional[str] = "json",
+        mode_type: Optional[str] = "fastest",
+        sources: Optional[List[int]] = None,
+        destinations: Optional[List[int]] = None,
+        search_range: Optional[int] = None,
+        avoid_areas: Optional[List[List[List[float]]]] = None,
+        avoid_links: Optional[List[str]] = None,
+        avoid_turns: Optional[str] = None,
+        exclude_countries: Optional[List[str]] = None,
+        departure: Optional[str] = None,
+        matrix_attributes: Optional[List[str]] = None,
+        summary_attributes: Optional[List[str]] = ["traveltime", "costfactor", "distance"],
+        truck_type: Optional[str] = None,
+        trailers_count: Optional[int] = None,
+        shipped_hazardous_goods: Optional[List[str]] = None,
+        limited_weight: Optional[int] = None,
+        weight_per_axle: Optional[int] = None,
+        height: Optional[int] = None,
+        width: Optional[int] = None,
+        length: Optional[int] = None,
+        tunnel_category: Optional[List[str]] = None,
+        speed_profile: Optional[str] = None,
+        dry_run: Optional[bool] = None,
         **matrix_kwargs
     ):
         """Gets travel distance and time for a matrix of origins and destinations.
@@ -1184,7 +1185,7 @@ class HereMaps:
 
         :param avoid_links: Links which the route must not cross.
           The list of LinkIdTypes.
-        :type avoid_areas: list of string
+        :type avoid_links: list of string
 
         :param avoid_turns: List of turn types that the route should avoid. Defaults to empty list.
           https://developer.here.com/documentation/routing/topics/resource-type-enumerations.html
@@ -1213,7 +1214,7 @@ class HereMaps:
             the response as part of the data representation of the matrix
             entries summaries. Defaults to costfactor.
             https://developer.here.com/documentation/routing/topics/resource-calculate-matrix.html#resource-calculate-matrix__matrix-route-summary-attribute-type
-        :type matrix_attributes: list of str
+        :type summary_attributes: list of str
 
         :param truck_type: Truck routing only, specifies the vehicle type.
             Defaults to truck.
@@ -1238,7 +1239,7 @@ class HereMaps:
 
         :param weight_per_axle: Truck routing only, vehicle weight per axle
             in tons. The provided value must be between 0 and 1000.
-        :type limited_weight: int
+        :type weight_per_axle: int
 
         :param height: Truck routing only, vehicle height in meters. The
             provided value must be between 0 and 50.
