@@ -15,6 +15,7 @@
 # the License.
 #
 
+import copy
 import json
 import random
 import time
@@ -156,7 +157,7 @@ class Client(BaseClient):
 
         authed_url = self._generate_auth_url(url, get_params)
 
-        final_requests_kwargs = self.kwargs
+        final_requests_kwargs = copy.copy(self.kwargs)
 
         # Determine GET/POST.
         requests_method = self._session.get
