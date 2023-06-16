@@ -17,6 +17,7 @@
 """
 Core client functionality, common across all API requests.
 """
+from typing import List, Optional, Tuple, Union
 
 from .. import convert, utils
 from ..client_base import DEFAULT
@@ -33,12 +34,12 @@ class MapboxOSRM:
 
     def __init__(
         self,
-        api_key,
-        user_agent=None,
-        timeout=DEFAULT,
-        retry_timeout=None,
-        retry_over_query_limit=False,
-        skip_api_error=None,
+        api_key: str,
+        user_agent: Optional[str] = None,
+        timeout: Optional[int] = DEFAULT,
+        retry_timeout: Optional[int] = None,
+        retry_over_query_limit: Optional[bool] = False,
+        skip_api_error: Optional[bool] = None,
         client=Client,
         **client_kwargs
     ):
@@ -94,26 +95,26 @@ class MapboxOSRM:
 
     def directions(  # noqa: C901
         self,
-        locations,
-        profile,
-        radiuses=None,
-        bearings=None,
-        alternatives=None,
-        steps=None,
-        continue_straight=None,
-        annotations=None,
-        geometries=None,
-        overview=None,
-        exclude=None,
-        approaches=None,
-        banner_instructions=None,
-        language=None,
-        roundabout_exits=None,
-        voice_instructions=None,
-        voice_units=None,
-        waypoint_names=None,
-        waypoint_targets=None,
-        dry_run=None,
+        locations: List[List[float]],
+        profile: str,
+        radiuses: Optional[Union[List[float], Tuple[float]]] = None,
+        bearings: Optional[List[List[int]]] = None,
+        alternatives: Optional[bool] = None,
+        steps: Optional[bool] = None,
+        continue_straight: Optional[bool] = None,
+        annotations: Optional[List[str]] = None,
+        geometries: Optional[str] = None,
+        overview: Optional[str] = None,
+        exclude: Optional[str] = None,
+        approaches: Optional[List[str]] = None,
+        banner_instructions: Optional[bool] = None,
+        language: Optional[str] = None,
+        roundabout_exits: Optional[bool] = None,
+        voice_instructions: Optional[bool] = None,
+        voice_units: Optional[str] = None,
+        waypoint_names: Optional[List[str]] = None,
+        waypoint_targets: Optional[List[List[float]]] = None,
+        dry_run: Optional[bool] = None,
     ):
         """Get directions between an origin point and a destination point.
 
@@ -342,14 +343,14 @@ class MapboxOSRM:
 
     def isochrones(
         self,
-        locations,
-        profile,
-        intervals,
-        contours_colors=None,
-        polygons=None,
-        denoise=None,
-        generalize=None,
-        dry_run=None,
+        locations: List[float],
+        profile: str,
+        intervals: List[int],
+        contours_colors: Optional[List[str]] = None,
+        polygons: Optional[bool] = None,
+        denoise: Optional[float] = None,
+        generalize: Optional[float] = None,
+        dry_run: Optional[bool] = None,
     ):
         """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
 
@@ -437,13 +438,13 @@ class MapboxOSRM:
 
     def matrix(
         self,
-        locations,
-        profile,
-        sources=None,
-        destinations=None,
-        annotations=None,
-        fallback_speed=None,
-        dry_run=None,
+        locations: Union[List[float], Tuple[float]],
+        profile: str,
+        sources: Optional[Union[List[int], Tuple[int]]] = None,
+        destinations: Optional[Union[List[int], Tuple[int]]] = None,
+        annotations: Optional[List[str]] = None,
+        fallback_speed: Optional[int] = None,
+        dry_run: Optional[bool] = None,
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.

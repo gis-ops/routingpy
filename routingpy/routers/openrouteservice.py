@@ -14,6 +14,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
+from typing import List, Optional
 
 from .. import utils
 from ..client_base import DEFAULT
@@ -30,13 +31,13 @@ class ORS:
 
     def __init__(
         self,
-        api_key=None,
-        base_url=_DEFAULT_BASE_URL,
-        user_agent=None,
-        timeout=DEFAULT,
-        retry_timeout=None,
-        retry_over_query_limit=False,
-        skip_api_error=None,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = _DEFAULT_BASE_URL,
+        user_agent: Optional[str] = None,
+        timeout: Optional[int] = DEFAULT,
+        retry_timeout: Optional[int] = None,
+        retry_over_query_limit: Optional[bool] = False,
+        skip_api_error: Optional[bool] = None,
         client=Client,
         **client_kwargs
     ):
@@ -100,28 +101,28 @@ class ORS:
 
     def directions(  # noqa: C901
         self,
-        locations,
-        profile,
-        format="geojson",
-        preference=None,
-        alternative_routes=None,
-        units=None,
-        language=None,
-        geometry=None,
-        geometry_simplify=None,
-        instructions=None,
-        instructions_format=None,
-        roundabout_exits=None,
-        attributes=None,
-        radiuses=None,
-        maneuvers=None,
-        bearings=None,
-        continue_straight=None,
-        elevation=None,
-        extra_info=None,
-        suppress_warnings=None,
-        options=None,
-        dry_run=None,
+        locations: List[List[float]],
+        profile: str,
+        format: Optional[str] = "geojson",
+        preference: Optional[str] = None,
+        alternative_routes: Optional[dict] = None,
+        units: Optional[str] = None,
+        language: Optional[str] = None,
+        geometry: Optional[bool] = None,
+        geometry_simplify: Optional[bool] = None,
+        instructions: Optional[bool] = None,
+        instructions_format: Optional[str] = None,
+        roundabout_exits: Optional[bool] = None,
+        attributes: Optional[List[str]] = None,
+        radiuses: Optional[List[int]] = None,
+        maneuvers: Optional[bool] = None,
+        bearings: Optional[List[List[float]]] = None,
+        continue_straight: Optional[bool] = None,
+        elevation: Optional[bool] = None,
+        extra_info: Optional[List[str]] = None,
+        suppress_warnings: Optional[bool] = None,
+        options: Optional[dict] = None,
+        dry_run: Optional[bool] = None,
     ):
         """Get directions between an origin point and a destination point.
 
@@ -207,7 +208,7 @@ class ORS:
         :type bearings: list of list
 
         :param continue_straight: Forces the route to keep going straight at waypoints not
-            restricting u-turns even if u-turns would be faster. Default False.
+            restricting U-turns even if U-turns would be faster. Default False.
         :type continue_straight: bool
 
         :param elevation: Specifies whether to return elevation values for points.
@@ -374,16 +375,16 @@ class ORS:
 
     def isochrones(
         self,
-        locations,
-        profile,
-        intervals,
-        interval_type="time",
-        units=None,
-        location_type=None,
-        smoothing=None,
-        attributes=None,
-        intersections=None,
-        dry_run=None,
+        locations: List[float],
+        profile: str,
+        intervals: List[int],
+        interval_type: Optional[str] = "time",
+        units: Optional[str] = None,
+        location_type: Optional[str] = None,
+        smoothing: Optional[float] = None,
+        attributes: Optional[List[str]] = None,
+        intersections: Optional[bool] = None,
+        dry_run: Optional[bool] = None,
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
 
@@ -485,14 +486,14 @@ class ORS:
 
     def matrix(
         self,
-        locations,
-        profile,
-        sources=None,
-        destinations=None,
-        metrics=None,
-        resolve_locations=None,
-        units=None,
-        dry_run=None,
+        locations: List[List[float]],
+        profile: str,
+        sources: Optional[List[int]] = None,
+        destinations: Optional[List[int]] = None,
+        metrics: Optional[List[str]] = None,
+        resolve_locations: Optional[bool] = None,
+        units: Optional[str] = None,
+        dry_run: Optional[bool] = None,
     ):
         """Gets travel distance and time for a matrix of origins and destinations.
 

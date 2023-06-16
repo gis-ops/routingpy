@@ -15,7 +15,7 @@
 # the License.
 #
 
-from typing import List, Tuple  # noqa: F401
+from typing import List, Optional, Tuple, Union  # noqa: F401
 
 from .. import convert, utils
 from ..client_base import DEFAULT
@@ -32,13 +32,13 @@ class Graphhopper:
 
     def __init__(
         self,
-        api_key=None,
-        base_url=_DEFAULT_BASE_URL,
-        user_agent=None,
-        timeout=DEFAULT,
-        retry_timeout=None,
-        retry_over_query_limit=False,
-        skip_api_error=None,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = _DEFAULT_BASE_URL,
+        user_agent: Optional[str] = None,
+        timeout: Optional[int] = DEFAULT,
+        retry_timeout: Optional[int] = None,
+        retry_over_query_limit: Optional[bool] = False,
+        skip_api_error: Optional[bool] = None,
         client=Client,
         **client_kwargs
     ):
@@ -99,32 +99,32 @@ class Graphhopper:
 
     def directions(  # noqa: C901
         self,
-        locations,
-        profile,
-        format=None,
-        optimize=None,
-        instructions=None,
-        locale=None,
-        elevation=None,
-        points_encoded=True,
-        calc_points=None,
-        debug=None,
-        point_hints=None,
-        details=None,
-        ch_disable=None,
-        custom_model=None,
-        headings=None,
-        heading_penalty=None,
-        pass_through=None,
-        algorithm=None,
-        round_trip_distance=None,
-        round_trip_seed=None,
-        alternative_route_max_paths=None,
-        alternative_route_max_weight_factor=None,
-        alternative_route_max_share_factor=None,
-        dry_run=None,
-        snap_preventions=None,
-        curbsides=None,
+        locations: Union[List[List[float]], Tuple[Tuple[float]]],
+        profile: str,
+        format: Optional[str] = None,
+        optimize: Optional[bool] = None,
+        instructions: Optional[bool] = None,
+        locale: Optional[str] = None,
+        elevation: Optional[bool] = None,
+        points_encoded: Optional[bool] = True,
+        calc_points: Optional[bool] = None,
+        debug: Optional[bool] = None,
+        point_hints: Optional[List[str]] = None,
+        details: Optional[List[str]] = None,
+        ch_disable: Optional[bool] = None,
+        custom_model: Optional[dict] = None,
+        headings: Optional[List[int]] = None,
+        heading_penalty: Optional[int] = None,
+        pass_through: Optional[bool] = None,
+        algorithm: Optional[str] = None,
+        round_trip_distance: Optional[int] = None,
+        round_trip_seed: Optional[int] = None,
+        alternative_route_max_paths: Optional[int] = None,
+        alternative_route_max_weight_factor: Optional[float] = None,
+        alternative_route_max_share_factor: Optional[float] = None,
+        dry_run: Optional[bool] = None,
+        snap_preventions: Optional[List[str]] = None,
+        curbsides: Optional[List[str]] = None,
         **direction_kwargs
     ):
         """Get directions between an origin point and a destination point.
@@ -402,15 +402,15 @@ class Graphhopper:
 
     def isochrones(
         self,
-        locations,
-        profile,
-        intervals,
-        type="json",
-        buckets=1,
-        interval_type="time",
-        reverse_flow=None,
-        debug=None,
-        dry_run=None,
+        locations: Union[Tuple[float], List[float]],
+        profile: str,
+        intervals: Union[List[int], Tuple[int]],
+        type: Optional[str] = "json",
+        buckets: Optional[int] = 1,
+        interval_type: Optional[str] = "time",
+        reverse_flow: Optional[bool] = None,
+        debug: Optional[bool] = None,
+        dry_run: Optional[bool] = None,
         **isochrones_kwargs
     ):
         """Gets isochrones or equidistants for a range of time/distance values around a given set of coordinates.
@@ -516,13 +516,15 @@ class Graphhopper:
 
     def matrix(
         self,
-        locations,
-        profile,
-        sources=None,
-        destinations=None,
-        out_array=["times", "distances"],
+        locations: Union[
+            List[Union[List[float], Tuple[float]]], Tuple[Union[List[float], Tuple[float]]]
+        ],
+        profile: str,
+        sources: Optional[List[int]] = None,
+        destinations: Optional[List[int]] = None,
+        out_array: Optional[List[str]] = ["times", "distances"],
         debug=None,
-        dry_run=None,
+        dry_run: Optional[bool] = None,
         **matrix_kwargs
     ):
         """Gets travel distance and time for a matrix of origins and destinations.
