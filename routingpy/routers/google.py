@@ -366,8 +366,8 @@ class Google:
             geometry = []
             duration, distance = 0, 0
             for leg in response["routes"][0]["legs"]:
-                duration = int(leg["duration"]["value"])
-                distance = int(leg["distance"]["value"])
+                duration += leg["duration"]["value"]
+                distance += leg["distance"]["value"]
                 for step in leg["steps"]:
                     geometry.extend(
                         [
