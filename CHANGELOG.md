@@ -119,7 +119,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - README not valid on PyPI, wasn't rendered
 - add to PyPI and Conda
 ### Changed
--
+- Fix for Google router's `duration` and `distance` attributes not being calculated correctly in single route response ([#107](https://github.com/gis-ops/routingpy/issues/107))
+
 ### Deprecated
 -
 
