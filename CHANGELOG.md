@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Valhalla `/expansion` examples in the Jupyter Notebook
 
+## Fixed
+- Google router's `duration` and `distance` attributes not being calculated correctly in single route response ([#107](https://github.com/gis-ops/routingpy/issues/107))
+
+
 ## [v1.2.1](https://pypi.org/project/routingpy/1.2.1/)
 ### Fixed
 - Graphhopper 7.0 deprecated the "vehicle" parameter for the new "profile" parammeter
@@ -121,8 +125,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Google router's `duration` and `distance` attributes not being calculated correctly in single route response ([#107](https://github.com/gis-ops/routingpy/issues/107))
 
 ### Changed
-- Fix for Google router's `duration` and `distance` attributes not being calculated correctly in single route response ([#107](https://github.com/gis-ops/routingpy/issues/107))
-
+- 
 ### Deprecated
 -
 
