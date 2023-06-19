@@ -11,9 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Valhalla `/expansion` examples in the Jupyter Notebook
 
-## Fixed
+### Fixed
 - Google router's `duration` and `distance` attributes not being calculated correctly in single route response ([#107](https://github.com/gis-ops/routingpy/issues/107))
-
 
 ## [v1.2.1](https://pypi.org/project/routingpy/1.2.1/)
 ### Fixed
@@ -122,10 +121,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - MapboxOSRM directions was parsing geometry to \[lat, lon\]
 - README not valid on PyPI, wasn't rendered
 - add to PyPI and Conda
-- Google router's `duration` and `distance` attributes not being calculated correctly in single route response ([#107](https://github.com/gis-ops/routingpy/issues/107))
-
 ### Changed
-- 
+-
 ### Deprecated
 -
 
