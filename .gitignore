@@ -13,3 +13,7 @@ test.py
 *.pyc
 *.idea/
 .DS_Store
+
+# Visual Studio Code
+.vscode
+.history

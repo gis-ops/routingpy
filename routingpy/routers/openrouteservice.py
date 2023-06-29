@@ -380,7 +380,7 @@ class ORS:
         intervals: List[int],
         interval_type: Optional[str] = "time",
         units: Optional[str] = None,
-        location_type: Optional[str] = None,
+        location_type: Optional[str] = "start",
         smoothing: Optional[float] = None,
         attributes: Optional[List[str]] = None,
         intersections: Optional[bool] = None,

@@ -22,26 +22,28 @@ from .heremaps import HereMaps
 from .mapbox_osrm import MapboxOSRM
 from .mapbox_valhalla import MapboxValhalla
 from .openrouteservice import ORS
+from .opentripplanner import OpenTripPlanner
 from .osrm import OSRM
 from .valhalla import Valhalla
 
 # Provide synonyms
 _SERVICE_TO_ROUTER = {
-    "ors": ORS,
-    "openrouteservice": ORS,
-    "osrm": OSRM,
-    "mapbox_osrm": MapboxOSRM,
-    "mapbox-osrm": MapboxOSRM,
-    "mapboxosrm": MapboxOSRM,
-    "mapbox": MapboxOSRM,
-    "valhalla": Valhalla,
-    "mapbox_valhalla": MapboxValhalla,
-    "mapbox-valhalla": MapboxValhalla,
-    "mapboxvalhalla": MapboxValhalla,
-    "graphhopper": Graphhopper,
     "google": Google,
+    "graphhopper": Graphhopper,
     "here": HereMaps,
     "heremaps": HereMaps,
+    "mapbox_osrm": MapboxOSRM,
+    "mapbox_valhalla": MapboxValhalla,
+    "mapbox-osrm": MapboxOSRM,
+    "mapbox-valhalla": MapboxValhalla,
+    "mapbox": MapboxOSRM,
+    "mapboxosrm": MapboxOSRM,
+    "mapboxvalhalla": MapboxValhalla,
+    "openrouteservice": ORS,
+    "opentripplanner": OpenTripPlanner,
+    "ors": ORS,
+    "osrm": OSRM,
+    "valhalla": Valhalla,
 }
 
 
@@ -61,7 +63,7 @@ def get_router_by_name(router_name):
     :param router_name: Name of the router as string.
     :type router_name: str
 
-    :rtype: Union[:class:`routingpy.routers.google.Google`, :class:`routingpy.routers.graphhopper.Graphhopper`, :class:`routingpy.routers.heremaps.HereMaps`, :class:`routingpy.routers.mapbox_osrm.MapBoxOSRM`, :class:`routingpy.routers.mapbox_valhalla.MapBoxValhalla`, :class:`routingpy.routers.openrouteservice.ORS`, :class:`routingpy.routers.osrm.OSRM`, :class:`routingpy.routers.valhalla.Valhalla`]
+    :rtype: Union[:class:`routingpy.routers.google.Google`, :class:`routingpy.routers.graphhopper.Graphhopper`, :class:`routingpy.routers.heremaps.HereMaps`, :class:`routingpy.routers.mapbox_osrm.MapBoxOSRM`, :class:`routingpy.routers.mapbox_valhalla.MapBoxValhalla`, :class:`routingpy.routers.openrouteservice.ORS`, :class:`routingpy.routers.osrm.OSRM`, :class:`routingpy.routers.opentripplanner.OpenTripPlanner`, :class:`routingpy.routers.valhalla.Valhalla`]
 
     """
     try:

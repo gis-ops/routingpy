@@ -141,7 +141,7 @@ class Valhalla:
 
         :param profile: Specifies the mode of transport to use when calculating
             directions. One of ["auto", "auto_shorter" (deprecated), "bicycle", "bus", "hov", "motor_scooter",
-            "motorcycle", "multimodal", "pedestrian".
+            "motorcycle", "multimodal", "pedestrian"].
 
         :param preference: Convenience argument to set the cost metric, one of ['shortest', 'fastest']. Note,
             that shortest is not guaranteed to be absolute shortest for motor vehicle profiles. It's called ``preference``

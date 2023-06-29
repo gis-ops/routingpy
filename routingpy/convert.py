@@ -16,6 +16,7 @@
 #
 """Converts Python types to string representations suitable for GET queries.
 """
+import datetime
 
 
 def delimit_list(arg, delimiter=","):
@@ -76,3 +77,32 @@ def _has_method(arg, method):
     :rtype: bool
     """
     return hasattr(arg, method) and callable(getattr(arg, method))
+
+
+def seconds_to_iso8601(seconds):
+    """Convert the given number of seconds to ISO 8601 duration format.
+
+    Example:
+        >>> convert_seconds_to_iso8601(3665)
+        'PT1H1M5S'
+
+    :param seconds: The number of seconds to convert.
+    :type seconds: int
+
+    :returns: The duration in ISO 8601 format.
+    :rtype: string
+    """
+    duration = datetime.timedelta(seconds=seconds)
+    hours = duration.seconds // 3600
+    minutes = (duration.seconds // 60) % 60
+    seconds = duration.seconds % 60
+
+    iso8601_duration = "PT"
+    if hours:
+        iso8601_duration += f"{hours}H"
+    if minutes:
+        iso8601_duration += f"{minutes}M"
+    if seconds or not (hours or minutes):
+        iso8601_duration += f"{seconds}S"
+
+    return iso8601_duration
