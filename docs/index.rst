@@ -81,10 +81,10 @@ MapboxValhalla
 
    .. automethod:: __init__
 
-OpenTripPlanner
+OpenTripPlannerV2
 --------------
 
-.. autoclass:: routingpy.routers.OpenTripPlanner
+.. autoclass:: routingpy.routers.OpenTripPlannerV2
    :members:
    :inherited-members:
    :show-inheritance:

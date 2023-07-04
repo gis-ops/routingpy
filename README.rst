@@ -28,7 +28,7 @@ or **time-distance matrices**.
 -  `Here Maps`_
 -  `Google Maps`_
 -  `Graphhopper`_
--  `OpenTripPlanner`_
+-  `OpenTripPlannerV2`_
 -  `Local Valhalla`_
 -  `Local OSRM`_
 

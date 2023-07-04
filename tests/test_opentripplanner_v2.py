@@ -14,24 +14,24 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-"""Tests for the OpenTripPlanner module."""
+"""Tests for the OpenTripPlannerV2 module."""
 
 from copy import deepcopy
 
 import responses
 
 import tests as _test
-from routingpy import OpenTripPlanner, convert
+from routingpy import OpenTripPlannerV2, convert
 from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrone, Isochrones
 from tests.test_helper import *
 
 
-class OpenTripPlannerTest(_test.TestCase):
-    name = "opentripplanner"
+class OpenTripPlannerV2Test(_test.TestCase):
+    name = "opentripplanner_v2"
 
     def setUp(self):
-        self.client = OpenTripPlanner()
+        self.client = OpenTripPlannerV2()
 
     @responses.activate
     def test_full_directions(self):
@@ -42,7 +42,7 @@ class OpenTripPlannerTest(_test.TestCase):
             responses.POST,
             "http://localhost:8080/otp/routers/default/index/graphql",
             status=200,
-            json=ENDPOINTS_RESPONSES["opentripplanner"]["directions"],
+            json=ENDPOINTS_RESPONSES["opentripplanner_v2"]["directions"],
             content_type="application/json",
         )
 
@@ -66,7 +66,7 @@ class OpenTripPlannerTest(_test.TestCase):
             responses.POST,
             "http://localhost:8080/otp/routers/default/index/graphql",
             status=200,
-            json=ENDPOINTS_RESPONSES["opentripplanner"]["directions"],
+            json=ENDPOINTS_RESPONSES["opentripplanner_v2"]["directions"],
             content_type="application/json",
         )
 

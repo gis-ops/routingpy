@@ -23,8 +23,8 @@ from ..direction import Direction, Directions
 from ..isochrone import Isochrone, Isochrones
 
 
-class OpenTripPlanner:
-    """Performs requests over OpenTripPlanner GraphQL API."""
+class OpenTripPlannerV2:
+    """Performs requests over OpenTripPlannerV2 GraphQL API."""
 
     _DEFAULT_BASE_URL = "http://localhost:8080"
 
@@ -41,7 +41,7 @@ class OpenTripPlanner:
         **client_kwargs,
     ):
         """
-        Initializes an OpenTripPlanner client.
+        Initializes an OpenTripPlannerV2 client.
 
         :param api_key: NOT USED, only for compatibility with other providers.
 
@@ -107,7 +107,7 @@ class OpenTripPlanner:
         :type locations: list of list
 
         :param profile: Specifies the mode of transport to use when calculating directions. Possible
-            values are "CAR", "BICYCLE", "TRANSIT", "WALK". For more profiles, see OpenTripPlanner's
+            values are "CAR", "BICYCLE", "TRANSIT", "WALK". For more profiles, see OpenTripPlannerV2's
             GraphiQL documentation.
         :type profile: str
 
@@ -195,7 +195,7 @@ class OpenTripPlanner:
         :type locations: list of float
 
         :param profile: Specifies the mode of transport to use when calculating directions. Possible
-            values are "CAR", "BICYCLE", "TRANSIT", "WALK". For more profiles, see OpenTripPlanner's
+            values are "CAR", "BICYCLE", "TRANSIT", "WALK". For more profiles, see OpenTripPlannerV2's
             GraphiQL documentation.
         :type profile: str
 
