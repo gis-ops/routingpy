@@ -1129,6 +1129,12 @@ ENDPOINTS_QUERIES = {
             "intervals": [600, 1200],
             "location_type": "start",
         },
+        "raster": {
+            "locations": PARAM_POINT,
+            "profile": "WALK,TRANSIT",
+            "interval": 1200,
+            "location_type": "start",
+        },
     },
     "ors": {
         "directions": {

@@ -71,3 +71,9 @@ class OverQueryLimit(RouterError, RetriableRequest):
     """
 
     pass
+
+
+class UnsupportedContentType(Exception):  # pragma: no cover
+    """The response has an unsupported content type."""
+
+    pass

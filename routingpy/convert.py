@@ -83,7 +83,7 @@ def seconds_to_iso8601(seconds):
     """Convert the given number of seconds to ISO 8601 duration format.
 
     Example:
-        >>> convert_seconds_to_iso8601(3665)
+        >>> seconds_to_iso8601(3665)
         'PT1H1M5S'
 
     :param seconds: The number of seconds to convert.

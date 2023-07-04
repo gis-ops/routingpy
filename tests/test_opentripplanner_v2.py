@@ -24,6 +24,7 @@ import tests as _test
 from routingpy import OpenTripPlannerV2, convert
 from routingpy.direction import Direction, Directions
 from routingpy.isochrone import Isochrone, Isochrones
+from routingpy.raster import Raster
 from tests.test_helper import *
 
 
@@ -115,3 +116,27 @@ class OpenTripPlannerV2Test(_test.TestCase):
             self.assertIsInstance(iso.geometry, list)
             self.assertIsInstance(iso.interval, int)
             self.assertEqual(iso.interval_type, "time")
+
+    @responses.activate
+    def test_raster(self):
+        query = deepcopy(ENDPOINTS_QUERIES[self.name]["raster"])
+        coords = convert.delimit_list(reversed(query["locations"]), ",")
+        cutoff = convert.seconds_to_iso8601(query["interval"])
+
+        url = f"http://localhost:8080/otp/traveltime/surface?location={coords}&mode={query['profile']}&cutoff={cutoff}&arriveBy=false"
+
+        with open("tests/raster_example.tiff", "rb") as raster_file:
+            image = raster_file.read()
+            responses.add(
+                responses.GET,
+                url,
+                status=200,
+                body=image,
+                content_type="image/tiff",
+            )
+
+            raster = self.client.raster(**query)
+
+            self.assertIsInstance(raster, Raster)
+            self.assertEqual(raster.image, image)
+            self.assertEqual(raster.interval, query["interval"])

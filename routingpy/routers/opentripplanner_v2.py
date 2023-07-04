@@ -21,6 +21,7 @@ from ..client_base import DEFAULT
 from ..client_default import Client
 from ..direction import Direction, Directions
 from ..isochrone import Isochrone, Isochrones
+from ..raster import Raster
 
 
 class OpenTripPlannerV2:
@@ -237,6 +238,56 @@ class OpenTripPlannerV2:
             )
 
         return Isochrones(isochrones=isochrones, raw=response)
+
+    def raster(
+        self,
+        locations: List[float],
+        profile: str,
+        interval: int,
+        location_type: Optional[str] = "start",
+        dry_run: Optional[bool] = None,
+    ):
+        """Get raster for a time value around a given set of coordinates.
+
+        :param locations: One pair of lng/lat values.
+        :type locations: list of float
+
+        :param profile: Specifies the mode of transport to use when calculating directions. Possible
+            values are "CAR", "BICYCLE", "TRANSIT", "WALK". For more profiles, see OpenTripPlanner's
+            GraphiQL documentation.
+        :type profile: str
+
+        :param interval: Range to calculate distances for. In seconds.
+        :type interval: int
+
+        :param location_type: 'start' treats the location(s) as starting point, 'destination' as
+            goal. Default 'start'.
+        :type location_type: str
+
+        :param dry_run: Print URL and parameters without sending the request.
+        :param dry_run: bool
+
+        :returns: A raster with the specified range.
+        :rtype: :class:`routingpy.raster.Raster`
+        """
+        params = {
+            "location": convert.delimit_list(reversed(locations), ","),
+            "mode": profile,
+            "arriveBy": "false" if location_type == "start" else "true",
+            "cutoff": convert.seconds_to_iso8601(interval),
+        }
+        response = self.client._request(
+            "/otp/traveltime/surface",
+            get_params=params,
+            dry_run=dry_run,
+        )
+        return self._parse_rasters_response(response, interval)
+
+    def _parse_rasters_response(self, response, interval):
+        if response is None:  # pragma: no cover
+            return Raster()
+
+        return Raster(image=response, interval=interval)
 
     def matrix(self):  # pragma: no cover
         raise NotImplementedError
