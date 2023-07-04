@@ -36,7 +36,7 @@ class OpenTripPlannerV2Test(_test.TestCase):
     @responses.activate
     def test_full_directions(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
-        query["alternatives"] = False
+        query["num_itineraries"] = 1
 
         responses.add(
             responses.POST,
@@ -59,7 +59,7 @@ class OpenTripPlannerV2Test(_test.TestCase):
         self.assertIsInstance(routes.raw, dict)
 
     @responses.activate
-    def test_full_directions_alternatives(self):
+    def test_full_directions_multiple_itinaries(self):
         query = ENDPOINTS_QUERIES[self.name]["directions"]
 
         responses.add(

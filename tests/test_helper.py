@@ -1121,7 +1121,7 @@ ENDPOINTS_QUERIES = {
         "directions": {
             "locations": PARAM_LINE,
             "profile": "CAR",
-            "alternatives": True,
+            "num_itineraries": 2,
         },
         "isochrones": {
             "locations": PARAM_POINT,

@@ -96,7 +96,7 @@ class OpenTripPlannerV2:
         self,
         locations: List[List[float]],
         profile: str,
-        alternatives: Optional[Union[bool, int]] = None,
+        num_itineraries: Optional[int] = 1,
         dry_run: Optional[bool] = None,
     ):
         """
@@ -107,13 +107,12 @@ class OpenTripPlannerV2:
         :type locations: list of list
 
         :param profile: Specifies the mode of transport to use when calculating directions. Possible
-            values are "CAR", "BICYCLE", "TRANSIT", "WALK". For more profiles, see OpenTripPlannerV2's
-            GraphiQL documentation.
+            values are "CAR", "BICYCLE", "TRANSIT", "WALK". For more profiles, see
+            OpenTripPlannerV2's GraphiQL documentation.
         :type profile: str
 
-        :param alternatives: Search for alternative routes. A result cannot be guaranteed. Accepts
-            an integer or False. Default False.
-        :type alternatives: bool
+        :param num_itineraries: The maximum number of itineraries to be returned. Default 1.
+        :type num_itineraries: int
 
         :param dry_run: Print URL and parameters without sending the request.
         :type dry_run: bool
@@ -121,7 +120,6 @@ class OpenTripPlannerV2:
         :returns: One or multiple route(s) from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
-        num_itineraries = 1 if not alternatives else 5
         query = f"""
             {{
                 plan(
@@ -147,9 +145,9 @@ class OpenTripPlannerV2:
         response = self.client._request(
             "/otp/routers/default/index/graphql", post_params=params, dry_run=dry_run
         )
-        return self._parse_directions_response(response, alternatives)
+        return self._parse_directions_response(response, num_itineraries)
 
-    def _parse_directions_response(self, response, alternatives):
+    def _parse_directions_response(self, response, num_itineraries):
         routes = []
         for itinerary in response["data"]["plan"]["itineraries"]:
             geometry, distance = self._parse_legs(itinerary["legs"])
@@ -162,7 +160,7 @@ class OpenTripPlannerV2:
                 )
             )
 
-        if alternatives:
+        if num_itineraries > 1:
             return Directions(routes, raw=response)
 
         elif routes:
