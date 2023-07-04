@@ -59,7 +59,7 @@ class OpenTripPlannerV2Test(_test.TestCase):
         self.assertIsInstance(routes.raw, dict)
 
     @responses.activate
-    def test_full_directions_multiple_itinaries(self):
+    def test_full_directions_multiple_itineraries(self):
         query = ENDPOINTS_QUERIES[self.name]["directions"]
 
         responses.add(
