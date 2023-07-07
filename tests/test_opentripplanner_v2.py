@@ -16,6 +16,7 @@
 #
 """Tests for the OpenTripPlannerV2 module."""
 
+import urllib.parse
 from copy import deepcopy
 
 import responses
@@ -35,10 +36,8 @@ class OpenTripPlannerV2Test(_test.TestCase):
         self.client = OpenTripPlannerV2()
 
     @responses.activate
-    def test_full_directions(self):
+    def test_directions(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["directions"])
-        query["num_itineraries"] = 1
-
         responses.add(
             responses.POST,
             "http://localhost:8080/otp/routers/default/index/graphql",
@@ -46,7 +45,6 @@ class OpenTripPlannerV2Test(_test.TestCase):
             json=ENDPOINTS_RESPONSES["opentripplanner_v2"]["directions"],
             content_type="application/json",
         )
-
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
@@ -60,9 +58,8 @@ class OpenTripPlannerV2Test(_test.TestCase):
         self.assertIsInstance(routes.raw, dict)
 
     @responses.activate
-    def test_full_directions_multiple_itineraries(self):
-        query = ENDPOINTS_QUERIES[self.name]["directions"]
-
+    def test_directions_alternative(self):
+        query = ENDPOINTS_QUERIES[self.name]["directions_alternative"]
         responses.add(
             responses.POST,
             "http://localhost:8080/otp/routers/default/index/graphql",
@@ -70,7 +67,6 @@ class OpenTripPlannerV2Test(_test.TestCase):
             json=ENDPOINTS_RESPONSES["opentripplanner_v2"]["directions"],
             content_type="application/json",
         )
-
         routes = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
@@ -87,56 +83,57 @@ class OpenTripPlannerV2Test(_test.TestCase):
             self.assertIsInstance(route.raw, dict)
 
     @responses.activate
-    def test_full_isochrones(self):
+    def test_isochrones(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["isochrones"])
-        coords = convert.delimit_list(reversed(query["locations"]), ",")
-
-        url = f"http://localhost:8080/otp/traveltime/isochrone?location={coords}&mode={query['profile']}&arriveBy=false"
-
-        for interval in query["intervals"]:
-            cutoff = convert.seconds_to_iso8601(interval)
-            url += f"&cutoff={cutoff}"
+        url = "http://localhost:8080/otp/traveltime/isochrone"
+        params = [
+            ("location", convert.delimit_list(reversed(query["locations"]), ",")),
+            ("time", query["time"].isoformat()),
+            ("modes", query["profile"]),
+            ("arriveBy", "false"),
+        ]
+        for cutoff in query["cutoffs"]:
+            params.append(("cutoff", convert.seconds_to_iso8601(cutoff)))
 
         responses.add(
             responses.GET,
-            url,
+            url + "?" + urllib.parse.urlencode(params),
             status=200,
             json=ENDPOINTS_RESPONSES[self.name]["isochrones"],
             content_type="application/json",
         )
-
         isochrones = self.client.isochrones(**query)
-
         self.assertEqual(1, len(responses.calls))
         self.assertIsInstance(isochrones, Isochrones)
         self.assertEqual(2, len(isochrones))
         self.assertIsInstance(isochrones.raw, dict)
-        for iso in isochrones:
-            self.assertIsInstance(iso, Isochrone)
-            self.assertIsInstance(iso.geometry, list)
-            self.assertIsInstance(iso.interval, int)
-            self.assertEqual(iso.interval_type, "time")
+        for isochrone in isochrones:
+            self.assertIsInstance(isochrone, Isochrone)
+            self.assertIsInstance(isochrone.geometry, list)
+            self.assertIsInstance(isochrone.interval, int)
+            self.assertEqual(isochrone.interval_type, "time")
 
     @responses.activate
     def test_raster(self):
         query = deepcopy(ENDPOINTS_QUERIES[self.name]["raster"])
-        coords = convert.delimit_list(reversed(query["locations"]), ",")
-        cutoff = convert.seconds_to_iso8601(query["interval"])
-
-        url = f"http://localhost:8080/otp/traveltime/surface?location={coords}&mode={query['profile']}&cutoff={cutoff}&arriveBy=false"
-
+        url = "http://localhost:8080/otp/traveltime/surface"
+        params = [
+            ("location", convert.delimit_list(reversed(query["locations"]), ",")),
+            ("time", query["time"].isoformat()),
+            ("modes", query["profile"]),
+            ("arriveBy", "false"),
+            ("cutoff", convert.seconds_to_iso8601(query["cutoff"])),
+        ]
         with open("tests/raster_example.tiff", "rb") as raster_file:
             image = raster_file.read()
             responses.add(
                 responses.GET,
-                url,
+                url + "?" + urllib.parse.urlencode(params),
                 status=200,
                 body=image,
                 content_type="image/tiff",
             )
-
             raster = self.client.raster(**query)
-
             self.assertIsInstance(raster, Raster)
             self.assertEqual(raster.image, image)
-            self.assertEqual(raster.interval, query["interval"])
+            self.assertEqual(raster.max_travel_time, query["cutoff"])

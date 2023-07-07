@@ -14,7 +14,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-from typing import List, Optional, Union  # noqa: F401
+import datetime
+from typing import List, Optional  # noqa: F401
 
 from .. import convert, utils
 from ..client_base import DEFAULT
@@ -96,23 +97,35 @@ class OpenTripPlannerV2:
     def directions(
         self,
         locations: List[List[float]],
-        profile: str,
-        num_itineraries: Optional[int] = 1,
+        profile: Optional[str] = "WALK,TRANSIT",
+        date: Optional[datetime.date] = datetime.datetime.now().date(),
+        time: Optional[datetime.time] = datetime.datetime.now().time(),
+        arrive_by: Optional[bool] = False,
+        num_itineraries: Optional[int] = 3,
         dry_run: Optional[bool] = None,
     ):
         """
         Get directions between an origin point and a destination point.
 
-        :param locations: The coordinates tuple the route should be calculated from in order of
-            visit.
-        :type locations: list of list
+        :param locations: List of coordinates for departure and arrival points as
+            [[lon,lat], [lon,lat]].
+        :type locations: list of list of float
 
-        :param profile: Specifies the mode of transport to use when calculating directions. Possible
-            values are "CAR", "BICYCLE", "TRANSIT", "WALK". For more profiles, see
-            OpenTripPlannerV2's GraphiQL documentation.
+        :param profile: Comma-separated list of transportation modes that the user is willing to
+            use. Default: "WALK,TRANSIT"
         :type profile: str
 
-        :param num_itineraries: The maximum number of itineraries to be returned. Default 1.
+        :param date: Date of departure or arrival. Default value: current date.
+        :type date: datetime.date
+
+        :param time: Time of departure or arrival. Default value: current time.
+        :type time: datetime.time
+
+        :arrive_by: Whether the itinerary should depart at the specified time (False), or arrive to
+            the destination at the specified time (True). Default value: False.
+        :type arrive_by: bool
+
+        :param num_itineraries: The maximum number of itineraries to return. Default value: 3.
         :type num_itineraries: int
 
         :param dry_run: Print URL and parameters without sending the request.
@@ -121,13 +134,17 @@ class OpenTripPlannerV2:
         :returns: One or multiple route(s) from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
+        transport_modes = [{"mode": mode} for mode in profile.strip().split(",")]
         query = f"""
             {{
                 plan(
+                    date: "{ date.strftime("%Y-%m-%d") }"
+                    time: "{ time.strftime("%H:%M:%S") }"
                     from: {{lat: {locations[0][1]}, lon: {locations[0][0]}}}
                     to: {{lat: {locations[1][1]}, lon: {locations[1][0]}}}
-                    transportModes: [{{mode: {profile}}}]
+                    transportModes: {str(transport_modes).replace("'", "")}
                     numItineraries: {num_itineraries}
+                    arriveBy: {"true" if arrive_by else "false"}
                 ) {{
                     itineraries {{
                         duration
@@ -149,6 +166,9 @@ class OpenTripPlannerV2:
         return self._parse_directions_response(response, num_itineraries)
 
     def _parse_directions_response(self, response, num_itineraries):
+        if response is None:  # pragma: no cover
+            return Directions() if num_itineraries > 1 else Direction()
+
         routes = []
         for itinerary in response["data"]["plan"]["itineraries"]:
             geometry, distance = self._parse_legs(itinerary["legs"])
@@ -183,28 +203,29 @@ class OpenTripPlannerV2:
     def isochrones(
         self,
         locations: List[float],
-        profile: str,
-        intervals: List[int],
-        location_type: Optional[str] = "start",
+        profile: Optional[str] = "WALK,TRANSIT",
+        time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
+        cutoffs: Optional[List[int]] = [3600],
+        arrive_by: Optional[bool] = False,
         dry_run: Optional[bool] = None,
     ):
         """Gets isochrones for a range of time values around a given set of coordinates.
 
-        :param locations: One pair of lng/lat values.
+        :param locations: Origin of the search as [lon,lat].
         :type locations: list of float
 
-        :param profile: Specifies the mode of transport to use when calculating directions. Possible
-            values are "CAR", "BICYCLE", "TRANSIT", "WALK". For more profiles, see OpenTripPlannerV2's
-            GraphiQL documentation.
+        :param profile: Comma-separated list of transportation modes that the user is willing to
+            use. Default: "WALK,TRANSIT"
         :type profile: str
 
-        :param intervals: Ranges to calculate distances/durations for. This can be a list of
-            multiple ranges, e.g. [600, 1200, 1400]. In seconds.
-        :type intervals: list of int
+        :time: Departure date and time (timezone aware). The default value is now (UTC).
+        :type time: datetime.datetime
 
-        :param location_type: 'start' treats the location(s) as starting point, 'destination' as
-            goal. Default 'start'.
-        :type location_type: str
+        :cutoff: The maximum travel duration in seconds. The default value is one hour.
+
+        :arrive_by: Set to False when searching from the location and True when searching to the
+            location. Default value: False.
+        :type arrive_by: bool
 
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
@@ -214,13 +235,18 @@ class OpenTripPlannerV2:
         """
         params = [
             ("location", convert.delimit_list(reversed(locations), ",")),
-            ("mode", profile),
-            ("arriveBy", "false" if location_type == "start" else "true"),
+            ("time", time.isoformat()),
+            ("modes", profile),
+            ("arriveBy", "true" if arrive_by else "false"),
         ]
-        for interval in intervals:
-            params.append(("cutoff", convert.seconds_to_iso8601(interval)))
+        for cutoff in cutoffs:
+            params.append(("cutoff", convert.seconds_to_iso8601(cutoff)))
 
-        response = self.client._request("/otp/traveltime/isochrone", get_params=params, dry_run=dry_run)
+        response = self.client._request(
+            "/otp/traveltime/isochrone",
+            get_params=params,
+            dry_run=dry_run,
+        )
         return self._parse_isochrones_response(response)
 
     def _parse_isochrones_response(self, response):
@@ -242,27 +268,29 @@ class OpenTripPlannerV2:
     def raster(
         self,
         locations: List[float],
-        profile: str,
-        interval: int,
-        location_type: Optional[str] = "start",
+        profile: Optional[str] = "WALK,TRANSIT",
+        time: Optional[datetime.datetime] = datetime.datetime.now(),
+        cutoff: Optional[int] = 3600,
+        arrive_by: Optional[bool] = False,
         dry_run: Optional[bool] = None,
     ):
         """Get raster for a time value around a given set of coordinates.
 
-        :param locations: One pair of lng/lat values.
+        :param locations: Origin of the search as [lon,lat].
         :type locations: list of float
 
-        :param profile: Specifies the mode of transport to use when calculating directions. Possible
-            values are "CAR", "BICYCLE", "TRANSIT", "WALK". For more profiles, see OpenTripPlanner's
-            GraphiQL documentation.
+        :param profile: Comma-separated list of transportation modes that the user is willing to
+            use. Default: "WALK,TRANSIT"
         :type profile: str
 
-        :param interval: Range to calculate distances for. In seconds.
-        :type interval: int
+        :time: Departure date and time. The default value is now.
+        :type time: datetime.datetime
 
-        :param location_type: 'start' treats the location(s) as starting point, 'destination' as
-            goal. Default 'start'.
-        :type location_type: str
+        :cutoff: The maximum travel duration in seconds. The default value is one hour.
+
+        :arrive_by: Whether the itinerary should depart at the specified time (False), or arrive to
+            the destination at the specified time (True). Default value: False.
+        :type arrive_by: bool
 
         :param dry_run: Print URL and parameters without sending the request.
         :param dry_run: bool
@@ -270,24 +298,25 @@ class OpenTripPlannerV2:
         :returns: A raster with the specified range.
         :rtype: :class:`routingpy.raster.Raster`
         """
-        params = {
-            "location": convert.delimit_list(reversed(locations), ","),
-            "mode": profile,
-            "arriveBy": "false" if location_type == "start" else "true",
-            "cutoff": convert.seconds_to_iso8601(interval),
-        }
+        params = [
+            ("location", convert.delimit_list(reversed(locations), ",")),
+            ("time", time.isoformat()),
+            ("modes", profile),
+            ("arriveBy", "true" if arrive_by else "false"),
+            ("cutoff", convert.seconds_to_iso8601(cutoff)),
+        ]
         response = self.client._request(
             "/otp/traveltime/surface",
             get_params=params,
             dry_run=dry_run,
         )
-        return self._parse_rasters_response(response, interval)
+        return self._parse_rasters_response(response, cutoff)
 
-    def _parse_rasters_response(self, response, interval):
+    def _parse_rasters_response(self, response, max_travel_time):
         if response is None:  # pragma: no cover
             return Raster()
 
-        return Raster(image=response, interval=interval)
+        return Raster(image=response, max_travel_time=max_travel_time)
 
     def matrix(self):  # pragma: no cover
         raise NotImplementedError

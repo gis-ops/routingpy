@@ -100,8 +100,10 @@ def seconds_to_iso8601(seconds):
     iso8601_duration = "PT"
     if hours:
         iso8601_duration += f"{hours}H"
+
     if minutes:
         iso8601_duration += f"{minutes}M"
+
     if seconds or not (hours or minutes):
         iso8601_duration += f"{seconds}S"
 

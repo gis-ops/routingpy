@@ -229,7 +229,7 @@ class Client(BaseClient):
         content_type = response.headers["content-type"]
 
         if status_code == 200:
-            if content_type == "application/json":
+            if content_type in ["application/json", "application/x-www-form-urlencoded"]:
                 try:
                     return response.json()
 

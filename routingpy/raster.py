@@ -22,12 +22,12 @@ from typing import Optional
 
 class Raster(object):
     """
-    Contains a parsed single raster response. Access via properties ``image``, ``interval``
+    Contains a parsed single raster response. Access via properties ``image``, ``max_travel_time``
     """
 
-    def __init__(self, image=None, interval=None):
+    def __init__(self, image=None, max_travel_time=None):
         self._image = image
-        self._interval = interval
+        self._max_travel_time = max_travel_time
 
     @property
     def image(self) -> Optional[bytes]:
@@ -39,13 +39,13 @@ class Raster(object):
         return self._image
 
     @property
-    def interval(self) -> int:
+    def max_travel_time(self) -> int:
         """
-        The interval of the raster in seconds.
+        The max travel time of the raster in seconds.
 
         :return: int
         """
-        return self._interval
+        return self._max_travel_time
 
     def __repr__(self):  # pragma: no cover
-        return "Raster({})".format(self.interval)
+        return "Raster({})".format(self.max_travel_time)

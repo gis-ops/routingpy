@@ -546,7 +546,7 @@ ENDPOINTS_RESPONSES = {
                             ]
                         ],
                     },
-                    "id": "fid-1f200bb1_188fd4d99f7_-7ff2",
+                    "id": "fid--1f71e282_18930eaafe4_-7fe3",
                 },
                 {
                     "type": "Feature",
@@ -577,7 +577,7 @@ ENDPOINTS_RESPONSES = {
                             ]
                         ],
                     },
-                    "id": "fid-1f200bb1_188fd4d99f7_-7ff3",
+                    "id": "fid--1f71e282_18930eaafe4_-7fe4",
                 },
             ],
         },
@@ -1121,19 +1121,24 @@ ENDPOINTS_QUERIES = {
         "directions": {
             "locations": PARAM_LINE,
             "profile": "CAR",
-            "num_itineraries": 2,
+            "num_itineraries": 1,
+        },
+        "directions_alternative": {
+            "locations": PARAM_LINE,
+            "profile": "CAR",
+            "num_itineraries": 3,
         },
         "isochrones": {
             "locations": PARAM_POINT,
+            "time": datetime.datetime.fromisoformat("2023-07-07T16:00:00+00:00"),
             "profile": "WALK,TRANSIT",
-            "intervals": [600, 1200],
-            "location_type": "start",
+            "cutoffs": [600, 1200],
         },
         "raster": {
             "locations": PARAM_POINT,
+            "time": datetime.datetime.fromisoformat("2023-07-07T16:00:00+00:00"),
             "profile": "WALK,TRANSIT",
-            "interval": 1200,
-            "location_type": "start",
+            "cutoff": 1200,
         },
     },
     "ors": {
