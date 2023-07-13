@@ -429,7 +429,7 @@ ENDPOINTS_RESPONSES = {
             ]
         },
     },
-    "opentripplanner_v2": {
+    "otp_v2": {
         "directions": {
             "data": {
                 "plan": {
@@ -1117,7 +1117,7 @@ ENDPOINTS_QUERIES = {
             },
         },
     },
-    "opentripplanner_v2": {
+    "otp_v2": {
         "directions": {
             "locations": PARAM_LINE,
             "profile": "CAR",

@@ -30,7 +30,7 @@ from tests.test_helper import *
 
 
 class OpenTripPlannerV2Test(_test.TestCase):
-    name = "opentripplanner_v2"
+    name = "otp_v2"
 
     def setUp(self):
         self.client = OpenTripPlannerV2()
@@ -42,7 +42,7 @@ class OpenTripPlannerV2Test(_test.TestCase):
             responses.POST,
             "http://localhost:8080/otp/routers/default/index/graphql",
             status=200,
-            json=ENDPOINTS_RESPONSES["opentripplanner_v2"]["directions"],
+            json=ENDPOINTS_RESPONSES["otp_v2"]["directions"],
             content_type="application/json",
         )
         routes = self.client.directions(**query)
@@ -64,7 +64,7 @@ class OpenTripPlannerV2Test(_test.TestCase):
             responses.POST,
             "http://localhost:8080/otp/routers/default/index/graphql",
             status=200,
-            json=ENDPOINTS_RESPONSES["opentripplanner_v2"]["directions"],
+            json=ENDPOINTS_RESPONSES["otp_v2"]["directions"],
             content_type="application/json",
         )
         routes = self.client.directions(**query)
