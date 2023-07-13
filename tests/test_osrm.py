@@ -14,7 +14,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-"""Tests for the Graphhopper module."""
+"""Tests for the OSRM module."""
 
 from copy import deepcopy
 

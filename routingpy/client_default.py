@@ -134,8 +134,8 @@ class Client(BaseClient):
         :raises routingpy.exceptions.TransportError: when something went wrong while trying to
             execute a request.
 
-        :returns: raw JSON response.
-        :rtype: dict
+        :returns: raw JSON response or GeoTIFF image
+        :rtype: dict or bytes
         """
 
         if not first_request_time:
@@ -192,13 +192,10 @@ class Client(BaseClient):
                 "Server down.\nRetrying for the {}{} time.".format(tried, get_ordinal(tried)),
                 UserWarning,
             )
-
             return self._request(url, get_params, post_params, first_request_time, retry_counter + 1)
 
         try:
-            result = self._get_body(response)
-
-            return result
+            return self._get_body(response)
 
         except exceptions.RouterApiError:
             if self.skip_api_error:
@@ -229,22 +226,32 @@ class Client(BaseClient):
     @staticmethod
     def _get_body(response):
         status_code = response.status_code
+        content_type = response.headers["content-type"]
 
-        try:
-            body = response.json()
-        except json.decoder.JSONDecodeError:
-            raise exceptions.JSONParseError("Can't decode JSON response:{}".format(response.text))
+        if status_code == 200:
+            if content_type in ["application/json", "application/x-www-form-urlencoded"]:
+                try:
+                    return response.json()
+
+                except json.decoder.JSONDecodeError:
+                    raise exceptions.JSONParseError(
+                        "Can't decode JSON response:{}".format(response.text)
+                    )
+
+            elif content_type == "image/tiff":
+                return response.content
+
+            else:
+                raise exceptions.UnsupportedContentType(status_code, response.text)
 
         if status_code == 429:
-            raise exceptions.OverQueryLimit(status_code, body)
+            raise exceptions.OverQueryLimit(status_code, response.text)
 
         if 400 <= status_code < 500:
-            raise exceptions.RouterApiError(status_code, body)
+            raise exceptions.RouterApiError(status_code, response.text)
 
         if 500 <= status_code:
-            raise exceptions.RouterServerError(status_code, body)
+            raise exceptions.RouterServerError(status_code, response.text)
 
         if status_code != 200:
-            raise exceptions.RouterError(status_code, body)
-
-        return body
+            raise exceptions.RouterError(status_code, response.text)

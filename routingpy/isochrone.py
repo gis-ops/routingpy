@@ -84,7 +84,7 @@ class Isochrone(object):
         return self._center
 
     @property
-    def interval(self) -> int:
+    def interval(self) -> Optional[int]:
         """
         The interval of the isochrone in seconds or in meters.
 

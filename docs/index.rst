@@ -81,6 +81,16 @@ MapboxValhalla
 
    .. automethod:: __init__
 
+OpenTripPlannerV2
+--------------
+
+.. autoclass:: routingpy.routers.OpenTripPlannerV2
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+   .. automethod:: __init__
+
 ORS
 ---
 
@@ -176,4 +186,3 @@ Indices and search
 
 * :ref:`genindex`
 * :ref:`search`
-
