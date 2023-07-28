@@ -519,13 +519,16 @@ class Google:
         if response is None:  # pragma: no cover
             return Matrix()
 
-        durations = [
-            [destination["duration"]["value"] for destination in origin["elements"]]
-            for origin in response["rows"]
-        ]
-        distances = [
-            [destination["distance"]["value"] for destination in origin["elements"]]
-            for origin in response["rows"]
-        ]
+        durations = []
+        distances = []
+        for row in response["rows"]:
+            for element in row["elements"]:
+                if element["status"] == "OK":
+                    durations.append(element["duration"]["value"])
+                    distances.append(element["distance"]["value"])
+
+                else:
+                    durations.append(None)
+                    distances.append(None)
 
         return Matrix(durations, distances, response)
