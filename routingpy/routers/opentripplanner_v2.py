@@ -203,6 +203,7 @@ class OpenTripPlannerV2:
             geometry.extend(points)
             distance += int(leg["distance"])
 
+        geometry = [coord[::-1] for coord in geometry]
         return geometry, distance
 
     def isochrones(

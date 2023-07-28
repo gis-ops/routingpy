@@ -282,6 +282,7 @@ class Valhalla:
             factor = 0.621371 if units == "mi" else 1
             distance += int(leg["summary"]["length"] * 1000 * factor)
 
+        geometry = [coord[::-1] for coord in geometry]
         return Direction(geometry=geometry, duration=int(duration), distance=int(distance), raw=response)
 
     def isochrones(  # noqa: C901
