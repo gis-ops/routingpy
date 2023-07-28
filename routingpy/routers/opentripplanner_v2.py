@@ -148,9 +148,14 @@ class OpenTripPlannerV2:
                 ) {{
                     itineraries {{
                         duration
+                        startTime
+                        endTime
                         legs {{
+                            startTime
+                            endTime
                             duration
                             distance
+                            mode
                             legGeometry {{
                                 points
                             }}
@@ -283,13 +288,13 @@ class OpenTripPlannerV2:
             use. Default: "WALK,TRANSIT"
         :type profile: str
 
-        :time: Departure date and time. The default value is now.
+        :time: Departure date and time (timezone aware). The default value is now (UTC).
         :type time: datetime.datetime
 
         :cutoff: The maximum travel duration in seconds. The default value is one hour.
 
-        :arrive_by: Whether the itinerary should depart at the specified time (False), or arrive to
-            the destination at the specified time (True). Default value: False.
+        :arrive_by: Set to False when searching from the location and True when searching to the
+            location. Default value: False.
         :type arrive_by: bool
 
         :param dry_run: Print URL and parameters without sending the request.
