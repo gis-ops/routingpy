@@ -32,7 +32,6 @@ class OpenTripPlannerV2:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
         base_url: Optional[str] = _DEFAULT_BASE_URL,
         user_agent: Optional[str] = None,
         timeout: Optional[int] = DEFAULT,
@@ -44,8 +43,6 @@ class OpenTripPlannerV2:
     ):
         """
         Initializes an OpenTripPlannerV2 client.
-
-        :param api_key: NOT USED, only for compatibility with other providers.
 
         :param base_url: The base URL for the request. Defaults to localhost. Should not have a
             trailing slash.
