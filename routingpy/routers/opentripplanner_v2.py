@@ -197,10 +197,9 @@ class OpenTripPlannerV2:
         geometry = []
         for leg in legs:
             points = utils.decode_polyline5(leg["legGeometry"]["points"])
-            geometry.extend(points)
+            geometry.extend(list(reversed(points)))
             distance += int(leg["distance"])
 
-        geometry = [coord[::-1] for coord in geometry]
         return geometry, distance
 
     def isochrones(
