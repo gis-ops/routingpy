@@ -230,7 +230,10 @@ class Client(BaseClient):
         content_type = response.headers["content-type"]
 
         if status_code == 200:
-            if content_type in ["application/json", "application/x-www-form-urlencoded"]:
+            if content_type == "image/tiff":
+                return response.content
+
+            else:
                 try:
                     return response.json()
 
@@ -238,12 +241,6 @@ class Client(BaseClient):
                     raise exceptions.JSONParseError(
                         "Can't decode JSON response:{}".format(response.text)
                     )
-
-            elif content_type == "image/tiff":
-                return response.content
-
-            else:
-                raise exceptions.UnsupportedContentType(status_code, response.text)
 
         if status_code == 429:
             raise exceptions.OverQueryLimit(status_code, response.text)
