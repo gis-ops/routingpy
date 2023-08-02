@@ -32,7 +32,6 @@ class OpenTripPlannerV2:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
         base_url: Optional[str] = _DEFAULT_BASE_URL,
         user_agent: Optional[str] = None,
         timeout: Optional[int] = DEFAULT,
@@ -44,8 +43,6 @@ class OpenTripPlannerV2:
     ):
         """
         Initializes an OpenTripPlannerV2 client.
-
-        :param api_key: NOT USED, only for compatibility with other providers.
 
         :param base_url: The base URL for the request. Defaults to localhost. Should not have a
             trailing slash.
@@ -148,9 +145,14 @@ class OpenTripPlannerV2:
                 ) {{
                     itineraries {{
                         duration
+                        startTime
+                        endTime
                         legs {{
+                            startTime
+                            endTime
                             duration
                             distance
+                            mode
                             legGeometry {{
                                 points
                             }}
@@ -195,7 +197,7 @@ class OpenTripPlannerV2:
         geometry = []
         for leg in legs:
             points = utils.decode_polyline5(leg["legGeometry"]["points"])
-            geometry.extend(points)
+            geometry.extend(list(reversed(points)))
             distance += int(leg["distance"])
 
         return geometry, distance
@@ -283,13 +285,13 @@ class OpenTripPlannerV2:
             use. Default: "WALK,TRANSIT"
         :type profile: str
 
-        :time: Departure date and time. The default value is now.
+        :time: Departure date and time (timezone aware). The default value is now (UTC).
         :type time: datetime.datetime
 
         :cutoff: The maximum travel duration in seconds. The default value is one hour.
 
-        :arrive_by: Whether the itinerary should depart at the specified time (False), or arrive to
-            the destination at the specified time (True). Default value: False.
+        :arrive_by: Set to False when searching from the location and True when searching to the
+            location. Default value: False.
         :type arrive_by: bool
 
         :param dry_run: Print URL and parameters without sending the request.
