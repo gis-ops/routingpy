@@ -10,9 +10,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Valhalla `/expansion` examples in the Jupyter Notebook
+- OpenTripPlanner v2 support for routing & isochrones
 
 ### Fixed
 - Google router's `duration` and `distance` attributes not being calculated correctly in single route response ([#107](https://github.com/gis-ops/routingpy/issues/107))
+- pointer issue when requesting multiple times with the same connection
+
+### Removed
+- `MapboxValhalla` provider, since Mapbox doesn't expose a public Valhalla endpoint anymore
 
 ## [v1.2.1](https://pypi.org/project/routingpy/1.2.1/)
 ### Fixed

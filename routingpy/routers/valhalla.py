@@ -31,10 +31,11 @@ from ..valhalla_attributes import MatchedResults
 class Valhalla:
     """Performs requests to a Valhalla instance."""
 
+    _DEFAULT_BASE_URL = "https://valhalla1.openstreetmap.de"
+
     def __init__(
         self,
         base_url: str,
-        api_key: Optional[str] = None,
         user_agent: Optional[str] = None,
         timeout: Optional[Union[int, None]] = DEFAULT,
         retry_timeout: Optional[int] = None,
@@ -46,9 +47,7 @@ class Valhalla:
         """
         Initializes a Valhalla client.
 
-        :param api_key: Mapbox API key. Required if base_url='https://api.mapbox.com/valhalla/v1'.
-
-        :param base_url: The base URL for the request. Defaults to the ORS API
+        :param base_url: The base URL for the request. Defaults to the public OSM
             server. Should not have a trailing slash.
 
         :param user_agent: User Agent to be used when requesting.
@@ -74,8 +73,6 @@ class Valhalla:
 
         :param client_kwargs: Additional arguments passed to the client, such as headers or proxies.
         """
-
-        self.api_key = api_key
 
         self.client = client(
             base_url,
@@ -203,10 +200,8 @@ class Valhalla:
             **kwargs
         )
 
-        get_params = {"access_token": self.api_key} if self.api_key else {}
-
         return self.parse_direction_json(
-            self.client._request("/route", get_params=get_params, post_params=params, dry_run=dry_run),
+            self.client._request("/route", post_params=params, dry_run=dry_run),
             units,
         )
 
@@ -391,11 +386,8 @@ class Valhalla:
             **kwargs
         )
 
-        get_params = {"access_token": self.api_key} if self.api_key else {}
         return self.parse_isochrone_json(
-            self.client._request(
-                "/isochrone", get_params=get_params, post_params=params, dry_run=dry_run
-            ),
+            self.client._request("/isochrone", post_params=params, dry_run=dry_run),
             intervals,
             locations,
             interval_type,
@@ -513,6 +505,7 @@ class Valhalla:
         avoid_locations: Optional[List[List[float]]] = None,
         avoid_polygons: Optional[List[List[List[float]]]] = None,
         units: Optional[str] = None,
+        date_time: Optional[dict] = None,
         id: Optional[str] = None,
         dry_run: Optional[bool] = None,
         **kwargs
@@ -555,6 +548,10 @@ class Valhalla:
 
         :param units: Distance units for output. One of ['mi', 'km']. Default km.
 
+        :param date_time: This is the local date and time at the location. Field ``type``: 0: Current departure time,
+            1: Specified departure time. Field ``value```: the date and time is specified
+            in format YYYY-MM-DDThh:mm, local time.
+
         :param id: Name your route request. If id is specified, the naming will be sent through to the response.
 
         :param dry_run: Print URL and parameters without sending the request.
@@ -573,16 +570,13 @@ class Valhalla:
             avoid_locations,
             avoid_polygons,
             units,
+            date_time,
             id,
             **kwargs
         )
 
-        get_params = {"access_token": self.api_key} if self.api_key else {}
-
         return self.parse_matrix_json(
-            self.client._request(
-                "/sources_to_targets", get_params=get_params, post_params=params, dry_run=dry_run
-            ),
+            self.client._request("/sources_to_targets", post_params=params, dry_run=dry_run),
             units,
         )
 
@@ -597,6 +591,7 @@ class Valhalla:
         avoid_locations=None,
         avoid_polygons=None,
         units=None,
+        date_time=None,
         id=None,
         **kwargs
     ):
@@ -641,6 +636,9 @@ class Valhalla:
 
         if units:
             params["units"] = units
+
+        if date_time:
+            params["date_time"] = date_time
 
         if id:
             params["id"] = id
@@ -717,8 +715,6 @@ class Valhalla:
 
         :returns: An expansions object consisting of single line strings and their attributes (if specified).
         """
-
-        get_params = {"access_token": self.api_key} if self.api_key else {}
         params = self.get_expansion_params(
             locations,
             profile,
@@ -732,9 +728,7 @@ class Valhalla:
             **kwargs
         )
         return self.parse_expansion_json(
-            self.client._request(
-                "/expansion", get_params=get_params, post_params=params, dry_run=dry_run
-            ),
+            self.client._request("/expansion", post_params=params, dry_run=dry_run),
             locations,
             expansion_properties,
             interval_type,
@@ -827,8 +821,6 @@ class Valhalla:
         :raises: ValueError if 'locations' and 'encoded_polyline' was specified
         :returns: A :class:`MatchedResults` object with matched edges and points set.
         """
-
-        get_params = {"access_token": self.api_key} if self.api_key else {}
         if locations and encoded_polyline:
             raise ValueError
 
@@ -837,9 +829,7 @@ class Valhalla:
         )
 
         return self.parse_trace_attributes_json(
-            self.client._request(
-                "/trace_attributes", get_params=get_params, post_params=params, dry_run=dry_run
-            )
+            self.client._request("/trace_attributes", post_params=params, dry_run=dry_run)
         )
 
     @classmethod
