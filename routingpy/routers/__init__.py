@@ -20,7 +20,6 @@ from .google import Google
 from .graphhopper import Graphhopper
 from .heremaps import HereMaps
 from .mapbox_osrm import MapboxOSRM
-from .mapbox_valhalla import MapboxValhalla
 from .openrouteservice import ORS
 from .opentripplanner_v2 import OpenTripPlannerV2
 from .osrm import OSRM
@@ -33,15 +32,15 @@ _SERVICE_TO_ROUTER = {
     "here": HereMaps,
     "heremaps": HereMaps,
     "mapbox_osrm": MapboxOSRM,
-    "mapbox_valhalla": MapboxValhalla,
     "mapbox-osrm": MapboxOSRM,
-    "mapbox-valhalla": MapboxValhalla,
     "mapbox": MapboxOSRM,
     "mapboxosrm": MapboxOSRM,
-    "mapboxvalhalla": MapboxValhalla,
     "openrouteservice": ORS,
+    "opentripplanner": OpenTripPlannerV2,
+    "opentripplanner_v2": OpenTripPlannerV2,
     "ors": ORS,
     "osrm": OSRM,
+    "otp": OpenTripPlannerV2,
     "otp_v2": OpenTripPlannerV2,
     "valhalla": Valhalla,
 }
