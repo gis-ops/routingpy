@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
+## [v1.3.0](https://pypi.org/project/routingpy/1.3.0/)
+
 ### Added
 - Valhalla `/expansion` examples in the Jupyter Notebook
 - OpenTripPlanner v2 support for routing & isochrones
