@@ -17,6 +17,7 @@
 """
 :class:`.Direction` returns directions results.
 """
+import datetime
 from typing import List, Optional
 
 
@@ -65,7 +66,15 @@ class Direction(object):
     Contains a parsed directions' response. Access via properties ``geometry``, ``duration`` and ``distance``.
     """
 
-    def __init__(self, geometry=None, duration=None, distance=None, raw=None):
+    def __init__(
+        self,
+        geometry: List[List[float]] = None,
+        duration: int = None,
+        distance: int = None,
+        departure_datetime: datetime.datetime = None,
+        arrival_datetime: datetime.datetime = None,
+        raw: dict = None,
+    ):
         """
         Initialize a :class:`Direction` object to hold the properties of a directions request.
 
@@ -78,6 +87,12 @@ class Direction(object):
         :param distance: The distance of the direction in meters.
         :type distance: int
 
+        :param departure_datetime: The departure timezone aware date and time of the direction.
+        :type departure_datetime: datetime.datetime
+
+        :param arrival_datetime: The arrival timezone aware date and time of the direction.
+        :type arrival_datetime: datetime.datetime
+
         :param raw: The raw response of an individual direction (for multiple alternative routes) or the whole direction
             response.
         :type raw: dict
@@ -85,6 +100,8 @@ class Direction(object):
         self._geometry = geometry
         self._duration = duration
         self._distance = distance
+        self._departure_datetime = departure_datetime
+        self._arrival_datetime = arrival_datetime
         self._raw = raw
 
     @property
@@ -113,6 +130,24 @@ class Direction(object):
         :rtype: int
         """
         return self._distance
+
+    @property
+    def departure_datetime(self) -> Optional[datetime.datetime]:
+        """
+        The departure timezone aware date and time of the direction.
+
+        :rtype: datetime.datetime or None
+        """
+        return self._departure_datetime
+
+    @property
+    def arrival_datetime(self) -> Optional[datetime.datetime]:
+        """
+        The arrival timezone aware date and time of the direction.
+
+        :rtype: datetime.datetime or None
+        """
+        return self._arrival_datetime
 
     @property
     def raw(self) -> Optional[dict]:

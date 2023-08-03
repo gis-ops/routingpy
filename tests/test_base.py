@@ -84,7 +84,6 @@ class BaseTest(_test.TestCase):
         )
 
         client = ClientMock(base_url="https://httpbin.org", skip_api_error=False)
-        print(client.skip_api_error)
         with self.assertRaises(routingpy.exceptions.RouterApiError):
             client.directions(url="/post", post_params=self.params)
 

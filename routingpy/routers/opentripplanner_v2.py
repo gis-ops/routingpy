@@ -15,7 +15,7 @@
 # the License.
 #
 import datetime
-from typing import List, Optional  # noqa: F401
+from typing import List, Optional
 
 from .. import convert, utils
 from ..client_base import DEFAULT
@@ -167,30 +167,35 @@ class OpenTripPlannerV2:
         )
         return self._parse_directions_response(response, num_itineraries)
 
+    def _timestamp_to_utc_datetime(self, timestamp):
+        dt = datetime.datetime.fromtimestamp(timestamp / 1000)
+        return dt.astimezone(datetime.timezone.utc)
+
     def _parse_directions_response(self, response, num_itineraries):
         if response is None:  # pragma: no cover
             return Directions() if num_itineraries > 1 else Direction()
 
-        routes = []
+        directions = []
         for itinerary in response["data"]["plan"]["itineraries"]:
-            geometry, distance = self._parse_legs(itinerary["legs"])
-            routes.append(
+            distance, geometry = self._parse_legs(itinerary["legs"])
+            departure_datetime = self._timestamp_to_utc_datetime(itinerary["startTime"])
+            arrival_datetime = self._timestamp_to_utc_datetime(itinerary["endTime"])
+            directions.append(
                 Direction(
                     geometry=geometry,
                     duration=int(itinerary["duration"]),
                     distance=distance,
+                    departure_datetime=departure_datetime,
+                    arrival_datetime=arrival_datetime,
                     raw=itinerary,
                 )
             )
 
         if num_itineraries > 1:
-            return Directions(routes, raw=response)
+            return Directions(directions, raw=response)
 
-        elif routes:
-            return routes[0]
-
-        else:
-            return Direction()
+        elif directions:
+            return directions[0]
 
     def _parse_legs(self, legs):
         distance = 0
@@ -200,7 +205,7 @@ class OpenTripPlannerV2:
             geometry.extend(list(reversed(points)))
             distance += int(leg["distance"])
 
-        return geometry, distance
+        return distance, geometry
 
     def isochrones(
         self,
