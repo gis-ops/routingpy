@@ -293,7 +293,8 @@ All these parameters, and more, can optionally be **globally set** for all route
 .. _Here Maps: https://developer.here.com/documentation
 .. _Google Maps: https://developers.google.com/maps/documentation
 .. _Graphhopper: https://graphhopper.com/api/1/docs
-.. _Local Valhalla: https://github.com/valhalla/valhalla-docs
+.. _OpenTripPlannerV2: https://docs.opentripplanner.org/en/latest/
+.. _Local Valhalla: https://valhalla.github.io/valhalla/
 .. _Local OSRM: https://github.com/Project-OSRM/osrm-backend/wiki
 .. _documentation: https://routingpy.readthedocs.io/en/latest
 .. _routing-py.routers: https://routingpy.readthedocs.io/en/latest/#module-routingpy.routers
