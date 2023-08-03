@@ -35,7 +35,7 @@ class Valhalla:
 
     def __init__(
         self,
-        base_url: str,
+        base_url: str = _DEFAULT_BASE_URL,
         user_agent: Optional[str] = None,
         timeout: Optional[Union[int, None]] = DEFAULT,
         retry_timeout: Optional[int] = None,
