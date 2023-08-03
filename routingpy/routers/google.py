@@ -326,11 +326,12 @@ class Google:
             self.client._request("/directions/json", get_params=params, dry_run=dry_run), alternatives
         )
 
-    def _time_object_to_aware_datetime(self, time_object):
+    def _time_object_to_naive_datetime(self, time_object):
         timestamp = time_object["value"]
         dt = datetime.datetime.fromtimestamp(timestamp)
         timezone = pytz.timezone(time_object["time_zone"])
-        return dt.astimezone(timezone)
+        aware_dt = dt.astimezone(timezone)
+        return aware_dt.replace(tzinfo=None)
 
     def _parse_legs(self, legs):
         duration = 0
@@ -343,12 +344,12 @@ class Google:
             departure_time = leg.get("departure_time")
             if departure_time:
                 assert len(legs) == 1, "departure_time is only supported for single leg routes"
-                departure_datetime = self._time_object_to_aware_datetime(departure_time)
+                departure_datetime = self._time_object_to_naive_datetime(departure_time)
 
             arrival_time = leg.get("arrival_time")
             if arrival_time:
                 assert len(legs) == 1, "arrival_time is only supported for single leg routes"
-                arrival_datetime = self._time_object_to_aware_datetime(arrival_time)
+                arrival_datetime = self._time_object_to_naive_datetime(arrival_time)
 
             duration += leg["duration"]["value"]
             distance += leg["distance"]["value"]

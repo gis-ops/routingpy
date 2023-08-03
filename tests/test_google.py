@@ -91,9 +91,9 @@ class GoogleTest(_test.TestCase):
         self.assertIsInstance(direction.distance, int)
         self.assertIsInstance(direction.duration, int)
         self.assertIsInstance(direction.departure_datetime, datetime.datetime)
-        self.assertEqual(direction.departure_datetime.tzinfo.zone, "Europe/Berlin")
+        self.assertEqual(direction.departure_datetime.tzinfo, None)
         self.assertIsInstance(direction.arrival_datetime, datetime.datetime)
-        self.assertEqual(direction.arrival_datetime.tzinfo.zone, "Europe/Berlin")
+        self.assertEqual(direction.arrival_datetime.tzinfo, None)
         self.assertIsInstance(direction.raw, dict)
 
     @responses.activate
