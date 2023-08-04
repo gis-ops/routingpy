@@ -189,8 +189,8 @@ class Google:
         language: Optional[str] = None,
         region: Optional[str] = None,
         units: Optional[str] = None,
-        arrival_time: Optional[int] = None,
         departure_time: Optional[int] = None,
+        arrival_time: Optional[int] = None,
         traffic_model: Optional[str] = None,
         transit_mode: Optional[Union[List[str], Tuple[str]]] = None,
         transit_routing_preference: Optional[str] = None,
@@ -341,20 +341,18 @@ class Google:
         arrival_datetime = None
 
         for leg in legs:
-            departure_time = leg.get("departure_time")
-            if departure_time:
-                assert len(legs) == 1, "departure_time is only supported for single leg routes"
-                departure_datetime = self._time_object_to_naive_datetime(departure_time)
-
-            arrival_time = leg.get("arrival_time")
-            if arrival_time:
-                assert len(legs) == 1, "arrival_time is only supported for single leg routes"
-                arrival_datetime = self._time_object_to_naive_datetime(arrival_time)
-
             duration += leg["duration"]["value"]
             distance += leg["distance"]["value"]
             for step in leg["steps"]:
                 geometry.extend(utils.decode_polyline5(step["polyline"]["points"]))
+
+        departure_time = legs[0].get("departure_time")
+        if departure_time:
+            departure_datetime = self._time_object_to_naive_datetime(departure_time)
+
+        arrival_time = legs[-1].get("arrival_time")
+        if arrival_time:
+            arrival_datetime = self._time_object_to_naive_datetime(arrival_time)
 
         return duration, distance, geometry, departure_datetime, arrival_datetime
 
