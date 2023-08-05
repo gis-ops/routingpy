@@ -56,9 +56,9 @@ class OpenTripPlannerV2Test(_test.TestCase):
         self.assertIsInstance(direction.duration, int)
         self.assertIsInstance(direction.geometry, list)
         self.assertIsInstance(direction.departure_datetime, datetime.datetime)
-        self.assertEqual(direction.departure_datetime.tzinfo, None)
+        self.assertEqual(direction.departure_datetime.tzinfo, datetime.timezone.utc)
         self.assertIsInstance(direction.arrival_datetime, datetime.datetime)
-        self.assertEqual(direction.arrival_datetime.tzinfo, None)
+        self.assertEqual(direction.arrival_datetime.tzinfo, datetime.timezone.utc)
 
     @responses.activate
     def test_directions_alternative(self):
@@ -85,9 +85,9 @@ class OpenTripPlannerV2Test(_test.TestCase):
             self.assertIsInstance(direction.geometry, list)
             self.assertIsInstance(direction.raw, dict)
             self.assertIsInstance(direction.departure_datetime, datetime.datetime)
-            self.assertEqual(direction.departure_datetime.tzinfo, None)
+            self.assertEqual(direction.departure_datetime.tzinfo, datetime.timezone.utc)
             self.assertIsInstance(direction.arrival_datetime, datetime.datetime)
-            self.assertEqual(direction.arrival_datetime.tzinfo, None)
+            self.assertEqual(direction.arrival_datetime.tzinfo, datetime.timezone.utc)
 
     @responses.activate
     def test_isochrones(self):
