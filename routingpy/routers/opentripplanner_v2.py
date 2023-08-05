@@ -17,8 +17,6 @@
 import datetime
 from typing import List, Optional
 
-import pytz
-
 from .. import convert, utils
 from ..client_base import DEFAULT
 from ..client_default import Client
@@ -99,7 +97,6 @@ class OpenTripPlannerV2:
         profile: Optional[str] = "WALK,TRANSIT",
         date: Optional[datetime.date] = datetime.datetime.now().date(),
         time: Optional[datetime.time] = datetime.datetime.now().time(),
-        timezone: Optional[str] = "UTC",
         arrive_by: Optional[bool] = False,
         num_itineraries: Optional[int] = 3,
         dry_run: Optional[bool] = None,
@@ -120,10 +117,6 @@ class OpenTripPlannerV2:
 
         :param time: Time of departure or arrival. Default value: current time.
         :type time: datetime.time
-
-        :param timezone: Timezone used to transform output departure and arrival timestamps to naive
-            datetimes. Default value: UTC.
-        :type time: str
 
         :arrive_by: Whether the itinerary should depart at the specified time (False), or arrive to
             the destination at the specified time (True). Default value: False.
@@ -172,22 +165,21 @@ class OpenTripPlannerV2:
         response = self.client._request(
             "/otp/routers/default/index/graphql", post_params=params, dry_run=dry_run
         )
-        return self._parse_directions_response(response, num_itineraries, timezone)
+        return self._parse_directions_response(response, num_itineraries)
 
-    def _timestamp_to_naive_datetime(self, timestamp, timezone):
+    def _timestamp_to_utc_datetime(self, timestamp):
         dt = datetime.datetime.fromtimestamp(timestamp / 1000)
-        aware_dt = dt.astimezone(pytz.timezone(timezone))
-        return aware_dt.replace(tzinfo=None)
+        return dt.astimezone(datetime.timezone.utc)
 
-    def _parse_directions_response(self, response, num_itineraries, timezone):
+    def _parse_directions_response(self, response, num_itineraries):
         if response is None:  # pragma: no cover
             return Directions() if num_itineraries > 1 else Direction()
 
         directions = []
         for itinerary in response["data"]["plan"]["itineraries"]:
             distance, geometry = self._parse_legs(itinerary["legs"])
-            departure_datetime = self._timestamp_to_naive_datetime(itinerary["startTime"], timezone)
-            arrival_datetime = self._timestamp_to_naive_datetime(itinerary["endTime"], timezone)
+            departure_datetime = self._timestamp_to_utc_datetime(itinerary["startTime"])
+            arrival_datetime = self._timestamp_to_utc_datetime(itinerary["endTime"])
             directions.append(
                 Direction(
                     geometry=geometry,
@@ -210,7 +202,7 @@ class OpenTripPlannerV2:
         geometry = []
         for leg in legs:
             points = utils.decode_polyline5(leg["legGeometry"]["points"])
-            geometry.extend(points)
+            geometry.extend(list(reversed(points)))
             distance += int(leg["distance"])
 
         return distance, geometry

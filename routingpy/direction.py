@@ -87,10 +87,10 @@ class Direction(object):
         :param distance: The distance of the direction in meters.
         :type distance: int
 
-        :param departure_datetime: The departure date and time of the direction.
+        :param departure_datetime: The departure date and time (timezone aware) of the direction.
         :type departure_datetime: datetime.datetime
 
-        :param arrival_datetime: The arrival date and time of the direction.
+        :param arrival_datetime: The arrival date and time (timezone aware) of the direction.
         :type arrival_datetime: datetime.datetime
 
         :param raw: The raw response of an individual direction (for multiple alternative routes) or the whole direction
@@ -134,7 +134,7 @@ class Direction(object):
     @property
     def departure_datetime(self) -> Optional[datetime.datetime]:
         """
-        The departure date and time of the direction.
+        The departure date and time (timezone aware) of the direction.
 
         :rtype: datetime.datetime or None
         """
@@ -143,7 +143,7 @@ class Direction(object):
     @property
     def arrival_datetime(self) -> Optional[datetime.datetime]:
         """
-        The arrival date and time of the direction.
+        The arrival date and time (timezone aware) of the direction.
 
         :rtype: datetime.datetime or None
         """
