@@ -15,10 +15,7 @@
 # the License.
 #
 
-import datetime
 import logging
-
-import pytz
 
 logger = logging.getLogger("routingpy")
 
@@ -133,29 +130,3 @@ def _get_coords(lat, lng, factor, order="lnglat"):
     if order not in ("lnglat", "latlng"):
         raise ValueError(f"order must be either 'latlng' or 'lnglat', not {order}.")
     return (lat / factor, lng / factor) if order == "latlng" else (lng / factor, lat / factor)
-
-
-# TODO: maybe we do a util module and different files, e.g. time_utils.py
-def timestamp_to_utc_datetime(timestamp: int) -> datetime.datetime:
-    """
-    Converts a UTC timestamp to a timezone-aware UTC datetime object.
-
-    :param timestamp: The UTC timestamp, i.e. UNIX epoch in seconds.
-    :returns: the UTC timezone aware datetime object
-    """
-    dt = datetime.datetime.fromtimestamp(timestamp)
-    return dt.astimezone(datetime.timezone.utc)
-
-
-def timestamp_to_tz_datetime(timestamp: int, timezone: str) -> datetime.datetime:
-    """
-    Converts a UTC timestamp (in seconds) and timezone string to a timezone aware
-    datetime.datetime object
-
-    :param timestamp: The UTC timestamp, i.e. UNIX epoch in seconds.
-    :param timezone: The timezone string, e.g. 'US/Eastern' or 'Europe/Berlin'
-    :returns: the timezone aware datetime object
-    """
-    dt = datetime.datetime.fromtimestamp(timestamp)
-    timezone = pytz.timezone(timezone)
-    return dt.astimezone(timezone)

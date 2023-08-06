@@ -14,13 +14,14 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-
+import datetime
 from operator import itemgetter
 from typing import List, Optional, Sequence, Union  # noqa: F401
 
 from .. import utils
 from ..client_base import DEFAULT
 from ..client_default import Client
+from ..convert import lonlat_to_timezone, timestamp_to_tz_datetime
 from ..direction import Direction
 from ..expansion import Edge, Expansions
 from ..isochrone import Isochrone, Isochrones
@@ -121,7 +122,8 @@ class Valhalla:
         directions_type: Optional[str] = None,
         avoid_locations: Optional[List[List[float]]] = None,
         avoid_polygons: Optional[List[List[List[float]]]] = None,
-        date_time: Optional[dict] = None,
+        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
+        date_time_type: Optional[str] = "depart_at",
         id: Optional[Union[str, int, float]] = None,
         dry_run: Optional[bool] = None,
         **kwargs
@@ -169,10 +171,8 @@ class Valhalla:
             efficient to use avoid_locations. Valhalla will close open rings (i.e. copy the first coordingate to the
             last position).
 
-        :param date_time: This is the local date and time at the location. Field ``type``: 0: Current departure time,
-            1: Specified departure time. Field ``value```: the date and time is specified
-            in ISO 8601 format (YYYY-MM-DDThh:mm), local time.
-            E.g. date_time = {type: 0, value: 2021-03-03T08:06:23}
+        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
+        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
 
         :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
 
@@ -196,6 +196,7 @@ class Valhalla:
             avoid_locations,
             avoid_polygons,
             date_time,
+            date_time_type,
             id,
             **kwargs
         )
@@ -218,6 +219,7 @@ class Valhalla:
         avoid_locations=None,
         avoid_polygons=None,
         date_time=None,
+        date_time_type=None,
         id=None,
         **kwargs
     ):
@@ -253,8 +255,11 @@ class Valhalla:
         if avoid_polygons:
             params["avoid_polygons"] = avoid_polygons
 
-        if date_time:
-            params["date_time"] = date_time
+        if date_time and date_time_type:
+            params["date_time"] = {
+                "type": 1 if date_time_type == "depart_at" else 2,
+                "value": date_time.strftime("%Y-%m-%dT%H:%M"),
+            }
 
         if id:
             params["id"] = id
@@ -277,7 +282,23 @@ class Valhalla:
             factor = 0.621371 if units == "mi" else 1
             distance += int(leg["summary"]["length"] * 1000 * factor)
 
-        return Direction(geometry=geometry, duration=int(duration), distance=int(distance), raw=response)
+        origin = response["trip"]["locations"][0]
+        destination = response["trip"]["locations"][-1]
+        departure_time = timestamp_to_tz_datetime(
+            origin["date_time"], lonlat_to_timezone(origin["lon"], origin["lat"])
+        )
+        arrival_time = timestamp_to_tz_datetime(
+            destination["date_time"], lonlat_to_timezone(destination["lon"], destination["lat"])
+        )
+
+        return Direction(
+            geometry=geometry,
+            duration=int(duration),
+            distance=int(distance),
+            departure_datetime=departure_time,
+            arrival_datetime=arrival_time,
+            raw=response,
+        )
 
     def isochrones(  # noqa: C901
         self,
@@ -291,12 +312,10 @@ class Valhalla:
         generalize: Optional[float] = None,
         preference: Optional[str] = None,
         options: Optional[dict] = None,
-        units: Optional[str] = None,
-        language: Optional[str] = None,
-        directions_type: Optional[str] = None,
         avoid_locations: Optional[List[List[float]]] = None,
         avoid_polygons: Optional[List[List[List[float]]]] = None,
-        date_time: Optional[dict] = None,
+        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
+        date_time_type: Optional[str] = "depart_at",
         show_locations: Optional[List[List[float]]] = None,
         id: Optional[str] = None,
         dry_run: Optional[bool] = None,
@@ -339,11 +358,6 @@ class Valhalla:
             will be filled automatically. For more information, visit:
             https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#costing-options
 
-        :param units: Distance units for output. One of ['mi', 'km']. Default km.
-
-        :param language: The language of the narration instructions based on the IETF BCP 47 language tag string.
-            One of ['ca', 'cs', 'de', 'en', 'pirate', 'es', 'fr', 'hi', 'it', 'pt', 'ru', 'sl', 'sv']. Default 'en'.
-
         :param avoid_locations: A set of locations to exclude or avoid within a route.
             Specified as a list of coordinates, similar to coordinates object.
 
@@ -353,11 +367,8 @@ class Valhalla:
             efficient to use avoid_locations. Valhalla will close open rings (i.e. copy the first coordingate to the
             last position).
 
-        :param date_time: This is the local date and time at the location. Field ``type``: 0: Current departure time,
-            1: Specified departure time. Field ``value```: the date and time is specified
-            in format YYYY-MM-DDThh:mm, local time.
-
-            E.g. date_time = {type: 0, value: 2021-03-03T08:06}
+        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
+        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
 
         :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
 
@@ -381,6 +392,7 @@ class Valhalla:
             avoid_locations,
             avoid_polygons,
             date_time,
+            date_time_type,
             show_locations,
             id,
             **kwargs
@@ -407,7 +419,8 @@ class Valhalla:
         options=None,
         avoid_locations=None,
         avoid_polygons=None,
-        date_time=None,
+        date_time: Optional[datetime.datetime] = None,
+        date_time_type=None,
         show_locations=None,
         id=None,
         **kwargs
@@ -462,8 +475,11 @@ class Valhalla:
         if avoid_polygons:
             params["avoid_polygons"] = avoid_polygons
 
-        if date_time:
-            params["date_time"] = date_time
+        if date_time and date_time_type:
+            params["date_time"] = {
+                "type": 1 if date_time_type == "depart_at" else 2,
+                "value": date_time.strftime("%Y-%m-%dT%H:%M"),
+            }
 
         if show_locations is not None:
             params["show_locations"] = show_locations
@@ -505,7 +521,8 @@ class Valhalla:
         avoid_locations: Optional[List[List[float]]] = None,
         avoid_polygons: Optional[List[List[List[float]]]] = None,
         units: Optional[str] = None,
-        date_time: Optional[dict] = None,
+        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
+        date_time_type: Optional[str] = "depart_at",
         id: Optional[str] = None,
         dry_run: Optional[bool] = None,
         **kwargs
@@ -548,9 +565,8 @@ class Valhalla:
 
         :param units: Distance units for output. One of ['mi', 'km']. Default km.
 
-        :param date_time: This is the local date and time at the location. Field ``type``: 0: Current departure time,
-            1: Specified departure time. Field ``value```: the date and time is specified
-            in format YYYY-MM-DDThh:mm, local time.
+        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
+        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
 
         :param id: Name your route request. If id is specified, the naming will be sent through to the response.
 
@@ -571,6 +587,7 @@ class Valhalla:
             avoid_polygons,
             units,
             date_time,
+            date_time_type,
             id,
             **kwargs
         )
@@ -591,7 +608,8 @@ class Valhalla:
         avoid_locations=None,
         avoid_polygons=None,
         units=None,
-        date_time=None,
+        date_time: Optional[datetime.datetime] = None,
+        date_time_type=None,
         id=None,
         **kwargs
     ):
@@ -637,8 +655,11 @@ class Valhalla:
         if units:
             params["units"] = units
 
-        if date_time:
-            params["date_time"] = date_time
+        if date_time and date_time_type:
+            params["date_time"] = {
+                "type": 1 if date_time_type == "depart_at" else 2,
+                "value": date_time.strftime("%Y-%m-%dT%H:%M"),
+            }
 
         if id:
             params["id"] = id
@@ -675,7 +696,8 @@ class Valhalla:
         expansion_properties: Optional[Sequence[str]] = None,
         interval_type: Optional[str] = "time",
         options: Optional[dict] = None,
-        date_time: Optional[dict] = None,
+        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
+        date_time_type: Optional[str] = "depart_at",
         id: Optional[str] = None,
         dry_run: Optional[bool] = None,
         **kwargs
@@ -703,11 +725,8 @@ class Valhalla:
             will be filled automatically. For more information, visit:
             https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#costing-options
 
-        :param date_time: This is the local date and time at the location. Field ``type``: 0: Current departure time,
-            1: Specified departure time. Field ``value```: the date and time is specified
-            in format YYYY-MM-DDThh:mm, local time.
-
-            E.g. date_time = {type: 0, value: 2021-03-03T08:06}
+        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
+        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
 
         :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
 
@@ -724,6 +743,7 @@ class Valhalla:
             interval_type,
             options,
             date_time,
+            date_time_type,
             id,
             **kwargs
         )
@@ -744,7 +764,8 @@ class Valhalla:
         expansion_properties=None,
         interval_type=None,
         options=None,
-        date_time=None,
+        date_time: Optional[datetime.datetime] = None,
+        date_time_type=None,
         id=None,
         **kwargs
     ):
@@ -755,6 +776,7 @@ class Valhalla:
             interval_type,
             options=options,
             date_time=date_time,
+            date_time_type=date_time_type,
             id=id,
         )
         params["action"] = "isochrone"

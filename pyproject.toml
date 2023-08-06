@@ -25,6 +25,7 @@ contextily = {version = "^1.1.0", optional = true}
 geopandas = {version = "^0.8.2", optional = true}
 descartes = {version = "^1.0.0", optional = true}
 pytz = "^2023.3"
+timezonefinder = "^6.2.0"
 
 [tool.poetry.extras]
 notebooks = ["shapely", "ipykernel", "geopandas", "contextily", "matplotlib", "descartes"]

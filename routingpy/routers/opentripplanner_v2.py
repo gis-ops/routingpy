@@ -14,6 +14,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
+import abc
 import datetime
 from typing import List, Optional
 
@@ -23,7 +24,6 @@ from ..client_default import Client
 from ..direction import Direction, Directions
 from ..isochrone import Isochrone, Isochrones
 from ..raster import Raster
-from ..utils import timestamp_to_utc_datetime
 
 
 class OpenTripPlannerV2:
@@ -39,7 +39,7 @@ class OpenTripPlannerV2:
         retry_timeout: Optional[int] = None,
         retry_over_query_limit: Optional[bool] = False,
         skip_api_error: Optional[bool] = None,
-        client=Client,
+        client: abc.ABCMeta = Client,
         **client_kwargs,
     ):
         """
@@ -47,39 +47,24 @@ class OpenTripPlannerV2:
 
         :param base_url: The base URL for the request. Defaults to localhost. Should not have a
             trailing slash.
-        :type base_url: str
-
         :param user_agent: User Agent to be used when requesting.
             Default :attr:`routingpy.routers.options.default_user_agent`.
-        :type user_agent: str
-
         :param timeout: Combined connect and read timeout for HTTP requests, in seconds.
             Specify ``None`` for no timeout.
             Default :attr:`routingpy.routers.options.default_timeout`.
-        :type timeout: int or None
-
         :param retry_timeout: Timeout across multiple retriable requests, in seconds.
             Default :attr:`routingpy.routers.options.default_retry_timeout`.
-        :type retry_timeout: int
-
         :param retry_over_query_limit: If True, client will not raise an exception on HTTP 429,
             but instead jitter a sleeping timer to pause between requests until HTTP 200 or
             retry_timeout is reached.
             Default :attr:`routingpy.routers.options.default_retry_over_query_limit`.
-        :type retry_over_query_limit: bool
-
         :param skip_api_error: Continue with batch processing if a
             :class:`routingpy.exceptions.RouterApiError` is encountered (e.g. no route found).
             If False, processing will discontinue and raise an error.
             Default :attr:`routingpy.routers.options.default_skip_api_error`.
-        :type skip_api_error: bool
-
         :param client: A client class for request handling. Needs to be derived from
             :class:`routingpy.client_base.BaseClient`
-        :type client: abc.ABCMeta
-
         :param client_kwargs: Additional arguments passed to the client, such as headers or proxies.
-        :type client_kwargs: dict
         """
 
         self.client = client(
@@ -95,10 +80,9 @@ class OpenTripPlannerV2:
     def directions(
         self,
         locations: List[List[float]],
-        profile: Optional[str] = "WALK,TRANSIT",
-        date: Optional[datetime.date] = datetime.datetime.now().date(),
-        time: Optional[datetime.time] = datetime.datetime.now().time(),
-        arrive_by: Optional[bool] = False,
+        profile: Optional[str],
+        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
+        date_time_type: Optional[str] = "depart_at",
         num_itineraries: Optional[int] = 3,
         dry_run: Optional[bool] = None,
     ):
@@ -107,27 +91,12 @@ class OpenTripPlannerV2:
 
         :param locations: List of coordinates for departure and arrival points as
             [[lon,lat], [lon,lat]].
-        :type locations: list of list of float
-
         :param profile: Comma-separated list of transportation modes that the user is willing to
-            use. Default: "WALK,TRANSIT"
-        :type profile: str
-
-        :param date: Date of departure or arrival. Default value: current date.
-        :type date: datetime.date
-
-        :param time: Time of departure or arrival. Default value: current time.
-        :type time: datetime.time
-
-        :arrive_by: Whether the itinerary should depart at the specified time (False), or arrive to
-            the destination at the specified time (True). Default value: False.
-        :type arrive_by: bool
-
+            use.
+        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
+        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
         :param num_itineraries: The maximum number of itineraries to return. Default value: 3.
-        :type num_itineraries: int
-
         :param dry_run: Print URL and parameters without sending the request.
-        :type dry_run: bool
 
         :returns: One or multiple route(s) from provided coordinates and restrictions.
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
@@ -136,13 +105,13 @@ class OpenTripPlannerV2:
         query = f"""
             {{
                 plan(
-                    date: "{ date.strftime("%Y-%m-%d") }"
-                    time: "{ time.strftime("%H:%M:%S") }"
+                    date: "{ date_time.date().strftime("%Y-%m-%d") }"
+                    time: "{ date_time.time().strftime("%H:%M:%S") }"
                     from: {{lat: {locations[0][1]}, lon: {locations[0][0]}}}
                     to: {{lat: {locations[1][1]}, lon: {locations[1][0]}}}
                     transportModes: {str(transport_modes).replace("'", "")}
                     numItineraries: {num_itineraries}
-                    arriveBy: {"true" if arrive_by else "false"}
+                    arriveBy: {"true" if date_time_type == "depart_at" else "false"}
                 ) {{
                     itineraries {{
                         duration
@@ -176,8 +145,8 @@ class OpenTripPlannerV2:
         directions = []
         for itinerary in response["data"]["plan"]["itineraries"]:
             distance, geometry = OpenTripPlannerV2._parse_legs(itinerary["legs"])
-            departure_datetime = timestamp_to_utc_datetime(itinerary["startTime"])
-            arrival_datetime = timestamp_to_utc_datetime(itinerary["endTime"])
+            departure_datetime = convert.timestamp_to_tz_datetime(itinerary["startTime"], "UTC")
+            arrival_datetime = convert.timestamp_to_tz_datetime(itinerary["endTime"], "UTC")
             directions.append(
                 Direction(
                     geometry=geometry,
@@ -209,43 +178,36 @@ class OpenTripPlannerV2:
     def isochrones(
         self,
         locations: List[float],
-        profile: Optional[str] = "WALK,TRANSIT",
-        time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
-        cutoffs: Optional[List[int]] = [3600],
+        profile: str,
+        intervals: List[int],
+        interval_type: Optional[str] = None,
+        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
+        date_time_type: Optional[str] = None,
         arrive_by: Optional[bool] = False,
         dry_run: Optional[bool] = None,
     ):
         """Gets isochrones for a range of time values around a given set of coordinates.
 
         :param locations: Origin of the search as [lon,lat].
-        :type locations: list of float
-
-        :param profile: Comma-separated list of transportation modes that the user is willing to
-            use. Default: "WALK,TRANSIT"
-        :type profile: str
-
-        :time: Departure date and time (timezone aware). The default value is now (UTC).
-        :type time: datetime.datetime
-
-        :cutoff: The maximum travel duration in seconds. The default value is one hour.
-
+        :param profile: Comma-separated list of transportation modes that the user is willing to use.
+        :param intervals: Time ranges to calculate isochrones for. In seconds or meters, depending on `interval_type`.
+        :param interval_type: Only for compatibility. This isn't used, only 'time' is allowed.
+        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
+        :param date_time_type: Only for compatibility. This isn't used, only "depart_at" isochrones are allowed.
         :arrive_by: Set to False when searching from the location and True when searching to the
             location. Default value: False.
-        :type arrive_by: bool
-
         :param dry_run: Print URL and parameters without sending the request.
-        :param dry_run: bool
 
         :returns: An isochrone with the specified range.
         :rtype: :class:`routingpy.isochrone.Isochrones`
         """
         params = [
             ("location", convert.delimit_list(reversed(locations), ",")),
-            ("time", time.isoformat()),
+            ("time", date_time.isoformat()),
             ("modes", profile),
             ("arriveBy", "true" if arrive_by else "false"),
         ]
-        for cutoff in cutoffs:
+        for cutoff in intervals:
             params.append(("cutoff", convert.seconds_to_iso8601(cutoff)))
 
         response = self.client._request(
@@ -253,9 +215,10 @@ class OpenTripPlannerV2:
             get_params=params,
             dry_run=dry_run,
         )
-        return self._parse_isochrones_response(response)
+        return self.parse_isochrones_response(response)
 
-    def _parse_isochrones_response(self, response):
+    @staticmethod
+    def parse_isochrones_response(response):
         if response is None:  # pragma: no cover
             return Isochrones()
 
@@ -274,10 +237,10 @@ class OpenTripPlannerV2:
     def raster(
         self,
         locations: List[float],
-        profile: Optional[str] = "WALK,TRANSIT",
-        time: Optional[datetime.datetime] = datetime.datetime.now(),
+        profile: Optional[str],
+        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
+        date_time_type: Optional[str] = None,
         cutoff: Optional[int] = 3600,
-        arrive_by: Optional[bool] = False,
         dry_run: Optional[bool] = None,
     ):
         """Get raster for a time value around a given set of coordinates.
@@ -286,29 +249,20 @@ class OpenTripPlannerV2:
         :type locations: list of float
 
         :param profile: Comma-separated list of transportation modes that the user is willing to
-            use. Default: "WALK,TRANSIT"
-        :type profile: str
-
-        :time: Departure date and time (timezone aware). The default value is now (UTC).
-        :type time: datetime.datetime
-
-        :cutoff: The maximum travel duration in seconds. The default value is one hour.
-
-        :arrive_by: Set to False when searching from the location and True when searching to the
-            location. Default value: False.
-        :type arrive_by: bool
-
+            use.
+        :param date_time: Date and time of departure or arrival. Default value: current datetime.
+        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
+        :param cutoff: The maximum travel duration in seconds. The default value is one hour.
         :param dry_run: Print URL and parameters without sending the request.
-        :param dry_run: bool
 
         :returns: A raster with the specified range.
         :rtype: :class:`routingpy.raster.Raster`
         """
         params = [
             ("location", convert.delimit_list(reversed(locations), ",")),
-            ("time", time.isoformat()),
+            ("time", date_time.isoformat()),
             ("modes", profile),
-            ("arriveBy", "true" if arrive_by else "false"),
+            ("arriveBy", "true" if date_time_type == "arrive_by" else "false"),
             ("cutoff", convert.seconds_to_iso8601(cutoff)),
         ]
         response = self.client._request(
@@ -316,9 +270,10 @@ class OpenTripPlannerV2:
             get_params=params,
             dry_run=dry_run,
         )
-        return self._parse_rasters_response(response, cutoff)
+        return self.parse_rasters_response(response, cutoff)
 
-    def _parse_rasters_response(self, response, max_travel_time):
+    @staticmethod
+    def parse_rasters_response(response, max_travel_time):
         if response is None:  # pragma: no cover
             return Raster()
 
