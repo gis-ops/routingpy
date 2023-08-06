@@ -286,6 +286,8 @@ class Valhalla:
         destination = response["trip"]["locations"][-1]
         departure_time: Optional[datetime] = None
         arrival_time: Optional[datetime] = None
+        # TODO: maybe we can get rid of that in the future, in case we'll have timezone aware strings in the response:
+        #   https://github.com/valhalla/valhalla/issues/4241
         if origin.get("date_time"):
             departure_time = timestamp_to_tz_datetime(
                 origin["date_time"], lonlat_to_timezone(origin["lon"], origin["lat"])
