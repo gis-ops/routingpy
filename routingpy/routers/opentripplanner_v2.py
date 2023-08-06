@@ -250,8 +250,8 @@ class OpenTripPlannerV2:
 
         :param profile: Comma-separated list of transportation modes that the user is willing to
             use.
-        :param date_time: Date and time of departure or arrival. Default value: current datetime.
-        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
+        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
+        :param date_time_type: Only for compatibility. This isn't used, only "depart_at" isochrones are allowed.
         :param cutoff: The maximum travel duration in seconds. The default value is one hour.
         :param dry_run: Print URL and parameters without sending the request.
 

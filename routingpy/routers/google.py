@@ -14,7 +14,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #
-from datetime import datetime
+import datetime
 from operator import itemgetter
 from typing import List, Optional, Tuple, Union
 
@@ -187,8 +187,8 @@ class Google:
         language: Optional[str] = None,
         region: Optional[str] = None,
         units: Optional[str] = None,
-        arrival_time: Optional[int] = None,
-        departure_time: Optional[int] = None,
+        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
+        date_time_type: Optional[str] = None,
         traffic_model: Optional[str] = None,
         transit_mode: Optional[Union[List[str], Tuple[str]]] = None,
         transit_routing_preference: Optional[str] = None,
@@ -202,41 +202,20 @@ class Google:
             from in order of visit. Can be a list/tuple of [lon, lat], a list/tuple of address strings, Google's
             Place ID's, a :class:`Google.WayPoint` instance or a combination of these. Note, the first and last location have to be specified as [lon, lat].
             Optionally, specify ``optimize=true`` for via waypoint optimization.
-        :type locations: list of list or list of :class:`Google.WayPoint`
-
         :param profile: The vehicle for which the route should be calculated.
             Default "driving". One of ['driving', 'walking', 'bicycling', 'transit'].
-        :type profile: str
-
         :param alternatives: Specifies whether more than one route should be returned.
             Only available for requests without intermediate waypoints. Default False.
-        :type alternatives: bool
-
         :param avoid: Indicates that the calculated route(s) should avoid the indicated features. One or more of
             ['tolls', 'highways', 'ferries', 'indoor']. Default None.
-        :type avoid: list of str
-
         :param optimize: Optimize the given order of via waypoints (i.e. between first and last location). Default False.
-        :type optimize: bool
-
         :param language: Language for routing instructions. The locale of the resulting turn instructions. Visit
             https://developers.google.com/maps/faq#languagesupport for options.
-        :type language: str
-
         :param region: Specifies the region code, specified as a ccTLD ("top-level domain") two-character value.
             See https://developers.google.com/maps/documentation/directions/intro#RegionBiasing.
-        :type region: str
-
         :param units: Specifies the unit system to use when displaying results. One of ['metric', 'imperial'].
-        :type units: str
-
-        :param arrival_time: Specifies the desired time of arrival for transit directions, in seconds since midnight,
-            January 1, 1970 UTC. Incompatible with departure_time.
-        :type arrival_time: int
-
-        :param departure_time: Specifies the desired time of departure. You can specify the time as an integer in
-            seconds since midnight, January 1, 1970 UTC.
-
+        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
+        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
         :param traffic_model: Specifies the assumptions to use when calculating time in traffic. One of ['best_guess',
             'pessimistic', 'optimistic'. See https://developers.google.com/maps/documentation/directions/intro#optional-parameters
             for details.
@@ -302,14 +281,10 @@ class Google:
         if units:
             params["units"] = units
 
-        if arrival_time and departure_time:
-            raise ValueError("Specify either arrival_time or departure_time.")
-
-        if arrival_time:
-            params["arrival_time"] = str(arrival_time)
-
-        if departure_time:
-            params["departure_time"] = str(departure_time)
+        if date_time and date_time_type:
+            params["arrival_time" if date_time_type == "arrive_by" else "departure_time"] = str(
+                date_time.timestamp()
+            )
 
         if traffic_model:
             params["traffic_model"] = traffic_model
@@ -346,7 +321,7 @@ class Google:
 
         arrival_time = legs[-1].get("arrival_time")
         if arrival_time:
-            arrival_datetime = timestamp_to_tz_datetime(arrival_time)
+            arrival_datetime = timestamp_to_tz_datetime(arrival_time["value"], arrival_time["time_zone"])
 
         return duration, distance, geometry, departure_datetime, arrival_datetime
 
@@ -407,8 +382,8 @@ class Google:
         language: Optional[str] = None,
         region: Optional[str] = None,
         units: Optional[str] = None,
-        date_time: Optional[datetime] = datetime.now(),
-        date_time_type: Optional[str] = "depart_at",
+        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
+        date_time_type: Optional[str] = None,
         traffic_model: Optional[str] = None,
         transit_mode: Optional[Union[List[str], Tuple[str]]] = None,
         transit_routing_preference: Optional[str] = None,
@@ -485,7 +460,7 @@ class Google:
 
         if date_time and date_time_type:
             params["arrival_time" if date_time_type == "arrive_by" else "departure_time"] = str(
-                date_time
+                date_time.timestamp()
             )
 
         if traffic_model:

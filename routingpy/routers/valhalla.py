@@ -284,12 +284,16 @@ class Valhalla:
 
         origin = response["trip"]["locations"][0]
         destination = response["trip"]["locations"][-1]
-        departure_time = timestamp_to_tz_datetime(
-            origin["date_time"], lonlat_to_timezone(origin["lon"], origin["lat"])
-        )
-        arrival_time = timestamp_to_tz_datetime(
-            destination["date_time"], lonlat_to_timezone(destination["lon"], destination["lat"])
-        )
+        departure_time: Optional[datetime] = None
+        arrival_time: Optional[datetime] = None
+        if origin.get("date_time"):
+            departure_time = timestamp_to_tz_datetime(
+                origin["date_time"], lonlat_to_timezone(origin["lon"], origin["lat"])
+            )
+        if destination.get("date_time"):
+            arrival_time = timestamp_to_tz_datetime(
+                destination["date_time"], lonlat_to_timezone(destination["lon"], destination["lat"])
+            )
 
         return Direction(
             geometry=geometry,
