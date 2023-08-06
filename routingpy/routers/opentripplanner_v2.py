@@ -23,6 +23,7 @@ from ..client_default import Client
 from ..direction import Direction, Directions
 from ..isochrone import Isochrone, Isochrones
 from ..raster import Raster
+from ..utils import timestamp_to_utc_datetime
 
 
 class OpenTripPlannerV2:
@@ -165,21 +166,18 @@ class OpenTripPlannerV2:
         response = self.client._request(
             "/otp/routers/default/index/graphql", post_params=params, dry_run=dry_run
         )
-        return self._parse_directions_response(response, num_itineraries)
+        return self.parse_directions_response(response, num_itineraries)
 
-    def _timestamp_to_utc_datetime(self, timestamp):
-        dt = datetime.datetime.fromtimestamp(timestamp / 1000)
-        return dt.astimezone(datetime.timezone.utc)
-
-    def _parse_directions_response(self, response, num_itineraries):
+    @staticmethod
+    def parse_directions_response(response, num_itineraries):
         if response is None:  # pragma: no cover
             return Directions() if num_itineraries > 1 else Direction()
 
         directions = []
         for itinerary in response["data"]["plan"]["itineraries"]:
-            distance, geometry = self._parse_legs(itinerary["legs"])
-            departure_datetime = self._timestamp_to_utc_datetime(itinerary["startTime"])
-            arrival_datetime = self._timestamp_to_utc_datetime(itinerary["endTime"])
+            distance, geometry = OpenTripPlannerV2._parse_legs(itinerary["legs"])
+            departure_datetime = timestamp_to_utc_datetime(itinerary["startTime"])
+            arrival_datetime = timestamp_to_utc_datetime(itinerary["endTime"])
             directions.append(
                 Direction(
                     geometry=geometry,
@@ -197,7 +195,8 @@ class OpenTripPlannerV2:
         elif directions:
             return directions[0]
 
-    def _parse_legs(self, legs):
+    @staticmethod
+    def _parse_legs(legs):
         distance = 0
         geometry = []
         for leg in legs:

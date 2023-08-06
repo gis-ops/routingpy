@@ -15,11 +15,8 @@
 # the License.
 #
 
-import datetime
 from operator import itemgetter
 from typing import List, Optional, Tuple, Union
-
-import pytz
 
 from .. import convert, utils
 from ..client_base import DEFAULT
@@ -27,6 +24,7 @@ from ..client_default import Client
 from ..direction import Direction, Directions
 from ..exceptions import OverQueryLimit, RouterApiError, RouterServerError
 from ..matrix import Matrix
+from ..utils import timestamp_to_tz_datetime
 
 STATUS_CODES = {
     "NOT_FOUND": {
@@ -322,17 +320,12 @@ class Google:
         if transit_routing_preference:
             params["transit_routing_preference"] = transit_routing_preference
 
-        return self._parse_direction_json(
+        return self.parse_direction_json(
             self.client._request("/directions/json", get_params=params, dry_run=dry_run), alternatives
         )
 
-    def _time_object_to_aware_datetime(self, time_object):
-        timestamp = time_object["value"]
-        dt = datetime.datetime.fromtimestamp(timestamp)
-        timezone = pytz.timezone(time_object["time_zone"])
-        return dt.astimezone(timezone)
-
-    def _parse_legs(self, legs):
+    @staticmethod
+    def parse_legs(legs):
         duration = 0
         distance = 0
         geometry = []
@@ -347,15 +340,18 @@ class Google:
 
         departure_time = legs[0].get("departure_time")
         if departure_time:
-            departure_datetime = self._time_object_to_aware_datetime(departure_time)
+            departure_datetime = timestamp_to_tz_datetime(
+                departure_time["value"], departure_time["time_zone"]
+            )
 
         arrival_time = legs[-1].get("arrival_time")
         if arrival_time:
-            arrival_datetime = self._time_object_to_aware_datetime(arrival_time)
+            arrival_datetime = timestamp_to_tz_datetime(arrival_time)
 
         return duration, distance, geometry, departure_datetime, arrival_datetime
 
-    def _parse_direction_json(self, response, alternatives):
+    @staticmethod
+    def parse_direction_json(response, alternatives):
         if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
@@ -378,7 +374,7 @@ class Google:
 
         directions = []
         for route in response["routes"]:
-            duration, distance, geometry, departure_datetime, arrival_datetime = self._parse_legs(
+            duration, distance, geometry, departure_datetime, arrival_datetime = Google._parse_legs(
                 route["legs"]
             )
             directions.append(
