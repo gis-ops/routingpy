@@ -531,11 +531,12 @@ class Google:
         if transit_routing_preference:
             params["transit_routing_preference"] = transit_routing_preference
 
-        return self._parse_matrix_json(
+        return self.parse_matrix_json(
             self.client._request("/distancematrix/json", get_params=params, dry_run=dry_run)
         )
 
-    def _parse_matrix_json(self, response):
+    @staticmethod
+    def parse_matrix_json(response):
         if response is None:  # pragma: no cover
             return Matrix()
 
