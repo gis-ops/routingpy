@@ -397,7 +397,7 @@ class Google:
         :param sources: A list of indices that refer to the list of locations
             (starting with 0). If not passed, all indices are considered.
         :param destinations: A list of indices that refer to the list of locations
-            (starting with 0). If not passed, all indices are conside
+            (starting with 0). If not passed, all indices are considered.
         :param avoid: Indicates that the calculated route(s) should avoid the indicated features. One or more of
             ['tolls', 'highways', 'ferries', 'indoor']. Default None.
         :param language: Language for routing instructions. The locale of the resulting turn instructions. Visit

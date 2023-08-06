@@ -111,7 +111,7 @@ class OpenTripPlannerV2:
                     to: {{lat: {locations[1][1]}, lon: {locations[1][0]}}}
                     transportModes: {str(transport_modes).replace("'", "")}
                     numItineraries: {num_itineraries}
-                    arriveBy: {"true" if date_time_type == "depart_at" else "false"}
+                    arriveBy: {"true" if date_time_type == "arrive_by" else "false"}
                 ) {{
                     itineraries {{
                         duration
@@ -183,7 +183,6 @@ class OpenTripPlannerV2:
         interval_type: Optional[str] = None,
         date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
         date_time_type: Optional[str] = None,
-        arrive_by: Optional[bool] = False,
         dry_run: Optional[bool] = None,
     ):
         """Gets isochrones for a range of time values around a given set of coordinates.
@@ -194,8 +193,6 @@ class OpenTripPlannerV2:
         :param interval_type: Only for compatibility. This isn't used, only 'time' is allowed.
         :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
         :param date_time_type: Only for compatibility. This isn't used, only "depart_at" isochrones are allowed.
-        :arrive_by: Set to False when searching from the location and True when searching to the
-            location. Default value: False.
         :param dry_run: Print URL and parameters without sending the request.
 
         :returns: An isochrone with the specified range.
@@ -205,7 +202,7 @@ class OpenTripPlannerV2:
             ("location", convert.delimit_list(reversed(locations), ",")),
             ("time", date_time.isoformat()),
             ("modes", profile),
-            ("arriveBy", "true" if arrive_by else "false"),
+            ("arriveBy", "true" if date_time_type == "arrive_by" else "false"),
         ]
         for cutoff in intervals:
             params.append(("cutoff", convert.seconds_to_iso8601(cutoff)))
