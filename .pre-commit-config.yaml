@@ -6,10 +6,10 @@ repos:
       language_version: python3
       # temp exlude osrm: black fails to reformat for some reason
       args: [routingpy, tests, --exclude, routingpy/routers/mapbox_osrm.py]
-- repo: https://github.com/pycqa/flake8
-  rev: 6.1.0  # pick a git hash / tag to point to
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  rev: v0.0.290
   hooks:
-    - id: flake8
+    - id: ruff
 - repo: https://github.com/pycqa/isort
   rev: 5.12.0
   hooks:
