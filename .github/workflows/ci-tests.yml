@@ -38,7 +38,6 @@ jobs:
         cache: pip
 
     - uses: actions/cache@v3
-      if: startsWith(runner.os, 'Linux')
       with:
         path: ~/.cache/pre-commit
         key: ${{ runner.os }}|pre-commit
