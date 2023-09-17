@@ -48,7 +48,7 @@ jobs:
 
     - name: style & lint checks
       run: |
-        pre-commit run --all-files
+        pre-commit run --all-files --color=always
 
     - name: pytest and coverage
       run: |
