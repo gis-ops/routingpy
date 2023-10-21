@@ -187,8 +187,8 @@ class Google:
         language: Optional[str] = None,
         region: Optional[str] = None,
         units: Optional[str] = None,
-        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
-        date_time_type: Optional[str] = None,
+        departure_time: Optional[datetime.datetime] = None,
+        arrival_time: Optional[datetime.datetime] = None,
         traffic_model: Optional[str] = None,
         transit_mode: Optional[Union[List[str], Tuple[str]]] = None,
         transit_routing_preference: Optional[str] = None,
@@ -214,8 +214,8 @@ class Google:
         :param region: Specifies the region code, specified as a ccTLD ("top-level domain") two-character value.
             See https://developers.google.com/maps/documentation/directions/intro#RegionBiasing.
         :param units: Specifies the unit system to use when displaying results. One of ['metric', 'imperial'].
-        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
-        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
+        :param departure_time: Departure date and time in the location's local timezone. Mutually exclusive with `arrival_time`.
+        :param arrival_time: Arrival date and time in the location's local timezone. Mutually exclusive with `departure_time`.
         :param traffic_model: Specifies the assumptions to use when calculating time in traffic. One of ['best_guess',
             'pessimistic', 'optimistic'. See https://developers.google.com/maps/documentation/directions/intro#optional-parameters
             for details.
@@ -281,10 +281,12 @@ class Google:
         if units:
             params["units"] = units
 
-        if date_time and date_time_type:
-            params["arrival_time" if date_time_type == "arrive_by" else "departure_time"] = str(
-                date_time.timestamp()
-            )
+        if arrival_time and departure_time:
+            raise ValueError("Either departure_time or arrival_time")
+        elif departure_time:
+            params["departure_time"] = departure_time.timestamp()
+        elif arrival_time:
+            params["arrival_time"] = arrival_time.timestamp()
 
         if traffic_model:
             params["traffic_model"] = traffic_model
@@ -382,8 +384,8 @@ class Google:
         language: Optional[str] = None,
         region: Optional[str] = None,
         units: Optional[str] = None,
-        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
-        date_time_type: Optional[str] = None,
+        departure_time: Optional[datetime.datetime] = None,
+        arrival_time: Optional[datetime.datetime] = None,
         traffic_model: Optional[str] = None,
         transit_mode: Optional[Union[List[str], Tuple[str]]] = None,
         transit_routing_preference: Optional[str] = None,
@@ -405,8 +407,8 @@ class Google:
         :param region: Specifies the region code, specified as a ccTLD ("top-level domain") two-character value.
             See https://developers.google.com/maps/documentation/directions/intro#RegionBiasing.
         :param units: Specifies the unit system to use when displaying results. One of ['metric', 'imperial'].
-        :param date_time: Date and time of departure or arrival. Default value: current datetime.
-        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
+        :param departure_time: Departure date and time in the location's local timezone. Mutually exclusive with `arrival_time`.
+        :param arrival_time: Arrival date and time in the location's local timezone. Mutually exclusive with `departure_time`.
         :param traffic_model: Specifies the assumptions to use when calculating time in traffic. One of ['best_guess',
             'pessimistic', 'optimistic'. See https://developers.google.com/maps/documentation/directions/intro#optional-parameters
             for details.
@@ -458,10 +460,12 @@ class Google:
         if units:
             params["units"] = units
 
-        if date_time and date_time_type:
-            params["arrival_time" if date_time_type == "arrive_by" else "departure_time"] = str(
-                date_time.timestamp()
-            )
+        if arrival_time and departure_time:
+            raise ValueError("Either departure_time or arrival_time")
+        elif departure_time:
+            params["departure_time"] = departure_time.timestamp()
+        elif arrival_time:
+            params["arrival_time"] = arrival_time.timestamp()
 
         if traffic_model:
             params["traffic_model"] = traffic_model
