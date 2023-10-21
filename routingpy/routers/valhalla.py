@@ -43,7 +43,7 @@ class Valhalla:
         retry_over_query_limit: Optional[bool] = False,
         skip_api_error: Optional[bool] = None,
         client=Client,
-        **client_kwargs: dict
+        **client_kwargs: dict,
     ):
         """
         Initializes a Valhalla client.
@@ -82,7 +82,7 @@ class Valhalla:
             retry_timeout,
             retry_over_query_limit,
             skip_api_error,
-            **client_kwargs
+            **client_kwargs,
         )
 
     class Waypoint(object):
@@ -122,11 +122,11 @@ class Valhalla:
         directions_type: Optional[str] = None,
         avoid_locations: Optional[List[List[float]]] = None,
         avoid_polygons: Optional[List[List[List[float]]]] = None,
-        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
-        date_time_type: Optional[str] = "depart_at",
+        departure_time: Optional[datetime.datetime] = None,
+        arrival_time: Optional[datetime.datetime] = None,
         id: Optional[Union[str, int, float]] = None,
         dry_run: Optional[bool] = None,
-        **kwargs
+        **kwargs,
     ):
         """Get directions between an origin point and a destination point.
 
@@ -171,8 +171,8 @@ class Valhalla:
             efficient to use avoid_locations. Valhalla will close open rings (i.e. copy the first coordingate to the
             last position).
 
-        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
-        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
+        :param departure_time: Departure date and time in the location's local timezone. Mutually exclusive with `arrival_time`.
+        :param arrival_time: Arrival date and time in the location's local timezone. Mutually exclusive with `departure_time`.
 
         :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
 
@@ -195,10 +195,10 @@ class Valhalla:
             directions_type,
             avoid_locations,
             avoid_polygons,
-            date_time,
-            date_time_type,
+            departure_time,
+            arrival_time,
             id,
-            **kwargs
+            **kwargs,
         )
 
         return self.parse_direction_json(
@@ -218,10 +218,10 @@ class Valhalla:
         directions_type=None,
         avoid_locations=None,
         avoid_polygons=None,
-        date_time=None,
-        date_time_type=None,
+        departure_time=None,
+        arrival_time=None,
         id=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Builds and returns the router's route parameters. It's a separate function so that
@@ -255,10 +255,17 @@ class Valhalla:
         if avoid_polygons:
             params["avoid_polygons"] = avoid_polygons
 
-        if date_time and date_time_type:
+        if arrival_time and departure_time:
+            raise ValueError("Either departure_time or arrival_time")
+        elif departure_time:
             params["date_time"] = {
-                "type": 1 if date_time_type == "depart_at" else 2,
-                "value": date_time.strftime("%Y-%m-%dT%H:%M"),
+                "type": 1,
+                "value": departure_time.strftime("%Y-%m-%dT%H:%M"),
+            }
+        elif arrival_time:
+            params["date_time"] = {
+                "type": 2,
+                "value": arrival_time.strftime("%Y-%m-%dT%H:%M"),
             }
 
         if id:
@@ -320,12 +327,12 @@ class Valhalla:
         options: Optional[dict] = None,
         avoid_locations: Optional[List[List[float]]] = None,
         avoid_polygons: Optional[List[List[List[float]]]] = None,
-        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
-        date_time_type: Optional[str] = "depart_at",
+        departure_time: Optional[datetime.datetime] = None,
+        arrival_time: Optional[datetime.datetime] = None,
         show_locations: Optional[List[List[float]]] = None,
         id: Optional[str] = None,
         dry_run: Optional[bool] = None,
-        **kwargs
+        **kwargs,
     ):
         """Gets isochrones or equidistants for a range of time values around a given set of coordinates.
 
@@ -373,8 +380,8 @@ class Valhalla:
             efficient to use avoid_locations. Valhalla will close open rings (i.e. copy the first coordingate to the
             last position).
 
-        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
-        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
+        :param departure_time: Departure date and time in the location's local timezone. Mutually exclusive with `arrival_time`.
+        :param arrival_time: Arrival date and time in the location's local timezone. Mutually exclusive with `departure_time`.
 
         :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
 
@@ -397,11 +404,11 @@ class Valhalla:
             options,
             avoid_locations,
             avoid_polygons,
-            date_time,
-            date_time_type,
+            departure_time,
+            arrival_time,
             show_locations,
             id,
-            **kwargs
+            **kwargs,
         )
 
         return self.parse_isochrone_json(
@@ -425,11 +432,11 @@ class Valhalla:
         options=None,
         avoid_locations=None,
         avoid_polygons=None,
-        date_time: Optional[datetime.datetime] = None,
-        date_time_type=None,
+        departure_time=None,
+        arrival_time=None,
         show_locations=None,
         id=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Builds and returns the router's route parameters. It's a separate function so that
@@ -481,10 +488,17 @@ class Valhalla:
         if avoid_polygons:
             params["avoid_polygons"] = avoid_polygons
 
-        if date_time and date_time_type:
+        if arrival_time and departure_time:
+            raise ValueError("Either departure_time or arrival_time")
+        elif departure_time:
             params["date_time"] = {
-                "type": 1 if date_time_type == "depart_at" else 2,
-                "value": date_time.strftime("%Y-%m-%dT%H:%M"),
+                "type": 1,
+                "value": departure_time.strftime("%Y-%m-%dT%H:%M"),
+            }
+        elif arrival_time:
+            params["date_time"] = {
+                "type": 2,
+                "value": arrival_time.strftime("%Y-%m-%dT%H:%M"),
             }
 
         if show_locations is not None:
@@ -527,11 +541,11 @@ class Valhalla:
         avoid_locations: Optional[List[List[float]]] = None,
         avoid_polygons: Optional[List[List[List[float]]]] = None,
         units: Optional[str] = None,
-        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
-        date_time_type: Optional[str] = "depart_at",
+        departure_time: Optional[datetime.datetime] = None,
+        arrival_time: Optional[datetime.datetime] = None,
         id: Optional[str] = None,
         dry_run: Optional[bool] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Gets travel distance and time for a matrix of origins and destinations.
@@ -571,8 +585,8 @@ class Valhalla:
 
         :param units: Distance units for output. One of ['mi', 'km']. Default km.
 
-        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
-        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
+        :param departure_time: Departure date and time in the location's local timezone. Mutually exclusive with `arrival_time`.
+        :param arrival_time: Arrival date and time in the location's local timezone. Mutually exclusive with `departure_time`.
 
         :param id: Name your route request. If id is specified, the naming will be sent through to the response.
 
@@ -592,10 +606,10 @@ class Valhalla:
             avoid_locations,
             avoid_polygons,
             units,
-            date_time,
-            date_time_type,
+            departure_time,
+            arrival_time,
             id,
-            **kwargs
+            **kwargs,
         )
 
         return self.parse_matrix_json(
@@ -614,10 +628,10 @@ class Valhalla:
         avoid_locations=None,
         avoid_polygons=None,
         units=None,
-        date_time: Optional[datetime.datetime] = None,
-        date_time_type=None,
+        departure_time=None,
+        arrival_time=None,
         id=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Builds and returns the router's route parameters. It's a separate function so that
@@ -661,10 +675,17 @@ class Valhalla:
         if units:
             params["units"] = units
 
-        if date_time and date_time_type:
+        if arrival_time and departure_time:
+            raise ValueError("Either departure_time or arrival_time")
+        elif departure_time:
             params["date_time"] = {
-                "type": 1 if date_time_type == "depart_at" else 2,
-                "value": date_time.strftime("%Y-%m-%dT%H:%M"),
+                "type": 1,
+                "value": departure_time.strftime("%Y-%m-%dT%H:%M"),
+            }
+        elif arrival_time:
+            params["date_time"] = {
+                "type": 2,
+                "value": arrival_time.strftime("%Y-%m-%dT%H:%M"),
             }
 
         if id:
@@ -702,11 +723,11 @@ class Valhalla:
         expansion_properties: Optional[Sequence[str]] = None,
         interval_type: Optional[str] = "time",
         options: Optional[dict] = None,
-        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
-        date_time_type: Optional[str] = "depart_at",
+        departure_time: Optional[datetime.datetime] = None,
+        arrival_time: Optional[datetime.datetime] = None,
         id: Optional[str] = None,
         dry_run: Optional[bool] = None,
-        **kwargs
+        **kwargs,
     ) -> Expansions:
         """Gets the expansion tree for a range of time or distance values around a given coordinate.
 
@@ -731,8 +752,8 @@ class Valhalla:
             will be filled automatically. For more information, visit:
             https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md#costing-options
 
-        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
-        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
+        :param departure_time: Departure date and time in the location's local timezone. Mutually exclusive with `arrival_time`.
+        :param arrival_time: Arrival date and time in the location's local timezone. Mutually exclusive with `departure_time`.
 
         :param id: Name your route request. If id is specified, the naming will be sent thru to the response.
 
@@ -748,10 +769,10 @@ class Valhalla:
             expansion_properties,
             interval_type,
             options,
-            date_time,
-            date_time_type,
+            departure_time,
+            arrival_time,
             id,
-            **kwargs
+            **kwargs,
         )
         return self.parse_expansion_json(
             self.client._request("/expansion", post_params=params, dry_run=dry_run),
@@ -770,10 +791,10 @@ class Valhalla:
         expansion_properties=None,
         interval_type=None,
         options=None,
-        date_time: Optional[datetime.datetime] = None,
-        date_time_type=None,
+        departure_time=None,
+        arrival_time=None,
         id=None,
-        **kwargs
+        **kwargs,
     ):
         params = cls.get_isochrone_params(
             locations,
@@ -781,8 +802,8 @@ class Valhalla:
             intervals,
             interval_type,
             options=options,
-            date_time=date_time,
-            date_time_type=date_time_type,
+            departure_time=departure_time,
+            arrival_time=arrival_time,
             id=id,
         )
         params["action"] = "isochrone"
@@ -822,7 +843,7 @@ class Valhalla:
         filters_action: Optional[str] = None,
         options: Optional[dict] = None,
         dry_run: Optional[bool] = None,
-        **kwargs
+        **kwargs,
     ) -> MatchedResults:
         """
         Map-matches the input locations to form a route on the Valhalla base network and
@@ -870,7 +891,7 @@ class Valhalla:
         filters: Optional[List[str]] = None,
         filters_action: Optional[str] = None,
         options: Optional[dict] = None,
-        **kwargs
+        **kwargs,
     ):
         params = dict()
         if locations:
