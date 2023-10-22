@@ -21,6 +21,7 @@ from typing import List, Optional
 from .. import convert, utils
 from ..client_base import DEFAULT
 from ..client_default import Client
+from ..convert import lonlat_to_timezone
 from ..direction import Direction, Directions
 from ..isochrone import Isochrone, Isochrones
 from ..raster import Raster
@@ -81,8 +82,8 @@ class OpenTripPlannerV2:
         self,
         locations: List[List[float]],
         profile: Optional[str],
-        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
-        date_time_type: Optional[str] = "depart_at",
+        departure_time: Optional[datetime.datetime] = None,
+        arrival_time: Optional[datetime.datetime] = None,
         num_itineraries: Optional[int] = 3,
         dry_run: Optional[bool] = None,
     ):
@@ -93,8 +94,8 @@ class OpenTripPlannerV2:
             [[lon,lat], [lon,lat]].
         :param profile: Comma-separated list of transportation modes that the user is willing to
             use.
-        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
-        :param date_time_type: One of ["depart_at", "arrive_by"].. Default "depart_at".
+        :param departure_time: Departure date and time in the location's local timezone. Mutually exclusive with `arrival_time`.
+        :param arrival_time: Arrival date and time in the location's local timezone. Mutually exclusive with `departure_time`.
         :param num_itineraries: The maximum number of itineraries to return. Default value: 3.
         :param dry_run: Print URL and parameters without sending the request.
 
@@ -102,16 +103,17 @@ class OpenTripPlannerV2:
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
         transport_modes = [{"mode": mode} for mode in profile.strip().split(",")]
+        date_time = arrival_time if arrival_time else departure_time
         query = f"""
             {{
                 plan(
-                    date: "{ date_time.date().strftime("%Y-%m-%d") }"
-                    time: "{ date_time.time().strftime("%H:%M:%S") }"
+                    date: "{date_time.date().strftime("%Y-%m-%d")}"
+                    time: "{date_time.time().strftime("%H:%M:%S")}"
                     from: {{lat: {locations[0][1]}, lon: {locations[0][0]}}}
                     to: {{lat: {locations[1][1]}, lon: {locations[1][0]}}}
                     transportModes: {str(transport_modes).replace("'", "")}
                     numItineraries: {num_itineraries}
-                    arriveBy: {"true" if date_time_type == "arrive_by" else "false"}
+                    arriveBy: {"true" if date_time == arrival_time else "false"}
                 ) {{
                     itineraries {{
                         duration
@@ -145,8 +147,12 @@ class OpenTripPlannerV2:
         directions = []
         for itinerary in response["data"]["plan"]["itineraries"]:
             distance, geometry = OpenTripPlannerV2._parse_legs(itinerary["legs"])
-            departure_datetime = convert.timestamp_to_tz_datetime(itinerary["startTime"], "UTC")
-            arrival_datetime = convert.timestamp_to_tz_datetime(itinerary["endTime"], "UTC")
+            departure_datetime = convert.timestamp_to_tz_datetime(
+                itinerary["startTime"], lonlat_to_timezone(*geometry[0], *geometry[-1])
+            )
+            arrival_datetime = convert.timestamp_to_tz_datetime(
+                itinerary["endTime"], lonlat_to_timezone(*geometry[0], *geometry[-1])
+            )
             directions.append(
                 Direction(
                     geometry=geometry,
@@ -181,8 +187,8 @@ class OpenTripPlannerV2:
         profile: str,
         intervals: List[int],
         interval_type: Optional[str] = None,
-        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
-        date_time_type: Optional[str] = None,
+        departure_time: Optional[datetime.datetime] = None,
+        arrival_time: Optional[datetime.datetime] = None,
         dry_run: Optional[bool] = None,
     ):
         """Gets isochrones for a range of time values around a given set of coordinates.
@@ -191,18 +197,19 @@ class OpenTripPlannerV2:
         :param profile: Comma-separated list of transportation modes that the user is willing to use.
         :param intervals: Time ranges to calculate isochrones for. In seconds or meters, depending on `interval_type`.
         :param interval_type: Only for compatibility. This isn't used, only 'time' is allowed.
-        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
-        :param date_time_type: Only for compatibility. This isn't used, only "depart_at" isochrones are allowed.
+        :param departure_time: Departure date and time in the location's local timezone. Mutually exclusive with `arrival_time`.
+        :param arrival_time: Arrival date and time in the location's local timezone. Mutually exclusive with `departure_time`.
         :param dry_run: Print URL and parameters without sending the request.
 
         :returns: An isochrone with the specified range.
         :rtype: :class:`routingpy.isochrone.Isochrones`
         """
+        date_time = arrival_time if arrival_time else departure_time
         params = [
             ("location", convert.delimit_list(reversed(locations), ",")),
             ("time", date_time.isoformat()),
             ("modes", profile),
-            ("arriveBy", "true" if date_time_type == "arrive_by" else "false"),
+            ("arriveBy", "true" if date_time == arrival_time else "false"),
         ]
         for cutoff in intervals:
             params.append(("cutoff", convert.seconds_to_iso8601(cutoff)))
@@ -235,8 +242,8 @@ class OpenTripPlannerV2:
         self,
         locations: List[float],
         profile: Optional[str],
-        date_time: Optional[datetime.datetime] = datetime.datetime.now(datetime.timezone.utc),
-        date_time_type: Optional[str] = None,
+        departure_time: Optional[datetime.datetime] = None,
+        arrival_time: Optional[datetime.datetime] = None,
         cutoff: Optional[int] = 3600,
         dry_run: Optional[bool] = None,
     ):
@@ -247,19 +254,20 @@ class OpenTripPlannerV2:
 
         :param profile: Comma-separated list of transportation modes that the user is willing to
             use.
-        :param date_time: Departure date and time (timezone aware). The default value is now (UTC).
-        :param date_time_type: Only for compatibility. This isn't used, only "depart_at" isochrones are allowed.
+        :param departure_time: Departure date and time in the location's local timezone. Mutually exclusive with `arrival_time`.
+        :param arrival_time: Arrival date and time in the location's local timezone. Mutually exclusive with `departure_time`.
         :param cutoff: The maximum travel duration in seconds. The default value is one hour.
         :param dry_run: Print URL and parameters without sending the request.
 
         :returns: A raster with the specified range.
         :rtype: :class:`routingpy.raster.Raster`
         """
+        date_time = arrival_time if arrival_time else departure_time
         params = [
             ("location", convert.delimit_list(reversed(locations), ",")),
             ("time", date_time.isoformat()),
             ("modes", profile),
-            ("arriveBy", "true" if date_time_type == "arrive_by" else "false"),
+            ("arriveBy", "true" if date_time == arrival_time else "false"),
             ("cutoff", convert.seconds_to_iso8601(cutoff)),
         ]
         response = self.client._request(
