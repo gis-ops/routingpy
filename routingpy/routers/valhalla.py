@@ -438,7 +438,7 @@ class Valhalla:
             "contours": contours,
         }
 
-        if options:
+        if options or preference:
             params["costing_options"] = dict()
             profile = profile if profile != "multimodal" else "transit"
             params["costing_options"][profile] = dict()
@@ -619,7 +619,7 @@ class Valhalla:
                 dest_coords = [dest_coords]
         params["targets"] = dest_coords
 
-        if options:
+        if options or preference:
             params["costing_options"] = dict()
             profile = profile if profile != "multimodal" else "transit"
             params["costing_options"][profile] = dict()
