@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## **Unreleased**
 
+### Fixed
+
+- Fixes taking into account the `preference` parameter when calculating isochrones and matrix with Valhalla ([#120](https://github.com/gis-ops/routingpy/issues/120))
+
 ## [v1.3.0](https://pypi.org/project/routingpy/1.3.0/)
 
 ### Added

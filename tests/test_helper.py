@@ -1077,7 +1077,7 @@ ENDPOINTS_QUERIES = {
             },
             "profile": "auto",
             "id": "wacko",
-            "preference": "fastest",
+            "preference": "shortest",
             "intervals": [600, 1200],
             "colors": ["ff0000", "00FF00"],
             "polygons": True,
@@ -1097,6 +1097,7 @@ ENDPOINTS_QUERIES = {
             "profile": "auto",
             "units": "mi",
             "id": "wacko",
+            "preference": "shortest",
         },
         "expansion": {
             "expansion_properties": ["distances", "durations", "costs"],
@@ -1210,7 +1211,12 @@ ENDPOINTS_EXPECTED = {
             "locations": [{"lat": PARAM_POINT[1], "lon": PARAM_POINT[0]}],
             "costing": "auto",
             "costing_options": {
-                "auto": {"maneuver_penalty": 50, "toll_booth_cost": 50, "country_crossing_penalty": 50}
+                "auto": {
+                    "maneuver_penalty": 50,
+                    "toll_booth_cost": 50,
+                    "country_crossing_penalty": 50,
+                    "shortest": True,
+                }
             },
             "contours": [{"time": 10, "color": "ff0000"}, {"time": 20, "color": "00FF00"}],
             "avoid_locations": [{"lon": 8.34234, "lat": 48.23424}],
@@ -1233,7 +1239,12 @@ ENDPOINTS_EXPECTED = {
             ],
             "costing": "auto",
             "costing_options": {
-                "auto": {"maneuver_penalty": 50, "toll_booth_cost": 50, "country_crossing_penalty": 50}
+                "auto": {
+                    "maneuver_penalty": 50,
+                    "toll_booth_cost": 50,
+                    "country_crossing_penalty": 50,
+                    "shortest": True,
+                }
             },
             "avoid_locations": [{"lon": 8.34234, "lat": 48.23424}],
             "id": "wacko",
