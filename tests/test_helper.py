@@ -421,6 +421,7 @@ ENDPOINTS_RESPONSES = {
                 {
                     "elements": [
                         {
+                            "status": "OK",
                             "distance": {"text": "225 mi", "value": 361957},
                             "duration": {"text": "3 hours 50 mins", "value": 13813},
                         }
