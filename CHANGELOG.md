@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - Fixes taking into account the `preference` parameter when calculating isochrones and matrix with Valhalla ([#120](https://github.com/gis-ops/routingpy/issues/120))
+- Google's matrix checks each response element's status code [#122](https://github.com/gis-ops/routingpy/pull/122)
 
 ## [v1.3.0](https://pypi.org/project/routingpy/1.3.0/)
 
