@@ -21,7 +21,6 @@ from typing import List, Optional, Sequence, Union  # noqa: F401
 from .. import utils
 from ..client_base import DEFAULT
 from ..client_default import Client
-from ..convert import lonlat_to_timezone, timestamp_to_tz_datetime
 from ..direction import Direction
 from ..expansion import Edge, Expansions
 from ..isochrone import Isochrone, Isochrones
@@ -296,13 +295,11 @@ class Valhalla:
         # TODO: maybe we can get rid of that in the future, in case we'll have timezone aware strings in the response:
         #   https://github.com/valhalla/valhalla/issues/4241
         if origin.get("date_time"):
-            departure_time = timestamp_to_tz_datetime(
-                origin["date_time"], lonlat_to_timezone(origin["lon"], origin["lat"])
+            departure_time: datetime.datetime = datetime.datetime.strptime(
+                origin["date_time"], "%Y-%m-%dT%H:%M"
             )
         if destination.get("date_time"):
-            arrival_time = timestamp_to_tz_datetime(
-                destination["date_time"], lonlat_to_timezone(destination["lon"], destination["lat"])
-            )
+            arrival_time = datetime.datetime.strptime(destination["date_time"], "%Y-%m-%dT%H:%M")
 
         return Direction(
             geometry=geometry,
@@ -695,6 +692,7 @@ class Valhalla:
 
     @staticmethod
     def parse_matrix_json(response, units):
+        # TODO: matrix supports time now too
         if response is None:  # pragma: no cover
             return Matrix()
 

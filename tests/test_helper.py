@@ -31,10 +31,16 @@ PARAM_GEOJSON_POINT = {"type": "Point", "coordinates": PARAM_POINT}
 PARAM_GEOJSON_LINE = {"type": "LineString", "coordinates": PARAM_LINE}
 PARAM_GEOJSON_POLY = {"type": "Polygon", "coordinates": PARAM_POLY}
 
+
 ENDPOINTS_RESPONSES = {
     "valhalla": {
         "directions": {
             "trip": {
+                "locations": [
+                    {"date_time": "2024-01-01T00:05"},
+                    {"date_time": "2024-01-01T00:10"},
+                    {"date_time": "2024-01-01T00:15"},
+                ],
                 "legs": [
                     {
                         "shape": "}wpulAvkxblCtJpGu}@hrCkAvDsAdEm@xBkAvDeK`\\ssAthE{iAjpDyiAlpD",
@@ -44,7 +50,7 @@ ENDPOINTS_RESPONSES = {
                         "shape": "}wpulAvkxblCtJpGu}@hrCkAvDsAdEm@xBkAvDeK`\\ssAthE{iAjpD",
                         "summary": {"length": 50, "time": 50},
                     },
-                ]
+                ],
             }
         },
         "isochrones": {
@@ -659,12 +665,12 @@ ENDPOINTS_RESPONSES = {
                     "itineraries": [
                         {
                             "duration": 178,
-                            "startTime": 1691053917000,
-                            "endTime": 1691054095000,
+                            "startTime": 1704063600,
+                            "endTime": 1704064500,
                             "legs": [
                                 {
-                                    "startTime": 1691053917000,
-                                    "endTime": 1691054095000,
+                                    "startTime": 1704063600,
+                                    "endTime": 1704064500,
                                     "duration": 178.0,
                                     "distance": 1073.17,
                                     "mode": "CAR",
@@ -1056,7 +1062,7 @@ ENDPOINTS_QUERIES = {
             "language": "de",
             "region": "de",
             "units": "metrics",
-            "arrival_time": 1567512000,
+            "arrival_time": datetime.datetime.strptime("2024-01-01 00:00", "%Y-%m-%d %H:%M"),
             "traffic_model": "optimistic",
             "transit_mode": ["bus", "rail"],
             "transit_routing_preference": "less_walking",
@@ -1064,7 +1070,7 @@ ENDPOINTS_QUERIES = {
         "directions_transit": {
             "profile": "transit",
             "locations": PARAM_LINE,
-            "arrival_time": 1691064000,
+            "arrival_time": datetime.datetime.strptime("2024-01-01 00:00", "%Y-%m-%d %H:%M"),
         },
         "matrix": {
             "profile": "driving",
@@ -1073,7 +1079,7 @@ ENDPOINTS_QUERIES = {
             "language": "de",
             "region": "de",
             "units": "metrics",
-            "arrival_time": 1567512000,
+            "arrival_time": datetime.datetime.strptime("2024-01-01 00:00", "%Y-%m-%d %H:%M"),
             "traffic_model": "optimistic",
             "transit_mode": ["bus", "rail"],
             "transit_routing_preference": "less_walking",
@@ -1295,7 +1301,7 @@ ENDPOINTS_QUERIES = {
             "directions_type": "none",
             "avoid_locations": PARAM_POINT,
             "avoid_polygons": PARAM_POLY,
-            "date_time": {"type": 1, "value": "2021-03-03T08:06"},
+            "departure_time": datetime.datetime.strptime("2024-01-01 00:00", "%Y-%m-%d %H:%M"),
             "language": "pirate",
             "instructions": False,
             "id": "wacko",
@@ -1317,7 +1323,7 @@ ENDPOINTS_QUERIES = {
             "avoid_locations": PARAM_POINT,
             "generalize": 0.5,
             "denoise": 0.1,
-            "date_time": {"type": 1, "value": "2021-03-03T08:06"},
+            "arrival_time": datetime.datetime.strptime("2024-01-01 00:00", "%Y-%m-%d %H:%M"),
         },
         "matrix": {
             "locations": PARAM_LINE_MULTI,
@@ -1331,6 +1337,7 @@ ENDPOINTS_QUERIES = {
             "units": "mi",
             "id": "wacko",
             "preference": "shortest",
+            "departure_time": datetime.datetime.strptime("2024-01-01 00:00", "%Y-%m-%d %H:%M"),
         },
         "expansion": {
             "expansion_properties": ["distances", "durations", "costs"],
@@ -1356,21 +1363,23 @@ ENDPOINTS_QUERIES = {
             "locations": PARAM_LINE,
             "profile": "CAR",
             "num_itineraries": 1,
+            "departure_time": datetime.datetime.strptime("2024-01-01 00:00", "%Y-%m-%d %H:%M"),
         },
         "directions_alternative": {
             "locations": PARAM_LINE,
             "profile": "CAR",
             "num_itineraries": 3,
+            "arrival_time": datetime.datetime.strptime("2024-01-01 00:00", "%Y-%m-%d %H:%M"),
         },
         "isochrones": {
             "locations": PARAM_POINT,
-            "time": datetime.datetime.fromisoformat("2023-07-07T16:00:00+00:00"),
+            "departure_time": datetime.datetime.strptime("2024-01-01 00:00", "%Y-%m-%d %H:%M"),
             "profile": "WALK,TRANSIT",
-            "cutoffs": [600, 1200],
+            "intervals": [600, 1200],
         },
         "raster": {
             "locations": PARAM_POINT,
-            "time": datetime.datetime.fromisoformat("2023-07-07T16:00:00+00:00"),
+            "departure_time": datetime.datetime.strptime("2024-01-01 00:00", "%Y-%m-%d %H:%M"),
             "profile": "WALK,TRANSIT",
             "cutoff": 1200,
         },
@@ -1435,7 +1444,7 @@ ENDPOINTS_EXPECTED = {
             "directions_options": {"units": "mi", "language": "pirate", "directions_type": "none"},
             "avoid_locations": [{"lon": 8.34234, "lat": 48.23424}],
             "avoid_polygons": PARAM_POLY,
-            "date_time": {"type": 1, "value": "2021-03-03T08:06"},
+            "date_time": {"type": 1, "value": "2024-01-01T00:00"},
             "id": "wacko",
             "narrative": False,
             "somerandom": "option",
@@ -1451,9 +1460,9 @@ ENDPOINTS_EXPECTED = {
                     "shortest": True,
                 }
             },
-            "contours": [{"time": 10, "color": "ff0000"}, {"time": 20, "color": "00FF00"}],
+            "contours": [{"time": 10.0, "color": "ff0000"}, {"time": 20.0, "color": "00FF00"}],
             "avoid_locations": [{"lon": 8.34234, "lat": 48.23424}],
-            "date_time": {"type": 1, "value": "2021-03-03T08:06"},
+            "date_time": {"type": 2, "value": "2024-01-01T00:00"},
             "id": "wacko",
             "denoise": 0.1,
             "polygons": True,
@@ -1481,6 +1490,7 @@ ENDPOINTS_EXPECTED = {
             },
             "avoid_locations": [{"lon": 8.34234, "lat": 48.23424}],
             "id": "wacko",
+            "date_time": {"type": 1, "value": "2024-01-01T00:00"},
             "units": "mi",
         },
         "expansion": {

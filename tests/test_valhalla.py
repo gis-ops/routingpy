@@ -15,7 +15,7 @@
 # the License.
 #
 """Tests for the Valhalla module."""
-
+import datetime
 import json
 from copy import deepcopy
 
@@ -65,6 +65,18 @@ class ValhallaTest(_test.TestCase):
         self.assertIsInstance(routes.duration, int)
         self.assertIsInstance(routes.geometry, list)
         self.assertIsInstance(routes.raw, dict)
+
+        expected_dt = datetime.datetime.strptime(
+            ENDPOINTS_RESPONSES[self.name]["directions"]["trip"]["locations"][0]["date_time"],
+            "%Y-%m-%dT%H:%M",
+        )
+        self.assertEqual(routes.departure_datetime, expected_dt)
+
+        expected_dt = datetime.datetime.strptime(
+            ENDPOINTS_RESPONSES[self.name]["directions"]["trip"]["locations"][-1]["date_time"],
+            "%Y-%m-%dT%H:%M",
+        )
+        self.assertEqual(routes.arrival_datetime, expected_dt)
 
     @responses.activate
     def test_waypoint_generator(self):

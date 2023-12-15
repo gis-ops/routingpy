@@ -134,7 +134,8 @@ class Direction(object):
     @property
     def departure_datetime(self) -> Optional[datetime.datetime]:
         """
-        The departure date and time (timezone aware) of the direction.
+        The departure date and time of the direction. Only timezone aware
+        for the Google provider for now.
 
         :rtype: datetime.datetime or None
         """
@@ -143,7 +144,8 @@ class Direction(object):
     @property
     def arrival_datetime(self) -> Optional[datetime.datetime]:
         """
-        The arrival date and time (timezone aware) of the direction.
+        The arrival date and time of the direction. Only timezone aware
+        for the Google provider for now.
 
         :rtype: datetime.datetime or None
         """

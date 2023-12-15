@@ -284,9 +284,9 @@ class Google:
         if arrival_time and departure_time:
             raise ValueError("Either departure_time or arrival_time")
         elif departure_time:
-            params["departure_time"] = departure_time.timestamp()
+            params["departure_time"] = int(departure_time.timestamp())
         elif arrival_time:
-            params["arrival_time"] = arrival_time.timestamp()
+            params["arrival_time"] = int(arrival_time.timestamp())
 
         if traffic_model:
             params["traffic_model"] = traffic_model
@@ -463,9 +463,9 @@ class Google:
         if arrival_time and departure_time:
             raise ValueError("Either departure_time or arrival_time")
         elif departure_time:
-            params["departure_time"] = departure_time.timestamp()
+            params["departure_time"] = int(departure_time.timestamp())
         elif arrival_time:
-            params["arrival_time"] = arrival_time.timestamp()
+            params["arrival_time"] = int(arrival_time.timestamp())
 
         if traffic_model:
             params["traffic_model"] = traffic_model

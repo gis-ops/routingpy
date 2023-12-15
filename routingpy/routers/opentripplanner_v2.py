@@ -103,7 +103,16 @@ class OpenTripPlannerV2:
         :rtype: :class:`routingpy.direction.Direction` or :class:`routingpy.direction.Directions`
         """
         transport_modes = [{"mode": mode} for mode in profile.strip().split(",")]
-        date_time = arrival_time if arrival_time else departure_time
+
+        if arrival_time and departure_time:
+            raise ValueError("Either departure_time or arrival_time")
+        elif arrival_time:
+            date_time = arrival_time
+        elif departure_time:
+            date_time = departure_time
+        else:
+            raise ValueError("Need to specify either departure_time or arrival_time")
+
         query = f"""
             {{
                 plan(
@@ -148,10 +157,10 @@ class OpenTripPlannerV2:
         for itinerary in response["data"]["plan"]["itineraries"]:
             distance, geometry = OpenTripPlannerV2._parse_legs(itinerary["legs"])
             departure_datetime = convert.timestamp_to_tz_datetime(
-                itinerary["startTime"], lonlat_to_timezone(*geometry[0], *geometry[-1])
+                itinerary["startTime"], lonlat_to_timezone(geometry[0][0], geometry[0][1])
             )
             arrival_datetime = convert.timestamp_to_tz_datetime(
-                itinerary["endTime"], lonlat_to_timezone(*geometry[0], *geometry[-1])
+                itinerary["endTime"], lonlat_to_timezone(geometry[-1][0], geometry[-1][1])
             )
             directions.append(
                 Direction(
@@ -175,7 +184,7 @@ class OpenTripPlannerV2:
         distance = 0
         geometry = []
         for leg in legs:
-            points = utils.decode_polyline5(leg["legGeometry"]["points"])
+            points = utils.decode_polyline5(leg["legGeometry"]["points"], order="lnglat")
             geometry.extend(list(reversed(points)))
             distance += int(leg["distance"])
 
@@ -198,18 +207,20 @@ class OpenTripPlannerV2:
         :param intervals: Time ranges to calculate isochrones for. In seconds or meters, depending on `interval_type`.
         :param interval_type: Only for compatibility. This isn't used, only 'time' is allowed.
         :param departure_time: Departure date and time in the location's local timezone. Mutually exclusive with `arrival_time`.
-        :param arrival_time: Arrival date and time in the location's local timezone. Mutually exclusive with `departure_time`.
+        :param arrival_time: INVALID FOR OTP.
         :param dry_run: Print URL and parameters without sending the request.
 
         :returns: An isochrone with the specified range.
         :rtype: :class:`routingpy.isochrone.Isochrones`
         """
-        date_time = arrival_time if arrival_time else departure_time
+        if arrival_time:
+            raise ValueError("arrival_time is not valid for OTP")
+        elif not departure_time:
+            raise ValueError("departure_time must be specified for OTP")
         params = [
             ("location", convert.delimit_list(reversed(locations), ",")),
-            ("time", date_time.isoformat()),
+            ("time", departure_time.isoformat()),
             ("modes", profile),
-            ("arriveBy", "true" if date_time == arrival_time else "false"),
         ]
         for cutoff in intervals:
             params.append(("cutoff", convert.seconds_to_iso8601(cutoff)))
@@ -267,7 +278,6 @@ class OpenTripPlannerV2:
             ("location", convert.delimit_list(reversed(locations), ",")),
             ("time", date_time.isoformat()),
             ("modes", profile),
-            ("arriveBy", "true" if date_time == arrival_time else "false"),
             ("cutoff", convert.seconds_to_iso8601(cutoff)),
         ]
         response = self.client._request(

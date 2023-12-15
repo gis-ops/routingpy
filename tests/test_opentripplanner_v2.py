@@ -18,6 +18,8 @@
 
 import urllib.parse
 from copy import deepcopy
+from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import responses
 
@@ -56,9 +58,15 @@ class OpenTripPlannerV2Test(_test.TestCase):
         self.assertIsInstance(direction.duration, int)
         self.assertIsInstance(direction.geometry, list)
         self.assertIsInstance(direction.departure_datetime, datetime.datetime)
-        self.assertEqual(direction.departure_datetime.tzinfo, datetime.timezone.utc)
+        self.assertEqual(
+            direction.departure_datetime.tzinfo.utcoffset(direction.departure_datetime),
+            ZoneInfo("Europe/Berlin").utcoffset(direction.departure_datetime),
+        )
         self.assertIsInstance(direction.arrival_datetime, datetime.datetime)
-        self.assertEqual(direction.arrival_datetime.tzinfo, datetime.timezone.utc)
+        self.assertEqual(
+            direction.arrival_datetime.tzinfo.utcoffset(direction.arrival_datetime),
+            ZoneInfo("Europe/Berlin").utcoffset(direction.arrival_datetime),
+        )
 
     @responses.activate
     def test_directions_alternative(self):
@@ -85,9 +93,16 @@ class OpenTripPlannerV2Test(_test.TestCase):
             self.assertIsInstance(direction.geometry, list)
             self.assertIsInstance(direction.raw, dict)
             self.assertIsInstance(direction.departure_datetime, datetime.datetime)
-            self.assertEqual(direction.departure_datetime.tzinfo, datetime.timezone.utc)
+            self.assertEqual(
+                direction.departure_datetime.tzinfo.utcoffset(direction.departure_datetime),
+                ZoneInfo("Europe/Berlin").utcoffset(direction.departure_datetime),
+            )
             self.assertIsInstance(direction.arrival_datetime, datetime.datetime)
-            self.assertEqual(direction.arrival_datetime.tzinfo, datetime.timezone.utc)
+
+            self.assertEqual(
+                direction.arrival_datetime.tzinfo.utcoffset(direction.arrival_datetime),
+                ZoneInfo("Europe/Berlin").utcoffset(direction.arrival_datetime),
+            )
 
     @responses.activate
     def test_isochrones(self):
@@ -95,11 +110,10 @@ class OpenTripPlannerV2Test(_test.TestCase):
         url = "http://localhost:8080/otp/traveltime/isochrone"
         params = [
             ("location", convert.delimit_list(reversed(query["locations"]), ",")),
-            ("time", query["time"].isoformat()),
+            ("time", query["departure_time"].isoformat()),
             ("modes", query["profile"]),
-            ("arriveBy", "false"),
         ]
-        for cutoff in query["cutoffs"]:
+        for cutoff in query["intervals"]:
             params.append(("cutoff", convert.seconds_to_iso8601(cutoff)))
 
         responses.add(
@@ -126,12 +140,11 @@ class OpenTripPlannerV2Test(_test.TestCase):
         url = "http://localhost:8080/otp/traveltime/surface"
         params = [
             ("location", convert.delimit_list(reversed(query["locations"]), ",")),
-            ("time", query["time"].isoformat()),
+            ("time", query["departure_time"].isoformat()),
             ("modes", query["profile"]),
-            ("arriveBy", "false"),
             ("cutoff", convert.seconds_to_iso8601(query["cutoff"])),
         ]
-        with open("tests/raster_example.tiff", "rb") as raster_file:
+        with Path(__file__).parent.joinpath("raster_example.tiff").open("rb") as raster_file:
             image = raster_file.read()
             responses.add(
                 responses.GET,
