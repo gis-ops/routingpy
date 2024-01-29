@@ -170,13 +170,13 @@ the ``raw`` attribute:
 
 .. code:: python
 
-    from routingpy import MapboxValhalla
+    from routingpy import Valhalla
     from pprint import pprint
 
     # Some locations in Berlin
     coords = [[13.413706, 52.490202], [13.421838, 52.514105],
               [13.453649, 52.507987], [13.401947, 52.543373]]
-    client = MapboxValhalla(api_key='mapbox_key')
+    client = Valhalla()
 
     route = client.directions(locations=coords, profile='pedestrian')
     isochrones = client.isochrones(locations=coords[0], profile='pedestrian', intervals=[600, 1200])
