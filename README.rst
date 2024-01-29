@@ -23,7 +23,7 @@ or **time-distance matrices**.
 
 **routingpy** currently includes support for the following services:
 
--  `Mapbox, either Valhalla or OSRM`_
+-  `Mapbox, OSRM`_
 -  `Openrouteservice`_
 -  `Here Maps`_
 -  `Google Maps`_
@@ -170,13 +170,13 @@ the ``raw`` attribute:
 
 .. code:: python
 
-    from routingpy import MapboxValhalla
+    from routingpy import Valhalla
     from pprint import pprint
 
     # Some locations in Berlin
     coords = [[13.413706, 52.490202], [13.421838, 52.514105],
               [13.453649, 52.507987], [13.401947, 52.543373]]
-    client = MapboxValhalla(api_key='mapbox_key')
+    client = Valhalla()
 
     route = client.directions(locations=coords, profile='pedestrian')
     isochrones = client.isochrones(locations=coords[0], profile='pedestrian', intervals=[600, 1200])
@@ -288,7 +288,7 @@ All these parameters, and more, can optionally be **globally set** for all route
     options.default_skip_api_error = True
 
 
-.. _Mapbox, either Valhalla or OSRM: https://docs.mapbox.com/api/navigation
+.. _Mapbox, OSRM: https://docs.mapbox.com/api/navigation
 .. _Openrouteservice: https://openrouteservice.org/dev/#/api-docs
 .. _Here Maps: https://developer.here.com/documentation
 .. _Google Maps: https://developers.google.com/maps/documentation
