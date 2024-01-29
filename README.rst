@@ -23,7 +23,7 @@ or **time-distance matrices**.
 
 **routingpy** currently includes support for the following services:
 
--  `Mapbox, either Valhalla or OSRM`_
+-  `Mapbox, OSRM`_
 -  `Openrouteservice`_
 -  `Here Maps`_
 -  `Google Maps`_
@@ -288,7 +288,7 @@ All these parameters, and more, can optionally be **globally set** for all route
     options.default_skip_api_error = True
 
 
-.. _Mapbox, either Valhalla or OSRM: https://docs.mapbox.com/api/navigation
+.. _Mapbox, OSRM: https://docs.mapbox.com/api/navigation
 .. _Openrouteservice: https://openrouteservice.org/dev/#/api-docs
 .. _Here Maps: https://developer.here.com/documentation
 .. _Google Maps: https://developers.google.com/maps/documentation
