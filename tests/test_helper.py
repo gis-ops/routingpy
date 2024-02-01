@@ -1181,6 +1181,27 @@ ENDPOINTS_QUERIES = {
             "units": "mi",
         },
     },
+    "arcgis":{
+        "directions":{
+            "locations": PARAM_LINE,
+            "f": "json"
+        }
+    },
+    "bing":{
+        "directions":{
+            "locations": PARAM_LINE
+        }
+    },
+    "mapquest":{
+        "directions":{
+            "locations": PARAM_LINE
+        }
+    },
+    "tomtom":{
+        "directions":{
+            "locations": PARAM_LINE
+        }
+    }
 }
 
 ENDPOINTS_EXPECTED = {

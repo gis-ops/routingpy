@@ -115,6 +115,38 @@ Valhalla
 
    .. automethod:: __init__
 
+ArcGIS
+------
+
+.. autoclass:: routingpy.routers.ArcGIS
+   :members:
+
+   .. automethod:: __init__
+
+Bing
+------
+
+.. autoclass:: routingpy.routers.Bing
+   :members:
+
+   .. automethod:: __init__
+
+MapQuest
+------
+
+.. autoclass:: routingpy.routers.MapQuest
+   :members:
+
+   .. automethod:: __init__
+
+TomTom
+------
+
+.. autoclass:: routingpy.routers.TomTom
+   :members:
+
+   .. automethod:: __init__
+
 Client
 ~~~~~~~
 .. autoclass:: routingpy.client_default.Client

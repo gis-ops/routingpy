@@ -24,6 +24,10 @@ from .openrouteservice import ORS
 from .opentripplanner_v2 import OpenTripPlannerV2
 from .osrm import OSRM
 from .valhalla import Valhalla
+from .arcgis import ArcGIS
+from .bing import Bing
+from .mapquest import MapQuest
+from .tomtom import TomTom
 
 # Provide synonyms
 _SERVICE_TO_ROUTER = {
@@ -43,6 +47,11 @@ _SERVICE_TO_ROUTER = {
     "otp": OpenTripPlannerV2,
     "otp_v2": OpenTripPlannerV2,
     "valhalla": Valhalla,
+    "arcgis": ArcGIS,
+    "bing": Bing,
+    "bingmaps": Bing,
+    "mapquest": MapQuest,
+    "tomtom": TomTom
 }
 
 
