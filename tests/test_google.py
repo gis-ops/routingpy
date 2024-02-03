@@ -47,7 +47,7 @@ class GoogleTest(_test.TestCase):
             content_type="application/json",
         )
 
-        routes = self.client.directions(**query)
+        directions = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "https://maps.googleapis.com/maps/api/directions/json?alternatives=true&arrival_time=1567512000&"
@@ -57,12 +57,44 @@ class GoogleTest(_test.TestCase):
             responses.calls[0].request.url,
         )
 
-        self.assertIsInstance(routes, Directions)
-        self.assertIsInstance(routes[0], Direction)
-        self.assertIsInstance(routes[0].geometry, list)
-        self.assertIsInstance(routes[0].distance, int)
-        self.assertIsInstance(routes[0].duration, int)
-        self.assertIsInstance(routes[0].raw, dict)
+        self.assertIsInstance(directions, Directions)
+        self.assertIsInstance(directions[0], Direction)
+        self.assertIsInstance(directions[0].geometry, list)
+        self.assertIsInstance(directions[0].distance, int)
+        self.assertIsInstance(directions[0].duration, int)
+        self.assertIsInstance(directions[0].raw, dict)
+
+    @responses.activate
+    def test_directions_transit(self):
+        query = ENDPOINTS_QUERIES[self.name]["directions_transit"]
+
+        responses.add(
+            responses.GET,
+            "https://maps.googleapis.com/maps/api/directions/json",
+            status=200,
+            json=ENDPOINTS_RESPONSES[self.name]["directions_transit"],
+            content_type="application/json",
+        )
+
+        direction = self.client.directions(**query)
+        self.assertEqual(1, len(responses.calls))
+        self.assertURLEqual(
+            "https://maps.googleapis.com/maps/api/directions/json?arrival_time=1691064000&"
+            "destination=49.415776%2C8.680916&key=sample_key&mode=transit&"
+            "origin=49.420577%2C8.688641",
+            responses.calls[0].request.url,
+        )
+
+        self.assertIsInstance(direction, Direction)
+        self.assertIsInstance(direction, Direction)
+        self.assertIsInstance(direction.geometry, list)
+        self.assertIsInstance(direction.distance, int)
+        self.assertIsInstance(direction.duration, int)
+        self.assertIsInstance(direction.departure_datetime, datetime.datetime)
+        self.assertEqual(direction.departure_datetime.tzinfo.zone, "Europe/Berlin")
+        self.assertIsInstance(direction.arrival_datetime, datetime.datetime)
+        self.assertEqual(direction.arrival_datetime.tzinfo.zone, "Europe/Berlin")
+        self.assertIsInstance(direction.raw, dict)
 
     @responses.activate
     def test_full_directions_no_alternatives(self):
@@ -77,7 +109,7 @@ class GoogleTest(_test.TestCase):
             content_type="application/json",
         )
 
-        routes = self.client.directions(**query)
+        direction = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "https://maps.googleapis.com/maps/api/directions/json?alternatives=false&arrival_time=1567512000&"
@@ -87,11 +119,11 @@ class GoogleTest(_test.TestCase):
             responses.calls[0].request.url,
         )
 
-        self.assertIsInstance(routes, Direction)
-        self.assertIsInstance(routes.geometry, list)
-        self.assertIsInstance(routes.duration, int)
-        self.assertIsInstance(routes.distance, int)
-        self.assertIsInstance(routes.raw, dict)
+        self.assertIsInstance(direction, Direction)
+        self.assertIsInstance(direction.geometry, list)
+        self.assertIsInstance(direction.duration, int)
+        self.assertIsInstance(direction.distance, int)
+        self.assertIsInstance(direction.raw, dict)
 
     @responses.activate
     def test_waypoint_generator_directions(self):
@@ -240,11 +272,11 @@ class GoogleTest(_test.TestCase):
 
         for alternatives in [True, False]:
             with self.assertRaises(RouterApiError):
-                self.client.parse_direction_json(
+                self.client._parse_direction_json(
                     error_responses["ZERO_RESULTS"], alternatives=alternatives
                 )
 
             with self.assertRaises(RouterServerError):
-                self.client.parse_direction_json(
+                self.client._parse_direction_json(
                     error_responses["UNKNOWN_ERROR"], alternatives=alternatives
                 )

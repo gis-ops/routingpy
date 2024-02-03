@@ -45,17 +45,20 @@ class OpenTripPlannerV2Test(_test.TestCase):
             json=ENDPOINTS_RESPONSES["otp_v2"]["directions"],
             content_type="application/json",
         )
-        routes = self.client.directions(**query)
+        direction = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "http://localhost:8080/otp/routers/default/index/graphql",
             responses.calls[0].request.url,
         )
-        self.assertIsInstance(routes, Direction)
-        self.assertIsInstance(routes.distance, int)
-        self.assertIsInstance(routes.duration, int)
-        self.assertIsInstance(routes.geometry, list)
-        self.assertIsInstance(routes.raw, dict)
+        self.assertIsInstance(direction, Direction)
+        self.assertIsInstance(direction.distance, int)
+        self.assertIsInstance(direction.duration, int)
+        self.assertIsInstance(direction.geometry, list)
+        self.assertIsInstance(direction.departure_datetime, datetime.datetime)
+        self.assertEqual(direction.departure_datetime.tzinfo, datetime.timezone.utc)
+        self.assertIsInstance(direction.arrival_datetime, datetime.datetime)
+        self.assertEqual(direction.arrival_datetime.tzinfo, datetime.timezone.utc)
 
     @responses.activate
     def test_directions_alternative(self):
@@ -67,20 +70,24 @@ class OpenTripPlannerV2Test(_test.TestCase):
             json=ENDPOINTS_RESPONSES["otp_v2"]["directions"],
             content_type="application/json",
         )
-        routes = self.client.directions(**query)
+        directions = self.client.directions(**query)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             "http://localhost:8080/otp/routers/default/index/graphql",
             responses.calls[0].request.url,
         )
-        self.assertIsInstance(routes, Directions)
-        self.assertEqual(1, len(routes))
-        for route in routes:
-            self.assertIsInstance(route, Direction)
-            self.assertIsInstance(route.duration, int)
-            self.assertIsInstance(route.distance, int)
-            self.assertIsInstance(route.geometry, list)
-            self.assertIsInstance(route.raw, dict)
+        self.assertIsInstance(directions, Directions)
+        self.assertEqual(1, len(directions))
+        for direction in directions:
+            self.assertIsInstance(direction, Direction)
+            self.assertIsInstance(direction.duration, int)
+            self.assertIsInstance(direction.distance, int)
+            self.assertIsInstance(direction.geometry, list)
+            self.assertIsInstance(direction.raw, dict)
+            self.assertIsInstance(direction.departure_datetime, datetime.datetime)
+            self.assertEqual(direction.departure_datetime.tzinfo, datetime.timezone.utc)
+            self.assertIsInstance(direction.arrival_datetime, datetime.datetime)
+            self.assertEqual(direction.arrival_datetime.tzinfo, datetime.timezone.utc)
 
     @responses.activate
     def test_isochrones(self):
