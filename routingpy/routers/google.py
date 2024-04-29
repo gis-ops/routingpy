@@ -262,11 +262,15 @@ class Google:
         origin, destination = locations[0], locations[-1]
         if isinstance(origin, (list, tuple)):
             params["origin"] = convert.delimit_list(list(reversed(origin)))
+        elif isinstance(origin, str):
+            params["origin"] = origin
         elif isinstance(origin, self.WayPoint):
             raise TypeError("The first and last locations must be list/tuple of [lon, lat]")
 
         if isinstance(destination, (list, tuple)):
             params["destination"] = convert.delimit_list(list(reversed(destination)))
+        elif isinstance(destination, str):
+            params["destination"] = destination
         elif isinstance(origin, self.WayPoint):
             raise TypeError("The first and last locations must be list/tuple of [lon, lat]")
 
