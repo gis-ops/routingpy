@@ -15,8 +15,11 @@
 # the License.
 #
 
+import datetime
 from operator import itemgetter
 from typing import List, Optional, Tuple, Union
+
+import pytz
 
 from .. import convert, utils
 from ..client_base import DEFAULT
@@ -323,12 +326,40 @@ class Google:
         if transit_routing_preference:
             params["transit_routing_preference"] = transit_routing_preference
 
-        return self.parse_direction_json(
+        return self._parse_direction_json(
             self.client._request("/directions/json", get_params=params, dry_run=dry_run), alternatives
         )
 
-    @staticmethod
-    def parse_direction_json(response, alternatives):
+    def _time_object_to_aware_datetime(self, time_object):
+        timestamp = time_object["value"]
+        dt = datetime.datetime.fromtimestamp(timestamp)
+        timezone = pytz.timezone(time_object["time_zone"])
+        return dt.astimezone(timezone)
+
+    def _parse_legs(self, legs):
+        duration = 0
+        distance = 0
+        geometry = []
+        departure_datetime = None
+        arrival_datetime = None
+
+        for leg in legs:
+            duration += leg["duration"]["value"]
+            distance += leg["distance"]["value"]
+            for step in leg["steps"]:
+                geometry.extend(utils.decode_polyline5(step["polyline"]["points"]))
+
+        departure_time = legs[0].get("departure_time")
+        if departure_time:
+            departure_datetime = self._time_object_to_aware_datetime(departure_time)
+
+        arrival_time = legs[-1].get("arrival_time")
+        if arrival_time:
+            arrival_datetime = self._time_object_to_aware_datetime(arrival_time)
+
+        return duration, distance, geometry, departure_datetime, arrival_datetime
+
+    def _parse_direction_json(self, response, alternatives):
         if response is None:  # pragma: no cover
             if alternatives:
                 return Directions()
@@ -349,33 +380,27 @@ class Google:
 
             raise error(STATUS_CODES[status]["code"], STATUS_CODES[status]["message"])
 
-        if alternatives:
-            routes = []
-            for route in response["routes"]:
-                geometry = []
-                duration, distance = 0, 0
-                for leg in route["legs"]:
-                    duration += leg["duration"]["value"]
-                    distance += leg["distance"]["value"]
-                    for step in leg["steps"]:
-                        geometry.extend(utils.decode_polyline5(step["polyline"]["points"]))
-
-                routes.append(
-                    Direction(
-                        geometry=geometry, duration=int(duration), distance=int(distance), raw=route
-                    )
+        directions = []
+        for route in response["routes"]:
+            duration, distance, geometry, departure_datetime, arrival_datetime = self._parse_legs(
+                route["legs"]
+            )
+            directions.append(
+                Direction(
+                    geometry=geometry,
+                    duration=int(duration),
+                    distance=int(distance),
+                    departure_datetime=departure_datetime,
+                    arrival_datetime=arrival_datetime,
+                    raw=route,
                 )
-            return Directions(routes, response)
-        else:
-            geometry = []
-            duration, distance = 0, 0
-            for leg in response["routes"][0]["legs"]:
-                duration += leg["duration"]["value"]
-                distance += leg["distance"]["value"]
-                for step in leg["steps"]:
-                    geometry.extend(utils.decode_polyline5(step["polyline"]["points"]))
+            )
 
-            return Direction(geometry=geometry, duration=duration, distance=distance, raw=response)
+        if alternatives:
+            return Directions(directions, raw=response)
+
+        elif directions:
+            return directions[0]
 
     def isochrones(self):  # pragma: no cover
         raise NotImplementedError
@@ -510,12 +535,11 @@ class Google:
         if transit_routing_preference:
             params["transit_routing_preference"] = transit_routing_preference
 
-        return self.parse_matrix_json(
+        return self._parse_matrix_json(
             self.client._request("/distancematrix/json", get_params=params, dry_run=dry_run)
         )
 
-    @staticmethod
-    def parse_matrix_json(response):
+    def _parse_matrix_json(self, response):
         if response is None:  # pragma: no cover
             return Matrix()
 

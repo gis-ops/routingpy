@@ -238,7 +238,6 @@ class OSRMTest(_test.TestCase):
 
         matrix = self.client.matrix(**query)
 
-        print(responses.calls[0].request.url)
         self.assertEqual(1, len(responses.calls))
         self.assertURLEqual(
             f"https://routing.openstreetmap.de/routed-bike/table/v1/{query['profile']}/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?annotations=distance%2Cduration&bearings=50%2C50%3B50%2C50%3B50%2C50&fallback_speed=42&radiuses=500%3B500%3B500",
@@ -268,7 +267,6 @@ class OSRMTest(_test.TestCase):
         self.client.matrix(**query)
 
         self.assertEqual(1, len(responses.calls))
-        print(responses.calls[0].request.url)
         self.assertURLEqual(
             f"https://routing.openstreetmap.de/routed-bike/table/v1/{query['profile']}/8.688641,49.420577;8.680916,49.415776;8.780916,49.445776?annotations=distance%2Cduration&bearings=50%2C50%3B50%2C50%3B50%2C50&destinations=0%3B2&radiuses=500%3B500%3B500&sources=1%3B2",
             responses.calls[0].request.url,

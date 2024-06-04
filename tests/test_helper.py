@@ -416,6 +416,228 @@ ENDPOINTS_RESPONSES = {
             ],
             "status": "OK",
         },
+        "directions_transit": {
+            "geocoded_waypoints": [
+                {
+                    "geocoder_status": "OK",
+                    "place_id": "ChIJi2as5j3Bl0cRQNkSY5pCTDQ",
+                    "types": ["premise"],
+                },
+                {
+                    "geocoder_status": "OK",
+                    "place_id": "ChIJITuAsCTBl0cRH5oKE9qv8Ys",
+                    "types": ["street_address"],
+                },
+            ],
+            "routes": [
+                {
+                    "bounds": {
+                        "northeast": {"lat": 49.4204993, "lng": 8.690909999999999},
+                        "southwest": {"lat": 49.4157593, "lng": 8.6809166},
+                    },
+                    "copyrights": "Map data ©2023 GeoBasis-DE/BKG (©2009)",
+                    "legs": [
+                        {
+                            "arrival_time": {
+                                "text": "1:57\u202fPM",
+                                "time_zone": "Europe/Berlin",
+                                "value": 1691063878,
+                            },
+                            "departure_time": {
+                                "text": "1:46\u202fPM",
+                                "time_zone": "Europe/Berlin",
+                                "value": 1691063212,
+                            },
+                            "distance": {"text": "1.3 km", "value": 1345},
+                            "duration": {"text": "11 mins", "value": 666},
+                            "end_address": "Schröderstraße 78, 69120 Heidelberg, Germany",
+                            "end_location": {"lat": 49.4157593, "lng": 8.6809166},
+                            "start_address": "Roonstraße 6, 69120 Heidelberg, Germany",
+                            "start_location": {"lat": 49.4204039, "lng": 8.6886808},
+                            "steps": [
+                                {
+                                    "distance": {"text": "0.5 km", "value": 463},
+                                    "duration": {"text": "6 mins", "value": 352},
+                                    "end_location": {"lat": 49.4173109, "lng": 8.6909041},
+                                    "html_instructions": "Walk to Neuenheim, Lutherstraße",
+                                    "polyline": {
+                                        "points": "olslHg_`t@S{D?Gr@a@pAs@n@a@z@a@HD`@A\\@VDZATCr@FdDC\\gB"
+                                    },
+                                    "start_location": {"lat": 49.4204039, "lng": 8.6886808},
+                                    "steps": [
+                                        {
+                                            "distance": {"text": "71 m", "value": 71},
+                                            "duration": {"text": "1 min", "value": 51},
+                                            "end_location": {
+                                                "lat": 49.4204993,
+                                                "lng": 8.689657799999999,
+                                            },
+                                            "html_instructions": "Head <b>east</b> on <b>Roonstraße</b> toward <b>Handschuhsheimer Landstraße</b>/<wbr/><b>B3</b>",
+                                            "polyline": {"points": "olslHg_`t@S{D?G"},
+                                            "start_location": {"lat": 49.4204039, "lng": 8.6886808},
+                                            "travel_mode": "WALKING",
+                                        },
+                                        {
+                                            "distance": {"text": "0.1 km", "value": 146},
+                                            "duration": {"text": "2 mins", "value": 109},
+                                            "end_location": {"lat": 49.41928799999999, "lng": 8.6904262},
+                                            "html_instructions": "Turn <b>right</b> onto <b>Handschuhsheimer Landstraße</b>/<wbr/><b>B3</b>",
+                                            "maneuver": "turn-right",
+                                            "polyline": {"points": "cmslHke`t@r@a@pAs@n@a@z@a@"},
+                                            "start_location": {
+                                                "lat": 49.4204993,
+                                                "lng": 8.689657799999999,
+                                            },
+                                            "travel_mode": "WALKING",
+                                        },
+                                        {
+                                            "distance": {"text": "25 m", "value": 25},
+                                            "duration": {"text": "1 min", "value": 24},
+                                            "end_location": {"lat": 49.4190674, "lng": 8.690413},
+                                            "html_instructions": "Slight <b>right</b> to stay on <b>Handschuhsheimer Landstraße</b>/<wbr/><b>B3</b>",
+                                            "maneuver": "turn-slight-right",
+                                            "polyline": {"points": "qeslHej`t@HD`@A"},
+                                            "start_location": {
+                                                "lat": 49.41928799999999,
+                                                "lng": 8.6904262,
+                                            },
+                                            "travel_mode": "WALKING",
+                                        },
+                                        {
+                                            "distance": {"text": "0.2 km", "value": 179},
+                                            "duration": {"text": "2 mins", "value": 136},
+                                            "end_location": {"lat": 49.4174571, "lng": 8.6903761},
+                                            "html_instructions": "Continue onto <b>Lutherstraße</b>",
+                                            "polyline": {"points": "edslHaj`t@\\@VDZATCr@FdDC"},
+                                            "start_location": {"lat": 49.4190674, "lng": 8.690413},
+                                            "travel_mode": "WALKING",
+                                        },
+                                        {
+                                            "distance": {"text": "42 m", "value": 42},
+                                            "duration": {"text": "1 min", "value": 32},
+                                            "end_location": {"lat": 49.4173109, "lng": 8.6909041},
+                                            "html_instructions": "Turn <b>left</b> onto <b>Mönchhofstraße</b>",
+                                            "maneuver": "turn-left",
+                                            "polyline": {"points": "czrlH{i`t@\\gB"},
+                                            "start_location": {"lat": 49.4174571, "lng": 8.6903761},
+                                            "travel_mode": "WALKING",
+                                        },
+                                    ],
+                                    "travel_mode": "WALKING",
+                                },
+                                {
+                                    "distance": {"text": "0.7 km", "value": 652},
+                                    "duration": {"text": "2 mins", "value": 120},
+                                    "end_location": {"lat": 49.417445, "lng": 8.682053999999999},
+                                    "html_instructions": "Bus towards Neuenheim, Kopfklinik",
+                                    "polyline": {
+                                        "points": "gyrlHem`t@@@]fB@^Ax@H`FDdA?~D?jC@nA@dC?jAAdCAzE?jB@~@AbCK?"
+                                    },
+                                    "start_location": {"lat": 49.41732, "lng": 8.690909999999999},
+                                    "transit_details": {
+                                        "arrival_stop": {
+                                            "location": {"lat": 49.417445, "lng": 8.682053999999999},
+                                            "name": "Neuenheim, Wielandtstraße",
+                                        },
+                                        "arrival_time": {
+                                            "text": "1:55\u202fPM",
+                                            "time_zone": "Europe/Berlin",
+                                            "value": 1691063700,
+                                        },
+                                        "departure_stop": {
+                                            "location": {"lat": 49.41732, "lng": 8.690909999999999},
+                                            "name": "Neuenheim, Lutherstraße",
+                                        },
+                                        "departure_time": {
+                                            "text": "1:53\u202fPM",
+                                            "time_zone": "Europe/Berlin",
+                                            "value": 1691063580,
+                                        },
+                                        "headsign": "Neuenheim, Kopfklinik",
+                                        "line": {
+                                            "agencies": [
+                                                {
+                                                    "name": "RNV Rhein-Neckar-Verkehr GmbH",
+                                                    "url": "https://vrn.de/",
+                                                }
+                                            ],
+                                            "color": "#0000f2",
+                                            "name": "HD Universitätsplatz - Bismarckplatz - Neuenheim - Uniklinikum",
+                                            "short_name": "RNV 31",
+                                            "text_color": "#ffffff",
+                                            "vehicle": {
+                                                "icon": "//maps.gstatic.com/mapfiles/transit/iw2/6/bus2.png",
+                                                "name": "Bus",
+                                                "type": "BUS",
+                                            },
+                                        },
+                                        "num_stops": 2,
+                                    },
+                                    "travel_mode": "TRANSIT",
+                                },
+                                {
+                                    "distance": {"text": "0.2 km", "value": 230},
+                                    "duration": {"text": "3 mins", "value": 166},
+                                    "end_location": {"lat": 49.4157593, "lng": 8.6809166},
+                                    "html_instructions": "Walk to Schröderstraße 78, 69120 Heidelberg, Germany",
+                                    "polyline": {"points": "syrlHyu~s@?X|Cr@bDl@@dB"},
+                                    "start_location": {"lat": 49.4173827, "lng": 8.6820519},
+                                    "steps": [
+                                        {
+                                            "distance": {"text": "10 m", "value": 10},
+                                            "duration": {"text": "1 min", "value": 7},
+                                            "end_location": {
+                                                "lat": 49.4173846,
+                                                "lng": 8.681917799999999,
+                                            },
+                                            "html_instructions": "Head <b>west</b> on <b>Mönchhofstraße</b> toward <b>Wielandtstraße</b>",
+                                            "polyline": {"points": "syrlHyu~s@?X"},
+                                            "start_location": {"lat": 49.4173827, "lng": 8.6820519},
+                                            "travel_mode": "WALKING",
+                                        },
+                                        {
+                                            "distance": {"text": "0.2 km", "value": 183},
+                                            "duration": {"text": "2 mins", "value": 132},
+                                            "end_location": {"lat": 49.4157671, "lng": 8.6814298},
+                                            "html_instructions": "Turn <b>left</b> onto <b>Wielandtstraße</b>",
+                                            "maneuver": "turn-left",
+                                            "polyline": {"points": "syrlH_u~s@|Cr@bDl@"},
+                                            "start_location": {
+                                                "lat": 49.4173846,
+                                                "lng": 8.681917799999999,
+                                            },
+                                            "travel_mode": "WALKING",
+                                        },
+                                        {
+                                            "distance": {"text": "37 m", "value": 37},
+                                            "duration": {"text": "1 min", "value": 27},
+                                            "end_location": {"lat": 49.4157593, "lng": 8.6809166},
+                                            "html_instructions": "Turn <b>right</b> onto <b>Schröderstraße</b>",
+                                            "maneuver": "turn-right",
+                                            "polyline": {"points": "qorlH}q~s@@dB"},
+                                            "start_location": {"lat": 49.4157671, "lng": 8.6814298},
+                                            "travel_mode": "WALKING",
+                                        },
+                                    ],
+                                    "travel_mode": "WALKING",
+                                },
+                            ],
+                            "traffic_speed_entry": [],
+                            "via_waypoint": [],
+                        }
+                    ],
+                    "overview_polyline": {
+                        "points": "olslHg_`t@ScEdCuAn@a@z@a@HD`@At@Fp@Er@FdDCZiB[hB?xANfH?jI@fLAjOK?J??X|Cr@bDl@@dB"
+                    },
+                    "summary": "",
+                    "warnings": [
+                        "Walking directions are in beta. Use caution – This route may be missing sidewalks or pedestrian paths."
+                    ],
+                    "waypoint_order": [],
+                }
+            ],
+            "status": "OK",
+        },
         "matrix": {
             "rows": [
                 {
@@ -437,10 +659,15 @@ ENDPOINTS_RESPONSES = {
                     "itineraries": [
                         {
                             "duration": 178,
+                            "startTime": 1691053917000,
+                            "endTime": 1691054095000,
                             "legs": [
                                 {
+                                    "startTime": 1691053917000,
+                                    "endTime": 1691054095000,
                                     "duration": 178.0,
                                     "distance": 1073.17,
+                                    "mode": "CAR",
                                     "legGeometry": {
                                         "points": "olslHg_`t@@N`@bI\\E~AMJAJAF?tAKjBSFAFApBY~@EPAHA?P?j@AV?l@?P?|@AhC@t@?P?JAt@?bA@bEATAj@?jC?h@AfA?H?`@T@@?d@H`B`@dB\\v@NJ??X?jA"
                                     },
@@ -833,6 +1060,11 @@ ENDPOINTS_QUERIES = {
             "traffic_model": "optimistic",
             "transit_mode": ["bus", "rail"],
             "transit_routing_preference": "less_walking",
+        },
+        "directions_transit": {
+            "profile": "transit",
+            "locations": PARAM_LINE,
+            "arrival_time": 1691064000,
         },
         "matrix": {
             "profile": "driving",

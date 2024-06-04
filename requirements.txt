@@ -1,5 +1,6 @@
 certifi==2023.7.22 ; python_full_version >= "3.8.0" and python_full_version < "4.0.0"
 charset-normalizer==3.2.0 ; python_full_version >= "3.8.0" and python_full_version < "4.0.0"
 idna==3.4 ; python_full_version >= "3.8.0" and python_full_version < "4.0.0"
+pytz==2023.3 ; python_full_version >= "3.8.0" and python_full_version < "4.0.0"
 requests==2.31.0 ; python_full_version >= "3.8.0" and python_full_version < "4.0.0"
 urllib3==2.0.4 ; python_full_version >= "3.8.0" and python_full_version < "4.0.0"
