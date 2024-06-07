@@ -165,7 +165,9 @@ class ORSTest(_test.TestCase):
 
         self.client.directions(**query)
 
-        self.assertEqual({"Authorization": self.key}, {"Authorization": self.key} | responses.calls[0].request.headers)
+        self.assertEqual(
+            {"Authorization": self.key}, {"Authorization": self.key} | responses.calls[0].request.headers
+        )
 
     @responses.activate
     def test_alternative_routes_error(self):
