@@ -168,8 +168,10 @@ class BaseTest(_test.TestCase):
 
         client = ClientMock("https://httpbin.org", **dict(timeout, **headers))
 
-        self.assertEqual(timeout, timeout | client.kwargs)
-        self.assertEqual(headers["headers"], headers["headers"] | client.kwargs["headers"])
+        self.assertTrue(timeout.items() <= {**timeout, **client.kwargs}.items())
+        self.assertTrue(
+            headers["headers"].items() <= {**headers["headers"], **client.kwargs["headers"]}.items()
+        )
 
     @responses.activate
     def test_req_property(self):

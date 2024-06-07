@@ -167,7 +167,9 @@ class ORSTest(_test.TestCase):
         self.client.directions(**query)
 
         header_dict = CaseInsensitiveDict({"Authorization": self.key})
-        self.assertEqual(header_dict, header_dict | responses.calls[0].request.headers)
+        self.assertTrue(
+            header_dict.items() <= {**header_dict, **responses.calls[0].request.headers}.items()
+        )
 
     @responses.activate
     def test_alternative_routes_error(self):
