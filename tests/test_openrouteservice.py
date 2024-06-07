@@ -20,6 +20,7 @@ import json
 from copy import deepcopy
 
 import responses
+from requests.structures import CaseInsensitiveDict
 
 import tests as _test
 from routingpy import ORS
@@ -165,9 +166,8 @@ class ORSTest(_test.TestCase):
 
         self.client.directions(**query)
 
-        self.assertEqual(
-            {"Authorization": self.key}, {"Authorization": self.key} | responses.calls[0].request.headers
-        )
+        header_dict = CaseInsensitiveDict({"Authorization": self.key})
+        self.assertEqual(header_dict, header_dict | responses.calls[0].request.headers)
 
     @responses.activate
     def test_alternative_routes_error(self):
