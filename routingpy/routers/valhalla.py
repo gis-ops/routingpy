@@ -128,7 +128,7 @@ class Valhalla:
     ):
         """Get directions between an origin point and a destination point.
 
-        For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md.
+        For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/docs/api/turn-by-turn/api-reference.md.
 
         Use ``kwargs`` for any missing ``directions`` request options.
 
@@ -513,7 +513,7 @@ class Valhalla:
         """
         Gets travel distance and time for a matrix of origins and destinations.
 
-        For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/api/matrix/api-reference.md.
+        For more information, visit https://github.com/valhalla/valhalla/blob/master/docs/docs/api/matrix/api-reference.md.
 
         Use ``kwargs`` for any missing ``matrix`` request options.
 
